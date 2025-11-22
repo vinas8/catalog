@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catalog</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0; padding: 20px;
+        background: #f5f5f5;
+    }
+    h1 { text-align: center; }
+    .catalog {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+    .item {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .item img {
+        width: 100%; height: 150px;
+        object-fit: cover; border-radius: 6px;
+    }
+    .name { font-size: 18px; margin: 10px 0; }
+    .price { color: green; font-weight: bold; }
+    .search {
+        display: block;
+        margin: 0 auto;
+        padding: 10px;
+        width: 80%;
+        max-width: 400px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+</style>
+</head>
+
+<body>
+<h1>Catalog</h1>
+
+<input type="text" class="search" placeholder="Search…" oninput="filterItems()">
+
+<div class="catalog" id="catalog"></div>
+
+<script>
+const items = [
+    { name: "Monstera Plant", price: "$25", img: "https://picsum.photos/300?random=1" },
+    { name: "Golden Retriever Puppy", price: "$500", img: "https://picsum.photos/300?random=2" },
+    { name: "Cactus", price: "$10", img: "https://picsum.photos/300?random=3" },
+    { name: "Parrot", price: "$150", img: "https://picsum.photos/300?random=4" }
+];
+
+function renderCatalog(list) {
+    const container = document.getElementById("catalog");
+    container.innerHTML = "";
+    list.forEach(item => {
+        container.innerHTML += `
+            <div class="item">
+                <img src="${item.img}">
+                <div class="name">${item.name}</div>
+                <div class="price">${item.price}</div>
+            </div>
+        `;
+    });
+}
+
+function filterItems() {
+    const q = document.querySelector(".search").value.toLowerCase();
+    const filtered = items.filter(i => i.name.toLowerCase().includes(q));
+    renderCatalog(filtered);
+}
+
+renderCatalog(items);
+</script>
+
+</body>
+</html>
