@@ -1,327 +1,274 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ball Python Catalog</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ball Python Catalog</title>
 
-<style>
-:root{
-  --bg:#f4f6f8; --card:#fff; --accent:#2e7d32; --dark:#111; --muted:#777; --danger:#c62828;
-}
-body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:#222; }
-header{ background:var(--dark); color:#fff; padding:18px 16px; text-align:center; }
-header h1{ margin:0; font-size:22px; }
-header p{ margin:6px 0 0; color:#cfcfcf; font-size:13px; }
+  <style>
+    :root{--bg:#f4f6f8;--card:#fff;--accent:#2e7d32;--dark:#111;--muted:#6b7280;--warn:#8a6d00;}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:#111;}
+    header{background:var(--dark);color:#fff;padding:18px 16px;text-align:center;}
+    header h1{margin:0;font-size:22px;}
+    header p{margin:6px 0 0;color:#cfcfcf;font-size:13px;}
 
-.controls{
-  max-width:1200px; margin:0 auto; padding:14px 16px 0;
-  display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
-}
-.controls input,.controls select{
-  padding:10px 12px; border-radius:10px; border:1px solid #d6d6d6; font-size:14px; min-width:220px;
-}
+    .bar{max-width:1200px;margin:0 auto;padding:14px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+    .bar .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    input{padding:10px 12px;border-radius:10px;border:1px solid #d6d6d6;font-size:14px;min-width:240px;}
+    .pill{background:#fff;border:1px solid #e5e7eb;border-radius:999px;padding:8px 12px;font-size:13px;color:#111;}
 
-.catalog{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:18px; padding:18px 16px 8px; max-width:1200px; margin:0 auto;
-}
-.card{
-  background:var(--card); border-radius:14px; overflow:hidden;
-  box-shadow:0 6px 16px rgba(0,0,0,.10);
-  transition:transform .18s ease, box-shadow .18s ease;
-}
-.card:hover{ transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.13); }
-.card img{ width:100%; height:180px; object-fit:cover; display:block; background:#eee; }
-.card-body{ padding:14px; }
-.name{ font-size:17px; font-weight:650; }
-.meta{ font-size:13px; color:#666; margin:6px 0 10px; }
-.price{ font-size:19px; font-weight:800; color:var(--accent); }
+    .wrap{max-width:1200px;margin:0 auto;padding:0 16px 22px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+    .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.10);transition:transform .18s ease,box-shadow .18s ease;}
+    .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.13);}
+    .img{width:100%;height:180px;object-fit:cover;display:block;background:#e5e7eb;}
+    .body{padding:14px;}
+    .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;background:#e8f5e9;color:#1b5e20;margin-bottom:8px;}
+    .name{font-size:17px;font-weight:700;}
+    .meta{font-size:13px;color:#666;margin:6px 0 10px;}
+    .price{font-size:19px;font-weight:900;color:var(--accent);}
+    button{width:100%;margin-top:10px;padding:10px 12px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:14px;font-weight:700;}
+    button.secondary{background:#555;}
+    button:disabled{opacity:.55;cursor:not-allowed;}
 
-.badge{
-  display:inline-block; padding:4px 10px; border-radius:999px;
-  font-size:12px; background:#e8f5e9; color:#1b5e20; margin-bottom:8px;
-}
+    .panel{background:#fff;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.10);padding:14px;margin-top:18px;}
+    .panel h2{margin:0 0 10px;font-size:18px;}
+    .row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eee;}
+    .row:last-child{border-bottom:none;}
+    .small{font-size:12px;color:var(--muted);margin-top:2px;}
+    .right{text-align:right;}
+    .remove{margin-top:6px;padding:6px 10px;border-radius:10px;border:none;cursor:pointer;background:#f2f2f2;color:#111;font-size:12px;}
+    .warn{display:none;margin-top:10px;color:var(--warn);background:#fff6d6;border:1px solid #ffe8a3;padding:8px 10px;border-radius:12px;font-size:12px;}
+    .total{margin-top:10px;font-weight:900;}
 
-.row{ display:flex; gap:10px; }
-button{
-  width:100%; margin-top:10px; padding:10px 12px; border:none; border-radius:10px;
-  background:var(--accent); color:#fff; cursor:pointer; font-size:14px; font-weight:650;
-}
-button.secondary{ background:#555; }
-button.danger{ background:var(--danger); }
-button:disabled{ opacity:.55; cursor:not-allowed; }
-
-#cart{
-  background:#fff; max-width:420px; margin:16px auto 22px; padding:14px;
-  border-radius:14px; box-shadow:0 6px 16px rgba(0,0,0,.10);
-}
-#cart h2{ margin:0 0 10px; font-size:18px; }
-.cart-item{
-  display:grid; grid-template-columns:1fr auto; gap:8px;
-  padding:8px 0; border-bottom:1px solid #eee;
-}
-.cart-item:last-child{ border-bottom:none; }
-.cart-item .small{ color:var(--muted); font-size:12px; margin-top:2px; }
-.cart-item .right{ text-align:right; }
-.cart-item .remove{
-  margin-top:6px; padding:6px 10px; border-radius:10px; border:none; cursor:pointer;
-  background:#f2f2f2; color:#222; font-size:12px;
-}
-.total{ margin-top:10px; font-weight:800; }
-.note{ font-size:12px; color:#888; margin-top:8px; line-height:1.35; }
-.warn{ color:#8a6d00; background:#fff6d6; border:1px solid #ffe8a3; padding:8px 10px; border-radius:12px; margin-top:10px; font-size:12px; }
-
-footer{ text-align:center; padding:18px 12px; color:#777; font-size:13px; }
-a.link{ color:#2b6cb0; text-decoration:none; }
-a.link:hover{ text-decoration:underline; }
-</style>
+    .pager{display:flex;justify-content:center;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
+    .pager button{width:auto;margin:0;padding:10px 14px;}
+    .pager .info{color:var(--muted);font-size:13px;}
+  </style>
 </head>
 
 <body>
 <header>
   <h1>Ball Python Catalog</h1>
-  <p>GitHub Pages friendly • JSON listings • Stripe payment links (no backend)</p>
+  <p>JSON listings • Stripe payment links • No backend</p>
 </header>
 
-<div class="controls">
-  <input id="search" placeholder="Search morphs…" oninput="applyFilters()" />
-  <select id="sort" onchange="applyFilters()">
-    <option value="name">Sort: Name</option>
-    <option value="price_asc">Sort: Price (Low → High)</option>
-    <option value="price_desc">Sort: Price (High → Low)</option>
-  </select>
+<div class="bar">
+  <div class="left">
+    <input id="search" placeholder="Search… (e.g. banana)" oninput="applyFilters(true)" />
+    <span class="pill" id="countPill">0 items</span>
+  </div>
+  <span class="pill">Page size: 12</span>
 </div>
 
-<div class="catalog" id="catalog"></div>
+<div class="wrap">
+  <div class="grid" id="grid"></div>
 
-<div id="cart">
-  <h2>Cart <span id="cartCount" style="color:#777;font-weight:600;"></span></h2>
-
-  <div id="cartItems"></div>
-  <div class="total" id="total"></div>
-
-  <!-- Checkout link gets updated by JS -->
-  <a id="checkoutLink" href="#" target="_blank" rel="noopener">
-    <button id="checkoutBtn" disabled>Checkout (Stripe)</button>
-  </a>
-
-  <div class="row">
-    <button class="secondary" onclick="clearCart()">Clear Cart</button>
+  <div class="pager">
+    <button class="secondary" id="prevBtn" onclick="prevPage()">Prev</button>
+    <div class="info" id="pageInfo">Page 1</div>
+    <button class="secondary" id="nextBtn" onclick="nextPage()">Next</button>
   </div>
 
-  <div id="checkoutWarning" class="warn" style="display:none;"></div>
+  <div class="panel">
+    <h2>Cart <span class="small" id="cartCount"></span></h2>
+    <div id="cartRows"></div>
+    <div class="total" id="cartTotal"></div>
 
-  <div class="note">
-    Listings load from <code>data/products.json</code>. Stripe secret keys are not used (safe for GitHub Pages).
+    <a id="checkoutLink" href="#" target="_blank" rel="noopener">
+      <button id="checkoutBtn" disabled>Checkout (Stripe)</button>
+    </a>
+
+    <button class="secondary" onclick="clearCart()">Clear cart</button>
+    <div id="checkoutWarn" class="warn"></div>
+
+    <div class="small" style="margin-top:10px;">
+      Tip: put your JSON at <code>data/products.json</code>.
+    </div>
   </div>
 </div>
-
-<footer>
-  Tip: Put images in an <code>img/</code> folder and reference them in JSON. |
-  <a class="link" href="data/products.json" target="_blank" rel="noopener">View products.json</a>
-</footer>
 
 <script>
-/**
- * ============================
- * CONFIG (edit these)
- * ============================
- * MULTI_ITEM_FALLBACK_LINK:
- * If user has multiple items in cart, a static site can't create a dynamic Stripe checkout.
- * Use a deposit link (recommended) or a general payment link.
- */
-const MULTI_ITEM_FALLBACK_LINK = "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00"; // replace if you want
+  // ===== Config =====
+  const PAGE_SIZE = 12;
+  const MULTI_ITEM_FALLBACK_LINK = "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00"; // deposit/general link
 
-/**
- * ============================
- * DATA LOADING
- * ============================
- * Expected JSON format at /data/products.json:
- * [
- *  {
- *    "id":"SB-2024-01",
- *    "name":"Super Banana",
- *    "price":450,
- *    "info":"Male • 2024",
- *    "img":"img/super-banana.jpg",
- *    "tag":"Morph",
- *    "stripe_link":"https://buy.stripe.com/test_..."
- *  }
- * ]
- */
-let ITEMS = [];
-let FILTERED = [];
+  // ===== State =====
+  let ITEMS = [];
+  let FILTERED = [];
+  let page = 1;
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  // ===== Utils =====
+  const money = n => "$" + Number(n || 0).toFixed(0);
+  const esc = s => String(s ?? "").replace(/[&<>'"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;" }[c]));
 
-async function loadItems() {
-  try {
-    const res = await fetch("data/products.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("products.json not found");
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error("products.json must be an array");
-    ITEMS = data;
-  } catch (e) {
-    // Fallback sample so the page still works if JSON isn't present yet
-    ITEMS = [
-      { id:"SB-2024-01", name:"Super Banana", price:450, info:"Male • 2024", img:"https://picsum.photos/400?1", tag:"Morph", stripe_link:MULTI_ITEM_FALLBACK_LINK },
-      { id:"BC-2023-02", name:"Banana Clown", price:900, info:"Female • 2023", img:"https://picsum.photos/400?2", tag:"Morph", stripe_link:MULTI_ITEM_FALLBACK_LINK },
-      { id:"PI-2022-03", name:"Pied", price:350, info:"Male • 2022", img:"https://picsum.photos/400?3", tag:"Classic", stripe_link:MULTI_ITEM_FALLBACK_LINK }
-    ];
+  // ===== Data loading (JSON + fallback) =====
+  async function loadItems() {
+    try {
+      const res = await fetch("data/products.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("no json");
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("bad json");
+      ITEMS = data;
+    } catch {
+      // Only Banana snake for now + placeholders to make UX nicer (pagination still works)
+      const banana = {
+        id: "SB-2024-01",
+        name: "Super Banana",
+        price: 450,
+        info: "Male • 2024",
+        tag: "Banana",
+        img: "https://picsum.photos/600?banana",
+        stripe_link: "https://buy.stripe.com/test_REPLACE_WITH_YOURS"
+      };
+
+      // 1 real item + 23 placeholders = 24 items = 2 pages @ 12/page
+      const placeholders = Array.from({length: 23}, (_, i) => ({
+        id: `placeholder-${i+1}`,
+        name: "Coming Soon",
+        price: 0,
+        info: "New listing soon",
+        tag: "Placeholder",
+        img: `https://picsum.photos/600?random=${100+i}`,
+        stripe_link: ""
+      }));
+
+      ITEMS = [banana, ...placeholders];
+    }
   }
-}
 
-function money(n){
-  const num = Number(n);
-  if (!Number.isFinite(num)) return "";
-  return "$" + num.toFixed(0);
-}
+  // ===== Catalog + Pagination =====
+  function applyFilters(resetPage) {
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    FILTERED = ITEMS.filter(i => {
+      const hay = `${i.name||""} ${i.info||""} ${i.tag||""}`.toLowerCase();
+      return hay.includes(q);
+    });
 
-function addToCart(item) {
-  cart.push({
-    id: item.id || item.name,
-    name: item.name,
-    price: Number(item.price) || 0,
-    info: item.info || "",
-    stripe_link: item.stripe_link || ""
-  });
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
+    if (resetPage) page = 1;
+    document.getElementById("countPill").textContent = `${FILTERED.length} items`;
+    renderGrid();
+    renderPager();
+  }
 
-function removeFromCart(idx){
-  cart.splice(idx, 1);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
+  function renderGrid() {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
 
-function clearCart(){
-  cart = [];
-  localStorage.removeItem("cart");
-  renderCart();
-}
+    const start = (page - 1) * PAGE_SIZE;
+    const slice = FILTERED.slice(start, start + PAGE_SIZE);
 
-function applyFilters(){
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  const sort = document.getElementById("sort").value;
+    slice.forEach(i => {
+      const isPlaceholder = (i.price || 0) <= 0 || !i.stripe_link;
+      grid.insertAdjacentHTML("beforeend", `
+        <div class="card">
+          <img class="img" src="${esc(i.img || "")}" alt="${esc(i.name || "")}" loading="lazy">
+          <div class="body">
+            <div class="tag">${esc(i.tag || "Listing")}</div>
+            <div class="name">${esc(i.name || "Untitled")}</div>
+            <div class="meta">${esc(i.info || "")}</div>
+            <div class="price">${isPlaceholder ? "—" : money(i.price)}</div>
+            <button ${isPlaceholder ? "disabled" : ""} onclick='addToCart(${JSON.stringify({
+              id: i.id, name: i.name, price: i.price, info: i.info, stripe_link: i.stripe_link
+            })})'>${isPlaceholder ? "Not available" : "Add to cart"}</button>
+          </div>
+        </div>
+      `);
+    });
+  }
 
-  FILTERED = ITEMS.filter(i => {
-    const hay = `${i.name||""} ${(i.info||"")} ${(i.tag||"")}`.toLowerCase();
-    return hay.includes(q);
-  });
+  function renderPager() {
+    const totalPages = Math.max(1, Math.ceil(FILTERED.length / PAGE_SIZE));
+    page = Math.min(page, totalPages);
 
-  if (sort === "price_asc") FILTERED.sort((a,b)=>(Number(a.price)||0)-(Number(b.price)||0));
-  else if (sort === "price_desc") FILTERED.sort((a,b)=>(Number(b.price)||0)-(Number(a.price)||0));
-  else FILTERED.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+    document.getElementById("pageInfo").textContent = `Page ${page} of ${totalPages}`;
+    document.getElementById("prevBtn").disabled = page <= 1;
+    document.getElementById("nextBtn").disabled = page >= totalPages;
+  }
 
-  renderCatalog();
-}
+  function nextPage(){ page++; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
+  function prevPage(){ page--; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
 
-function renderCatalog(){
-  const c = document.getElementById("catalog");
-  c.innerHTML = "";
+  // ===== Cart =====
+  function addToCart(item){
+    cart.push(item);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+  }
+  function removeFromCart(idx){
+    cart.splice(idx, 1);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+  }
+  function clearCart(){
+    cart = [];
+    localStorage.removeItem("cart");
+    renderCart();
+  }
 
-  FILTERED.forEach(i => {
-    const safe = {
-      id: i.id || i.name,
-      name: i.name || "Untitled",
-      price: Number(i.price) || 0,
-      info: i.info || "",
-      img: i.img || "",
-      tag: i.tag || "Listing",
-      stripe_link: i.stripe_link || ""
-    };
+  function renderCart(){
+    const rows = document.getElementById("cartRows");
+    const total = cart.reduce((s,i)=>s + (Number(i.price)||0), 0);
+    document.getElementById("cartCount").textContent = cart.length ? `(${cart.length})` : "";
 
-    c.insertAdjacentHTML("beforeend", `
-      <div class="card">
-        <img src="${safe.img}" alt="${escapeHtml(safe.name)}" loading="lazy">
-        <div class="card-body">
-          <div class="badge">${escapeHtml(safe.tag)}</div>
-          <div class="name">${escapeHtml(safe.name)}</div>
-          <div class="meta">${escapeHtml(safe.info)}</div>
-          <div class="price">${money(safe.price)}</div>
-          <button onclick='addToCart(${JSON.stringify(safe)})'>Add to Cart</button>
+    rows.innerHTML = cart.length ? cart.map((i, idx) => `
+      <div class="row">
+        <div>
+          <div><strong>${esc(i.name || "")}</strong></div>
+          <div class="small">${esc(i.info || "")}</div>
+        </div>
+        <div class="right">
+          <div><strong>${money(i.price)}</strong></div>
+          <button class="remove" onclick="removeFromCart(${idx})">Remove</button>
         </div>
       </div>
-    `);
-  });
-}
+    `).join("") : `<div class="small">Cart is empty.</div>`;
 
-function renderCart(){
-  const box = document.getElementById("cartItems");
-  const total = cart.reduce((s,i)=>s+(Number(i.price)||0), 0);
+    document.getElementById("cartTotal").textContent = cart.length ? `Total: ${money(total)}` : "";
 
-  document.getElementById("cartCount").textContent = cart.length ? `(${cart.length})` : "";
-  document.getElementById("total").innerHTML = cart.length ? `<strong>Total:</strong> ${money(total)}` : "";
+    // Checkout logic
+    const btn = document.getElementById("checkoutBtn");
+    const link = document.getElementById("checkoutLink");
+    const warn = document.getElementById("checkoutWarn");
+    warn.style.display = "none";
+    warn.textContent = "";
 
-  box.innerHTML = cart.length ? cart.map((i, idx) => `
-    <div class="cart-item">
-      <div>
-        <div><strong>${escapeHtml(i.name||"")}</strong></div>
-        <div class="small">${escapeHtml(i.info||"")}</div>
-      </div>
-      <div class="right">
-        <div><strong>${money(i.price||0)}</strong></div>
-        <button class="remove" onclick="removeFromCart(${idx})">Remove</button>
-      </div>
-    </div>
-  `).join("") : `<div class="note">Your cart is empty.</div>`;
-
-  // Checkout logic:
-  const checkoutBtn = document.getElementById("checkoutBtn");
-  const checkoutLink = document.getElementById("checkoutLink");
-  const warn = document.getElementById("checkoutWarning");
-
-  warn.style.display = "none";
-  warn.textContent = "";
-
-  if (cart.length === 0) {
-    checkoutBtn.disabled = true;
-    checkoutLink.href = "#";
-    return;
-  }
-
-  // If ONE item: use that animal's stripe_link
-  if (cart.length === 1) {
-    const link = cart[0].stripe_link || "";
-    if (!link) {
-      checkoutBtn.disabled = true;
-      checkoutLink.href = "#";
-      warn.style.display = "block";
-      warn.textContent = "This item has no stripe_link set in products.json.";
+    if (!cart.length) {
+      btn.disabled = true;
+      link.href = "#";
       return;
     }
-    checkoutBtn.disabled = false;
-    checkoutLink.href = link;
-    return;
+
+    if (cart.length === 1) {
+      const one = cart[0].stripe_link || "";
+      if (!one) {
+        btn.disabled = true;
+        link.href = "#";
+        warn.style.display = "block";
+        warn.textContent = "This item has no stripe_link set.";
+        return;
+      }
+      btn.disabled = false;
+      link.href = one;
+      return;
+    }
+
+    // Multiple items: static site cannot create dynamic Stripe cart checkout
+    btn.disabled = !MULTI_ITEM_FALLBACK_LINK;
+    link.href = MULTI_ITEM_FALLBACK_LINK || "#";
+    warn.style.display = "block";
+    warn.textContent = "Multiple items: using deposit/general Stripe link (static site limitation). Confirm exact animals manually.";
   }
 
-  // MULTIPLE items: can't do dynamic Stripe checkout on a static site
-  // Use a fallback deposit/general link (optional).
-  checkoutBtn.disabled = !MULTI_ITEM_FALLBACK_LINK;
-  checkoutLink.href = MULTI_ITEM_FALLBACK_LINK || "#";
-
-  warn.style.display = "block";
-  warn.textContent =
-    "Multiple items in cart: a static GitHub Pages site can’t create a dynamic Stripe cart checkout. Use a deposit/general payment link here, then confirm the exact animals manually.";
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>'\"]/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"
-  }[c]));
-}
-
-// boot
-(async function(){
-  await loadItems();
-  FILTERED = [...ITEMS];
-  applyFilters();
-  renderCart();
-})();
+  // ===== Boot =====
+  (async function(){
+    await loadItems();
+    FILTERED = [...ITEMS];
+    applyFilters(true);
+    renderCart();
+  })();
 </script>
-
 </body>
 </html>
-
