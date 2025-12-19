@@ -74,7 +74,8 @@
 
 <div class="bar">
   <div class="left">
-    <input id="search" placeholder="Search… (e.g. banana)" oninput="applyFilters(true)" />
+    <!-- IMPORTANT: no inline oninput; we bind input event in JS for reliability -->
+    <input id="search" placeholder="Search… (e.g. banana, male, 2024)" />
     <span class="pill" id="countPill">0 listings</span>
   </div>
   <span class="pill">12 per page</span>
@@ -104,20 +105,6 @@
   // Optional default subject prefix:
   const INQUIRY_SUBJECT_PREFIX = "Ball Python Inquiry";
 
-  // ===== Expected JSON format =====
-  // [
-  //   {
-  //     "id":"SB-2024-01",
-  //     "name":"Super Banana",
-  //     "price":450,
-  //     "info":"Male • 2024 • 250g • F/T",
-  //     "tag":"Banana",
-  //     "status":"for_sale",  // "for_sale" | "on_hold" | "sold"
-  //     "img":"img/super-banana.jpg",
-  //     "stripe_link":"https://buy.stripe.com/test_..."
-  //   }
-  // ]
-
   // ===== State =====
   let ITEMS = [];
   let FILTERED = [];
@@ -134,7 +121,7 @@
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error("products.json must be an array");
       ITEMS = data;
-    } catch {
+    } catch (e) {
       // Fallback: one banana snake, ready for you to replace
       ITEMS = [{
         id:"SB-2024-01",
@@ -150,9 +137,10 @@
   }
 
   function applyFilters(resetPage){
-    const q = document.getElementById("search").value.trim().toLowerCase();
+    const q = (document.getElementById("search").value || "").trim().toLowerCase();
+
     FILTERED = ITEMS.filter(i => {
-      const hay = `${i.name||""} ${i.info||""} ${i.tag||""} ${i.status||""}`.toLowerCase();
+      const hay = `${i.id||""} ${i.name||""} ${i.info||""} ${i.tag||""} ${i.status||""}`.toLowerCase();
       return hay.includes(q);
     });
 
@@ -229,15 +217,31 @@ Is it still available?`;
     document.getElementById("nextBtn").disabled = page >= totalPages;
   }
 
-  function nextPage(){ page++; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
-  function prevPage(){ page--; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
+  function nextPage(){
+    page++;
+    renderGrid();
+    renderPager();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
 
-  // Boot
-  (async function(){
+  function prevPage(){
+    page--;
+    renderGrid();
+    renderPager();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  // Boot (reliable: bind events after DOM is ready)
+  document.addEventListener("DOMContentLoaded", async () => {
     await loadItems();
     FILTERED = [...ITEMS];
+
+    // Bind search event reliably
+    document.getElementById("search").addEventListener("input", () => applyFilters(true));
+
     applyFilters(true);
-  })();
+  });
 </script>
 </body>
 </html>
+
