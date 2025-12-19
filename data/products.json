@@ -1,11 +1,23 @@
+
 [
   {
     "id": "SB-2024-01",
     "name": "Super Banana",
     "price": 450,
     "info": "Male • 2024",
+    "tag": "Banana",
+    "status": "for_sale",
     "img": "img/super-banana.jpg",
-    "tag": "Morph",
-    "stripe_link": "https://buy.stripe.com/test_XXXXXXXX"
+    "stripe_link": "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00"
+  },
+  {
+    "id": "SB-2024-02",
+    "name": "Super Banana",
+    "price": 475,
+    "info": "Female • 2024",
+    "tag": "Banana",
+    "status": "for_sale",
+    "img": "img/super-banana-2.jpg",
+    "stripe_link": "https://buy.stripe.com/test_XXXX2"
   }
 ]
