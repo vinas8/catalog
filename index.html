@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,153 +6,164 @@
   <title>Ball Python Catalog</title>
 
   <style>
-    :root{--bg:#f4f6f8;--card:#fff;--accent:#2e7d32;--dark:#111;--muted:#6b7280;--warn:#8a6d00;}
+    :root{
+      --bg:#f4f6f8; --card:#fff; --accent:#2e7d32; --dark:#111;
+      --muted:#6b7280; --hold:#8a6d00;
+    }
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:#111;}
     header{background:var(--dark);color:#fff;padding:18px 16px;text-align:center;}
     header h1{margin:0;font-size:22px;}
     header p{margin:6px 0 0;color:#cfcfcf;font-size:13px;}
 
-    .bar{max-width:1200px;margin:0 auto;padding:14px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
-    .bar .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    input{padding:10px 12px;border-radius:10px;border:1px solid #d6d6d6;font-size:14px;min-width:240px;}
+    .bar{
+      max-width:1200px;margin:0 auto;padding:14px 16px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    }
+    .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    input{
+      padding:10px 12px;border-radius:10px;border:1px solid #d6d6d6;font-size:14px;min-width:260px;
+    }
     .pill{background:#fff;border:1px solid #e5e7eb;border-radius:999px;padding:8px 12px;font-size:13px;color:#111;}
 
-    .wrap{max-width:1200px;margin:0 auto;padding:0 16px 22px;}
+    .wrap{max-width:1200px;margin:0 auto;padding:0 16px 26px;}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
-    .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.10);transition:transform .18s ease,box-shadow .18s ease;}
-    .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.13);}
-    .img{width:100%;height:180px;object-fit:cover;display:block;background:#e5e7eb;}
-    .body{padding:14px;}
-    .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;background:#e8f5e9;color:#1b5e20;margin-bottom:8px;}
-    .name{font-size:17px;font-weight:700;}
-    .meta{font-size:13px;color:#666;margin:6px 0 10px;}
-    .price{font-size:19px;font-weight:900;color:var(--accent);}
-    button{width:100%;margin-top:10px;padding:10px 12px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:14px;font-weight:700;}
-    button.secondary{background:#555;}
-    button:disabled{opacity:.55;cursor:not-allowed;}
 
-    .panel{background:#fff;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.10);padding:14px;margin-top:18px;}
-    .panel h2{margin:0 0 10px;font-size:18px;}
-    .row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eee;}
-    .row:last-child{border-bottom:none;}
-    .small{font-size:12px;color:var(--muted);margin-top:2px;}
-    .right{text-align:right;}
-    .remove{margin-top:6px;padding:6px 10px;border-radius:10px;border:none;cursor:pointer;background:#f2f2f2;color:#111;font-size:12px;}
-    .warn{display:none;margin-top:10px;color:var(--warn);background:#fff6d6;border:1px solid #ffe8a3;padding:8px 10px;border-radius:12px;font-size:12px;}
-    .total{margin-top:10px;font-weight:900;}
+    .card{
+      background:var(--card);border-radius:14px;overflow:hidden;
+      box-shadow:0 6px 16px rgba(0,0,0,.10);
+      transition:transform .18s ease,box-shadow .18s ease;
+      display:flex;flex-direction:column;
+    }
+    .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.13);}
+    .img{width:100%;height:190px;object-fit:cover;display:block;background:#e5e7eb;}
+    .body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;background:#e8f5e9;color:#1b5e20;}
+    .badge.hold{background:#fff6d6;border:1px solid #ffe8a3;color:var(--hold);}
+    .name{font-size:17px;font-weight:800;}
+    .meta{font-size:13px;color:#666;}
+    .price{font-size:19px;font-weight:900;color:var(--accent);margin-top:4px;}
+
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    a.btn{
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+      padding:10px 12px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;
+      border:1px solid transparent;
+    }
+    .btn.inquire{background:#fff;border-color:#d1d5db;color:#111;}
+    .btn.buy{background:var(--accent);color:#fff;}
+    .btn.disabled{opacity:.55;pointer-events:none;}
 
     .pager{display:flex;justify-content:center;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
-    .pager button{width:auto;margin:0;padding:10px 14px;}
-    .pager .info{color:var(--muted);font-size:13px;}
+    .pager button{
+      width:auto;margin:0;padding:10px 14px;border:none;border-radius:10px;background:#555;color:#fff;cursor:pointer;font-weight:800;
+    }
+    .pager button:disabled{opacity:.55;cursor:not-allowed;}
+    .info{color:var(--muted);font-size:13px;}
+
+    footer{text-align:center;padding:18px 12px;color:#777;font-size:13px;}
+    code{background:#fff;border:1px solid #eee;border-radius:8px;padding:2px 6px;}
   </style>
 </head>
 
 <body>
 <header>
   <h1>Ball Python Catalog</h1>
-  <p>JSON listings • Stripe payment links • No backend</p>
+  <p>Unique listings • Inquire or Buy Now • No cart</p>
 </header>
 
 <div class="bar">
   <div class="left">
     <input id="search" placeholder="Search… (e.g. banana)" oninput="applyFilters(true)" />
-    <span class="pill" id="countPill">0 items</span>
+    <span class="pill" id="countPill">0 listings</span>
   </div>
-  <span class="pill">Page size: 12</span>
+  <span class="pill">12 per page</span>
 </div>
 
 <div class="wrap">
   <div class="grid" id="grid"></div>
 
   <div class="pager">
-    <button class="secondary" id="prevBtn" onclick="prevPage()">Prev</button>
+    <button id="prevBtn" onclick="prevPage()">Prev</button>
     <div class="info" id="pageInfo">Page 1</div>
-    <button class="secondary" id="nextBtn" onclick="nextPage()">Next</button>
-  </div>
-
-  <div class="panel">
-    <h2>Cart <span class="small" id="cartCount"></span></h2>
-    <div id="cartRows"></div>
-    <div class="total" id="cartTotal"></div>
-
-    <a id="checkoutLink" href="#" target="_blank" rel="noopener">
-      <button id="checkoutBtn" disabled>Checkout (Stripe)</button>
-    </a>
-
-    <button class="secondary" onclick="clearCart()">Clear cart</button>
-    <div id="checkoutWarn" class="warn"></div>
-
-    <div class="small" style="margin-top:10px;">
-      Tip: put your JSON at <code>data/products.json</code>.
-    </div>
+    <button id="nextBtn" onclick="nextPage()">Next</button>
   </div>
 </div>
 
+<footer>
+  Listings load from <code>data/products.json</code> • Put images in <code>img/</code>.
+</footer>
+
 <script>
-  // ===== Config =====
+  // ===== CONFIG =====
   const PAGE_SIZE = 12;
-  const MULTI_ITEM_FALLBACK_LINK = "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00"; // deposit/general link
+
+  // Set your contact email for inquiries:
+  const INQUIRY_EMAIL = "you@example.com";
+
+  // Optional default subject prefix:
+  const INQUIRY_SUBJECT_PREFIX = "Ball Python Inquiry";
+
+  // ===== Expected JSON format =====
+  // [
+  //   {
+  //     "id":"SB-2024-01",
+  //     "name":"Super Banana",
+  //     "price":450,
+  //     "info":"Male • 2024 • 250g • F/T",
+  //     "tag":"Banana",
+  //     "status":"for_sale",  // "for_sale" | "on_hold" | "sold"
+  //     "img":"img/super-banana.jpg",
+  //     "stripe_link":"https://buy.stripe.com/test_..."
+  //   }
+  // ]
 
   // ===== State =====
   let ITEMS = [];
   let FILTERED = [];
   let page = 1;
-  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
   // ===== Utils =====
-  const money = n => "$" + Number(n || 0).toFixed(0);
   const esc = s => String(s ?? "").replace(/[&<>'"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;" }[c]));
+  const money = n => "$" + Number(n || 0).toFixed(0);
 
-  // ===== Data loading (JSON + fallback) =====
   async function loadItems() {
     try {
       const res = await fetch("data/products.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("no json");
+      if (!res.ok) throw new Error("missing products.json");
       const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("bad json");
+      if (!Array.isArray(data)) throw new Error("products.json must be an array");
       ITEMS = data;
     } catch {
-      // Only Banana snake for now + placeholders to make UX nicer (pagination still works)
-      const banana = {
-        id: "SB-2024-01",
-        name: "Super Banana",
-        price: 450,
-        info: "Male • 2024",
-        tag: "Banana",
-        img: "https://picsum.photos/600?banana",
-        stripe_link: "https://buy.stripe.com/test_REPLACE_WITH_YOURS"
-      };
-
-      // 1 real item + 23 placeholders = 24 items = 2 pages @ 12/page
-      const placeholders = Array.from({length: 23}, (_, i) => ({
-        id: `placeholder-${i+1}`,
-        name: "Coming Soon",
-        price: 0,
-        info: "New listing soon",
-        tag: "Placeholder",
-        img: `https://picsum.photos/600?random=${100+i}`,
-        stripe_link: ""
-      }));
-
-      ITEMS = [banana, ...placeholders];
+      // Fallback: one banana snake, ready for you to replace
+      ITEMS = [{
+        id:"SB-2024-01",
+        name:"Super Banana",
+        price:450,
+        info:"Male • 2024",
+        tag:"Banana",
+        status:"for_sale",
+        img:"https://picsum.photos/600?banana",
+        stripe_link:"https://buy.stripe.com/test_REPLACE_WITH_YOURS"
+      }];
     }
   }
 
-  // ===== Catalog + Pagination =====
-  function applyFilters(resetPage) {
+  function applyFilters(resetPage){
     const q = document.getElementById("search").value.trim().toLowerCase();
     FILTERED = ITEMS.filter(i => {
-      const hay = `${i.name||""} ${i.info||""} ${i.tag||""}`.toLowerCase();
+      const hay = `${i.name||""} ${i.info||""} ${i.tag||""} ${i.status||""}`.toLowerCase();
       return hay.includes(q);
     });
 
     if (resetPage) page = 1;
-    document.getElementById("countPill").textContent = `${FILTERED.length} items`;
+
+    document.getElementById("countPill").textContent = `${FILTERED.length} listings`;
     renderGrid();
     renderPager();
   }
 
-  function renderGrid() {
+  function renderGrid(){
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
 
@@ -161,25 +171,56 @@
     const slice = FILTERED.slice(start, start + PAGE_SIZE);
 
     slice.forEach(i => {
-      const isPlaceholder = (i.price || 0) <= 0 || !i.stripe_link;
+      const status = (i.status || "for_sale").toLowerCase();
+      const isHold = status === "on_hold";
+      const isSold = status === "sold";
+
+      const canBuy = !!i.stripe_link && !isSold;
+      const canInquire = !isSold;
+
+      const subject = `${INQUIRY_SUBJECT_PREFIX}: ${i.name || ""} (${i.id || ""})`;
+      const body =
+`Hi,
+
+I’m interested in this ball python:
+- Listing: ${i.name || ""}
+- ID: ${i.id || ""}
+- Price: ${money(i.price)}
+- Info: ${i.info || ""}
+
+Is it still available?`;
+
+      const mailto = `mailto:${encodeURIComponent(INQUIRY_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
       grid.insertAdjacentHTML("beforeend", `
         <div class="card">
           <img class="img" src="${esc(i.img || "")}" alt="${esc(i.name || "")}" loading="lazy">
           <div class="body">
-            <div class="tag">${esc(i.tag || "Listing")}</div>
+            <div class="badges">
+              <span class="badge">${esc(i.tag || "Listing")}</span>
+              ${isHold ? `<span class="badge hold">On Hold</span>` : ""}
+              ${isSold ? `<span class="badge hold">Sold</span>` : ""}
+            </div>
+
             <div class="name">${esc(i.name || "Untitled")}</div>
             <div class="meta">${esc(i.info || "")}</div>
-            <div class="price">${isPlaceholder ? "—" : money(i.price)}</div>
-            <button ${isPlaceholder ? "disabled" : ""} onclick='addToCart(${JSON.stringify({
-              id: i.id, name: i.name, price: i.price, info: i.info, stripe_link: i.stripe_link
-            })})'>${isPlaceholder ? "Not available" : "Add to cart"}</button>
+            <div class="price">${isSold ? "—" : money(i.price)}</div>
+
+            <div class="actions">
+              <a class="btn inquire ${canInquire ? "" : "disabled"}" href="${canInquire ? mailto : "#"}">Inquire</a>
+              <a class="btn buy ${canBuy ? "" : "disabled"}" href="${canBuy ? esc(i.stripe_link) : "#"}" target="_blank" rel="noopener">Buy Now</a>
+            </div>
           </div>
         </div>
       `);
     });
+
+    if (!slice.length){
+      grid.innerHTML = `<div class="pill" style="grid-column:1/-1;text-align:center;">No listings match your search.</div>`;
+    }
   }
 
-  function renderPager() {
+  function renderPager(){
     const totalPages = Math.max(1, Math.ceil(FILTERED.length / PAGE_SIZE));
     page = Math.min(page, totalPages);
 
@@ -191,83 +232,11 @@
   function nextPage(){ page++; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
   function prevPage(){ page--; renderGrid(); renderPager(); window.scrollTo({top:0,behavior:"smooth"}); }
 
-  // ===== Cart =====
-  function addToCart(item){
-    cart.push(item);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    renderCart();
-  }
-  function removeFromCart(idx){
-    cart.splice(idx, 1);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    renderCart();
-  }
-  function clearCart(){
-    cart = [];
-    localStorage.removeItem("cart");
-    renderCart();
-  }
-
-  function renderCart(){
-    const rows = document.getElementById("cartRows");
-    const total = cart.reduce((s,i)=>s + (Number(i.price)||0), 0);
-    document.getElementById("cartCount").textContent = cart.length ? `(${cart.length})` : "";
-
-    rows.innerHTML = cart.length ? cart.map((i, idx) => `
-      <div class="row">
-        <div>
-          <div><strong>${esc(i.name || "")}</strong></div>
-          <div class="small">${esc(i.info || "")}</div>
-        </div>
-        <div class="right">
-          <div><strong>${money(i.price)}</strong></div>
-          <button class="remove" onclick="removeFromCart(${idx})">Remove</button>
-        </div>
-      </div>
-    `).join("") : `<div class="small">Cart is empty.</div>`;
-
-    document.getElementById("cartTotal").textContent = cart.length ? `Total: ${money(total)}` : "";
-
-    // Checkout logic
-    const btn = document.getElementById("checkoutBtn");
-    const link = document.getElementById("checkoutLink");
-    const warn = document.getElementById("checkoutWarn");
-    warn.style.display = "none";
-    warn.textContent = "";
-
-    if (!cart.length) {
-      btn.disabled = true;
-      link.href = "#";
-      return;
-    }
-
-    if (cart.length === 1) {
-      const one = cart[0].stripe_link || "";
-      if (!one) {
-        btn.disabled = true;
-        link.href = "#";
-        warn.style.display = "block";
-        warn.textContent = "This item has no stripe_link set.";
-        return;
-      }
-      btn.disabled = false;
-      link.href = one;
-      return;
-    }
-
-    // Multiple items: static site cannot create dynamic Stripe cart checkout
-    btn.disabled = !MULTI_ITEM_FALLBACK_LINK;
-    link.href = MULTI_ITEM_FALLBACK_LINK || "#";
-    warn.style.display = "block";
-    warn.textContent = "Multiple items: using deposit/general Stripe link (static site limitation). Confirm exact animals manually.";
-  }
-
-  // ===== Boot =====
+  // Boot
   (async function(){
     await loadItems();
     FILTERED = [...ITEMS];
     applyFilters(true);
-    renderCart();
   })();
 </script>
 </body>
