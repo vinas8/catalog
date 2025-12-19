@@ -1,147 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Ball Python Catalog</title>
 
 <style>
-:root {
-  --bg:#f4f6f8; --card:#fff; --accent:#2e7d32; --dark:#111;
+:root{
+  --bg:#f4f6f8; --card:#fff; --accent:#2e7d32; --dark:#111; --muted:#777; --danger:#c62828;
 }
-body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); }
-header { background:var(--dark); color:#fff; padding:20px; text-align:center; }
-.catalog {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:20px;
-  padding:20px;
-  max-width:1200px;
-  margin:auto;
+body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:#222; }
+header{ background:var(--dark); color:#fff; padding:18px 16px; text-align:center; }
+header h1{ margin:0; font-size:22px; }
+header p{ margin:6px 0 0; color:#cfcfcf; font-size:13px; }
+
+.controls{
+  max-width:1200px; margin:0 auto; padding:14px 16px 0;
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;
 }
-.card {
-  background:var(--card);
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 6px 16px rgba(0,0,0,.1);
+.controls input,.controls select{
+  padding:10px 12px; border-radius:10px; border:1px solid #d6d6d6; font-size:14px; min-width:220px;
 }
-.card img { width:100%; height:180px; object-fit:cover; }
-.card-body { padding:14px; }
-.name { font-size:18px; font-weight:600; }
-.meta { font-size:14px; color:#666; }
-.price { font-size:20px; font-weight:700; color:var(--accent); }
-button {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:var(--accent);
-  color:#fff;
-  cursor:pointer;
+
+.catalog{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:18px; padding:18px 16px 8px; max-width:1200px; margin:0 auto;
 }
-#cart {
-  background:#fff;
-  max-width:400px;
-  margin:20px auto;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 6px 16px rgba(0,0,0,.1);
+.card{
+  background:var(--card); border-radius:14px; overflow:hidden;
+  box-shadow:0 6px 16px rgba(0,0,0,.10);
+  transition:transform .18s ease, box-shadow .18s ease;
 }
-.cart-item {
-  display:flex;
-  justify-content:space-between;
-  margin:6px 0;
+.card:hover{ transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,.13); }
+.card img{ width:100%; height:180px; object-fit:cover; display:block; background:#eee; }
+.card-body{ padding:14px; }
+.name{ font-size:17px; font-weight:650; }
+.meta{ font-size:13px; color:#666; margin:6px 0 10px; }
+.price{ font-size:19px; font-weight:800; color:var(--accent); }
+
+.badge{
+  display:inline-block; padding:4px 10px; border-radius:999px;
+  font-size:12px; background:#e8f5e9; color:#1b5e20; margin-bottom:8px;
 }
-footer {
-  text-align:center;
-  padding:20px;
-  color:#777;
-  font-size:14px;
+
+.row{ display:flex; gap:10px; }
+button{
+  width:100%; margin-top:10px; padding:10px 12px; border:none; border-radius:10px;
+  background:var(--accent); color:#fff; cursor:pointer; font-size:14px; font-weight:650;
 }
-.note {
-  font-size:12px;
-  color:#999;
-  margin-top:8px;
+button.secondary{ background:#555; }
+button.danger{ background:var(--danger); }
+button:disabled{ opacity:.55; cursor:not-allowed; }
+
+#cart{
+  background:#fff; max-width:420px; margin:16px auto 22px; padding:14px;
+  border-radius:14px; box-shadow:0 6px 16px rgba(0,0,0,.10);
 }
+#cart h2{ margin:0 0 10px; font-size:18px; }
+.cart-item{
+  display:grid; grid-template-columns:1fr auto; gap:8px;
+  padding:8px 0; border-bottom:1px solid #eee;
+}
+.cart-item:last-child{ border-bottom:none; }
+.cart-item .small{ color:var(--muted); font-size:12px; margin-top:2px; }
+.cart-item .right{ text-align:right; }
+.cart-item .remove{
+  margin-top:6px; padding:6px 10px; border-radius:10px; border:none; cursor:pointer;
+  background:#f2f2f2; color:#222; font-size:12px;
+}
+.total{ margin-top:10px; font-weight:800; }
+.note{ font-size:12px; color:#888; margin-top:8px; line-height:1.35; }
+.warn{ color:#8a6d00; background:#fff6d6; border:1px solid #ffe8a3; padding:8px 10px; border-radius:12px; margin-top:10px; font-size:12px; }
+
+footer{ text-align:center; padding:18px 12px; color:#777; font-size:13px; }
+a.link{ color:#2b6cb0; text-decoration:none; }
+a.link:hover{ text-decoration:underline; }
 </style>
 </head>
 
 <body>
-
 <header>
   <h1>Ball Python Catalog</h1>
-  <p>Static Site • Stripe Test Mode</p>
+  <p>GitHub Pages friendly • JSON listings • Stripe payment links (no backend)</p>
 </header>
+
+<div class="controls">
+  <input id="search" placeholder="Search morphs…" oninput="applyFilters()" />
+  <select id="sort" onchange="applyFilters()">
+    <option value="name">Sort: Name</option>
+    <option value="price_asc">Sort: Price (Low → High)</option>
+    <option value="price_desc">Sort: Price (High → Low)</option>
+  </select>
+</div>
 
 <div class="catalog" id="catalog"></div>
 
 <div id="cart">
-  <h2>Cart</h2>
-  <div id="cartItems"></div>
-  <div id="total"></div>
+  <h2>Cart <span id="cartCount" style="color:#777;font-weight:600;"></span></h2>
 
-  <!-- STRIPE TEST PAYMENT LINK (FIXED AMOUNT) -->
-  <a id="checkoutBtn" href="https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00" target="_blank">
-    <button>Checkout (Stripe Test)</button>
+  <div id="cartItems"></div>
+  <div class="total" id="total"></div>
+
+  <!-- Checkout link gets updated by JS -->
+  <a id="checkoutLink" href="#" target="_blank" rel="noopener">
+    <button id="checkoutBtn" disabled>Checkout (Stripe)</button>
   </a>
 
+  <div class="row">
+    <button class="secondary" onclick="clearCart()">Clear Cart</button>
+  </div>
+
+  <div id="checkoutWarning" class="warn" style="display:none;"></div>
+
   <div class="note">
-    Test checkout only. Cart total is for reference. Payment link amount is fixed.
+    Listings load from <code>data/products.json</code>. Stripe secret keys are not used (safe for GitHub Pages).
   </div>
 </div>
 
 <footer>
-  GitHub Pages compatible • No backend • No secrets
+  Tip: Put images in an <code>img/</code> folder and reference them in JSON. |
+  <a class="link" href="data/products.json" target="_blank" rel="noopener">View products.json</a>
 </footer>
 
 <script>
-const ITEMS = [
-  { name:"Super Banana", price:450, info:"Male • 2024", img:"https://picsum.photos/400?1" },
-  { name:"Banana Clown", price:900, info:"Female • 2023", img:"https://picsum.photos/400?2" },
-  { name:"Pied", price:350, info:"Male • 2022", img:"https://picsum.photos/400?3" }
-];
+/**
+ * ============================
+ * CONFIG (edit these)
+ * ============================
+ * MULTI_ITEM_FALLBACK_LINK:
+ * If user has multiple items in cart, a static site can't create a dynamic Stripe checkout.
+ * Use a deposit link (recommended) or a general payment link.
+ */
+const MULTI_ITEM_FALLBACK_LINK = "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00"; // replace if you want
+
+/**
+ * ============================
+ * DATA LOADING
+ * ============================
+ * Expected JSON format at /data/products.json:
+ * [
+ *  {
+ *    "id":"SB-2024-01",
+ *    "name":"Super Banana",
+ *    "price":450,
+ *    "info":"Male • 2024",
+ *    "img":"img/super-banana.jpg",
+ *    "tag":"Morph",
+ *    "stripe_link":"https://buy.stripe.com/test_..."
+ *  }
+ * ]
+ */
+let ITEMS = [];
+let FILTERED = [];
 
 let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
+async function loadItems() {
+  try {
+    const res = await fetch("data/products.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("products.json not found");
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error("products.json must be an array");
+    ITEMS = data;
+  } catch (e) {
+    // Fallback sample so the page still works if JSON isn't present yet
+    ITEMS = [
+      { id:"SB-2024-01", name:"Super Banana", price:450, info:"Male • 2024", img:"https://picsum.photos/400?1", tag:"Morph", stripe_link:MULTI_ITEM_FALLBACK_LINK },
+      { id:"BC-2023-02", name:"Banana Clown", price:900, info:"Female • 2023", img:"https://picsum.photos/400?2", tag:"Morph", stripe_link:MULTI_ITEM_FALLBACK_LINK },
+      { id:"PI-2022-03", name:"Pied", price:350, info:"Male • 2022", img:"https://picsum.photos/400?3", tag:"Classic", stripe_link:MULTI_ITEM_FALLBACK_LINK }
+    ];
+  }
+}
+
+function money(n){
+  const num = Number(n);
+  if (!Number.isFinite(num)) return "";
+  return "$" + num.toFixed(0);
+}
+
 function addToCart(item) {
-  cart.push(item);
+  cart.push({
+    id: item.id || item.name,
+    name: item.name,
+    price: Number(item.price) || 0,
+    info: item.info || "",
+    stripe_link: item.stripe_link || ""
+  });
   localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
 }
 
-function render() {
+function removeFromCart(idx){
+  cart.splice(idx, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+function clearCart(){
+  cart = [];
+  localStorage.removeItem("cart");
+  renderCart();
+}
+
+function applyFilters(){
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const sort = document.getElementById("sort").value;
+
+  FILTERED = ITEMS.filter(i => {
+    const hay = `${i.name||""} ${(i.info||"")} ${(i.tag||"")}`.toLowerCase();
+    return hay.includes(q);
+  });
+
+  if (sort === "price_asc") FILTERED.sort((a,b)=>(Number(a.price)||0)-(Number(b.price)||0));
+  else if (sort === "price_desc") FILTERED.sort((a,b)=>(Number(b.price)||0)-(Number(a.price)||0));
+  else FILTERED.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+
+  renderCatalog();
+}
+
+function renderCatalog(){
   const c = document.getElementById("catalog");
   c.innerHTML = "";
-  ITEMS.forEach(i => {
-    c.innerHTML += `
+
+  FILTERED.forEach(i => {
+    const safe = {
+      id: i.id || i.name,
+      name: i.name || "Untitled",
+      price: Number(i.price) || 0,
+      info: i.info || "",
+      img: i.img || "",
+      tag: i.tag || "Listing",
+      stripe_link: i.stripe_link || ""
+    };
+
+    c.insertAdjacentHTML("beforeend", `
       <div class="card">
-        <img src="${i.img}">
+        <img src="${safe.img}" alt="${escapeHtml(safe.name)}" loading="lazy">
         <div class="card-body">
-          <div class="name">${i.name}</div>
-          <div class="meta">${i.info}</div>
-          <div class="price">$${i.price}</div>
-          <button onclick='addToCart(${JSON.stringify(i)})'>
-            Add to Cart
-          </button>
+          <div class="badge">${escapeHtml(safe.tag)}</div>
+          <div class="name">${escapeHtml(safe.name)}</div>
+          <div class="meta">${escapeHtml(safe.info)}</div>
+          <div class="price">${money(safe.price)}</div>
+          <button onclick='addToCart(${JSON.stringify(safe)})'>Add to Cart</button>
         </div>
-      </div>`;
+      </div>
+    `);
   });
 }
 
-function renderCart() {
+function renderCart(){
   const box = document.getElementById("cartItems");
-  box.innerHTML = cart.map(i =>
-    `<div class="cart-item"><span>${i.name}</span><span>$${i.price}</span></div>`
-  ).join("");
-  const total = cart.reduce((s,i)=>s+i.price,0);
-  document.getElementById("total").innerHTML =
-    "<strong>Total:</strong> $" + total;
+  const total = cart.reduce((s,i)=>s+(Number(i.price)||0), 0);
+
+  document.getElementById("cartCount").textContent = cart.length ? `(${cart.length})` : "";
+  document.getElementById("total").innerHTML = cart.length ? `<strong>Total:</strong> ${money(total)}` : "";
+
+  box.innerHTML = cart.length ? cart.map((i, idx) => `
+    <div class="cart-item">
+      <div>
+        <div><strong>${escapeHtml(i.name||"")}</strong></div>
+        <div class="small">${escapeHtml(i.info||"")}</div>
+      </div>
+      <div class="right">
+        <div><strong>${money(i.price||0)}</strong></div>
+        <button class="remove" onclick="removeFromCart(${idx})">Remove</button>
+      </div>
+    </div>
+  `).join("") : `<div class="note">Your cart is empty.</div>`;
+
+  // Checkout logic:
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const checkoutLink = document.getElementById("checkoutLink");
+  const warn = document.getElementById("checkoutWarning");
+
+  warn.style.display = "none";
+  warn.textContent = "";
+
+  if (cart.length === 0) {
+    checkoutBtn.disabled = true;
+    checkoutLink.href = "#";
+    return;
+  }
+
+  // If ONE item: use that animal's stripe_link
+  if (cart.length === 1) {
+    const link = cart[0].stripe_link || "";
+    if (!link) {
+      checkoutBtn.disabled = true;
+      checkoutLink.href = "#";
+      warn.style.display = "block";
+      warn.textContent = "This item has no stripe_link set in products.json.";
+      return;
+    }
+    checkoutBtn.disabled = false;
+    checkoutLink.href = link;
+    return;
+  }
+
+  // MULTIPLE items: can't do dynamic Stripe checkout on a static site
+  // Use a fallback deposit/general link (optional).
+  checkoutBtn.disabled = !MULTI_ITEM_FALLBACK_LINK;
+  checkoutLink.href = MULTI_ITEM_FALLBACK_LINK || "#";
+
+  warn.style.display = "block";
+  warn.textContent =
+    "Multiple items in cart: a static GitHub Pages site can’t create a dynamic Stripe cart checkout. Use a deposit/general payment link here, then confirm the exact animals manually.";
 }
 
-render();
-renderCart();
+function escapeHtml(s){
+  return String(s).replace(/[&<>'\"]/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"
+  }[c]));
+}
+
+// boot
+(async function(){
+  await loadItems();
+  FILTERED = [...ITEMS];
+  applyFilters();
+  renderCart();
+})();
 </script>
 
 </body>
 </html>
+
