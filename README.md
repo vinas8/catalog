@@ -1,124 +1,180 @@
-# Serpent Town — MVP
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Serpent Town — Catalog (MVP)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; max-width:900px; margin:2rem auto; padding:0 1rem; color:#111;}
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;}
+    .card { border:1px solid #e6e6e6; border-radius:8px; padding:12px; margin:8px 0; display:flex; gap:12px; align-items:center;}
+    .thumb { width:64px; height:64px; background:#f3f3f3; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+    button { background:#0b6efd; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    .muted { color:#666; font-size:0.9rem }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .stat { font-size:0.9rem; }
+    #inspector .card { flex-direction: column; align-items:flex-start; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Serpent Town</h1>
+    <nav class="muted">Catalog + Tamagotchi (minimal)</nav>
+  </header>
 
-Version: MVP Proposal v1.0  
-Status: Approved — Architecture & Scope
+  <main>
+    <section id="hero">
+      <h2>Care. Learn. Collect.</h2>
+      <p class="muted">Minimal demo: catalog + actions. Buy using Stripe links; care actions are local UI interactions.</p>
+    </section>
 
-Serpent Town is a calm, web-first digital keeper experience (Tamagotchi-style). This repository contains a minimal, testable MVP using static HTML/JS for the frontend and a Cloudflare Worker for backend ownership syncing.
+    <section>
+      <h3>Catalog</h3>
+      <div id="catalog"></div>
+    </section>
 
-## Project structure
+    <section>
+      <h3>Your Collection</h3>
+      <div id="collection"></div>
+    </section>
 
-src/
-- index.html
-- core.js
-- constants.js
-- plugins/
-  - snakes.js
-  - plants.js
-  - tamagotchi.js
-  - dex.js
-  - shop.js
-- assets/ (images placeholder)
+    <section>
+      <h3>Inspect Pet</h3>
+      <div id="inspector" class="muted">Select a pet from your collection.</div>
+    </section>
+  </main>
 
-worker/
-- worker.js (Cloudflare Worker script)
+  <script type="module">
+    import { DEFAULTS } from './constants.js';
+    import * as Core from './core.js';
+    import tamagotchiPlugin from './plugins/tamagotchi.js';
+    import shopPlugin from './plugins/shop.js';
 
-tests/
-- core.test.js
-- snakes.test.js
-- plants.test.js
-- tamagotchi.test.js
-- dex.test.js
-- shop.test.js
-- run-all.js
+    // Only load the two plugins requested: catalog (shop) and tamagotchi
+    Core.loadPlugins([shopPlugin, tamagotchiPlugin]);
 
-package.json
+    // Optional: point to a deployed worker URL (absolute). Leave empty to use demo collection fallback.
+    const WORKER_URL = '';
+    const USER_EMAIL = 'demo@serpent.town';
 
-## What this includes
-- Minimal static web UI (src/index.html)
-- Core logic in `src/core.js` (single place with logic)
-- Plugins are pure data (no functions) under `src/plugins/`
-- Simple Cloudflare Worker (worker/worker.js) with:
-  - POST /stripe-webhook (accepts `checkout.session.completed` events and stores ownership in KV)
-  - GET  /collection?user=email
-- Simple node-based test runner (no external deps) — run tests with `npm test`
+    function renderCatalog() {
+      const catalogEl = document.getElementById('catalog');
+      catalogEl.innerHTML = '';
+      for (const item of shopPlugin.catalog) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">${item.image ? '<img src="' + item.image + '" width="56" height="56" alt="" />' : '📦'}</div>
+          <div style="flex:1">
+            <div><strong>${item.display_name || item.product_id}</strong></div>
+            <div class="muted">${item.description || ''}</div>
+            <div class="muted">Price: ${item.price_text || '—'}</div>
+          </div>
+          <div>
+            <a target="_blank" rel="noopener" href="${item.payment_link}"><button>Buy</button></a>
+          </div>
+        `;
+        catalogEl.appendChild(card);
+      }
+    }
 
-## Running locally (frontend)
-You can serve `src/` with any static server.
+    async function fetchCollection() {
+      const url = WORKER_URL ? `${WORKER_URL}/collection?user=${encodeURIComponent(USER_EMAIL)}` : `/collection?user=${encodeURIComponent(USER_EMAIL)}`;
+      try {
+        const resp = await fetch(url);
+        if (resp.ok) return await resp.json();
+      } catch (e) { /* ignore */ }
+      // fallback to demo collection in core
+      return Core.getDemoCollection(USER_EMAIL);
+    }
 
-Option A (serve if installed):
-```bash
-npm start
-# opens a static server at http://localhost:5000 (or use your own)
-```
+    async function renderCollection() {
+      const collectionEl = document.getElementById('collection');
+      collectionEl.innerHTML = '';
+      const owned = await fetchCollection();
+      if (!owned || owned.length === 0) {
+        collectionEl.innerHTML = '<div class="muted">No pets yet. Buy one from the catalog.</div>';
+        return;
+      }
 
-Option B (python http server):
-```bash
-cd src
-python3 -m http.server 5000
-# open http://localhost:5000
-```
+      for (const id of owned) {
+        // Try to find a matching catalog entry by product_id
+        const catalogEntry = shopPlugin.catalog.find(c => c.product_id === id) || { product_id: id, display_name: id };
+        const pet = createTransientPetFromCatalog(catalogEntry);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">${catalogEntry.image ? '<img src="' + catalogEntry.image + '" width="56" height="56" alt="" />' : '🐾'}</div>
+          <div style="flex:1">
+            <div><strong>${catalogEntry.display_name || catalogEntry.product_id}</strong></div>
+            <div class="stat">Hunger: <span data-stat="hunger">${pet.care.hunger}</span></div>
+            <div class="stat">Clean: <span data-stat="clean">${pet.care.clean}</span></div>
+          </div>
+          <div>
+            <button data-id="${catalogEntry.product_id}" class="inspect-btn">Open</button>
+          </div>
+        `;
+        collectionEl.appendChild(card);
+      }
+    }
 
-The frontend will attempt to call `/collection?user=demo@serpent.town`. If you don't have the worker deployed, the frontend falls back to a demo collection.
+    // Create a minimal transient pet instance from a shop catalog entry.
+    function createTransientPetFromCatalog(catalogEntry) {
+      const entityDef = {
+        id: catalogEntry.product_id,
+        name: catalogEntry.display_name || catalogEntry.product_id,
+        initial_care: { hunger: DEFAULTS.STAT_MAX, clean: DEFAULTS.STAT_MAX }
+      };
+      return Core.createPetInstance(entityDef, {});
+    }
 
-## Running tests
-Tests use a tiny Node test runner provided in `tests/run-all.js` and assert using Node's `assert`.
+    function setupCollectionClickHandler() {
+      document.getElementById('collection').addEventListener('click', (e) => {
+        const btn = e.target.closest('button.inspect-btn');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        openInspectorFor(id);
+      });
+    }
 
-Run:
-```bash
-npm test
-```
+    function openInspectorFor(productId) {
+      const inspectorEl = document.getElementById('inspector');
+      const catalogEntry = shopPlugin.catalog.find(c => c.product_id === productId) || { product_id: productId };
+      const pet = createTransientPetFromCatalog(catalogEntry);
 
-All test files are under `tests/`. They validate core logic and plugin shape (plugins must be plain data objects).
+      inspectorEl.innerHTML = '';
+      const node = document.createElement('div');
+      node.className = 'card';
+      node.innerHTML = `
+        <div style="flex:1">
+          <div><strong>${catalogEntry.display_name || catalogEntry.product_id}</strong></div>
+          <div class="muted">${catalogEntry.description || ''}</div>
+          <div class="stat">Hunger: <span id="stat-hunger">${pet.care.hunger}</span></div>
+          <div class="stat">Clean: <span id="stat-clean">${pet.care.clean}</span></div>
+        </div>
+        <div>
+          <button id="feed">Feed</button>
+          <button id="clean">Clean</button>
+        </div>
+      `;
+      inspectorEl.appendChild(node);
 
-## Cloudflare Worker deployment (MVP)
-This worker handles ownership state via KV and receives Stripe webhooks.
+      // Wire tamagotchi actions (labels from plugin, logic in core)
+      document.getElementById('feed').addEventListener('click', () => {
+        Core.applyAction('feed', pet, {});
+        document.getElementById('stat-hunger').textContent = pet.care.hunger;
+      });
+      document.getElementById('clean').addEventListener('click', () => {
+        Core.applyAction('clean', pet, {});
+        document.getElementById('stat-clean').textContent = pet.care.clean;
+      });
+    }
 
-1. Create a Cloudflare account and a Worker.
-2. Create a KV namespace (e.g. `COLLECTIONS_KV`).
-3. Deploy `worker/worker.js` and bind the KV namespace to the `COLLECTIONS_KV` binding name.
-4. Expose the worker route (e.g. `https://api.serpent.town/*`) or use the Worker URL.
-
-Example `wrangler.toml` snippet:
-```toml
-name = "serpent-town-worker"
-type = "javascript"
-account_id = "<YOUR_ACCOUNT_ID>"
-workers_dev = true
-
-[vars]
-# none
-
-[kv_namespaces]
-bindings = [
-  { binding = "COLLECTIONS_KV", id = "<YOUR_KV_ID>" }
-]
-```
-
-Important: For production, verify Stripe webhook signatures using your webhook secret. The MVP worker intentionally does not perform signature verification — you must add this.
-
-## Stripe setup (README MUST INCLUDE)
-1. Create a Stripe account.
-2. Create a Product for each sellable entity (e.g. `corn_snake`).
-3. Create a Payment Link for the product.
-4. When creating the Payment Link, add metadata keys:
-   - `product_id` (e.g. `corn_snake`)
-   - `user_email`: (you can ask the buyer in checkout or collect via other flows)
-5. Create a webhook in Stripe dashboard pointing to:
-   `https://<your-worker-domain>/stripe-webhook`
-   - Listen for `checkout.session.completed`
-6. (IMPORTANT) Add the Stripe webhook secret to your worker environment and verify Stripe signatures in `worker/worker.js`. The sample worker skips verification for clarity.
-
-## Final rule (include in README)
-Plugins describe the world. Core runs the world.
-If it can’t be unit-tested, it doesn’t ship.
-
-## Notes & Next steps
-- Replace placeholder Stripe Payment Links in `src/plugins/shop.js` with your real payment links.
-- Deploy worker and bind KV before relying on cloud collection storage.
-- The Godot client is not executed in JS and should consume the same data structures via HTTP APIs or a direct asset bundle.
-
-If you want, I can:
-- generate a ready-to-deploy `wrangler.toml` and deployment instructions,
-- add signature verification example for Stripe webhooks,
-- plug in real Stripe Payment Link URLs and KV binding names for a ready deployment,
-- or produce a compressed zip output / GitHub repo commit instructions.
+    (async function init() {
+      renderCatalog();
+      await renderCollection();
+      setupCollectionClickHandler();
+    })();
+  </script>
+</body>
+</html>
