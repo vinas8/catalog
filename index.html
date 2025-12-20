@@ -1,247 +1,180 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ball Python Catalog</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Serpent Town — Catalog (MVP)</title>
   <style>
-    :root{
-      --bg:#f4f6f8; --card:#fff; --accent:#2e7d32; --dark:#111;
-      --muted:#6b7280; --hold:#8a6d00;
-    }
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:#111;}
-    header{background:var(--dark);color:#fff;padding:18px 16px;text-align:center;}
-    header h1{margin:0;font-size:22px;}
-    header p{margin:6px 0 0;color:#cfcfcf;font-size:13px;}
-
-    .bar{
-      max-width:1200px;margin:0 auto;padding:14px 16px;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;
-    }
-    .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    input{
-      padding:10px 12px;border-radius:10px;border:1px solid #d6d6d6;font-size:14px;min-width:260px;
-    }
-    .pill{background:#fff;border:1px solid #e5e7eb;border-radius:999px;padding:8px 12px;font-size:13px;color:#111;}
-
-    .wrap{max-width:1200px;margin:0 auto;padding:0 16px 26px;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
-
-    .card{
-      background:var(--card);border-radius:14px;overflow:hidden;
-      box-shadow:0 6px 16px rgba(0,0,0,.10);
-      transition:transform .18s ease,box-shadow .18s ease;
-      display:flex;flex-direction:column;
-    }
-    .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.13);}
-    .img{width:100%;height:190px;object-fit:cover;display:block;background:#e5e7eb;}
-    .body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1;}
-    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
-    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;background:#e8f5e9;color:#1b5e20;}
-    .badge.hold{background:#fff6d6;border:1px solid #ffe8a3;color:var(--hold);}
-    .name{font-size:17px;font-weight:800;}
-    .meta{font-size:13px;color:#666;}
-    .price{font-size:19px;font-weight:900;color:var(--accent);margin-top:4px;}
-
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-    a.btn{
-      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
-      padding:10px 12px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;
-      border:1px solid transparent;
-    }
-    .btn.inquire{background:#fff;border-color:#d1d5db;color:#111;}
-    .btn.buy{background:var(--accent);color:#fff;}
-    .btn.disabled{opacity:.55;pointer-events:none;}
-
-    .pager{display:flex;justify-content:center;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
-    .pager button{
-      width:auto;margin:0;padding:10px 14px;border:none;border-radius:10px;background:#555;color:#fff;cursor:pointer;font-weight:800;
-    }
-    .pager button:disabled{opacity:.55;cursor:not-allowed;}
-    .info{color:var(--muted);font-size:13px;}
-
-    footer{text-align:center;padding:18px 12px;color:#777;font-size:13px;}
-    code{background:#fff;border:1px solid #eee;border-radius:8px;padding:2px 6px;}
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; max-width:900px; margin:2rem auto; padding:0 1rem; color:#111;}
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;}
+    .card { border:1px solid #e6e6e6; border-radius:8px; padding:12px; margin:8px 0; display:flex; gap:12px; align-items:center;}
+    .thumb { width:64px; height:64px; background:#f3f3f3; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+    button { background:#0b6efd; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    .muted { color:#666; font-size:0.9rem }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .stat { font-size:0.9rem; }
+    #inspector .card { flex-direction: column; align-items:flex-start; }
   </style>
 </head>
-
 <body>
-<header>
-  <h1>Ball Python Catalog</h1>
-  <p>Unique listings • Inquire or Buy Now • No cart</p>
-</header>
+  <header>
+    <h1>Serpent Town</h1>
+    <nav class="muted">Catalog + Tamagotchi (minimal)</nav>
+  </header>
 
-<div class="bar">
-  <div class="left">
-    <!-- IMPORTANT: no inline oninput; we bind input event in JS for reliability -->
-    <input id="search" placeholder="Search… (e.g. banana, male, 2024)" />
-    <span class="pill" id="countPill">0 listings</span>
-  </div>
-  <span class="pill">12 per page</span>
-</div>
+  <main>
+    <section id="hero">
+      <h2>Care. Learn. Collect.</h2>
+      <p class="muted">Minimal demo: catalog + actions. Buy using Stripe links; care actions are local UI interactions.</p>
+    </section>
 
-<div class="wrap">
-  <div class="grid" id="grid"></div>
+    <section>
+      <h3>Catalog</h3>
+      <div id="catalog"></div>
+    </section>
 
-  <div class="pager">
-    <button id="prevBtn" onclick="prevPage()">Prev</button>
-    <div class="info" id="pageInfo">Page 1</div>
-    <button id="nextBtn" onclick="nextPage()">Next</button>
-  </div>
-</div>
+    <section>
+      <h3>Your Collection</h3>
+      <div id="collection"></div>
+    </section>
 
-<footer>
-  Listings load from <code>data/products.json</code> • Put images in <code>img/</code>.
-</footer>
+    <section>
+      <h3>Inspect Pet</h3>
+      <div id="inspector" class="muted">Select a pet from your collection.</div>
+    </section>
+  </main>
 
-<script>
-  // ===== CONFIG =====
-  const PAGE_SIZE = 12;
+  <script type="module">
+    import { DEFAULTS } from './constants.js';
+    import * as Core from './core.js';
+    import tamagotchiPlugin from './plugins/tamagotchi.js';
+    import shopPlugin from './plugins/shop.js';
 
-  // Set your contact email for inquiries:
-  const INQUIRY_EMAIL = "you@example.com";
+    // Only load the two plugins requested: catalog (shop) and tamagotchi
+    Core.loadPlugins([shopPlugin, tamagotchiPlugin]);
 
-  // Optional default subject prefix:
-  const INQUIRY_SUBJECT_PREFIX = "Ball Python Inquiry";
+    // Optional: point to a deployed worker URL (absolute). Leave empty to use demo collection fallback.
+    const WORKER_URL = '';
+    const USER_EMAIL = 'demo@serpent.town';
 
-  // ===== State =====
-  let ITEMS = [];
-  let FILTERED = [];
-  let page = 1;
-
-  // ===== Utils =====
-  const esc = s => String(s ?? "").replace(/[&<>'"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;" }[c]));
-  const money = n => "$" + Number(n || 0).toFixed(0);
-
-  async function loadItems() {
-    try {
-      const res = await fetch("data/products.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("missing products.json");
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("products.json must be an array");
-      ITEMS = data;
-    } catch (e) {
-      // Fallback: one banana snake, ready for you to replace
-      ITEMS = [{
-        id:"SB-2024-01",
-        name:"Super Banana",
-        price:450,
-        info:"Male • 2024",
-        tag:"Banana",
-        status:"for_sale",
-        img:"https://picsum.photos/600?banana",
-        stripe_link:"https://buy.stripe.com/test_REPLACE_WITH_YOURS"
-      }];
-    }
-  }
-
-  function applyFilters(resetPage){
-    const q = (document.getElementById("search").value || "").trim().toLowerCase();
-
-    FILTERED = ITEMS.filter(i => {
-      const hay = `${i.id||""} ${i.name||""} ${i.info||""} ${i.tag||""} ${i.status||""}`.toLowerCase();
-      return hay.includes(q);
-    });
-
-    if (resetPage) page = 1;
-
-    document.getElementById("countPill").textContent = `${FILTERED.length} listings`;
-    renderGrid();
-    renderPager();
-  }
-
-  function renderGrid(){
-    const grid = document.getElementById("grid");
-    grid.innerHTML = "";
-
-    const start = (page - 1) * PAGE_SIZE;
-    const slice = FILTERED.slice(start, start + PAGE_SIZE);
-
-    slice.forEach(i => {
-      const status = (i.status || "for_sale").toLowerCase();
-      const isHold = status === "on_hold";
-      const isSold = status === "sold";
-
-      const canBuy = !!i.stripe_link && !isSold;
-      const canInquire = !isSold;
-
-      const subject = `${INQUIRY_SUBJECT_PREFIX}: ${i.name || ""} (${i.id || ""})`;
-      const body =
-`Hi,
-
-I’m interested in this ball python:
-- Listing: ${i.name || ""}
-- ID: ${i.id || ""}
-- Price: ${money(i.price)}
-- Info: ${i.info || ""}
-
-Is it still available?`;
-
-      const mailto = `mailto:${encodeURIComponent(INQUIRY_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-      grid.insertAdjacentHTML("beforeend", `
-        <div class="card">
-          <img class="img" src="${esc(i.img || "")}" alt="${esc(i.name || "")}" loading="lazy">
-          <div class="body">
-            <div class="badges">
-              <span class="badge">${esc(i.tag || "Listing")}</span>
-              ${isHold ? `<span class="badge hold">On Hold</span>` : ""}
-              ${isSold ? `<span class="badge hold">Sold</span>` : ""}
-            </div>
-
-            <div class="name">${esc(i.name || "Untitled")}</div>
-            <div class="meta">${esc(i.info || "")}</div>
-            <div class="price">${isSold ? "—" : money(i.price)}</div>
-
-            <div class="actions">
-              <a class="btn inquire ${canInquire ? "" : "disabled"}" href="${canInquire ? mailto : "#"}">Inquire</a>
-              <a class="btn buy ${canBuy ? "" : "disabled"}" href="${canBuy ? esc(i.stripe_link) : "#"}" target="_blank" rel="noopener">Buy Now</a>
-            </div>
+    function renderCatalog() {
+      const catalogEl = document.getElementById('catalog');
+      catalogEl.innerHTML = '';
+      for (const item of shopPlugin.catalog) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">${item.image ? '<img src="' + item.image + '" width="56" height="56" alt="" />' : '📦'}</div>
+          <div style="flex:1">
+            <div><strong>${item.display_name || item.product_id}</strong></div>
+            <div class="muted">${item.description || ''}</div>
+            <div class="muted">Price: ${item.price_text || '—'}</div>
           </div>
-        </div>
-      `);
-    });
-
-    if (!slice.length){
-      grid.innerHTML = `<div class="pill" style="grid-column:1/-1;text-align:center;">No listings match your search.</div>`;
+          <div>
+            <a target="_blank" rel="noopener" href="${item.payment_link}"><button>Buy</button></a>
+          </div>
+        `;
+        catalogEl.appendChild(card);
+      }
     }
-  }
 
-  function renderPager(){
-    const totalPages = Math.max(1, Math.ceil(FILTERED.length / PAGE_SIZE));
-    page = Math.min(page, totalPages);
+    async function fetchCollection() {
+      const url = WORKER_URL ? `${WORKER_URL}/collection?user=${encodeURIComponent(USER_EMAIL)}` : `/collection?user=${encodeURIComponent(USER_EMAIL)}`;
+      try {
+        const resp = await fetch(url);
+        if (resp.ok) return await resp.json();
+      } catch (e) { /* ignore */ }
+      // fallback to demo collection in core
+      return Core.getDemoCollection(USER_EMAIL);
+    }
 
-    document.getElementById("pageInfo").textContent = `Page ${page} of ${totalPages}`;
-    document.getElementById("prevBtn").disabled = page <= 1;
-    document.getElementById("nextBtn").disabled = page >= totalPages;
-  }
+    async function renderCollection() {
+      const collectionEl = document.getElementById('collection');
+      collectionEl.innerHTML = '';
+      const owned = await fetchCollection();
+      if (!owned || owned.length === 0) {
+        collectionEl.innerHTML = '<div class="muted">No pets yet. Buy one from the catalog.</div>';
+        return;
+      }
 
-  function nextPage(){
-    page++;
-    renderGrid();
-    renderPager();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
+      for (const id of owned) {
+        // Try to find a matching catalog entry by product_id
+        const catalogEntry = shopPlugin.catalog.find(c => c.product_id === id) || { product_id: id, display_name: id };
+        const pet = createTransientPetFromCatalog(catalogEntry);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">${catalogEntry.image ? '<img src="' + catalogEntry.image + '" width="56" height="56" alt="" />' : '🐾'}</div>
+          <div style="flex:1">
+            <div><strong>${catalogEntry.display_name || catalogEntry.product_id}</strong></div>
+            <div class="stat">Hunger: <span data-stat="hunger">${pet.care.hunger}</span></div>
+            <div class="stat">Clean: <span data-stat="clean">${pet.care.clean}</span></div>
+          </div>
+          <div>
+            <button data-id="${catalogEntry.product_id}" class="inspect-btn">Open</button>
+          </div>
+        `;
+        collectionEl.appendChild(card);
+      }
+    }
 
-  function prevPage(){
-    page--;
-    renderGrid();
-    renderPager();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
+    // Create a minimal transient pet instance from a shop catalog entry.
+    function createTransientPetFromCatalog(catalogEntry) {
+      const entityDef = {
+        id: catalogEntry.product_id,
+        name: catalogEntry.display_name || catalogEntry.product_id,
+        initial_care: { hunger: DEFAULTS.STAT_MAX, clean: DEFAULTS.STAT_MAX }
+      };
+      return Core.createPetInstance(entityDef, {});
+    }
 
-  // Boot (reliable: bind events after DOM is ready)
-  document.addEventListener("DOMContentLoaded", async () => {
-    await loadItems();
-    FILTERED = [...ITEMS];
+    function setupCollectionClickHandler() {
+      document.getElementById('collection').addEventListener('click', (e) => {
+        const btn = e.target.closest('button.inspect-btn');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        openInspectorFor(id);
+      });
+    }
 
-    // Bind search event reliably
-    document.getElementById("search").addEventListener("input", () => applyFilters(true));
+    function openInspectorFor(productId) {
+      const inspectorEl = document.getElementById('inspector');
+      const catalogEntry = shopPlugin.catalog.find(c => c.product_id === productId) || { product_id: productId };
+      const pet = createTransientPetFromCatalog(catalogEntry);
 
-    applyFilters(true);
-  });
-</script>
+      inspectorEl.innerHTML = '';
+      const node = document.createElement('div');
+      node.className = 'card';
+      node.innerHTML = `
+        <div style="flex:1">
+          <div><strong>${catalogEntry.display_name || catalogEntry.product_id}</strong></div>
+          <div class="muted">${catalogEntry.description || ''}</div>
+          <div class="stat">Hunger: <span id="stat-hunger">${pet.care.hunger}</span></div>
+          <div class="stat">Clean: <span id="stat-clean">${pet.care.clean}</span></div>
+        </div>
+        <div>
+          <button id="feed">Feed</button>
+          <button id="clean">Clean</button>
+        </div>
+      `;
+      inspectorEl.appendChild(node);
+
+      // Wire tamagotchi actions (labels from plugin, logic in core)
+      document.getElementById('feed').addEventListener('click', () => {
+        Core.applyAction('feed', pet, {});
+        document.getElementById('stat-hunger').textContent = pet.care.hunger;
+      });
+      document.getElementById('clean').addEventListener('click', () => {
+        Core.applyAction('clean', pet, {});
+        document.getElementById('stat-clean').textContent = pet.care.clean;
+      });
+    }
+
+    (async function init() {
+      renderCatalog();
+      await renderCollection();
+      setupCollectionClickHandler();
+    })();
+  </script>
 </body>
 </html>
-
