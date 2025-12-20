@@ -1,0 +1,12 @@
+{
+  "name": "serpent-town-mvp",
+  "version": "0.1.0",
+  "description": "Serpent Town — MVP (static frontend + Cloudflare Worker backend) - minimal UI + tests",
+  "type": "module",
+  "scripts": {
+    "test": "node ./tests/run-all.js",
+    "start": "npx serve src -l 5000 || python3 -m http.server 5000"
+  },
+  "author": "serpent-town",
+  "license": "MIT"
+}
