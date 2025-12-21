@@ -169,7 +169,7 @@
         // Try to get customer email from URL (if Stripe passes it)
         const email = urlParams.get('email') || urlParams.get('customer_email');
         
-        let registerUrl = `http://localhost:8000/register.html?session_id=${sessionId || 'none'}`;
+        let registerUrl = `${window.location.origin}/register.html?session_id=${sessionId || 'none'}`;
         registerUrl += `&user_hash=${userHash}`;
         if (email) {
           registerUrl += `&email=${encodeURIComponent(email)}`;
@@ -192,7 +192,7 @@
       }
       
       function redirectToGame() {
-        const gameUrl = `http://localhost:8000/game.html#${userHash}`;
+        const gameUrl = `${window.location.origin}/game.html?user=${userHash}`;
         document.getElementById('register-now-btn').textContent = 'Go to Game';
         document.getElementById('register-now-btn').href = gameUrl;
         document.getElementById('redirect-message').textContent = 'Welcome back! Your new snake is ready!';
