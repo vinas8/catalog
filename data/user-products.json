@@ -1,0 +1,38 @@
+[
+  {
+    "assignment_id": "assign_001",
+    "user_id": "user_demo_001",
+    "product_id": "prod_example",
+    "product_type": "real",
+    "nickname": "My First Snake",
+    "acquired_at": "2025-12-21T00:00:00Z",
+    "acquisition_type": "stripe_purchase",
+    "payment_id": "pi_stripe_example",
+    "price_paid": 100.00,
+    "currency": "eur",
+    "stats": {
+      "hunger": 80,
+      "water": 100,
+      "health": 100,
+      "happiness": 80
+    }
+  },
+  {
+    "assignment_id": "assign_002",
+    "user_id": "user_demo_001",
+    "product_id": "virtual_bp_001",
+    "product_type": "virtual",
+    "nickname": "Practice Python",
+    "acquired_at": "2025-12-21T00:00:00Z",
+    "acquisition_type": "game_purchase",
+    "payment_id": null,
+    "price_paid": 100,
+    "currency": "gold",
+    "stats": {
+      "hunger": 90,
+      "water": 90,
+      "health": 100,
+      "happiness": 85
+    }
+  }
+]

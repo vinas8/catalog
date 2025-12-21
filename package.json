@@ -1,12 +1,19 @@
 {
-  "name": "serpent-town-mvp",
+  "name": "serpent-town",
   "version": "0.1.0",
-  "description": "Serpent Town — MVP (static frontend + Cloudflare Worker backend) - minimal UI + tests",
+  "description": "Snake care simulation game with Stripe integration",
   "type": "module",
   "scripts": {
-    "test": "node ./tests/run-all.js",
-    "start": "npx serve src -l 5000 || python3 -m http.server 5000"
+    "test": "node tests/game.test.js && node tests/snapshot.test.js",
+    "test:unit": "node tests/game.test.js",
+    "test:snapshot": "node tests/snapshot.test.js",
+    "start": "python3 -m http.server 8000"
   },
-  "author": "serpent-town",
-  "license": "MIT"
+  "keywords": ["game", "snake", "simulation", "stripe"],
+  "author": "Serpent Town Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/serpent-town.git"
+  }
 }

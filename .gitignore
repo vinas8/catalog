@@ -1,0 +1,36 @@
+# Serpent Town - Gitignore
+
+# Environment & Secrets
+node_modules/
+.env
+.env.local
+.env.*.local
+**/stripe-config.local.js
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.bak
+.cache/
+
+# Build (if any)
+dist/
+build/
