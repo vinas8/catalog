@@ -1,172 +1,193 @@
-// User Authentication & Session Management
-// Simple localStorage-based for MVP (upgrade to real auth later)
+// User Authentication via Secure Hash in URL
+// User access via: ?user=HASH or /game.html#user=HASH
 
 export class UserAuth {
   
   /**
-   * Get currently logged-in user
+   * Get user hash from URL
    */
-  static getCurrentUser() {
-    const userStr = localStorage.getItem('serpent_user');
-    if (!userStr) return null;
-    try {
-      return JSON.parse(userStr);
-    } catch (e) {
-      return null;
+  static getUserHashFromURL() {
+    // Check query parameter: ?user=abc123
+    const urlParams = new URLSearchParams(window.location.search);
+    let hash = urlParams.get('user');
+    
+    // Check hash parameter: #user=abc123
+    if (!hash && window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      hash = hashParams.get('user');
     }
+    
+    return hash;
   }
   
   /**
-   * Set current user session
+   * Get or create user from hash
    */
-  static setCurrentUser(user) {
-    localStorage.setItem('serpent_user', JSON.stringify(user));
-    console.log('👤 User logged in:', user.email);
-  }
-  
-  /**
-   * Logout current user
-   */
-  static logout() {
-    localStorage.removeItem('serpent_user');
-    localStorage.removeItem('serpent_town_save'); // Clear game data
-    window.location.href = '/';
-  }
-  
-  /**
-   * Login with email (simple version)
-   */
-  static async loginWithEmail(email) {
+  static async getUserFromHash(hash) {
+    if (!hash) return null;
+    
     try {
       // Load users file
       const response = await fetch('/data/users.json');
       let users = await response.json();
       
-      // Find existing user
-      let user = users.find(u => u.email === email);
+      // Find user by hash (user_id is the hash)
+      let user = users.find(u => u.user_id === hash);
       
       if (!user) {
-        // Create new user
+        // Create new user with this hash
         user = {
-          user_id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-          email: email,
-          name: email.split('@')[0],
+          user_id: hash,
+          email: null, // Will be set from Stripe
+          name: `User ${hash.substring(0, 8)}`,
           created_at: new Date().toISOString(),
           loyalty_points: 0,
           loyalty_tier: 'bronze'
         };
-        console.log('🆕 Created new user:', user);
-        // In production: POST /api/users to save
+        console.log('🆕 New user from hash:', user);
+        // In production: POST /api/users
       }
       
-      this.setCurrentUser(user);
       return user;
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      console.error('Error loading user:', error);
+      return null;
     }
   }
   
   /**
-   * Check if user is logged in
+   * Get current user (from URL or localStorage)
    */
-  static isLoggedIn() {
-    return this.getCurrentUser() !== null;
+  static async getCurrentUser() {
+    // First check URL
+    const hash = this.getUserHashFromURL();
+    
+    if (hash) {
+      const user = await this.getUserFromHash(hash);
+      if (user) {
+        // Cache in localStorage
+        localStorage.setItem('serpent_user_hash', hash);
+        localStorage.setItem('serpent_user', JSON.stringify(user));
+        return user;
+      }
+    }
+    
+    // Fall back to cached user
+    const cachedHash = localStorage.getItem('serpent_user_hash');
+    if (cachedHash) {
+      const user = await this.getUserFromHash(cachedHash);
+      return user;
+    }
+    
+    return null;
   }
   
   /**
-   * Get user ID
+   * Get user ID (hash)
    */
   static getUserId() {
-    const user = this.getCurrentUser();
-    return user ? user.user_id : null;
+    return this.getUserHashFromURL() || localStorage.getItem('serpent_user_hash');
   }
   
   /**
-   * Get user email
+   * Check if user is identified
    */
-  static getUserEmail() {
-    const user = this.getCurrentUser();
-    return user ? user.email : null;
+  static isLoggedIn() {
+    return this.getUserId() !== null;
   }
   
   /**
-   * Show login modal
+   * Generate secure hash for new user
    */
-  static showLoginModal() {
+  static generateUserHash() {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 15);
+    return timestamp + random;
+  }
+  
+  /**
+   * Create shareable user URL
+   */
+  static getUserURL(basePath = '/game.html') {
+    const hash = this.getUserId();
+    if (!hash) return basePath;
+    return `${basePath}?user=${hash}`;
+  }
+  
+  /**
+   * Show "Get Your Link" modal for new users
+   */
+  static showGetLinkModal() {
+    const hash = this.generateUserHash();
+    const url = window.location.origin + this.getUserURL('/game.html');
+    const fullURL = url.replace('/game.html', '/game.html') + `?user=${hash}`;
+    
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.display = 'flex';
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
-          <h2>🔐 Login / Sign Up</h2>
-          <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+          <h2>🔗 Your Personal Link</h2>
         </div>
         <div style="padding: 2rem;">
-          <p style="margin-bottom: 1rem;">Enter your email to continue:</p>
-          <input type="email" id="login-email" placeholder="your@email.com" 
-                 style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 1rem;">
-          <button id="login-btn" class="primary-btn" style="width: 100%;">Continue</button>
-          <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-            We'll remember you for future visits. No password needed!
+          <p style="margin-bottom: 1rem;">
+            Save this link to access your snakes from any device:
+          </p>
+          <input type="text" value="${fullURL}" 
+                 style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1rem;"
+                 readonly onclick="this.select()">
+          <div style="display: flex; gap: 1rem;">
+            <button class="primary-btn" onclick="navigator.clipboard.writeText('${fullURL}'); alert('Link copied!')">
+              📋 Copy Link
+            </button>
+            <button class="secondary-btn" onclick="window.location.href='${fullURL}'">
+              ✅ Use This Link
+            </button>
+          </div>
+          <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #666;">
+            ⚠️ Bookmark this link! Anyone with this link can access your snakes.
           </p>
         </div>
       </div>
     `;
     
     document.body.appendChild(modal);
-    
-    const emailInput = modal.querySelector('#login-email');
-    const loginBtn = modal.querySelector('#login-btn');
-    
-    const doLogin = async () => {
-      const email = emailInput.value.trim();
-      if (!email || !email.includes('@')) {
-        alert('Please enter a valid email');
-        return;
-      }
-      
-      try {
-        await UserAuth.loginWithEmail(email);
-        modal.remove();
-        window.location.reload(); // Refresh to load user data
-      } catch (error) {
-        alert('Login failed. Please try again.');
-      }
-    };
-    
-    loginBtn.addEventListener('click', doLogin);
-    emailInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') doLogin();
-    });
-    
-    emailInput.focus();
   }
   
   /**
-   * Require login - show modal if not logged in
+   * Logout - clear cached hash
    */
-  static requireLogin() {
-    if (!this.isLoggedIn()) {
-      this.showLoginModal();
-      return false;
-    }
-    return true;
+  static logout() {
+    localStorage.removeItem('serpent_user_hash');
+    localStorage.removeItem('serpent_user');
+    localStorage.removeItem('serpent_town_save');
+    window.location.href = '/';
   }
 }
 
 /**
- * Handle auth from URL parameter (?user=email@example.com)
+ * Initialize user from URL on page load
  */
-export function handleAuthFromURL() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const email = urlParams.get('user');
+export async function initializeUser() {
+  const user = await UserAuth.getCurrentUser();
   
-  if (email && !UserAuth.isLoggedIn()) {
-    UserAuth.loginWithEmail(email).then(() => {
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
-    });
+  if (user) {
+    console.log('👤 User loaded:', user.user_id);
+    return user;
+  } else {
+    console.log('👤 No user in URL - anonymous mode');
+    return null;
   }
+}
+
+/**
+ * Require user hash - show modal if not present
+ */
+export function requireUser() {
+  if (!UserAuth.isLoggedIn()) {
+    UserAuth.showGetLinkModal();
+    return false;
+  }
+  return true;
 }

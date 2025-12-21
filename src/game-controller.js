@@ -1,25 +1,38 @@
 // Main Game Logic - Serpent Town v3.4
-// Bug fixes: Shop modal, reset game, catalog filtering
-// New: Data-driven catalog system from JSON
+// User authentication via URL hash + user-specific data loading
 
-import { Economy, createInitialGameState } from './src/business/economy.js';
-import { EquipmentShop } from './src/business/equipment.js';
-import { openShop } from './src/ui/shop-view.js';
-import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from './src/data/species-profiles.js';
-import { getMorphsForSpecies } from './src/data/morphs.js';
-import { getProductsBySpecies } from './src/data/catalog.js';
+import { Economy, createInitialGameState } from './business/economy.js';
+import { EquipmentShop } from './business/equipment.js';
+import { openShop } from './ui/shop-view.js';
+import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from './data/species-profiles.js';
+import { getMorphsForSpecies } from './data/morphs.js';
+import { getProductsBySpecies } from './data/catalog.js';
+import { UserAuth, initializeUser } from './auth/user-auth.js';
 
 class SerpentTown {
   constructor() {
-    this.gameState = this.loadGame() || createInitialGameState();
+    this.currentUser = null;
+    this.gameState = null;
     this.gameLoop = null;
     this.lastUpdate = Date.now();
     
     this.init();
   }
   
-  init() {
+  async init() {
     console.log('🐍 Serpent Town v3.4 - Starting...');
+    
+    // Load user from URL
+    this.currentUser = await initializeUser();
+    
+    if (this.currentUser) {
+      console.log('👤 Logged in as:', this.currentUser.user_id);
+      // Load user-specific snakes
+      await this.loadUserSnakes();
+    } else {
+      console.log('👤 No user - using demo/guest mode');
+      this.gameState = this.loadGame() || createInitialGameState();
+    }
     
     // Set up UI event listeners
     this.setupEventListeners();
@@ -34,6 +47,77 @@ class SerpentTown {
     setInterval(() => this.saveGame(), 30000);
     
     console.log('✅ Game initialized!');
+  }
+  
+  async loadUserSnakes() {
+    try {
+      // Load user's snakes from user-products.json
+      const response = await fetch('/data/user-products.json');
+      const userProducts = await response.json();
+      
+      // Filter by current user
+      const mySnakes = userProducts.filter(up => up.user_id === this.currentUser.user_id);
+      
+      console.log(`🐍 Loaded ${mySnakes.length} snakes for user`);
+      
+      // Create game state with user's snakes
+      this.gameState = this.loadGame() || createInitialGameState();
+      this.gameState.user_id = this.currentUser.user_id;
+      this.gameState.snakes = await this.convertUserProductsToSnakes(mySnakes);
+      
+    } catch (error) {
+      console.error('Error loading user snakes:', error);
+      this.gameState = createInitialGameState();
+    }
+  }
+  
+  async convertUserProductsToSnakes(userProducts) {
+    // Load products to get full details
+    const productsResponse = await fetch('/data/products.json');
+    const products = await productsResponse.json();
+    
+    return userProducts.map(up => {
+      const product = products.find(p => p.id === up.product_id);
+      
+      return {
+        id: up.assignment_id,
+        product_id: up.product_id,
+        user_id: up.user_id,
+        nickname: up.nickname,
+        species: product?.species || 'ball_python',
+        morph: product?.morph || 'normal',
+        type: up.product_type, // 'real' or 'virtual'
+        sex: product?.sex || 'unknown',
+        birth_date: product?.birth_year || 2024,
+        weight_grams: product?.weight_grams || 100,
+        length_cm: 30,
+        acquired_date: up.acquired_at,
+        acquisition_type: up.acquisition_type,
+        stats: up.stats || {
+          hunger: 80,
+          water: 100,
+          temperature: 80,
+          humidity: 50,
+          health: 100,
+          stress: 10,
+          cleanliness: 100,
+          happiness: 80
+        },
+        equipment: {
+          heater: null,
+          mister: null,
+          thermometer: false,
+          hygrometer: false
+        },
+        shed_cycle: {
+          stage: 'normal',
+          last_shed: new Date().toISOString(),
+          days_since_last: 0
+        },
+        created_at: up.acquired_at,
+        updated_at: new Date().toISOString()
+      };
+    });
   }
   
   setupEventListeners() {
