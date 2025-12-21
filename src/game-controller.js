@@ -54,7 +54,7 @@ class SerpentTown {
   async loadUserProfile() {
     try {
       // Try loading from worker first
-      const workerUrl = `https://serpent-town.vinatier8.workers.dev/user-data?user=${this.currentUser.user_id}`;
+      const workerUrl = `https://catalog.navickaszilvinas.workers.dev/user-data?user=${this.currentUser.user_id}`;
       const response = await fetch(workerUrl);
       
       if (response.ok) {
@@ -95,23 +95,35 @@ class SerpentTown {
   
   async loadUserSnakes() {
     try {
-      // Load user's snakes from user-products.json
-      const response = await fetch('/data/user-products.json');
+      // Load user's snakes from Cloudflare Worker KV
+      const workerUrl = `https://catalog.navickaszilvinas.workers.dev/user-products?user=${this.currentUser.user_id}`;
+      console.log(`🔄 Fetching snakes from: ${workerUrl}`);
+      
+      const response = await fetch(workerUrl);
+      
+      if (!response.ok) {
+        console.warn(`⚠️ Worker returned ${response.status}, no snakes found`);
+        this.gameState = this.loadGame() || createInitialGameState();
+        this.gameState.user_id = this.currentUser.user_id;
+        this.gameState.snakes = [];
+        return;
+      }
+      
       const userProducts = await response.json();
       
-      // Filter by current user
-      const mySnakes = userProducts.filter(up => up.user_id === this.currentUser.user_id);
-      
-      console.log(`🐍 Loaded ${mySnakes.length} snakes for user`);
+      console.log(`🐍 Loaded ${userProducts.length} snakes for user ${this.currentUser.user_id}`);
       
       // Create game state with user's snakes
       this.gameState = this.loadGame() || createInitialGameState();
       this.gameState.user_id = this.currentUser.user_id;
-      this.gameState.snakes = await this.convertUserProductsToSnakes(mySnakes);
+      this.gameState.snakes = await this.convertUserProductsToSnakes(userProducts);
       
     } catch (error) {
-      console.error('Error loading user snakes:', error);
+      console.error('Error loading user snakes from worker:', error);
+      console.log('📝 Starting with empty collection');
       this.gameState = createInitialGameState();
+      this.gameState.user_id = this.currentUser.user_id;
+      this.gameState.snakes = [];
     }
   }
   
