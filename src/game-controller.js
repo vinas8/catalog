@@ -156,11 +156,30 @@ class SerpentTown {
   }
   
   async convertUserProductsToSnakes(userProducts) {
-    // Load products to get full details
-    const productsResponse = await fetch('/data/products.json');
-    const products = await productsResponse.json();
+    // Debug
+    const debug = (msg) => {
+      const debugDiv = document.createElement('div');
+      debugDiv.style.cssText = 'position:fixed;top:200px;left:10px;background:#f0f;color:#fff;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
+      debugDiv.textContent = msg;
+      document.body.appendChild(debugDiv);
+      setTimeout(() => debugDiv.remove(), 5000);
+    };
     
-    return userProducts.map(up => {
+    debug(`🔄 Converting ${userProducts.length} products...`);
+    
+    try {
+      // Try to load products catalog for details
+      const productsResponse = await fetch('/data/products.json');
+      if (!productsResponse.ok) {
+        debug('⚠️ products.json not found, using minimal data');
+        // Convert without catalog data
+        return userProducts.map(up => this.createSnakeFromProduct(up, null));
+      }
+      
+      const products = await productsResponse.json();
+      debug(`✅ Loaded products catalog`);
+      
+      return userProducts.map(up => {
       const product = products.find(p => p.id === up.product_id);
       
       return {
