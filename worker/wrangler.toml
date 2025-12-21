@@ -7,6 +7,11 @@ compatibility_date = "2024-12-21"
 binding = "USER_PRODUCTS"
 id = "3b88d32c0a0540a8b557c5fb698ff61a"
 
+# KV Namespace for tracking product sold status
+[[kv_namespaces]]
+binding = "PRODUCT_STATUS"
+id = "PLACEHOLDER_CREATE_THIS_NAMESPACE"
+
 # Routes (uncomment when deploying to custom domain)
 # routes = [
 #   { pattern = "api.serpenttown.com/*", zone_name = "serpenttown.com" }

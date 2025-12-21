@@ -3,21 +3,24 @@
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
+ * - PRODUCT_STATUS (KV namespace) - Tracks which products are sold
  *
  * Endpoints:
  * - POST /stripe-webhook  (Stripe webhook)
  * - GET  /user-products?user=<hash>  (Get user's snakes)
  * - GET  /products  (Get available products)
+ * - GET  /product-status?id=<product_id>  (Check if product is sold)
  *
  * Features:
  * - Hash-based user authentication (user ID in URL)
  * - Stores user products in KV
  * - Handles Stripe checkout.session.completed events
  * - Assigns snakes to users by hash
+ * - Tracks sold status for unique real snakes
  *
  * Deployment:
  * - wrangler publish
- * - Bind KV namespace: USER_PRODUCTS
+ * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS
  */
 
 export default {
@@ -54,6 +57,11 @@ export default {
     // Route: GET /products (available products)
     if (pathname === '/products' && request.method === 'GET') {
       return handleGetProducts(request, env, corsHeaders);
+    }
+
+    // Route: GET /product-status?id=PRODUCT_ID
+    if (pathname === '/product-status' && request.method === 'GET') {
+      return handleGetProductStatus(request, env, corsHeaders);
     }
 
     // Route: POST /assign-product (manual assignment, for testing)
@@ -167,11 +175,24 @@ async function handleStripeWebhook(request, env, corsHeaders) {
       // Save back to KV
       await env.USER_PRODUCTS.put(kvKey, JSON.stringify(userProducts));
 
-      console.log('✅ Saved to KV');
+      console.log('✅ Saved to USER_PRODUCTS KV');
+
+      // Mark product as sold in PRODUCT_STATUS KV
+      if (env.PRODUCT_STATUS) {
+        const statusKey = `product:${productId}`;
+        const statusData = {
+          status: 'sold',
+          owner_id: userHash,
+          sold_at: new Date().toISOString(),
+          payment_id: session.payment_intent || session.id
+        };
+        await env.PRODUCT_STATUS.put(statusKey, JSON.stringify(statusData));
+        console.log('✅ Marked product as sold in PRODUCT_STATUS KV');
+      }
 
       return new Response(JSON.stringify({ 
         success: true,
-        message: 'Product assigned to user',
+        message: 'Product assigned to user and marked as sold',
         user_id: userHash,
         product_id: productId
       }), {
@@ -192,6 +213,66 @@ async function handleStripeWebhook(request, env, corsHeaders) {
     status: 200,
     headers: corsHeaders
   });
+}
+
+/**
+ * Handle GET /product-status?id=PRODUCT_ID - check if product is sold
+ */
+async function handleGetProductStatus(request, env, corsHeaders) {
+  const url = new URL(request.url);
+  const productId = url.searchParams.get('id');
+
+  if (!productId) {
+    return new Response(JSON.stringify({ error: 'Missing product ID' }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
+
+  try {
+    if (!env.PRODUCT_STATUS) {
+      // If PRODUCT_STATUS not bound, assume all available
+      return new Response(JSON.stringify({ 
+        product_id: productId,
+        status: 'available',
+        owner_id: null
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    const statusKey = `product:${productId}`;
+    const statusData = await env.PRODUCT_STATUS.get(statusKey);
+
+    if (!statusData) {
+      // Product not in KV = available
+      return new Response(JSON.stringify({ 
+        product_id: productId,
+        status: 'available',
+        owner_id: null
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    // Return status data
+    return new Response(statusData, {
+      status: 200,
+      headers: corsHeaders
+    });
+
+  } catch (err) {
+    console.error('❌ Error checking product status:', err);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to check status',
+      details: err.message
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
 }
 
 /**
