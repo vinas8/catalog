@@ -37,31 +37,45 @@ export class UserAuth {
     if (!hash) return null;
     
     try {
-      // Load users file
-      const response = await fetch('/data/users.json');
-      let users = await response.json();
-      
-      // Find user by hash (user_id is the hash)
-      let user = users.find(u => u.user_id === hash);
-      
-      if (!user) {
-        // Create new user with this hash
-        user = {
-          user_id: hash,
-          email: null, // Will be set from Stripe
-          name: `User ${hash.substring(0, 8)}`,
-          created_at: new Date().toISOString(),
-          loyalty_points: 0,
-          loyalty_tier: 'bronze'
-        };
-        console.log('🆕 New user from hash:', user);
-        // In production: POST /api/users
+      // Try to load from worker first (preferred)
+      try {
+        const { WORKER_CONFIG } = await import('../config/worker-config.js');
+        const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_DATA', hash);
+        const response = await fetch(workerUrl);
+        
+        if (response.ok) {
+          const user = await response.json();
+          console.log('👤 Loaded user from worker:', user.user_id);
+          return user;
+        }
+      } catch (workerError) {
+        console.log('⚠️ Worker unavailable, creating user from hash');
       }
       
+      // Fall back: create user object from hash
+      const user = {
+        user_id: hash,
+        username: `User ${hash.substring(0, 8)}`,
+        email: null,
+        created_at: new Date().toISOString(),
+        loyalty_points: 0,
+        loyalty_tier: 'bronze'
+      };
+      
+      console.log('🆕 Created user from hash:', user.user_id);
       return user;
+      
     } catch (error) {
       console.error('Error loading user:', error);
-      return null;
+      // Even on error, create basic user
+      return {
+        user_id: hash,
+        username: `User ${hash.substring(0, 8)}`,
+        email: null,
+        created_at: new Date().toISOString(),
+        loyalty_points: 0,
+        loyalty_tier: 'bronze'
+      };
     }
   }
   
