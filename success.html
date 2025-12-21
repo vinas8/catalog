@@ -171,48 +171,49 @@
       }); // End import promise
       
       function redirectToRegistration() {
-        // Try to get customer email from URL (if Stripe passes it)
-        const email = urlParams.get('email') || urlParams.get('customer_email');
-        
-        let registerUrl = `${window.location.origin}/register.html?session_id=${sessionId || 'none'}`;
-        registerUrl += `&user_hash=${userHash}`;
-        if (email) {
-          registerUrl += `&email=${encodeURIComponent(email)}`;
-        }
-        
-        document.getElementById('register-now-btn').href = registerUrl;
-        document.getElementById('redirect-message').textContent = 'Your snake is ready!';
-        document.getElementById('countdown').innerHTML = 'Redirecting to registration in <strong>2</strong> seconds...';
-        
-        let seconds = 2;
-        const countdown = setInterval(() => {
-          seconds--;
-          if (seconds > 0) {
-            document.getElementById('countdown').innerHTML = `Redirecting to registration in <strong>${seconds}</strong> seconds...`;
-          } else {
-            clearInterval(countdown);
-            window.location.href = registerUrl;
-          }
-        }, 1000);
+        // Import page URLs
+        import('./src/config/worker-config.js').then(({ PAGE_URLS }) => {
+          // Try to get customer email from URL (if Stripe passes it)
+          const email = urlParams.get('email') || urlParams.get('customer_email');
+          
+          const registerUrl = PAGE_URLS.getRegisterUrl(sessionId, userHash, email, window.location.origin);
+          
+          document.getElementById('register-now-btn').href = registerUrl;
+          document.getElementById('redirect-message').textContent = 'Your snake is ready!';
+          document.getElementById('countdown').innerHTML = 'Redirecting to registration in <strong>2</strong> seconds...';
+          
+          let seconds = 2;
+          const countdown = setInterval(() => {
+            seconds--;
+            if (seconds > 0) {
+              document.getElementById('countdown').innerHTML = `Redirecting to registration in <strong>${seconds}</strong> seconds...`;
+            } else {
+              clearInterval(countdown);
+              window.location.href = registerUrl;
+            }
+          }, 1000);
+        });
       }
       
       function redirectToGame() {
-        const gameUrl = `${window.location.origin}/game.html?user=${userHash}`;
-        document.getElementById('register-now-btn').textContent = 'Go to Game';
-        document.getElementById('register-now-btn').href = gameUrl;
-        document.getElementById('redirect-message').textContent = 'Welcome back! Your new snake is ready!';
-        document.getElementById('countdown').innerHTML = 'Redirecting to game in <strong>2</strong> seconds...';
-        
-        let seconds = 2;
-        const countdown = setInterval(() => {
-          seconds--;
-          if (seconds > 0) {
-            document.getElementById('countdown').innerHTML = `Redirecting to game in <strong>${seconds}</strong> seconds...`;
-          } else {
-            clearInterval(countdown);
-            window.location.href = gameUrl;
-          }
-        }, 1000);
+        import('./src/config/worker-config.js').then(({ PAGE_URLS }) => {
+          const gameUrl = PAGE_URLS.getGameUrl(userHash, window.location.origin);
+          document.getElementById('register-now-btn').textContent = 'Go to My Farm';
+          document.getElementById('register-now-btn').href = gameUrl;
+          document.getElementById('redirect-message').textContent = 'Welcome back! Your new snake is ready!';
+          document.getElementById('countdown').innerHTML = 'Redirecting to your farm in <strong>2</strong> seconds...';
+          
+          let seconds = 2;
+          const countdown = setInterval(() => {
+            seconds--;
+            if (seconds > 0) {
+              document.getElementById('countdown').innerHTML = `Redirecting to your farm in <strong>${seconds}</strong> seconds...`;
+            } else {
+              clearInterval(countdown);
+              window.location.href = gameUrl;
+            }
+          }, 1000);
+        });
       }
     }
   </script>

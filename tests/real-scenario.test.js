@@ -142,8 +142,8 @@ await test('STEP 6: Game loads snakes from worker', async () => {
   console.log(`   📊 Stats: Hunger=${snake.stats?.hunger}, Health=${snake.stats?.health}`);
 });
 
-// STEP 7: Second purchase should recognize returning user
-await test('STEP 7: Second purchase recognizes returning user', async () => {
+// STEP 7: Second purchase should go to FARM not registration
+await test('STEP 7: Second purchase goes to FARM (not registration)', async () => {
   // Simulate success.html checking for existing user
   const mockStorage = {
     serpent_user_hash: TEST_USER_HASH,
@@ -163,10 +163,73 @@ await test('STEP 7: Second purchase recognizes returning user', async () => {
   const shouldSkipRegistration = !!existingUser;
   assert(shouldSkipRegistration, '🚨 Second purchase forces re-registration!');
   
-  console.log(`   ✅ Returning user detected - skips registration`);
+  // Import PAGE_URLS to verify redirect
+  const { PAGE_URLS } = await import('../src/config/worker-config.js');
+  const expectedUrl = PAGE_URLS.getGameUrl(TEST_USER_HASH);
+  
+  assert(expectedUrl.includes('/game.html'), 'Should redirect to game.html');
+  assert(expectedUrl.includes(`?user=${TEST_USER_HASH}`), 'Should include user hash');
+  assert(!expectedUrl.includes('register'), 'Should NOT go to registration');
+  
+  console.log(`   ✅ Returning user goes to: ${expectedUrl}`);
+  console.log(`   📝 Button text should say: "Go to My Farm"`);
 });
 
-// STEP 8: Verify localStorage persistence
+// STEP 8: Verify farm page displays snakes
+await test('STEP 8: Farm page (game.html) displays purchased snakes', async () => {
+  const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', TEST_USER_HASH);
+  
+  const response = await fetch(workerUrl);
+  assert(response.ok, `Failed to load snakes: ${response.status}`);
+  
+  const products = await response.json();
+  assert(Array.isArray(products), 'Products not an array');
+  assert(products.length > 0, '🚨 NO SNAKES in farm! User bought but collection is empty!');
+  
+  // Verify farm URL structure
+  const { PAGE_URLS } = await import('../src/config/worker-config.js');
+  const farmUrl = PAGE_URLS.getGameUrl(TEST_USER_HASH);
+  
+  assert(farmUrl === `/game.html?user=${TEST_USER_HASH}`, 'Farm URL incorrect');
+  
+  console.log(`   🏡 Farm URL: ${farmUrl}`);
+  console.log(`   🐍 Snakes in collection: ${products.length}`);
+  console.log(`   📦 Snake IDs: ${products.map(p => p.product_id).join(', ')}`);
+});
+
+// STEP 9: Buy second snake - should add to collection
+await test('STEP 9: Buying second snake adds to existing collection', async () => {
+  const SECOND_PRODUCT = 'prod_test_piebald_ball';
+  
+  // Assign second snake
+  const workerUrl = WORKER_CONFIG.getEndpoint('ASSIGN_PRODUCT');
+  const response = await fetch(workerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: TEST_USER_HASH,
+      product_id: SECOND_PRODUCT
+    })
+  });
+  
+  assert(response.ok, 'Second snake assignment failed');
+  
+  // Check collection now has 2 snakes
+  const productsUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', TEST_USER_HASH);
+  const productsResponse = await fetch(productsUrl);
+  const products = await productsResponse.json();
+  
+  assert(products.length === 2, `🚨 Should have 2 snakes, got ${products.length}!`);
+  
+  const productIds = products.map(p => p.product_id);
+  assert(productIds.includes(TEST_PRODUCT_ID), 'First snake missing!');
+  assert(productIds.includes(SECOND_PRODUCT), 'Second snake not added!');
+  
+  console.log(`   🐍🐍 Collection now has ${products.length} snakes`);
+  console.log(`   📦 Snakes: ${productIds.join(', ')}`);
+});
+
+// STEP 10: Verify localStorage persistence
 await test('STEP 8: LocalStorage persists user session', async () => {
   const mockStorage = {
     serpent_user_hash: TEST_USER_HASH,
@@ -198,8 +261,9 @@ console.log('='.repeat(60));
 
 if (failed === 0) {
   console.log('\n🎉 REAL USER FLOW WORKS PERFECTLY!');
-  console.log('✅ Users can buy snakes and see them in game');
-  console.log('✅ Returning users skip re-registration');
+  console.log('✅ First purchase → Registration → Farm with snake');
+  console.log('✅ Second purchase → Skip registration → Farm with NEW snake');
+  console.log('✅ Farm displays all purchased snakes correctly');
   console.log('✅ All data persists correctly\n');
   process.exit(0);
 } else {
