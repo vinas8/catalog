@@ -11,12 +11,22 @@ export class UserAuth {
     const urlParams = new URLSearchParams(window.location.search);
     let hash = urlParams.get('user');
     
+    // Debug for mobile
+    if (typeof document !== 'undefined') {
+      const debugDiv = document.createElement('div');
+      debugDiv.style.cssText = 'position:fixed;top:50px;left:10px;background:#00f;color:#fff;padding:10px;z-index:99999;font-size:12px;';
+      debugDiv.innerHTML = `URL: ${window.location.href}<br>Hash from ?user=: ${hash || 'NONE'}`;
+      document.body.appendChild(debugDiv);
+      setTimeout(() => debugDiv.remove(), 8000);
+    }
+    
     // Check hash parameter: #user=abc123
     if (!hash && window.location.hash) {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       hash = hashParams.get('user');
     }
     
+    console.log('🔑 Hash from URL:', hash);
     return hash;
   }
   
