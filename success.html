@@ -104,17 +104,20 @@
       document.getElementById('redirect-message').textContent = 'Processing your purchase...';
       document.getElementById('countdown').innerHTML = 'Waiting for confirmation... <span class="spinner">⏳</span>';
       
-      let checkAttempts = 0;
-      const maxAttempts = 20; // 20 seconds max wait (increased from 10)
-      
-      const checkInterval = setInterval(async () => {
-        checkAttempts++;
-        console.log(`🔄 Checking if snake assigned (attempt ${checkAttempts}/${maxAttempts})...`);
+      // Import worker config
+      import('./src/config/worker-config.js').then(({ WORKER_CONFIG }) => {
+        let checkAttempts = 0;
+        const maxAttempts = 20; // 20 seconds max wait (increased from 10)
         
-        try {
-          // Check if snake was assigned via webhook
-          const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/user-products?user=${userHash}`);
-          const products = await response.json();
+        const checkInterval = setInterval(async () => {
+          checkAttempts++;
+          console.log(`🔄 Checking if snake assigned (attempt ${checkAttempts}/${maxAttempts})...`);
+          
+          try {
+            // Check if snake was assigned via webhook
+            const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', userHash);
+            const response = await fetch(workerUrl);
+            const products = await response.json();
           
           if (products && products.length > 0) {
             clearInterval(checkInterval);
@@ -164,6 +167,8 @@
           }
         }
       }, 1000); // Check every second
+      
+      }); // End import promise
       
       function redirectToRegistration() {
         // Try to get customer email from URL (if Stripe passes it)

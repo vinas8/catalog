@@ -253,8 +253,11 @@
 
         console.log('💾 Saving user data:', userData);
 
+        // Import worker config
+        const { WORKER_CONFIG } = await import('./src/config/worker-config.js');
+        
         // Save to worker (if available) or localStorage
-        const workerUrl = 'https://catalog.navickaszilvinas.workers.dev/register-user';
+        const workerUrl = WORKER_CONFIG.getEndpoint('REGISTER_USER');
         
         try {
           const response = await fetch(workerUrl, {

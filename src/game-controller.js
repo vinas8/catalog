@@ -53,8 +53,11 @@ class SerpentTown {
   
   async loadUserProfile() {
     try {
+      // Import worker config
+      const { WORKER_CONFIG } = await import('../config/worker-config.js');
+      
       // Try loading from worker first
-      const workerUrl = `https://catalog.navickaszilvinas.workers.dev/user-data?user=${this.currentUser.user_id}`;
+      const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_DATA', this.currentUser.user_id);
       const response = await fetch(workerUrl);
       
       if (response.ok) {
@@ -95,8 +98,11 @@ class SerpentTown {
   
   async loadUserSnakes() {
     try {
+      // Import worker config
+      const { WORKER_CONFIG } = await import('../config/worker-config.js');
+      
       // Load user's snakes from Cloudflare Worker KV
-      const workerUrl = `https://catalog.navickaszilvinas.workers.dev/user-products?user=${this.currentUser.user_id}`;
+      const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', this.currentUser.user_id);
       console.log(`🔄 Fetching snakes from: ${workerUrl}`);
       
       const response = await fetch(workerUrl);
