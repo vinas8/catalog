@@ -4,11 +4,12 @@
   "description": "Snake care simulation game with Stripe integration",
   "type": "module",
   "scripts": {
-    "test": "node tests/real-scenario.test.js && node tests/game.test.js && node tests/snapshot.test.js && node tests/integration.test.js",
+    "test": "node tests/frontend-to-backend.test.js && node tests/real-scenario.test.js && node tests/game.test.js && node tests/snapshot.test.js && node tests/integration.test.js",
     "test:unit": "node tests/game.test.js",
     "test:snapshot": "node tests/snapshot.test.js",
     "test:integration": "node tests/integration.test.js",
     "test:real": "node tests/real-scenario.test.js",
+    "test:frontend": "node tests/frontend-to-backend.test.js",
     "start": "python3 -m http.server 8000"
   },
   "keywords": ["game", "snake", "simulation", "stripe"],
