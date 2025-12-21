@@ -54,7 +54,7 @@ class SerpentTown {
   async loadUserProfile() {
     try {
       // Import worker config
-      const { WORKER_CONFIG } = await import('../config/worker-config.js');
+      const { WORKER_CONFIG } = await import('./config/worker-config.js');
       
       // Try loading from worker first
       const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_DATA', this.currentUser.user_id);
@@ -113,7 +113,7 @@ class SerpentTown {
       debug('🔄 Starting loadUserSnakes...');
       
       // Import worker config
-      const { WORKER_CONFIG } = await import('../config/worker-config.js');
+      const { WORKER_CONFIG } = await import('./config/worker-config.js');
       debug(`✅ Config loaded: ${WORKER_CONFIG.WORKER_URL}`);
       
       // Load user's snakes from Cloudflare Worker KV
@@ -221,6 +221,54 @@ class SerpentTown {
         updated_at: new Date().toISOString()
       };
     });
+    } catch (error) {
+      console.error('Error converting products:', error);
+      debug(`❌ Error: ${error.message}`);
+      // Return minimal data on error
+      return userProducts.map(up => this.createSnakeFromProduct(up, null));
+    }
+  }
+  
+  createSnakeFromProduct(userProduct, catalogProduct = null) {
+    // Create a snake object from user product data
+    return {
+      id: userProduct.assignment_id || userProduct.id,
+      product_id: userProduct.product_id,
+      user_id: userProduct.user_id,
+      nickname: userProduct.nickname || catalogProduct?.name || 'Unnamed Snake',
+      species: catalogProduct?.species || userProduct.species || 'ball_python',
+      morph: catalogProduct?.morph || userProduct.morph || 'normal',
+      type: userProduct.product_type || 'real',
+      sex: catalogProduct?.sex || userProduct.sex || 'unknown',
+      birth_date: catalogProduct?.birth_year || userProduct.birth_year || 2024,
+      weight_grams: catalogProduct?.weight_grams || userProduct.weight_grams || 100,
+      length_cm: 30,
+      acquired_date: userProduct.acquired_at || new Date().toISOString(),
+      acquisition_type: userProduct.acquisition_type || 'purchase',
+      stats: userProduct.stats || {
+        hunger: 80,
+        water: 100,
+        temperature: 80,
+        humidity: 50,
+        health: 100,
+        stress: 10,
+        cleanliness: 100,
+        happiness: 80
+      },
+      equipment: userProduct.equipment || {
+        heater: null,
+        mister: null,
+        thermometer: false,
+        hygrometer: false
+      },
+      shed_cycle: userProduct.shed_cycle || {
+        stage: 'normal',
+        last_shed: new Date().toISOString(),
+        days_since_last: 0
+      },
+      created_at: userProduct.acquired_at || new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
   }
   
   setupEventListeners() {

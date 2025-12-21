@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Serpent Town - Debug Console</title>
+  <style>
+    body { 
+      font-family: 'Courier New', monospace; 
+      padding: 20px; 
+      background: #0a0a0a; 
+      color: #00ff00; 
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 { color: #00ff00; border-bottom: 2px solid #00ff00; padding-bottom: 10px; }
+    h2 { color: #ffff00; margin-top: 30px; }
+    .log { 
+      margin: 3px 0; 
+      padding: 5px 10px; 
+      background: #1a1a1a; 
+      border-left: 3px solid #00ff00; 
+      font-size: 12px;
+    }
+    .error { border-color: #ff0000; color: #ff0000; }
+    .warn { border-color: #ffaa00; color: #ffaa00; }
+    .info { border-color: #00aaff; color: #00aaff; }
+    .success { border-color: #00ff00; color: #00ff00; font-weight: bold; }
+    button { 
+      padding: 10px 20px; 
+      margin: 10px 5px; 
+      font-size: 14px;
+      background: #00ff00;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #00cc00; }
+    pre { 
+      background: #000; 
+      padding: 10px; 
+      border: 1px solid #00ff00; 
+      overflow-x: auto;
+      font-size: 11px;
+    }
+    .section { 
+      background: #111; 
+      padding: 15px; 
+      margin: 15px 0; 
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 Serpent Town - Comprehensive Debug Console</h1>
+  
+  <div class="section">
+    <h2>Quick Tests</h2>
+    <button id="test-btn">Test Event Listener</button>
+    <button onclick="testInline()">Test Inline Click</button>
+    <button onclick="testGameController()">Test Game Controller</button>
+    <button onclick="testDataFiles()">Test Data Files</button>
+    <button onclick="testWorkerAPI()">Test Worker API</button>
+  </div>
+  
+  <div class="section">
+    <h2>📊 Test Results</h2>
+    <div id="output"></div>
+  </div>
+  
+  <div class="section">
+    <h2>📦 Sample Data Structure</h2>
+    <pre id="data-structure">Loading...</pre>
+  </div>
+  
+  <script>
+    function log(msg, type = 'log') {
+      const div = document.createElement('div');
+      div.className = 'log ' + type;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      document.getElementById('output').appendChild(div);
+      console.log(msg);
+      div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+    
+    function testInline() {
+      log('✅ Inline onclick works!', 'success');
+    }
+    
+    // Auto-run basic tests
+    log('🔄 Starting debug tests...', 'info');
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      log('✅ DOMContentLoaded fired', 'success');
+      
+      const btn = document.getElementById('test-btn');
+      if (btn) {
+        log('✅ Button found in DOM', 'success');
+        btn.addEventListener('click', () => {
+          log('✅ Event listener fired!', 'success');
+        });
+      } else {
+        log('❌ Button not found', 'error');
+      }
+      
+      // Show expected data structure
+      const sampleProduct = {
+        product_id: "prod_xxx",
+        assignment_id: "assign_123",
+        user_id: "user_abc",
+        nickname: "Banana Baby",
+        product_type: "real",
+        acquired_at: "2025-12-21T17:00:00Z",
+        stats: {
+          hunger: 80,
+          water: 100,
+          temperature: 80,
+          humidity: 50,
+          health: 100,
+          stress: 10,
+          cleanliness: 100,
+          happiness: 80
+        }
+      };
+      document.getElementById('data-structure').textContent = 
+        'Expected user product structure:\n' + JSON.stringify(sampleProduct, null, 2);
+    });
+    
+    // Test game controller loading
+    async function testGameController() {
+      log('🔄 Testing game-controller.js...', 'info');
+      try {
+        await import('./src/game-controller.js');
+        log('✅ game-controller.js loaded successfully!', 'success');
+      } catch (err) {
+        log(`❌ ERROR: ${err.message}`, 'error');
+        log(`Stack: ${err.stack}`, 'error');
+      }
+    }
+    
+    // Test data files
+    async function testDataFiles() {
+      log('🔄 Testing data files...', 'info');
+      
+      const files = [
+        '/data/products.json',
+        '/data/user-products.json',
+        '/data/users.json'
+      ];
+      
+      for (const file of files) {
+        try {
+          const response = await fetch(file);
+          if (response.ok) {
+            const data = await response.json();
+            log(`✅ ${file}: ${Array.isArray(data) ? data.length + ' items' : 'Object'}`, 'success');
+            console.log(`${file}:`, data);
+          } else {
+            log(`⚠️ ${file}: ${response.status}`, 'warn');
+          }
+        } catch (err) {
+          log(`❌ ${file}: ${err.message}`, 'error');
+        }
+      }
+    }
+    
+    // Test worker API
+    async function testWorkerAPI() {
+      log('🔄 Testing Cloudflare Worker API...', 'info');
+      
+      try {
+        const { WORKER_CONFIG } = await import('./src/config/worker-config.js');
+        log(`✅ Worker URL: ${WORKER_CONFIG.WORKER_URL}`, 'success');
+        
+        // Test health check
+        const healthUrl = `${WORKER_CONFIG.WORKER_URL}/`;
+        const healthResponse = await fetch(healthUrl);
+        const healthData = await healthResponse.json();
+        log(`✅ Worker health: ${healthData.status}`, 'success');
+        
+        // Test user products endpoint (with test user)
+        const testUserId = 'test_user_123';
+        const productsUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', testUserId);
+        log(`🔄 Testing: ${productsUrl}`, 'info');
+        
+        const productsResponse = await fetch(productsUrl);
+        if (productsResponse.ok) {
+          const products = await productsResponse.json();
+          log(`✅ User products: ${products.length} items`, 'success');
+          console.log('User products:', products);
+        } else {
+          log(`⚠️ No products found (${productsResponse.status})`, 'warn');
+        }
+        
+      } catch (err) {
+        log(`❌ Worker test failed: ${err.message}`, 'error');
+      }
+    }
+    
+    // Auto-run game controller test
+    log('🔄 Auto-testing game controller...', 'info');
+    testGameController();
+  </script>
+</body>
+</html>
