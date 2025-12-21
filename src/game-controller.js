@@ -337,11 +337,30 @@ class SerpentTown {
     const container = document.getElementById('snake-collection');
     const emptyState = document.getElementById('empty-collection');
     
+    // Debug
+    const debug = (msg) => {
+      const debugDiv = document.createElement('div');
+      debugDiv.style.cssText = 'position:fixed;bottom:10px;left:10px;background:#ff0;color:#000;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
+      debugDiv.textContent = msg;
+      document.body.appendChild(debugDiv);
+      setTimeout(() => debugDiv.remove(), 5000);
+    };
+    
+    debug(`🎨 renderFarm called. Snakes: ${this.gameState?.snakes?.length || 'NONE'}`);
+    
+    if (!this.gameState || !this.gameState.snakes) {
+      debug('❌ No gameState or snakes array!');
+      return;
+    }
+    
     if (this.gameState.snakes.length === 0) {
+      debug('⚠️ Snakes array is empty');
       container.style.display = 'none';
       emptyState.style.display = 'block';
       return;
     }
+    
+    debug(`✅ Rendering ${this.gameState.snakes.length} snakes to DOM`);
     
     container.style.display = 'grid';
     emptyState.style.display = 'none';
