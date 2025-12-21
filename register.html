@@ -202,12 +202,22 @@
     const stripeSessionId = urlParams.get('session_id');
     const stripeEmail = urlParams.get('email');
     const userHashFromUrl = urlParams.get('user_hash');
+    const isTimeout = urlParams.get('timeout') === 'true';
     
     console.log('🎯 Registration Data from Stripe:', {
       session_id: stripeSessionId,
       email: stripeEmail,
-      user_hash: userHashFromUrl
+      user_hash: userHashFromUrl,
+      timeout_fallback: isTimeout
     });
+    
+    if (isTimeout) {
+      console.warn('⚠️ Entered registration via timeout fallback - purchase still processing');
+      const notice = document.createElement('div');
+      notice.style.cssText = 'background:#fff3cd;color:#856404;padding:1rem;margin-bottom:1rem;border-radius:6px;border-left:4px solid #ffc107;';
+      notice.innerHTML = '<strong>⏳ Note:</strong> Your purchase is processing. Your snake will appear once the transaction is confirmed (usually within 30 seconds).';
+      document.querySelector('.register-container').insertBefore(notice, document.querySelector('.welcome-banner'));
+    }
 
     // Initialize
     const playerHash = userHashFromUrl || localStorage.getItem('serpent_last_purchase_hash') || generatePlayerHash();

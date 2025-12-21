@@ -188,7 +188,14 @@
       const buyButton = isSold ? 
         '<button class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
         `<a href="${checkoutUrl}" target="_blank" class="primary-btn" rel="noopener" 
-           onclick="localStorage.setItem('serpent_last_purchase_hash', '${userHash}'); localStorage.setItem('serpent_user_hash', '${userHash}');">
+           onclick="
+             console.log('🛒 Initiating purchase with hash:', '${userHash}');
+             localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
+             localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
+             localStorage.setItem('serpent_user_hash', '${userHash}');
+             sessionStorage.setItem('serpent_purchase_hash', '${userHash}');
+             console.log('✅ Hash saved to all storage locations');
+           ">
           💳 Buy Now - $${item.price.toFixed(2)}
         </a>`;
 

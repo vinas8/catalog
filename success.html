@@ -53,7 +53,7 @@
     </div>
 
     <p style="color: #666; margin-top: 2rem;">
-      <span id="countdown">Redirecting to registration in <strong>3</strong> seconds...</span>
+      <span id="countdown">⏳ Loading...</span>
     </p>
 
     <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
@@ -69,9 +69,24 @@
   </footer>
 
   <script>
+    console.log('🚀 Success page script started');
+    
     // Get Stripe callback data from URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
+    
+    console.log('📊 URL params:', { session_id: sessionId, fullURL: window.location.href });
+    
+    // Check if this is actually a Stripe callback
+    if (!sessionId) {
+      console.warn('⚠️ No session_id in URL - not a Stripe callback');
+      document.getElementById('redirect-message').textContent = 'Invalid page access';
+      document.getElementById('countdown').innerHTML = '<span style="color: orange;">⚠️ Please complete purchase through catalog. <a href="/catalog.html">Go to Catalog</a></span>';
+      document.getElementById('register-now-btn').href = '/catalog.html';
+      document.getElementById('register-now-btn').textContent = 'Go to Catalog';
+      // Don't proceed further
+    } else {
+      console.log('✅ Session ID found:', sessionId);
     
     // Log Stripe callback data in footer
     const callbackInfo = {
@@ -86,19 +101,34 @@
     console.log('🔍 All localStorage keys:', {
       serpent_user_hash: localStorage.getItem('serpent_user_hash'),
       serpent_last_purchase_hash: localStorage.getItem('serpent_last_purchase_hash'),
-      serpent_pending_purchase_hash: localStorage.getItem('serpent_pending_purchase_hash')
+      serpent_pending_purchase_hash: localStorage.getItem('serpent_pending_purchase_hash'),
+      serpent_purchase_hash_session: sessionStorage.getItem('serpent_purchase_hash')
     });
-    document.getElementById('callback-info').textContent = JSON.stringify(callbackInfo, null, 2);
+    
+    const callbackInfoEl = document.getElementById('callback-info');
+    if (callbackInfoEl) {
+      callbackInfoEl.textContent = JSON.stringify(callbackInfo, null, 2);
+    }
     
     // Get user hash from localStorage (set during purchase)
-    const userHash = callbackInfo.user_hash;
+    const userHash = callbackInfo.user_hash || sessionStorage.getItem('serpent_purchase_hash');
+    
+    console.log('🔍 Full hash check:', {
+      from_localStorage: callbackInfo.user_hash,
+      from_sessionStorage: sessionStorage.getItem('serpent_purchase_hash'),
+      final_hash: userHash
+    });
+    
+    // Update UI immediately
+    document.getElementById('countdown').innerHTML = '🔍 Checking...';
     
     if (!userHash) {
       // Fallback: redirect to catalog if no hash found
-      console.error('❌ No user hash found');
+      console.error('❌ No user hash found in any storage');
       document.getElementById('redirect-message').textContent = 'Error: Unable to identify user. Please contact support.';
-      document.getElementById('countdown').textContent = '';
+      document.getElementById('countdown').innerHTML = '<span style="color: red;">❌ No user ID found. Please contact support.</span>';
       document.getElementById('register-now-btn').href = '/catalog.html';
+      document.getElementById('register-now-btn').textContent = 'Back to Catalog';
     } else {
       // WAIT for webhook to process (check if snake assigned)
       document.getElementById('redirect-message').textContent = 'Processing your purchase...';
@@ -146,8 +176,27 @@
           } else if (checkAttempts >= maxAttempts) {
             clearInterval(checkInterval);
             console.error('⚠️ Webhook timeout - snake not assigned yet');
-            document.getElementById('redirect-message').textContent = 'Processing is taking longer than expected.';
-            document.getElementById('countdown').innerHTML = 'Your purchase is being processed. Please <a href="/catalog.html">contact support</a> if this persists.';
+            console.log('💡 This usually means:');
+            console.log('   1. Webhook is still processing (wait a bit)');
+            console.log('   2. Webhook failed (check worker logs)');
+            console.log('   3. Hash mismatch between localStorage and Stripe');
+            console.log('   Current hash:', userHash);
+            console.log('   Session ID:', sessionId);
+            
+            // Fallback: Create new user account anyway and let them register
+            document.getElementById('redirect-message').textContent = 'Purchase received! Setting up your account...';
+            document.getElementById('countdown').innerHTML = 'Redirecting to registration...';
+            
+            // Generate fresh hash if needed and redirect
+            const finalHash = userHash || (Date.now().toString(36) + Math.random().toString(36).substring(2, 15));
+            localStorage.setItem('serpent_user_hash', finalHash);
+            localStorage.setItem('serpent_pending_purchase_hash', finalHash);
+            sessionStorage.setItem('serpent_purchase_hash', finalHash);
+            
+            setTimeout(() => {
+              window.location.href = `register.html?user_hash=${finalHash}&session_id=${sessionId}&timeout=true`;
+            }, 2000);
+          }
             
             // Still try to proceed after showing message
             setTimeout(() => {
@@ -215,7 +264,21 @@
           }, 1000);
         });
       }
-    }
+    } // End else (session_id exists)
+    
+    console.log('✅ Success page script completed');
+  </script>
+  <script>
+    // Global error handler
+    window.addEventListener('error', (event) => {
+      console.error('🔥 Global error:', event.error);
+      document.getElementById('countdown').innerHTML = '<span style="color: orange;">⚠️ Error occurred. <a href="/register.html">Click to proceed manually</a></span>';
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('🔥 Unhandled promise rejection:', event.reason);
+      document.getElementById('countdown').innerHTML = '<span style="color: orange;">⚠️ Error occurred. <a href="/register.html">Click to proceed manually</a></span>';
+    });
   </script>
 </body>
 </html>
