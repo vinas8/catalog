@@ -27,6 +27,8 @@ class SerpentTown {
     
     if (this.currentUser) {
       console.log('👤 Logged in as:', this.currentUser.user_id);
+      // Load full user profile from worker
+      await this.loadUserProfile();
       // Load user-specific snakes
       await this.loadUserSnakes();
     } else {
@@ -47,6 +49,48 @@ class SerpentTown {
     setInterval(() => this.saveGame(), 30000);
     
     console.log('✅ Game initialized!');
+  }
+  
+  async loadUserProfile() {
+    try {
+      // Try loading from worker first
+      const workerUrl = `https://serpent-town.vinatier8.workers.dev/user-data?user=${this.currentUser.user_id}`;
+      const response = await fetch(workerUrl);
+      
+      if (response.ok) {
+        const userData = await response.json();
+        this.currentUser = { ...this.currentUser, ...userData };
+        console.log('✅ User profile loaded from worker:', userData.username);
+        this.displayUserProfile(userData);
+      } else {
+        console.log('⚠️ User profile not in worker, checking localStorage');
+        const cached = localStorage.getItem('serpent_user');
+        if (cached) {
+          const userData = JSON.parse(cached);
+          this.displayUserProfile(userData);
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Could not load user profile from worker:', error.message);
+      // Try localStorage fallback
+      const cached = localStorage.getItem('serpent_user');
+      if (cached) {
+        const userData = JSON.parse(cached);
+        this.displayUserProfile(userData);
+      }
+    }
+  }
+  
+  displayUserProfile(userData) {
+    const welcomeEl = document.getElementById('user-welcome');
+    const profileDisplay = document.getElementById('user-profile-display');
+    const usernameDisplay = document.getElementById('username-display');
+    
+    if (userData.username) {
+      welcomeEl.textContent = `Welcome back, ${userData.username}! 🎮`;
+      usernameDisplay.textContent = userData.username;
+      profileDisplay.style.display = 'block';
+    }
   }
   
   async loadUserSnakes() {

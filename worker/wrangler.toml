@@ -1,0 +1,24 @@
+name = "serpent-town-api"
+main = "worker.js"
+compatibility_date = "2024-12-21"
+
+# KV Namespace for storing user products
+[[kv_namespaces]]
+binding = "USER_PRODUCTS"
+id = "3b88d32c0a0540a8b557c5fb698ff61a"
+
+# Routes (uncomment when deploying to custom domain)
+# routes = [
+#   { pattern = "api.serpenttown.com/*", zone_name = "serpenttown.com" }
+# ]
+
+# For workers.dev subdomain (default)
+workers_dev = true
+
+# Environment variables (optional)
+[vars]
+ENVIRONMENT = "production"
+
+# Add your Stripe webhook secret for signature verification
+# [vars]
+# STRIPE_WEBHOOK_SECRET = "whsec_..."

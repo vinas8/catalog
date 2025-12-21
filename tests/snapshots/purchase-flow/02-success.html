@@ -46,68 +46,38 @@
       <h3>🎮 What's Next?</h3>
       <ul>
         <li>Your new snake has been assigned to your account</li>
-        <li>Complete quick registration to access your snakes</li>
-        <li>Get your unique Player ID</li>
-        <li>Start playing immediately!</li>
+        <li>Start playing and taking care of your snake immediately</li>
+        <li>Feed, water, and maintain your snake's health</li>
+        <li>Purchase equipment and upgrades in the game shop</li>
       </ul>
     </div>
 
     <p style="color: #666; margin-top: 2rem;">
-      <span id="countdown">Redirecting to registration in <strong>3</strong> seconds...</span>
+      <span id="countdown">Redirecting to your snakes in <strong>3</strong> seconds...</span>
     </p>
 
     <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
-      <a href="#" id="register-now-btn" class="primary-btn">Register Now</a>
+      <a href="#" id="game-now-btn" class="primary-btn">Go to Game Now</a>
       <a href="/catalog.html" class="secondary-btn">Continue Shopping</a>
     </div>
   </div>
 
-  <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: #f8f9fa; padding: 0.5rem; font-size: 0.8rem; color: #666; border-top: 1px solid #ddd;">
-    <div style="max-width: 1200px; margin: 0 auto;" id="stripe-callback-data">
-      📊 Stripe Callback Data: <span id="callback-info">Loading...</span>
-    </div>
-  </footer>
-
   <script>
-    // Get Stripe callback data from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-    
-    // Log Stripe callback data in footer
-    const callbackInfo = {
-      session_id: sessionId,
-      timestamp: new Date().toISOString(),
-      user_hash: localStorage.getItem('serpent_last_purchase_hash') || localStorage.getItem('serpent_user_hash')
-    };
-    
-    console.log('🎯 Stripe Callback Data:', callbackInfo);
-    document.getElementById('callback-info').textContent = JSON.stringify(callbackInfo, null, 2);
-    
     // Get user hash from localStorage (set during purchase)
-    const userHash = callbackInfo.user_hash;
+    const userHash = localStorage.getItem('serpent_last_purchase_hash') || localStorage.getItem('serpent_user_hash');
     
     if (!userHash) {
       // Fallback: redirect to catalog if no hash found
-      console.error('❌ No user hash found');
+      console.error('No user hash found');
       document.getElementById('redirect-message').textContent = 'Error: Unable to identify user. Please contact support.';
       document.getElementById('countdown').textContent = '';
-      document.getElementById('register-now-btn').href = '/catalog.html';
+      document.getElementById('game-now-btn').href = '/catalog.html';
     } else {
-      // Build registration URL with Stripe data
-      let registerUrl = `http://localhost:8000/register.html?session_id=${sessionId || 'none'}`;
-      registerUrl += `&user_hash=${userHash}`;
-      
-      // Try to get customer email from URL (if Stripe passes it)
-      const email = urlParams.get('email') || urlParams.get('customer_email');
-      if (email) {
-        registerUrl += `&email=${encodeURIComponent(email)}`;
-        console.log('✅ Email from Stripe:', email);
-      }
-      
-      console.log('🔗 Registration URL:', registerUrl);
+      // Build game URL with user hash
+      const gameUrl = `http://localhost:8000/game.html#${userHash}`;
       
       // Set button URL
-      document.getElementById('register-now-btn').href = registerUrl;
+      document.getElementById('game-now-btn').href = gameUrl;
       
       // Auto-redirect countdown
       let seconds = 3;
@@ -116,17 +86,17 @@
       const countdown = setInterval(() => {
         seconds--;
         if (seconds > 0) {
-          countdownEl.innerHTML = `Redirecting to registration in <strong>${seconds}</strong> seconds...`;
+          countdownEl.innerHTML = `Redirecting to your snakes in <strong>${seconds}</strong> seconds...`;
         } else {
           clearInterval(countdown);
-          window.location.href = registerUrl;
+          window.location.href = gameUrl;
         }
       }, 1000);
       
       // Cancel countdown if user clicks anywhere
       document.body.addEventListener('click', () => {
         clearInterval(countdown);
-        countdownEl.textContent = 'Countdown paused - click Register Now when ready';
+        countdownEl.textContent = 'Countdown paused - click Go to Game Now when ready';
       }, { once: true });
     }
   </script>

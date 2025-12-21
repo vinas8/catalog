@@ -1,0 +1,17 @@
+{
+  "name": "serpent-town-worker",
+  "version": "3.4.0",
+  "description": "Cloudflare Worker for Serpent Town - handles Stripe webhooks and user data",
+  "scripts": {
+    "deploy": "wrangler publish",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail",
+    "kv:create": "wrangler kv:namespace create USER_PRODUCTS",
+    "kv:list": "wrangler kv:key list --binding=USER_PRODUCTS",
+    "kv:get": "wrangler kv:key get",
+    "test": "node test-worker.js"
+  },
+  "keywords": ["cloudflare", "worker", "stripe", "webhook"],
+  "author": "Serpent Town",
+  "license": "MIT"
+}

@@ -25,7 +25,7 @@ function assert(condition, message) {
 
 // Load all files
 const html = readFileSync('game.html', 'utf-8');
-const js = readFileSync('game.js', 'utf-8');
+const gameController = readFileSync('src/game-controller.js', 'utf-8');
 const css = readFileSync('styles.css', 'utf-8');
 const economyJs = readFileSync('src/business/economy.js', 'utf-8');
 const equipmentJs = readFileSync('src/business/equipment.js', 'utf-8');
@@ -51,9 +51,9 @@ test('Links to styles.css', () => {
   assert(html.includes('href="styles.css"'), 'Missing stylesheet link');
 });
 
-test('Links to game.js as module', () => {
+test('Links to game controller as module', () => {
   assert(html.includes('type="module"'), 'Missing ES6 module type');
-  assert(html.includes('src="game.js"'), 'Missing game.js script');
+  assert(html.includes('src="src/game-controller.js"'), 'Missing game-controller.js script');
 });
 
 test('Has viewport meta tag', () => {
@@ -167,71 +167,57 @@ test('Has reset button', () => {
 console.log('\n💻 JavaScript Core');
 
 test('Has SerpentTown class', () => {
-  assert(js.includes('class SerpentTown'), 'Missing main class');
+  assert(gameController.includes('class SerpentTown'), 'Missing main class');
 });
 
 test('Imports Economy module', () => {
-  assert(js.includes('import { Economy'), 'Missing Economy import');
-  assert(js.includes('./src/business/economy.js'), 'Wrong Economy path');
+  assert(gameController.includes('import { Economy'), 'Missing Economy import');
+  assert(gameController.includes('./business/economy.js'), 'Wrong Economy path');
 });
 
 test('Imports EquipmentShop module', () => {
-  assert(js.includes('import { EquipmentShop'), 'Missing EquipmentShop import');
-  assert(js.includes('./src/business/equipment.js'), 'Wrong EquipmentShop path');
+  assert(gameController.includes('import { EquipmentShop'), 'Missing EquipmentShop import');
+  assert(gameController.includes('./business/equipment.js'), 'Wrong EquipmentShop path');
 });
 
 test('Imports shop view', () => {
-  assert(js.includes('import { openShop'), 'Missing openShop import');
-  assert(js.includes('./src/ui/shop-view.js'), 'Wrong shop view path');
+  assert(gameController.includes('import { openShop'), 'Missing openShop import');
+  assert(gameController.includes('./ui/shop-view.js'), 'Wrong shop view path');
 });
 
 test('Imports species profiles', () => {
-  assert(js.includes('import { SPECIES_PROFILES'), 'Missing species import');
-  assert(js.includes('./src/data/species-profiles.js'), 'Wrong species path');
+  assert(gameController.includes('import { SPECIES_PROFILES'), 'Missing species import');
+  assert(gameController.includes('./data/species-profiles.js'), 'Wrong species path');
 });
 
 test('Imports morphs data', () => {
-  assert(js.includes('import { getMorphsForSpecies'), 'Missing morphs import');
-  assert(js.includes('./src/data/morphs.js'), 'Wrong morphs path');
-});
-
-test('Imports Stripe sync', () => {
-  assert(js.includes('import { initializeCatalog'), 'Missing Stripe sync import');
-  assert(js.includes('./src/business/stripe-sync.js'), 'Wrong sync path');
+  assert(gameController.includes('import { getMorphsForSpecies'), 'Missing morphs import');
+  assert(gameController.includes('./data/morphs.js'), 'Wrong morphs path');
 });
 
 test('Imports catalog', () => {
-  assert(js.includes('import { getProductsBySpecies'), 'Missing catalog import');
-  assert(js.includes('./src/data/catalog.js'), 'Wrong catalog path');
-});
-
-test('Imports Stripe config', () => {
-  assert(js.includes('import { getStripeKey'), 'Missing config import');
-  assert(js.includes('./src/config/stripe-config.js'), 'Wrong config path');
+  assert(gameController.includes('import { getProductsBySpecies'), 'Missing catalog import');
+  assert(gameController.includes('./data/catalog.js'), 'Wrong catalog path');
 });
 
 test('Has async init method', () => {
-  assert(js.includes('async init()'), 'Missing async init');
-});
-
-test('Has loadCatalog method', () => {
-  assert(js.includes('async loadCatalog()'), 'Missing loadCatalog');
+  assert(gameController.includes('async init()'), 'Missing async init');
 });
 
 test('Has game loop', () => {
-  assert(js.includes('startGameLoop'), 'Missing game loop start');
-  assert(js.includes('updateGame'), 'Missing game update');
+  assert(gameController.includes('startGameLoop'), 'Missing game loop start');
+  assert(gameController.includes('updateGame'), 'Missing game update');
 });
 
 test('Has save/load functions', () => {
-  assert(js.includes('saveGame'), 'Missing save function');
-  assert(js.includes('loadGame'), 'Missing load function');
+  assert(gameController.includes('saveGame'), 'Missing save function');
+  assert(gameController.includes('loadGame'), 'Missing load function');
 });
 
 test('Has render functions', () => {
-  assert(js.includes('renderFarmView'), 'Missing farm render');
-  assert(js.includes('renderSnakeCard'), 'Missing snake card render');
-  assert(js.includes('renderCatalogView'), 'Missing catalog render');
+  assert(gameController.includes('renderFarmView'), 'Missing farm render');
+  assert(gameController.includes('renderSnakeCard'), 'Missing snake card render');
+  assert(gameController.includes('renderCatalogView'), 'Missing catalog render');
 });
 
 console.log('\n💰 Economy Module');
@@ -312,8 +298,8 @@ test('Morphs exports', () => {
 });
 
 test('Catalog exports', () => {
-  assert(catalogJs.includes('export const STRIPE_PRODUCTS'), 'Missing products export');
-  assert(catalogJs.includes('export function getProductsBySpecies'), 'Missing get products function');
+  assert(catalogJs.includes('export async function loadCatalog'), 'Missing loadCatalog export');
+  assert(catalogJs.includes('export async function getProductsBySpecies'), 'Missing get products function');
 });
 
 test('Equipment catalog has items', () => {
@@ -519,34 +505,34 @@ test('Has calculator view', () => {
 console.log('\n💻 JavaScript');
 
 test('Has SerpentTown class', () => {
-  assert(js.includes('class SerpentTown'), 'Missing main class');
+  assert(gameController.includes('class SerpentTown'), 'Missing main class');
 });
 
 test('Imports Economy', () => {
-  assert(js.includes('Economy'), 'Missing Economy import');
+  assert(gameController.includes('Economy'), 'Missing Economy import');
 });
 
 test('Imports EquipmentShop', () => {
-  assert(js.includes('EquipmentShop'), 'Missing EquipmentShop import');
+  assert(gameController.includes('EquipmentShop'), 'Missing EquipmentShop import');
 });
 
 test('Imports openShop', () => {
-  assert(js.includes('openShop'), 'Missing openShop import');
+  assert(gameController.includes('openShop'), 'Missing openShop import');
 });
 
 test('Has game loop', () => {
-  assert(js.includes('startGameLoop'), 'Missing game loop');
-  assert(js.includes('updateGame'), 'Missing update function');
+  assert(gameController.includes('startGameLoop'), 'Missing game loop');
+  assert(gameController.includes('updateGame'), 'Missing update function');
 });
 
 test('Has save/load', () => {
-  assert(js.includes('saveGame'), 'Missing save function');
-  assert(js.includes('loadGame'), 'Missing load function');
+  assert(gameController.includes('saveGame'), 'Missing save function');
+  assert(gameController.includes('loadGame'), 'Missing load function');
 });
 
 test('Has render functions', () => {
-  assert(js.includes('renderFarmView'), 'Missing farm render');
-  assert(js.includes('renderSnakeCard'), 'Missing snake card render');
+  assert(gameController.includes('renderFarmView'), 'Missing farm render');
+  assert(gameController.includes('renderSnakeCard'), 'Missing snake card render');
 });
 
 console.log('\n🎨 CSS');
