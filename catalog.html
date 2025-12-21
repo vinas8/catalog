@@ -45,12 +45,18 @@
 
     // Generate or get user hash for purchase tracking
     function getUserHash() {
-      let hash = localStorage.getItem('serpent_pending_purchase_hash');
+      // Try to get existing hash from any of the possible keys
+      let hash = localStorage.getItem('serpent_user_hash') || 
+                 localStorage.getItem('serpent_last_purchase_hash') ||
+                 localStorage.getItem('serpent_pending_purchase_hash');
+      
       if (!hash) {
         const timestamp = Date.now().toString(36);
         const random = Math.random().toString(36).substring(2, 15);
         hash = timestamp + random;
+        // Store in multiple keys for compatibility
         localStorage.setItem('serpent_pending_purchase_hash', hash);
+        localStorage.setItem('serpent_last_purchase_hash', hash);
       }
       return hash;
     }
@@ -107,7 +113,7 @@
               <meta itemprop="priceCurrency" content="USD">
             </div>
             <a href="${checkoutUrl}" target="_blank" class="primary-btn" rel="noopener" 
-               onclick="localStorage.setItem('serpent_last_purchase_hash', '${userHash}')">
+               onclick="localStorage.setItem('serpent_last_purchase_hash', '${userHash}'); localStorage.setItem('serpent_user_hash', '${userHash}'); console.log('Saved hash:', '${userHash}');">
               💳 Buy Now
             </a>
           </div>

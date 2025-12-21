@@ -266,6 +266,37 @@ npm test  # Always run before committing changes
 
 ---
 
+## 🔐 API Credentials Access
+
+AI assistants have programmatic access to these services via `.env` file:
+
+### Available APIs:
+- **Cloudflare**: Worker deployment, KV storage management
+- **Stripe**: Payment link configuration, webhook management  
+- **GitHub**: Repository operations, workflow triggers
+
+### Verification Script:
+```bash
+bash scripts/verify-api-connections.sh
+```
+
+### Adding GitHub Token:
+1. Go to: https://github.com/settings/tokens/new
+2. Name: `Serpent Town AI Access`
+3. Scopes: `repo`, `workflow`
+4. Copy token
+5. Add to `.env`: `GITHUB_TOKEN=your_token_here`
+
+### Example AI Commands:
+- "Deploy worker to Cloudflare"
+- "Update Stripe payment link redirect URL"
+- "Check GitHub Actions status"
+- "List items in KV storage"
+
+---
+
+**Remember:** This is a production project. Make surgical, minimal changes. Test everything. Never break working code.
+
 ## 😄 Special Commands
 
 **When user says "lol"** → Respond with a random programming/snake joke before continuing with the task.
@@ -275,7 +306,3 @@ Examples:
 - "What's a snake's favorite programming language? Python, obviously! 🐍"
 - "Why do programmers always confuse Halloween and Christmas? Because Oct 31 == Dec 25! 🎃🎄"
 - "How do snakes deploy code? They use pip install! 🐍📦"
-
----
-
-**Remember:** This is a production project. Make surgical, minimal changes. Test everything. Never break working code.
