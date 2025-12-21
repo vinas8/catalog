@@ -1,4 +1,4 @@
-name = "serpent-town-api"
+name = "catalog"
 main = "worker.js"
 compatibility_date = "2024-12-21"
 
