@@ -260,68 +260,115 @@
     <div id="tab-api" class="tab-content active">
       <h2 style="color: #58a6ff; margin-bottom: 20px;">API Endpoints</h2>
       
-      <!-- GET /user-products -->
-      <div class="api-endpoint">
-        <span class="method">GET</span>
-        <div class="path">/user-products?user={hash}</div>
-        <div class="description">Get all products owned by a user</div>
-        <button class="btn" onclick="callAPI('getUserProducts')">▶ Execute</button>
-        <div id="res-getUserProducts" class="response" style="display:none;"></div>
-      </div>
+      <!-- CATALOG ENDPOINTS -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #f0883e; font-size: 16px; margin-bottom: 15px; border-bottom: 2px solid #f0883e; padding-bottom: 8px;">📦 Catalog & Products</h3>
+        
+        <!-- GET /products -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/products</div>
+          <div class="description">Get all products from catalog (no auth required)</div>
+          <button class="btn" onclick="callAPI('getProducts')">▶ Execute</button>
+          <div id="res-getProducts" class="response" style="display:none;"></div>
+        </div>
 
-      <!-- GET /user-data -->
-      <div class="api-endpoint">
-        <span class="method">GET</span>
-        <div class="path">/user-data?user={hash}</div>
-        <div class="description">Get user profile information</div>
-        <button class="btn" onclick="callAPI('getUserData')">▶ Execute</button>
-        <div id="res-getUserData" class="response" style="display:none;"></div>
-      </div>
-
-      <!-- POST /assign-product -->
-      <div class="api-endpoint">
-        <span class="method post">POST</span>
-        <div class="path">/assign-product</div>
-        <div class="description">Manually assign a product to a user (testing)</div>
-        <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Product ID:</label>
-        <input type="text" id="param-assignProduct-productId" placeholder="prod_test_batman_ball">
-        <button class="btn" onclick="callAPI('assignProduct')">▶ Execute</button>
-        <div id="res-assignProduct" class="response" style="display:none;"></div>
-      </div>
-
-      <!-- POST /register-user -->
-      <div class="api-endpoint">
-        <span class="method post">POST</span>
-        <div class="path">/register-user</div>
-        <div class="description">Register a new user profile</div>
-        <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Username:</label>
-        <input type="text" id="param-registerUser-username" placeholder="TestUser123">
-        <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Email:</label>
-        <input type="text" id="param-registerUser-email" placeholder="test@example.com">
-        <button class="btn" onclick="callAPI('registerUser')">▶ Execute</button>
-        <div id="res-registerUser" class="response" style="display:none;"></div>
-      </div>
-
-      <!-- POST /stripe-webhook (info only) -->
-      <div class="api-endpoint">
-        <span class="method post">POST</span>
-        <div class="path">/stripe-webhook</div>
-        <div class="description">⚠️ Stripe webhook endpoint (called by Stripe, not for manual testing)</div>
-        <button class="btn" disabled>▶ Execute</button>
-        <div style="color: #8b949e; font-size: 11px; margin-top: 10px;">
-          This endpoint is automatically called by Stripe when a purchase is completed.
+        <!-- GET /product-status -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/product-status?id={product_id}</div>
+          <div class="description">Check if a product is sold/available (no auth required)</div>
+          <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Product ID:</label>
+          <input type="text" id="param-productStatus-id" placeholder="prod_TdKcnyjt5Jk0U2">
+          <button class="btn" onclick="callAPI('productStatus')">▶ Execute</button>
+          <div id="res-productStatus" class="response" style="display:none;"></div>
         </div>
       </div>
 
-      <!-- GET /product-status -->
-      <div class="api-endpoint">
-        <span class="method">GET</span>
-        <div class="path">/product-status?id={product_id}</div>
-        <div class="description">Check if a product is sold/available</div>
-        <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Product ID:</label>
-        <input type="text" id="param-productStatus-id" placeholder="prod_test_batman_ball">
-        <button class="btn" onclick="callAPI('productStatus')">▶ Execute</button>
-        <div id="res-productStatus" class="response" style="display:none;"></div>
+      <!-- USER-SPECIFIC ENDPOINTS -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #3fb950; font-size: 16px; margin-bottom: 15px; border-bottom: 2px solid #3fb950; padding-bottom: 8px;">👤 User Management (requires user)</h3>
+        
+        <!-- GET /user-products -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/user-products?user={hash}</div>
+          <div class="description">Get all products owned by a specific user</div>
+          <button class="btn" onclick="callAPI('getUserProducts')">▶ Execute</button>
+          <div id="res-getUserProducts" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- GET /user-data -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/user-data?user={hash}</div>
+          <div class="description">Get user profile information</div>
+          <button class="btn" onclick="callAPI('getUserData')">▶ Execute</button>
+          <div id="res-getUserData" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- POST /register-user -->
+        <div class="api-endpoint">
+          <span class="method post">POST</span>
+          <div class="path">/register-user</div>
+          <div class="description">Register a new user profile</div>
+          <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Username:</label>
+          <input type="text" id="param-registerUser-username" placeholder="TestUser123">
+          <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Email:</label>
+          <input type="text" id="param-registerUser-email" placeholder="test@example.com">
+          <button class="btn" onclick="callAPI('registerUser')">▶ Execute</button>
+          <div id="res-registerUser" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- POST /assign-product -->
+        <div class="api-endpoint">
+          <span class="method post">POST</span>
+          <div class="path">/assign-product</div>
+          <div class="description">Manually assign a product to a user (testing only)</div>
+          <label style="color: #8b949e; font-size: 12px; display: block; margin-bottom: 5px;">Product ID:</label>
+          <input type="text" id="param-assignProduct-productId" placeholder="prod_TdKcnyjt5Jk0U2">
+          <button class="btn" onclick="callAPI('assignProduct')">▶ Execute</button>
+          <div id="res-assignProduct" class="response" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- ADMIN ENDPOINTS -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #58a6ff; font-size: 16px; margin-bottom: 15px; border-bottom: 2px solid #58a6ff; padding-bottom: 8px;">🔐 Admin & Reports (no auth required)</h3>
+        
+        <!-- GET /all-users -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/all-users</div>
+          <div class="description">Get all registered users (sorted by registration date, newest first)</div>
+          <button class="btn" onclick="callAPI('getAllUsers')">▶ Execute</button>
+          <div id="res-getAllUsers" class="response" style="display:none;"></div>
+        </div>
+
+        <!-- GET /all-purchases -->
+        <div class="api-endpoint">
+          <span class="method">GET</span>
+          <div class="path">/all-purchases</div>
+          <div class="description">Get all purchase records (sorted by date, newest first)</div>
+          <button class="btn" onclick="callAPI('getAllPurchases')">▶ Execute</button>
+          <div id="res-getAllPurchases" class="response" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- STRIPE WEBHOOK -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #d29922; font-size: 16px; margin-bottom: 15px; border-bottom: 2px solid #d29922; padding-bottom: 8px;">💳 Stripe Integration</h3>
+        
+        <!-- POST /stripe-webhook (info only) -->
+        <div class="api-endpoint">
+          <span class="method post">POST</span>
+          <div class="path">/stripe-webhook</div>
+          <div class="description">⚠️ Stripe webhook endpoint (called by Stripe, not for manual testing)</div>
+          <button class="btn" disabled>▶ Execute</button>
+          <div style="color: #8b949e; font-size: 11px; margin-top: 10px;">
+            This endpoint is automatically called by Stripe when a purchase is completed.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -471,7 +518,10 @@
     };
 
     window.callAPI = async function(endpoint) {
-      if (!window.currentUser && endpoint !== 'productStatus') {
+      // Endpoints that don't require user
+      const noUserRequired = ['productStatus', 'getProducts', 'getAllUsers', 'getAllPurchases'];
+      
+      if (!window.currentUser && !noUserRequired.includes(endpoint)) {
         log('❌ Please set a user first!', 'error');
         log('💡 Click "Generate Test User" button at the top', 'warning');
         alert('⚠️ Please set a user first!\n\nClick the "Generate Test User" button at the top of the page.');
@@ -491,6 +541,12 @@
         let response, url, options;
         
         switch(endpoint) {
+          case 'getProducts':
+            url = `${window.WORKER_URL}/products`;
+            log(`📡 GET ${url}`, 'success');
+            response = await fetch(url);
+            break;
+            
           case 'getUserProducts':
             url = `${window.WORKER_URL}/user-products?user=${window.currentUser}`;
             log(`📡 GET ${url}`, 'success');
@@ -503,15 +559,34 @@
             response = await fetch(url);
             break;
             
+          case 'getAllUsers':
+            url = `${window.WORKER_URL}/all-users`;
+            log(`📡 GET ${url}`, 'success');
+            response = await fetch(url);
+            break;
+            
+          case 'getAllPurchases':
+            url = `${window.WORKER_URL}/all-purchases`;
+            log(`📡 GET ${url}`, 'success');
+            response = await fetch(url);
+            break;
+            
+          case 'productStatus':
+            const prodId = document.getElementById('param-productStatus-id').value || 'prod_TdKcnyjt5Jk0U2';
+            url = `${window.WORKER_URL}/product-status?id=${prodId}`;
+            log(`📡 GET ${url}`, 'success');
+            response = await fetch(url);
+            break;
+            
           case 'assignProduct':
-            const productId = document.getElementById('param-assignProduct-productId').value || 'prod_test_batman_ball';
+            const productId = document.getElementById('param-assignProduct-productId').value || 'prod_TdKcnyjt5Jk0U2';
             url = `${window.WORKER_URL}/assign-product`;
             options = {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ user_id: window.currentUser, product_id: productId })
             };
-            log(`📡 POST ${url} ${JSON.stringify(options.body)}`, 'success');
+            log(`📡 POST ${url}`, 'success');
             response = await fetch(url, options);
             break;
             
@@ -524,15 +599,8 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ user_id: window.currentUser, username, email })
             };
-            log(`📡 POST ${url} ${JSON.stringify(options.body)}`, 'success');
+            log(`📡 POST ${url}`, 'success');
             response = await fetch(url, options);
-            break;
-            
-          case 'productStatus':
-            const prodId = document.getElementById('param-productStatus-id').value || 'prod_test_batman_ball';
-            url = `${window.WORKER_URL}/product-status?id=${prodId}`;
-            log(`📡 GET ${url}`, 'success');
-            response = await fetch(url);
             break;
         }
 

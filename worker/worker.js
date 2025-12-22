@@ -727,3 +727,115 @@ async function rebuildProductIndex(env) {
   await env.PRODUCTS.put('_index:products', JSON.stringify(productIds));
   console.log('✅ Product index rebuilt:', productIds.length, 'products');
 }
+
+/**
+ * Handler: GET /all-users
+ * Returns all registered users sorted by registration date (newest first)
+ */
+async function handleGetAllUsers(env, corsHeaders) {
+  try {
+    const USER_PRODUCTS = env.USER_PRODUCTS;
+    
+    // List all keys with userdata: prefix
+    const list = await USER_PRODUCTS.list({ prefix: 'userdata:' });
+    
+    if (!list || !list.keys || list.keys.length === 0) {
+      return new Response(JSON.stringify({ users: [], count: 0 }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+    
+    // Fetch all users
+    const userPromises = list.keys.map(async (key) => {
+      const userData = await USER_PRODUCTS.get(key.name, { type: 'json' });
+      return userData;
+    });
+    
+    let users = await Promise.all(userPromises);
+    users = users.filter(u => u !== null);
+    
+    // Sort by created_at (newest first)
+    users.sort((a, b) => {
+      const dateA = new Date(a.created_at || 0);
+      const dateB = new Date(b.created_at || 0);
+      return dateB - dateA;
+    });
+    
+    return new Response(JSON.stringify({ 
+      users, 
+      count: users.length,
+      sorted_by: 'created_at',
+      order: 'newest_first'
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+    
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handler: GET /all-purchases
+ * Returns all purchase records sorted by date (newest first)
+ */
+async function handleGetAllPurchases(env, corsHeaders) {
+  try {
+    const USER_PRODUCTS = env.USER_PRODUCTS;
+    
+    // List all keys with user: prefix
+    const list = await USER_PRODUCTS.list({ prefix: 'user:' });
+    
+    if (!list || !list.keys || list.keys.length === 0) {
+      return new Response(JSON.stringify({ purchases: [], count: 0 }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+    
+    // Fetch all user products
+    const productPromises = list.keys.map(async (key) => {
+      const data = await USER_PRODUCTS.get(key.name, { type: 'json' });
+      return data;
+    });
+    
+    let allData = await Promise.all(productPromises);
+    allData = allData.filter(d => d !== null);
+    
+    // Flatten all products from all users
+    let allPurchases = [];
+    for (const userData of allData) {
+      if (Array.isArray(userData)) {
+        allPurchases.push(...userData);
+      }
+    }
+    
+    // Sort by acquired_at (newest first)
+    allPurchases.sort((a, b) => {
+      const dateA = new Date(a.acquired_at || 0);
+      const dateB = new Date(b.acquired_at || 0);
+      return dateB - dateA;
+    });
+    
+    return new Response(JSON.stringify({ 
+      purchases: allPurchases, 
+      count: allPurchases.length,
+      sorted_by: 'acquired_at',
+      order: 'newest_first'
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+    
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
