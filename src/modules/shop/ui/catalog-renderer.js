@@ -119,20 +119,32 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
 }
 
 /**
- * Check product status from worker
+ * Check product status from worker (with timeout)
  */
 async function checkProductStatus(productId) {
   try {
+    // Add 5 second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/product-status?id=${productId}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
+    
     if (response.ok) {
       return await response.json();
     }
     console.warn('Status check failed for', productId, 'status:', response.status);
   } catch (err) {
-    console.warn('Could not check status for', productId, err.message);
+    if (err.name === 'AbortError') {
+      console.warn('Status check timeout for', productId);
+    } else {
+      console.warn('Could not check status for', productId, err.message);
+    }
   }
   // Default to available if check fails
   return { product_id: productId, status: 'available', owner_id: null };
