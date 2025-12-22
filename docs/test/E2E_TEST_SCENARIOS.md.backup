@@ -19,15 +19,15 @@ S M R I
 └─────── Prefix (always S)
 ```
 
-**Module Numbers (Aligned with src/ directory structure):**
-1. **Shop** (`src/business/shop.js`) - Product catalog, morphs, equipment, Stripe links
-2. **Game** (`src/business/game.js`) - Tamagotchi mechanics, stats, care actions
-3. **Auth** (`src/auth/`) - User identity, hash-based authentication
-4. **Payment** (`src/business/payment.js`) - Stripe checkout, webhooks, KV writes
-5. **Worker** (`worker/worker.js`) - Cloudflare Worker API, KV operations, routing
-6. **Common** (`src/common/`) - Shared utilities, helpers (no business logic)
+**Module Numbers (Aligned with src/modules/):**
+1. **Shop** - Product catalog, morphs, equipment, Stripe links
+2. **Game** - Tamagotchi mechanics, stats, care actions
+3. **Auth** - User identity, hash-based authentication
+4. **Payment** - Stripe checkout, webhooks, KV writes
+5. **Worker** - Cloudflare Worker API, KV operations, routing
+6. **Common** - Shared utilities, helpers (no business logic)
 
-**Note:** Security, Performance, Analytics, Data/KV are cross-cutting concerns embedded in modules above, not separate modules. This document previously had 9 "modules" (including invented ones). We've corrected to the 6 actual modules that exist in the codebase.
+**Note:** Security, Performance, Analytics, Data/KV are cross-cutting concerns embedded in modules above, not separate modules.
 
 **Relation Digit (R):**
 - 0 → Standalone (only this module)
@@ -163,8 +163,8 @@ assert(document.querySelector(`[data-product="${soldProduct.id}"] button`).disab
 
 ---
 
-### S444: Webhook Signature Verification
-**Code:** S444 (Payment → Payment, Instance 4)
+### S411: Webhook Signature Verification
+**Code:** S411 (Security → Payments, Instance 1)  
 **Priority:** P0.3 (Security)  
 **User Story:** US-032
 
@@ -193,8 +193,8 @@ assert(KV['user:attacker_hash'] === undefined);
 
 ---
 
-### S345: User Hash Validation
-**Code:** S345 (Auth → Worker, Instance 1)
+### S431: User Hash Validation
+**Code:** S431 (Security → User, Instance 1)  
 **Priority:** P0.4 (Security)  
 **User Story:** US-033
 
@@ -465,8 +465,8 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 
 ## 👤 User Flow Scenarios (P2-P3)
 
-### S314: Register After Purchase
-**Code:** S314 (Auth → Payment, Instance 1)
+### S311: Register After Purchase
+**Code:** S311 (User → Payments, Instance 1)
 **Priority:** P2.0  
 **User Story:** US-007
 
@@ -491,7 +491,7 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 ---
 
 ### S301: Skip Registration
-**Code:** S301 (Auth standalone, Instance 1)
+**Code:** S301 (User standalone, Instance 1) - Returning User
 **Priority:** P2.1  
 **User Story:** US-008
 
@@ -509,8 +509,8 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 
 ---
 
-### S344: Loyalty Points Earning
-**Code:** S344 (Auth → Payment, Instance 2)
+### S312: Loyalty Points Earning
+**Code:** S312 (User → Payments, Instance 2)
 **Priority:** P3.0  
 **User Story:** US-017
 
@@ -528,7 +528,7 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 ---
 
 ### S302: Loyalty Tier Progression
-**Code:** S302 (Auth standalone, Instance 2)
+**Code:** S302 (User standalone, Instance 2)
 **Priority:** P3.1  
 **User Story:** US-018
 
@@ -605,8 +605,8 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 
 ## ⚠️ Error & Edge Case Scenarios
 
-### S141: Webhook Delayed - Long Wait
-**Code:** S141 (Payment → Payment, Instance 1)
+### S161: Webhook Delayed - Long Wait
+**Code:** S161 (Payments → Performance, Instance 1) - Long Wait
 **Priority:** P0 (Edge Case)  
 **User Story:** US-006
 
@@ -626,8 +626,8 @@ assert(savedState.snakes[0].stats.hunger === snake.stats.hunger);
 
 ---
 
-### S142: Webhook Idempotency
-**Code:** S142 (Payment → Payment, Instance 2)
+### S102: Webhook Idempotency
+**Code:** S102 (Payments standalone, Instance 2) - Duplicate Events
 **Priority:** P0 (Edge Case)  
 **User Story:** US-005
 
@@ -654,8 +654,8 @@ assert(products.length === 1); // Not 2
 
 ---
 
-### S143: Product Already Sold - Race Condition
-**Code:** S143 (Payment → Payment, Instance 3)
+### S162: Product Already Sold - Race Condition
+**Code:** S162 (Payments → Performance, Instance 2) - Race Condition
 **Priority:** P0 (Edge Case)
 
 **Flow:**
@@ -672,8 +672,8 @@ assert(products.length === 1); // Not 2
 
 ---
 
-### S346: Invalid Hash in URL
-**Code:** S346 (Auth → Worker, Instance 2)
+### S432: Invalid Hash in URL
+**Code:** S432 (Security → User, Instance 2)
 **Priority:** P0 (Security)
 
 **Flow:**
@@ -761,8 +761,8 @@ assert(products.length === 1); // Not 2
 
 ---
 
-### S347: XSS Attempt via Username
-**Code:** S347 (Auth → Worker, Instance 3)
+### S433: XSS Attempt via Username
+**Code:** S433 (Security → User, Instance 3)
 **Priority:** P0
 
 **Flow:**
@@ -777,8 +777,8 @@ assert(products.length === 1); // Not 2
 
 ---
 
-### S445: CSRF Attack on Webhook
-**Code:** S445 (Payment → Payment, Instance 5)
+### S412: CSRF Attack on Webhook
+**Code:** S412 (Security → Payments, Instance 2)
 **Priority:** P0
 
 **Flow:**
