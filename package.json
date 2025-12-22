@@ -12,6 +12,7 @@
     "test:snapshot": "node tests/integration/snapshot.test.js",
     "test:stripe-kv": "node tests/integration/stripe-kv-sync.test.js",
     "test:worker-deploy": "node tests/integration/worker-deployment.test.js",
+    "test:stripe-webhook": "node tests/integration/stripe-webhook-config.test.js",
     "test:game": "node tests/modules/game/tamagotchi.test.js && node tests/modules/game/snakes.test.js",
     "test:shop": "node tests/modules/shop/shop.test.js && node tests/modules/shop/game.test.js",
     "test:common": "node tests/modules/common/core.test.js",
