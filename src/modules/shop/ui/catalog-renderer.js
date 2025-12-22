@@ -123,13 +123,18 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
  */
 async function checkProductStatus(productId) {
   try {
-    const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/product-status?id=${productId}`);
+    const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/product-status?id=${productId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
     if (response.ok) {
       return await response.json();
     }
+    console.warn('Status check failed for', productId, 'status:', response.status);
   } catch (err) {
-    console.warn('Could not check status for', productId, err);
+    console.warn('Could not check status for', productId, err.message);
   }
+  // Default to available if check fails
   return { product_id: productId, status: 'available', owner_id: null };
 }
 
