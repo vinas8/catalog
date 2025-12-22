@@ -242,10 +242,7 @@
       <input type="text" id="user-hash-input" placeholder="Enter user hash (or load from URL)" value="">
       <button class="btn" onclick="setUser()">💾 Set User</button>
       <button class="btn" onclick="generateTestUser()">🎲 Generate Test User</button>
-      <div id="current-user" style="margin-top: 10px; padding: 10px; background: #0d1117; border-radius: 6px; border: 1px solid #30363d;">
-        <span style="color: #d29922;">⚠️ No user set</span>
-        <span style="color: #8b949e; font-size: 11px; display: block; margin-top: 5px;">Click "Generate Test User" or enter a hash above</span>
-      </div>
+      <div id="current-user" style="margin-top: 10px; color: #8b949e; font-size: 12px;"></div>
     </div>
 
     <!-- Tabs -->
@@ -425,13 +422,10 @@
       if (userHash) {
         document.getElementById('user-hash-input').value = userHash;
         setUser();
-        log(`✅ Loaded user from URL: ${userHash}`, 'success');
       } else {
-        log('⚠️ No user hash in URL. Enter one above or generate a test user.', 'warning');
-        log('💡 TIP: Click "Generate Test User" button to create one', 'warning');
+        log('ℹ️ No user hash in URL. Enter one above or generate a test user.', 'warning');
       }
       
-      // Check worker status once on load (no loop)
       await checkWorker();
     })();
 
@@ -451,15 +445,11 @@
       const hash = document.getElementById('user-hash-input').value.trim();
       if (!hash) {
         log('❌ Please enter a user hash', 'error');
-        alert('❌ Please enter a user hash in the input field');
         return;
       }
       
       window.currentUser = hash;
-      document.getElementById('current-user').innerHTML = `
-        <span style="color: #3fb950;">✅ Current user: <strong style="color: #58a6ff;">${hash}</strong></span>
-        <span style="color: #8b949e; font-size: 11px; display: block; margin-top: 5px;">User set! You can now execute API calls.</span>
-      `;
+      document.getElementById('current-user').innerHTML = `✅ Current user: <span style="color: #58a6ff;">${hash}</span>`;
       log(`👤 User set: ${hash}`, 'success');
     };
 
@@ -472,14 +462,10 @@
 
     window.callAPI = async function(endpoint) {
       if (!window.currentUser && endpoint !== 'productStatus') {
-        log('❌ Please set a user first!', 'error');
-        log('💡 Click "Generate Test User" button at the top', 'warning');
-        alert('⚠️ Please set a user first!\n\nClick the "Generate Test User" button at the top of the page.');
+        log('❌ Please set a user first', 'error');
         return;
       }
 
-      log(`🚀 Executing ${endpoint}...`, 'info');
-      
       const resDiv = document.getElementById('res-' + endpoint);
       resDiv.style.display = 'block';
       resDiv.className = 'response';
@@ -655,27 +641,13 @@
     };
 
     window.checkWorker = async function() {
-      // Prevent multiple simultaneous checks
-      if (window.checkingWorker) {
-        log('⏳ Worker check already in progress...', 'warning');
-        return;
-      }
-      
-      window.checkingWorker = true;
       const container = document.getElementById('worker-status');
       container.innerHTML = '<div class="spinner"></div>';
       log('🔌 Checking worker status...', 'success');
 
       try {
         const startTime = Date.now();
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const response = await fetch(`${window.WORKER_URL}/user-products?user=test`, {
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
+        const response = await fetch(`${window.WORKER_URL}/user-products?user=test`);
         const latency = Date.now() - startTime;
         
         container.innerHTML = `
@@ -691,8 +663,6 @@
           <div class="info-row"><span class="value" style="color: #f85149;">Error: ${error.message}</span></div>
         `;
         log(`❌ Worker is offline: ${error.message}`, 'error');
-      } finally {
-        window.checkingWorker = false;
       }
     };
 

@@ -54,17 +54,23 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
   const soldContainer = document.getElementById('sold-snakes');
   const soldCount = document.getElementById('sold-count');
 
+  console.log('🔄 renderStandaloneCatalog START', { selectedSpecies });
+  
   availableContainer.innerHTML = '<div class="loading">Loading...</div>';
   virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
 
   try {
     // Load ALL products (not just available)
+    console.log('📡 Calling loadCatalog()...');
     const allProducts = await loadCatalog();
+    console.log('✅ loadCatalog returned:', allProducts.length, 'products');
     
     // Filter by species if needed
     const filteredProducts = selectedSpecies === 'all' 
       ? allProducts 
       : allProducts.filter(p => p.species === selectedSpecies);
+    
+    console.log('✅ After species filter:', filteredProducts.length, 'products');
     
     // Separate by type
     const realProducts = filteredProducts.filter(p => p.type === 'real');
@@ -72,27 +78,30 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
       ? filteredProducts.filter(p => p.type === 'virtual')
       : [];
     
-    // Check status from worker for real snakes
-    const statusPromises = realProducts.map(p => checkProductStatus(p.id));
-    const statuses = await Promise.all(statusPromises);
+    console.log('✅ Real products:', realProducts.length, 'Virtual:', virtualProducts.length);
     
-    // Merge status data
-    realProducts.forEach((product, index) => {
-      const status = statuses[index];
-      product.status = status.status;
-      product.owner_id = status.owner_id;
+    // Products from worker already have status - no need for individual checks!
+    // Just ensure default status if missing
+    realProducts.forEach(product => {
+      if (!product.status) {
+        product.status = 'available';
+      }
     });
     
     // Separate by availability
     const available = realProducts.filter(p => p.status === 'available');
     const sold = realProducts.filter(p => p.status === 'sold');
 
+    console.log('✅ Available:', available.length, 'Sold:', sold.length);
+
     const userHash = getUserHash();
+    console.log('✅ User hash:', userHash);
 
     // Render available real snakes
     if (available.length === 0) {
       availableContainer.innerHTML = '<div class="empty-state">No snakes available</div>';
     } else {
+      console.log('🎨 Rendering', available.length, 'available snakes');
       availableContainer.innerHTML = available.map(item => renderProductCard(item, userHash, false)).join('');
     }
 
@@ -100,6 +109,7 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
     if (virtualProducts.length === 0) {
       virtualContainer.innerHTML = '<div class="empty-state">No virtual snakes configured</div>';
     } else {
+      console.log('🎨 Rendering', virtualProducts.length, 'virtual snakes');
       virtualContainer.innerHTML = virtualProducts.map(item => renderVirtualCard(item)).join('');
     }
 
@@ -108,13 +118,16 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
     if (sold.length === 0) {
       soldContainer.innerHTML = '<div class="empty-state">No snakes sold yet</div>';
     } else {
+      console.log('🎨 Rendering', sold.length, 'sold snakes');
       soldContainer.innerHTML = sold.map(item => renderProductCard(item, userHash, true)).join('');
     }
 
+    console.log('✅ renderStandaloneCatalog COMPLETE');
+
   } catch (error) {
-    console.error('Error:', error);
-    availableContainer.innerHTML = '<div class="error-state">Failed to load</div>';
-    virtualContainer.innerHTML = '<div class="error-state">Failed to load</div>';
+    console.error('❌ Catalog render error:', error);
+    availableContainer.innerHTML = `<div class="error-state">Failed to load: ${error.message}<br><a href="debug.html">Check Debug Dashboard</a></div>`;
+    virtualContainer.innerHTML = `<div class="error-state">Error loading catalog</div>`;
   }
 }
 
