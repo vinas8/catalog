@@ -57,7 +57,7 @@
     </p>
 
     <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
-      <a href="#" id="register-now-btn" class="primary-btn">Register Now</a>
+      <a href="#" id="register-now-btn" class="primary-btn" style="display: none;">Register Now</a>
       <a href="/catalog.html" class="secondary-btn">Continue Shopping</a>
     </div>
   </div>
@@ -152,6 +152,9 @@
             if (products && products.length > 0) {
               clearInterval(checkInterval);
               console.log('✅ Snake assigned! Products:', products);
+              
+              // Show register button now that data is loaded
+              document.getElementById('register-now-btn').style.display = 'inline-block';
               
               // Check if user already registered
               const existingUser = localStorage.getItem('serpent_user');
