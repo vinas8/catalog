@@ -56,9 +56,9 @@
       <span id="countdown">⏳ Loading...</span>
     </p>
 
-    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;" id="action-buttons">
       <a href="#" id="register-now-btn" class="primary-btn" style="display: none;">Register Now</a>
-      <a href="/catalog.html" class="secondary-btn">Continue Shopping</a>
+      <a href="/catalog.html" class="secondary-btn" id="secondary-btn">Continue Shopping</a>
     </div>
   </div>
 
@@ -153,9 +153,6 @@
               clearInterval(checkInterval);
               console.log('✅ Snake assigned! Products:', products);
               
-              // Show register button now that data is loaded
-              document.getElementById('register-now-btn').style.display = 'inline-block';
-              
               // Check if user already registered
               const existingUser = localStorage.getItem('serpent_user');
               const existingHash = localStorage.getItem('serpent_user_hash');
@@ -168,13 +165,33 @@
               });
               
               if (isFirstPurchase) {
-                // First purchase - go to registration
-                console.log('📝 First purchase - redirecting to registration');
-                redirectToRegistration();
+                // First purchase - show register button
+                console.log('📝 First purchase - showing registration button');
+                document.getElementById('register-now-btn').style.display = 'inline-block';
+                document.getElementById('redirect-message').textContent = 'Ready to register!';
+                document.getElementById('countdown').innerHTML = '🎉 Your snake is ready! Click "Register Now" to claim it.';
+                
+                // Setup register button click handler
+                import('./src/config/worker-config.js').then(({ PAGE_URLS }) => {
+                  const email = urlParams.get('email') || urlParams.get('customer_email');
+                  const registerUrl = PAGE_URLS.getRegisterUrl(sessionId, userHash, email, window.location.origin);
+                  document.getElementById('register-now-btn').href = registerUrl;
+                });
               } else {
-                // Already registered - go straight to game
-                console.log('🎮 Returning customer - going to game');
-                redirectToGame();
+                // Already registered - hide register button, change secondary button to "Go to Farm"
+                console.log('🎮 Returning customer - showing farm link');
+                document.getElementById('register-now-btn').style.display = 'none';
+                document.getElementById('redirect-message').textContent = 'Welcome back!';
+                document.getElementById('countdown').innerHTML = '🎮 Your new snake is ready at the farm!';
+                
+                // Change secondary button to "Go to My Farm"
+                const secondaryBtn = document.getElementById('secondary-btn');
+                import('./src/config/worker-config.js').then(({ PAGE_URLS }) => {
+                  const gameUrl = PAGE_URLS.getGameUrl(userHash, window.location.origin);
+                  secondaryBtn.textContent = '🎮 Go to My Farm';
+                  secondaryBtn.href = gameUrl;
+                  secondaryBtn.className = 'primary-btn';
+                });
               }
             } else if (checkAttempts >= maxAttempts) {
               clearInterval(checkInterval);
