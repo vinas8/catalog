@@ -1,0 +1,348 @@
+
+> serpent-town@0.3.0 test:all
+> npm test && npm run test:slow && npm run test:external
+
+
+> serpent-town@0.3.0 test
+> node tests/modules/shop/game.test.js && node tests/integration/snapshot.test.js
+
+🧪 Running Game Tests...
+
+📊 Data Tests
+✅ Species profiles exist
+✅ Species have required fields
+✅ Morphs database exists
+✅ Equipment catalog has items
+✅ Equipment has categories
+
+💰 Economy Tests
+✅ Create initial game state
+✅ Money to currency conversion
+✅ Buy virtual snake
+✅ Virtual snake prices
+✅ Loyalty tier system
+✅ Loyalty discounts
+
+🛒 Shop Tests
+✅ Get available equipment
+✅ Buy equipment with gold
+✅ Cannot buy without gold
+✅ Loyalty tier requirements
+
+==================================================
+✅ Passed: 15
+❌ Failed: 0
+📊 Total: 15
+🎉 All tests passed!
+==================================================
+📸 Serpent Town v3.2 - Comprehensive Snapshot Tests
+
+📄 HTML Structure Tests
+✅ Has DOCTYPE
+✅ Has title with game name
+✅ Links to styles.css
+✅ Links to game controller as module
+✅ Has viewport meta tag
+
+🎨 Header Components
+✅ Has game header
+✅ Has game title
+✅ Has gold display element
+✅ Has loyalty tier display
+✅ Has shop button
+✅ Has settings button
+
+🧭 Navigation System
+✅ Has main navigation
+✅ Has farm view button
+✅ Has catalog view button
+✅ Has encyclopedia view button
+✅ Has calculator view button
+
+🏡 Farm View Components
+✅ Has farm view container
+✅ Has snake collection container
+✅ Has buy virtual snake button
+✅ Has empty collection state
+
+📖 Catalog View Components
+✅ Has catalog view container
+✅ Has catalog items container
+✅ Has species filter
+
+⚙️ Settings Modal
+✅ Has settings modal
+✅ Has speed slider
+✅ Has speed display
+✅ Has save button
+✅ Has reset button
+
+💻 JavaScript Core
+✅ Has SerpentTown class
+✅ Imports Economy module
+✅ Imports EquipmentShop module
+✅ Imports shop view
+✅ Imports species profiles
+✅ Imports morphs data
+✅ Imports catalog
+✅ Has async init method
+✅ Has game loop
+✅ Has save/load functions
+✅ Has render functions
+
+💰 Economy Module
+✅ Exports Economy class
+✅ Has moneyToCurrency function
+✅ Has buyVirtualSnake function
+✅ Has loyalty tier system
+✅ Exports createInitialGameState
+
+🛒 Equipment Shop Module
+✅ Exports EquipmentShop class
+✅ Has getAvailableItems method
+✅ Has buyEquipment method
+✅ Has installEquipment method
+
+🔄 Stripe Sync Module
+✅ Exports StripeSync class
+✅ Has syncProducts method
+✅ Has fetchStripeProducts method
+✅ Has mergeProducts method
+✅ Exports initializeCatalog function
+
+📦 Data Modules
+✅ Species profiles exports
+✅ Morphs exports
+✅ Catalog exports
+✅ Equipment catalog has items
+✅ Stripe config exports
+
+🎨 CSS Styles
+✅ Has CSS variables
+✅ Has snake card styles
+✅ Has real/virtual snake styling
+✅ Has modal styles
+✅ Has settings styles
+✅ Has shop styles
+✅ Has catalog grid
+✅ Has stat bar styles
+✅ Has responsive styles
+✅ Has notification styles
+
+🎮 Shop UI Module
+✅ Exports ShopView class
+✅ Has render method
+✅ Exports openShop function
+
+==================================================
+✅ Passed: 71
+❌ Failed: 0
+📊 Total: 71
+📈 Success Rate: 100%
+🎉 All tests passed!
+==================================================
+
+> serpent-town@0.3.0 test:slow
+> node tests/slow/frontend-to-backend.test.js && node tests/slow/real-scenario.test.js && node tests/slow/worker-api.test.js
+
+👁️  FRONTEND → BACKEND TEST
+
+Testing from what USER SEES to backend...
+
+📄 LAYER 1: Checking HTML Pages (what user sees)...
+
+   📋 Catalog page has Buy buttons
+✅ ✓ catalog.html exists and loads
+   📋 Success page has returning user detection
+✅ ✓ success.html checks for existing user
+   📋 Success page waits for snake assignment
+✅ ✓ success.html waits for webhook
+   📋 Registration has username generator
+✅ ✓ register.html has username generator
+   📋 Game loads snakes from worker API
+✅ ✓ game.html loads from worker (not local file)
+   📋 Game has profile display elements
+✅ ✓ game.html displays user profile
+
+📜 LAYER 2: Checking JavaScript Logic...
+
+   📜 Profile loading implemented
+✅ ✓ game-controller.js loads user profile
+   📜 Snakes loaded from worker API
+✅ ✓ game-controller.js loads snakes from worker
+   📜 Hash consistency verified across pages
+✅ ✓ Hash is consistent throughout flow
+
+⚙️  LAYER 3: Checking Configuration...
+
+   ⚙️  Worker: https://catalog.navickaszilvinas.workers.dev
+✅ ✓ Worker config is valid
+   ⚙️  Farm URL: /game.html
+✅ ✓ Page URLs are configured
+
+🔌 LAYER 4: Checking Worker API...
+
+   🔌 Worker status: 404
+✅ ✓ Worker is reachable
+   🔌 Snake assignment works
+✅ ✓ Can assign snake to user
+   🔌 Retrieved 1 snake(s)
+✅ ✓ Can retrieve assigned snake
+   🔌 User registration works
+✅ ✓ Can register user
+   🔌 Profile retrieval works
+✅ ✓ Can retrieve user profile
+
+============================================================
+✅ Passed: 16
+❌ Failed: 0
+📊 Total: 16
+============================================================
+
+✨ ALL LAYERS WORK!
+
+Layer 1: HTML pages are correct ✓
+Layer 2: JavaScript logic works ✓
+Layer 3: Configuration valid ✓
+Layer 4: Worker API functional ✓
+
+If user still sees no snakes:
+→ Check localStorage has user hash
+→ Check URL has ?user=HASH parameter
+→ Open debug.html to diagnose
+
+🎯 REAL USER SCENARIO TEST
+
+Testing the ACTUAL purchase flow that users experience...
+
+👤 Test User Hash: test_1766408420031_realflow
+🐍 Test Product: prod_test_batman_ball
+
+   💾 Hash saved to localStorage: test_1766408420031_realflow...
+✅ STEP 1: User browses catalog and hash is generated
+   ✅ Snake assigned to KV: user:test_1766408420031_realflow
+✅ STEP 2: Webhook assigns snake to user in KV
+   🐍 Found 1 snake(s) in user's account
+   📦 Products: ["prod_test_batman_ball"]
+✅ STEP 3: Success page verifies snake was assigned
+   👤 User registered: TestSnakeWhisperer42
+✅ STEP 4: User completes registration
+   👤 Profile loaded: TestSnakeWhisperer42
+✅ STEP 5: Game loads user profile from worker
+   🐍 Snake loaded successfully!
+   📊 Stats: Hunger=100, Health=100
+✅ STEP 6: Game loads snakes from worker
+   ✅ Returning user goes to: /game.html?user=test_1766408420031_realflow
+   📝 Button text should say: "Go to My Farm"
+✅ STEP 7: Second purchase goes to FARM (not registration)
+   🏡 Farm URL: /game.html?user=test_1766408420031_realflow
+   🐍 Snakes in collection: 1
+   📦 Snake IDs: prod_test_batman_ball
+✅ STEP 8: Farm page (game.html) displays purchased snakes
+   🐍🐍 Collection now has 2 snakes
+   📦 Snakes: prod_test_batman_ball, prod_test_piebald_ball
+✅ STEP 9: Buying second snake adds to existing collection
+   💾 Session persisted correctly
+✅ STEP 8: LocalStorage persists user session
+
+============================================================
+✅ Passed: 10
+❌ Failed: 0
+📊 Total: 10
+============================================================
+
+🎉 REAL USER FLOW WORKS PERFECTLY!
+✅ First purchase → Registration → Farm with snake
+✅ Second purchase → Skip registration → Farm with NEW snake
+✅ Farm displays all purchased snakes correctly
+✅ All data persists correctly
+
+🧪 Integration Tests - Worker API
+
+   📍 Using: https://catalog.navickaszilvinas.workers.dev
+✅ Worker config exists
+✅ All required endpoints defined
+   🔗 https://catalog.navickaszilvinas.workers.dev/user-data
+✅ getEndpoint() helper works
+   🔗 https://catalog.navickaszilvinas.workers.dev/user-products?user=test123abc
+✅ getUserEndpoint() helper works
+   📡 Status: 404
+✅ Worker is reachable
+   📡 Status: 200
+   ✅ User registered: test_1766408430900
+✅ Register user endpoint exists
+   📡 Status: 200
+   📦 Products: 0
+✅ User products endpoint exists
+   🔑 Generated hash: mjh5z2dby6fr2y87rd...
+✅ Purchase flow hash generation
+   💾 LocalStorage pattern validated
+✅ LocalStorage available for fallback
+   🎮 Game URL: /game.html?user=testuser123
+✅ Game URL construction works
+
+==================================================
+✅ Passed: 10
+❌ Failed: 0
+📊 Total: 10
+🎉 All integration tests passed!
+
+> serpent-town@0.3.0 test:external
+> node tests/external/stripe/marketplace.test.js
+
+🧪 Serpent Town Marketplace Test Suite v0.3.0
+
+Test 1: Payment Adapter Factory
+✅ Stripe adapter created
+✅ PayPal adapter created
+✅ Square adapter created
+✅ Mock adapter created
+
+Test 2: Fee Calculation
+Product price: $100.00
+Platform fee (5%): $5.00
+Processing fee: $3.20
+Total to customer: $108.20
+Merchant receives: $95.00
+✅ Fee calculation correct
+
+Test 3: Mock Checkout Creation
+Checkout URL: https://vinas8.github.io/catalog/success.html?mock=true&product=prod_123
+Session ID: mock_1766408435040
+✅ Mock checkout created
+
+Test 4: Provider Switching
+Current provider: stripe
+✅ Switched to stripe
+✅ Switched to paypal
+✅ Switched to square
+✅ Switched to mock
+
+Test 5: Merchant Registration API
+❌ API test failed: fetch failed
+   (This is expected if worker is not deployed)
+
+Test 6: Add Product API
+❌ API test failed: fetch failed
+   (This is expected if worker is not deployed)
+
+Test 7: Webhook Processing
+✅ Webhook processed
+   Order ID: mock_order_123
+   Platform fee: $5.00
+   Merchant payout: $95.00
+
+==================================================
+🎯 Test Summary
+==================================================
+✅ Payment adapter abstraction working
+✅ Provider switching functional
+✅ Fee calculation accurate
+✅ Mock payments working
+⚠️  Worker API tests require deployment
+
+💡 To test with real Stripe/PayPal:
+   1. Deploy worker: bash .github/skills/worker-deploy.sh
+   2. Update payment provider in src/payment/config.js
+   3. Add API keys to .env
+   4. Test full purchase flow
