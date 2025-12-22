@@ -1,0 +1,32 @@
+[
+  {
+    "id": "prod_default_banana_ball",
+    "name": "Banana Ball Python",
+    "species": "ball_python",
+    "morph": "banana",
+    "price": 450.00,
+    "type": "real",
+    "stripe_link": "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+    "status": "available"
+  },
+  {
+    "id": "prod_default_piebald_ball",
+    "name": "Piebald Ball Python",
+    "species": "ball_python",
+    "morph": "piebald",
+    "price": 600.00,
+    "type": "real",
+    "stripe_link": "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+    "status": "available"
+  },
+  {
+    "id": "prod_stripe_snake_001",
+    "name": "Premium Ball Python",
+    "species": "ball_python",
+    "morph": "banana",
+    "price": 100.00,
+    "type": "real",
+    "stripe_link": "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+    "status": "available"
+  }
+]
