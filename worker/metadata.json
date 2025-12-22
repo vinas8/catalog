@@ -1,0 +1,21 @@
+{
+  "main_module": "worker.js",
+  "compatibility_date": "2024-12-21",
+  "bindings": [
+    {
+      "type": "kv_namespace",
+      "name": "USER_PRODUCTS",
+      "namespace_id": "3b88d32c0a0540a8b557c5fb698ff61a"
+    },
+    {
+      "type": "kv_namespace",
+      "name": "PRODUCT_STATUS",
+      "namespace_id": "57da5a83146147c8939e4070d4b4d4c1"
+    },
+    {
+      "type": "kv_namespace",
+      "name": "PRODUCTS",
+      "namespace_id": "ecbcb79f3df64379863872965f993991"
+    }
+  ]
+}
