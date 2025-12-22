@@ -320,18 +320,58 @@ async function handleGetUserProducts(request, env, corsHeaders) {
 }
 
 /**
- * Get all available products (from GitHub Pages fallback)
+ * Get all available products (with fallback to defaults)
  */
 async function handleGetProducts(request, env, corsHeaders) {
   try {
     // Check if PRODUCTS namespace is bound
     if (!env.PRODUCTS) {
-      console.warn('⚠️ PRODUCTS namespace not bound');
+      console.warn('⚠️ PRODUCTS namespace not bound, using default snakes');
+      
+      // Return default snakes with Stripe link
+      const defaultProducts = [
+        {
+          id: "prod_default_banana_ball",
+          name: "Banana Ball Python",
+          species: "ball_python",
+          morph: "banana",
+          price: 450.00,
+          currency: "usd",
+          stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+          status: "available",
+          source: "default"
+        },
+        {
+          id: "prod_default_piebald_ball",
+          name: "Piebald Ball Python",
+          species: "ball_python",
+          morph: "piebald",
+          price: 600.00,
+          currency: "usd",
+          stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+          status: "available",
+          source: "default"
+        },
+        {
+          id: "prod_stripe_snake_001",
+          name: "Premium Ball Python",
+          species: "ball_python",
+          morph: "banana",
+          price: 100.00,
+          currency: "eur",
+          stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+          description: "Beautiful ball python available via Stripe",
+          status: "available",
+          source: "stripe"
+        }
+      ];
+      
       return new Response(JSON.stringify({
-        error: 'PRODUCTS namespace not configured',
-        message: 'Load products from GitHub Pages: /data/products.json'
+        products: defaultProducts,
+        count: defaultProducts.length,
+        source: "fallback"
       }), {
-        status: 503,
+        status: 200,
         headers: corsHeaders
       });
     }
