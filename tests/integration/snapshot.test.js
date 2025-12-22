@@ -25,16 +25,16 @@ function assert(condition, message) {
 
 // Load all files
 const html = readFileSync('game.html', 'utf-8');
-const gameController = readFileSync('src/game-controller.js', 'utf-8');
+const gameController = readFileSync('src/modules/game/game-controller.js', 'utf-8');
 const css = readFileSync('styles.css', 'utf-8');
-const economyJs = readFileSync('src/business/economy.js', 'utf-8');
-const equipmentJs = readFileSync('src/business/equipment.js', 'utf-8');
-const stripeSyncJs = readFileSync('src/business/stripe-sync.js', 'utf-8');
-const speciesJs = readFileSync('src/data/species-profiles.js', 'utf-8');
-const morphsJs = readFileSync('src/data/morphs.js', 'utf-8');
-const catalogJs = readFileSync('src/data/catalog.js', 'utf-8');
-const equipmentCatalogJs = readFileSync('src/data/equipment-catalog.js', 'utf-8');
-const shopViewJs = readFileSync('src/ui/shop-view.js', 'utf-8');
+const economyJs = readFileSync('src/modules/shop/business/economy.js', 'utf-8');
+const equipmentJs = readFileSync('src/modules/shop/business/equipment.js', 'utf-8');
+const stripeSyncJs = readFileSync('src/modules/shop/business/stripe-sync.js', 'utf-8');
+const speciesJs = readFileSync('src/modules/shop/data/species-profiles.js', 'utf-8');
+const morphsJs = readFileSync('src/modules/shop/data/morphs.js', 'utf-8');
+const catalogJs = readFileSync('src/modules/shop/data/catalog.js', 'utf-8');
+const equipmentCatalogJs = readFileSync('src/modules/shop/data/equipment-catalog.js', 'utf-8');
+const shopViewJs = readFileSync('src/modules/shop/ui/shop-view.js', 'utf-8');
 const stripeConfigJs = readFileSync('src/config/stripe-config.js', 'utf-8');
 
 console.log('📄 HTML Structure Tests');
@@ -53,7 +53,7 @@ test('Links to styles.css', () => {
 
 test('Links to game controller as module', () => {
   assert(html.includes('type="module"'), 'Missing ES6 module type');
-  assert(html.includes('src="src/game-controller.js"'), 'Missing game-controller.js script');
+  assert(html.includes('src="src/modules/game/game-controller.js"'), 'Missing game-controller.js script');
 });
 
 test('Has viewport meta tag', () => {
@@ -99,7 +99,7 @@ test('Has farm view button', () => {
 });
 
 test('Has catalog view button', () => {
-  assert(html.includes('data-view="catalog"'), 'Missing catalog view button');
+  assert(html.includes('href="catalog.html"') || html.includes('data-view="catalog"'), 'Missing catalog navigation');
 });
 
 test('Has encyclopedia view button', () => {
@@ -172,32 +172,32 @@ test('Has SerpentTown class', () => {
 
 test('Imports Economy module', () => {
   assert(gameController.includes('import { Economy'), 'Missing Economy import');
-  assert(gameController.includes('./business/economy.js'), 'Wrong Economy path');
+  assert(gameController.includes('../shop/business/economy.js'), 'Wrong Economy path');
 });
 
 test('Imports EquipmentShop module', () => {
   assert(gameController.includes('import { EquipmentShop'), 'Missing EquipmentShop import');
-  assert(gameController.includes('./business/equipment.js'), 'Wrong EquipmentShop path');
+  assert(gameController.includes('../shop/business/equipment.js'), 'Wrong EquipmentShop path');
 });
 
 test('Imports shop view', () => {
   assert(gameController.includes('import { openShop'), 'Missing openShop import');
-  assert(gameController.includes('./ui/shop-view.js'), 'Wrong shop view path');
+  assert(gameController.includes('../shop/ui/shop-view.js'), 'Wrong shop view path');
 });
 
 test('Imports species profiles', () => {
   assert(gameController.includes('import { SPECIES_PROFILES'), 'Missing species import');
-  assert(gameController.includes('./data/species-profiles.js'), 'Wrong species path');
+  assert(gameController.includes('../shop/data/species-profiles.js'), 'Wrong species path');
 });
 
 test('Imports morphs data', () => {
   assert(gameController.includes('import { getMorphsForSpecies'), 'Missing morphs import');
-  assert(gameController.includes('./data/morphs.js'), 'Wrong morphs path');
+  assert(gameController.includes('../shop/data/morphs.js'), 'Wrong morphs path');
 });
 
 test('Imports catalog', () => {
   assert(gameController.includes('import { getProductsBySpecies'), 'Missing catalog import');
-  assert(gameController.includes('./data/catalog.js'), 'Wrong catalog path');
+  assert(gameController.includes('../shop/data/catalog.js'), 'Wrong catalog path');
 });
 
 test('Has async init method', () => {

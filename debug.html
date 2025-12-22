@@ -1,153 +1,420 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Debug - Check LocalStorage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 Serpent Town Debug Dashboard</title>
   <style>
-    body { font-family: monospace; padding: 2rem; max-width: 800px; margin: 0 auto; }
-    .section { background: #f5f5f5; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
-    .error { color: #e74c3c; font-weight: bold; }
-    .success { color: #27ae60; font-weight: bold; }
-    .warning { color: #f39c12; font-weight: bold; }
-    button { padding: 0.5rem 1rem; margin: 0.5rem; cursor: pointer; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 { color: #667eea; margin-bottom: 10px; }
+    .status { 
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .status.ok { background: #10b981; color: white; }
+    .status.error { background: #ef4444; color: white; }
+    .status.warning { background: #f59e0b; color: white; }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      color: #764ba2;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .label { font-weight: 600; color: #6b7280; }
+    .value { 
+      color: #111827;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #5568d3; }
+    .btn.danger { background: #ef4444; }
+    .btn.danger:hover { background: #dc2626; }
+    
+    pre {
+      background: #1f2937;
+      color: #10b981;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      padding: 8px;
+      border-left: 3px solid #10b981;
+      margin-bottom: 5px;
+      background: #f9fafb;
+      font-size: 13px;
+    }
+    .log-entry.error { border-left-color: #ef4444; }
+    .log-entry.warning { border-left-color: #f59e0b; }
+    
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
-  <h1>🔍 LocalStorage Debugger</h1>
-  
-  <div class="section">
-    <h2>Step 1: Check LocalStorage</h2>
-    <div id="localStorage-check"></div>
-  </div>
+  <div class="container">
+    <header>
+      <h1>🔍 Serpent Town Debug Dashboard</h1>
+      <p>Real-time diagnostics for KV store, Worker API, and user data</p>
+      <div style="margin-top: 10px;">
+        <span id="worker-status" class="status">Checking...</span>
+        <span id="kv-status" class="status" style="margin-left: 10px;">Checking...</span>
+      </div>
+    </header>
 
-  <div class="section">
-    <h2>Step 2: Check Worker Connection</h2>
-    <div id="worker-check"></div>
-    <button onclick="testWorker()">Test Worker</button>
-  </div>
+    <div class="grid">
+      <!-- User Info -->
+      <div class="card">
+        <h2>👤 Current User</h2>
+        <div id="user-info">
+          <div class="spinner"></div>
+        </div>
+        <button class="btn" onclick="refreshUserInfo()">🔄 Refresh</button>
+      </div>
 
-  <div class="section">
-    <h2>Step 3: Check Your Snakes in KV</h2>
-    <div id="snakes-check"></div>
-    <button onclick="checkSnakes()">Check My Snakes</button>
-  </div>
+      <!-- KV Store Data -->
+      <div class="card">
+        <h2>🗄️ KV Store</h2>
+        <div id="kv-data">
+          <div class="spinner"></div>
+        </div>
+        <button class="btn" onclick="fetchKVData()">📦 Load KV Data</button>
+        <button class="btn danger" onclick="clearUserData()">🗑️ Clear My Data</button>
+      </div>
 
-  <div class="section">
-    <h2>Step 4: Manual Fix</h2>
-    <button onclick="generateNewHash()">Generate New Hash</button>
-    <button onclick="clearAll()">Clear Everything & Start Over</button>
+      <!-- Worker Endpoints -->
+      <div class="card">
+        <h2>🔌 Worker Endpoints</h2>
+        <div id="endpoint-status">
+          <div class="spinner"></div>
+        </div>
+        <button class="btn" onclick="testAllEndpoints()">🧪 Test All</button>
+      </div>
+    </div>
+
+    <!-- Purchased Snakes -->
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>🐍 Your Purchased Snakes</h2>
+      <div id="user-snakes">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- Debug Log -->
+    <div class="card">
+      <h2>📝 Debug Log</h2>
+      <div id="debug-log" style="max-height: 300px; overflow-y: auto;">
+        <div class="log-entry">🚀 Dashboard initialized</div>
+      </div>
+      <button class="btn" onclick="clearLog()">🗑️ Clear Log</button>
+      <button class="btn" onclick="exportLog()">💾 Export Log</button>
+    </div>
   </div>
 
   <script type="module">
     import { WORKER_CONFIG } from './src/config/worker-config.js';
-    window.WORKER_CONFIG = WORKER_CONFIG;
+    import { initializeUser } from './src/auth/user-auth.js';
 
-    // Check localStorage immediately
-    function checkLocalStorage() {
-      const output = document.getElementById('localStorage-check');
-      const keys = ['serpent_user_hash', 'serpent_last_purchase_hash', 'serpent_pending_purchase_hash', 'serpent_user'];
+    window.WORKER_CONFIG = WORKER_CONFIG;
+    window.currentUser = null;
+
+    // Initialize
+    (async function() {
+      log('🔄 Loading user from URL...');
+      window.currentUser = await initializeUser();
       
-      let html = '<ul>';
-      let hasHash = false;
-      
-      keys.forEach(key => {
-        const value = localStorage.getItem(key);
-        if (value) {
-          html += `<li class="success">✅ ${key}: ${value.substring(0, 50)}...</li>`;
-          if (key.includes('hash')) hasHash = true;
-        } else {
-          html += `<li class="error">❌ ${key}: NOT FOUND</li>`;
-        }
-      });
-      html += '</ul>';
-      
-      if (!hasHash) {
-        html += '<p class="error">💥 PROBLEM: No user hash found! You need to buy from catalog.html first!</p>';
+      if (window.currentUser) {
+        log(`✅ User loaded: ${window.currentUser.user_id}`);
+      } else {
+        log('⚠️ No user in URL. Add ?user=YOUR_HASH to URL');
       }
-      
-      output.innerHTML = html;
+
+      await refreshAll();
+    })();
+
+    async function refreshAll() {
+      await Promise.all([
+        checkWorkerStatus(),
+        refreshUserInfo(),
+        fetchUserSnakes(),
+        testAllEndpoints()
+      ]);
     }
 
-    window.testWorker = async function() {
-      const output = document.getElementById('worker-check');
-      output.innerHTML = '⏳ Testing...';
+    window.refreshUserInfo = async function() {
+      const container = document.getElementById('user-info');
       
-      try {
-        const response = await fetch(WORKER_CONFIG.WORKER_URL);
-        if (response) {
-          output.innerHTML = `<span class="success">✅ Worker reachable: ${WORKER_CONFIG.WORKER_URL}</span>`;
-        } else {
-          output.innerHTML = `<span class="error">❌ Worker not responding</span>`;
-        }
-      } catch (err) {
-        output.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
-      }
-    };
-
-    window.checkSnakes = async function() {
-      const output = document.getElementById('snakes-check');
-      const userHash = localStorage.getItem('serpent_user_hash') || 
-                       localStorage.getItem('serpent_last_purchase_hash');
-      
-      if (!userHash) {
-        output.innerHTML = '<span class="error">❌ No user hash found! Buy from catalog first.</span>';
+      if (!window.currentUser) {
+        container.innerHTML = '<div class="info-row"><span class="value" style="color: #ef4444;">No user loaded. Add ?user=HASH to URL</span></div>';
         return;
       }
-      
-      output.innerHTML = `⏳ Checking snakes for user: ${userHash}...`;
-      
+
       try {
-        const url = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', userHash);
-        console.log('Fetching from:', url);
+        const url = WORKER_CONFIG.getUserEndpoint('USER_DATA', window.currentUser.user_id);
+        log(`📡 Fetching user data: ${url}`);
         
         const response = await fetch(url);
-        const products = await response.json();
         
-        if (products && products.length > 0) {
-          let html = `<p class="success">✅ Found ${products.length} snake(s)!</p><ul>`;
-          products.forEach(p => {
-            html += `<li>🐍 ${p.product_id} (assigned ${new Date(p.acquired_at).toLocaleString()})</li>`;
-          });
-          html += '</ul>';
-          html += `<p><a href="/game.html?user=${userHash}">Go to game with this hash →</a></p>`;
-          output.innerHTML = html;
+        if (response.ok) {
+          const userData = await response.json();
+          container.innerHTML = `
+            <div class="info-row"><span class="label">User ID:</span><span class="value">${userData.user_id || 'N/A'}</span></div>
+            <div class="info-row"><span class="label">Username:</span><span class="value">${userData.username || 'N/A'}</span></div>
+            <div class="info-row"><span class="label">Email:</span><span class="value">${userData.email || 'N/A'}</span></div>
+            <div class="info-row"><span class="label">Registered:</span><span class="value">${userData.created_at || 'N/A'}</span></div>
+          `;
+          log('✅ User data loaded');
         } else {
-          output.innerHTML = `<p class="error">❌ NO SNAKES FOUND for user ${userHash}</p>
-            <p>This means:</p>
-            <ul>
-              <li>Either webhook didn't fire</li>
-              <li>Or hash mismatch between purchase and game</li>
-              <li>Try buying again from catalog.html</li>
-            </ul>`;
+          container.innerHTML = '<div class="info-row"><span class="value" style="color: #f59e0b;">User not registered in KV yet</span></div>';
+          log('⚠️ User not in KV store');
         }
-      } catch (err) {
-        output.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+      } catch (error) {
+        container.innerHTML = `<div class="info-row"><span class="value" style="color: #ef4444;">Error: ${error.message}</span></div>`;
+        logError(`❌ Failed to load user: ${error.message}`);
       }
     };
 
-    window.generateNewHash = function() {
-      const timestamp = Date.now().toString(36);
-      const random = Math.random().toString(36).substring(2, 15);
-      const hash = timestamp + random;
+    async function fetchUserSnakes() {
+      const container = document.getElementById('user-snakes');
       
-      localStorage.setItem('serpent_user_hash', hash);
-      localStorage.setItem('serpent_last_purchase_hash', hash);
-      localStorage.setItem('serpent_pending_purchase_hash', hash);
-      
-      alert(`New hash generated: ${hash}\n\nNow go buy from catalog.html`);
-      location.reload();
-    };
+      if (!window.currentUser) {
+        container.innerHTML = '<div style="color: #6b7280;">No user loaded</div>';
+        return;
+      }
 
-    window.clearAll = function() {
-      if (confirm('Clear ALL localStorage and start fresh?')) {
-        localStorage.clear();
-        alert('Cleared! Now go to catalog.html and buy again.');
-        location.reload();
+      try {
+        const url = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', window.currentUser.user_id);
+        log(`📡 Fetching snakes: ${url}`);
+        
+        const response = await fetch(url);
+        
+        if (response.ok) {
+          const data = await response.json();
+          const snakes = data.products || [];
+          
+          if (snakes.length === 0) {
+            container.innerHTML = '<div style="color: #6b7280;">No snakes purchased yet</div>';
+          } else {
+            container.innerHTML = `
+              <div style="margin-bottom: 10px;"><strong>${snakes.length} snake(s) found</strong></div>
+              <pre>${JSON.stringify(snakes, null, 2)}</pre>
+            `;
+            log(`✅ Found ${snakes.length} snake(s)`);
+          }
+        } else {
+          container.innerHTML = '<div style="color: #f59e0b;">No snakes in KV store</div>';
+          log('⚠️ No snakes found');
+        }
+      } catch (error) {
+        container.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+        logError(`❌ Failed to fetch snakes: ${error.message}`);
+      }
+    }
+
+    window.fetchKVData = async function() {
+      const container = document.getElementById('kv-data');
+      container.innerHTML = '<div class="spinner"></div>';
+      
+      log('📦 Fetching KV store data...');
+      
+      // Try to get user products
+      if (window.currentUser) {
+        try {
+          const url = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', window.currentUser.user_id);
+          const response = await fetch(url);
+          
+          if (response.ok) {
+            const data = await response.json();
+            container.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            log('✅ KV data loaded');
+            document.getElementById('kv-status').textContent = 'KV: OK';
+            document.getElementById('kv-status').className = 'status ok';
+          } else {
+            container.innerHTML = '<div style="color: #f59e0b;">No data in KV for this user</div>';
+            log('⚠️ No KV data');
+          }
+        } catch (error) {
+          container.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+          logError(`❌ KV fetch failed: ${error.message}`);
+          document.getElementById('kv-status').textContent = 'KV: ERROR';
+          document.getElementById('kv-status').className = 'status error';
+        }
+      } else {
+        container.innerHTML = '<div style="color: #6b7280;">No user to query</div>';
       }
     };
 
-    // Run check on load
-    checkLocalStorage();
+    async function checkWorkerStatus() {
+      try {
+        const url = WORKER_CONFIG.getEndpoint('USER_DATA');
+        log(`📡 Pinging worker: ${url}`);
+        
+        const response = await fetch(url);
+        
+        if (response.status === 404 || response.status === 400 || response.ok) {
+          document.getElementById('worker-status').textContent = 'Worker: ONLINE';
+          document.getElementById('worker-status').className = 'status ok';
+          log('✅ Worker is online');
+          return true;
+        }
+      } catch (error) {
+        document.getElementById('worker-status').textContent = 'Worker: OFFLINE';
+        document.getElementById('worker-status').className = 'status error';
+        logError(`❌ Worker offline: ${error.message}`);
+        return false;
+      }
+    }
+
+    window.testAllEndpoints = async function() {
+      const container = document.getElementById('endpoint-status');
+      container.innerHTML = '<div class="spinner"></div>';
+      
+      log('🧪 Testing all endpoints...');
+      
+      const endpoints = [
+        { name: 'User Products', path: '/user-products?user=test' },
+        { name: 'User Data', path: '/user-data?user=test' },
+        { name: 'Products', path: '/products' },
+        { name: 'Register User', path: '/register-user', method: 'POST' }
+      ];
+      
+      let html = '';
+      for (const endpoint of endpoints) {
+        try {
+          const url = WORKER_CONFIG.baseUrl + endpoint.path;
+          const response = await fetch(url, { method: endpoint.method || 'GET' });
+          const status = response.status;
+          const statusClass = status < 400 ? 'ok' : (status < 500 ? 'warning' : 'error');
+          html += `<div class="info-row">
+            <span class="label">${endpoint.name}:</span>
+            <span class="status ${statusClass}" style="font-size: 12px;">${status}</span>
+          </div>`;
+          log(`${status < 400 ? '✅' : '⚠️'} ${endpoint.name}: ${status}`);
+        } catch (error) {
+          html += `<div class="info-row">
+            <span class="label">${endpoint.name}:</span>
+            <span class="status error" style="font-size: 12px;">ERROR</span>
+          </div>`;
+          logError(`❌ ${endpoint.name}: ${error.message}`);
+        }
+      }
+      
+      container.innerHTML = html;
+    };
+
+    window.clearUserData = async function() {
+      if (!confirm('⚠️ This will clear your data from the dashboard. Continue?')) return;
+      
+      log('🗑️ Clearing local data...');
+      localStorage.clear();
+      sessionStorage.clear();
+      log('✅ Local data cleared');
+      
+      alert('✅ Local data cleared. KV data remains (use Cloudflare dashboard to clear KV)');
+    };
+
+    window.clearLog = function() {
+      document.getElementById('debug-log').innerHTML = '<div class="log-entry">📝 Log cleared</div>';
+    };
+
+    window.exportLog = function() {
+      const log = document.getElementById('debug-log').innerText;
+      const blob = new Blob([log], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `serpent-debug-${Date.now()}.txt`;
+      a.click();
+    };
+
+    function log(message) {
+      const logDiv = document.getElementById('debug-log');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+
+    function logError(message) {
+      const logDiv = document.getElementById('debug-log');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry error';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.error(message);
+    }
+
+    // Export for window use
+    window.log = log;
+    window.logError = logError;
+    window.fetchUserSnakes = fetchUserSnakes;
   </script>
 </body>
 </html>

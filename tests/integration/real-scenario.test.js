@@ -2,7 +2,7 @@
 // REAL USER SCENARIO TEST - This MUST pass for the app to work!
 // Simulates actual purchase flow from catalog → game
 
-import { WORKER_CONFIG } from '../src/config/worker-config.js';
+import { WORKER_CONFIG } from '../../src/config/worker-config.js';
 
 let passed = 0;
 let failed = 0;
@@ -164,7 +164,7 @@ await test('STEP 7: Second purchase goes to FARM (not registration)', async () =
   assert(shouldSkipRegistration, '🚨 Second purchase forces re-registration!');
   
   // Import PAGE_URLS to verify redirect
-  const { PAGE_URLS } = await import('../src/config/worker-config.js');
+  const { PAGE_URLS } = await import('../../src/config/worker-config.js');
   const expectedUrl = PAGE_URLS.getGameUrl(TEST_USER_HASH);
   
   assert(expectedUrl.includes('/game.html'), 'Should redirect to game.html');
@@ -187,7 +187,7 @@ await test('STEP 8: Farm page (game.html) displays purchased snakes', async () =
   assert(products.length > 0, '🚨 NO SNAKES in farm! User bought but collection is empty!');
   
   // Verify farm URL structure
-  const { PAGE_URLS } = await import('../src/config/worker-config.js');
+  const { PAGE_URLS } = await import('../../src/config/worker-config.js');
   const farmUrl = PAGE_URLS.getGameUrl(TEST_USER_HASH);
   
   assert(farmUrl === `/game.html?user=${TEST_USER_HASH}`, 'Farm URL incorrect');

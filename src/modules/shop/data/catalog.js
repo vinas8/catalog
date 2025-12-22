@@ -15,7 +15,7 @@ export async function loadCatalog() {
   try {
     // Add cache buster to force fresh load
     const cacheBuster = Date.now();
-    const response = await fetch(`/data/products.json?v=${cacheBuster}`);
+    const response = await fetch(`./data/products.json?v=${cacheBuster}`);
     if (!response.ok) {
       throw new Error(`Failed to load catalog: ${response.status}`);
     }

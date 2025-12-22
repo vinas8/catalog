@@ -1,0 +1,37 @@
+# New src/ Structure
+
+src/
+├── modules/
+│   ├── common/              ✅ Shared utilities
+│   │   ├── constants.js
+│   │   └── core.js
+│   ├── game/                ✅ Game logic
+│   │   ├── game-controller.js
+│   │   └── plugins/
+│   │       ├── dex.js
+│   │       ├── plants.js
+│   │       ├── shop.js
+│   │       ├── snakes.js
+│   │       └── tamagotchi.js
+│   └── shop/                ✅ Shop/Catalog
+│       ├── business/
+│       │   ├── economy.js
+│       │   ├── equipment.js
+│       │   └── stripe-sync.js
+│       ├── data/
+│       │   ├── catalog.js
+│       │   ├── equipment-catalog.js
+│       │   ├── morphs.js
+│       │   └── species-profiles.js
+│       └── ui/
+│           ├── catalog-renderer.js
+│           └── shop-view.js
+├── auth/                    ✅ Authentication (cross-cutting)
+│   └── user-auth.js
+├── config/                  ✅ Configuration (cross-cutting)
+│   ├── stripe-config.js
+│   └── worker-config.js
+├── payment/                 ✅ Payment logic (cross-cutting)
+│   ├── config.js
+│   └── payment-adapter.js
+└── index.html               (deprecated - can archive)

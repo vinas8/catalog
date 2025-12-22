@@ -1,11 +1,11 @@
 // Simple Game Tests - v3.2
 // Run with: node tests/game.test.js
 
-import { Economy, createInitialGameState } from '../src/business/economy.js';
-import { EquipmentShop } from '../src/business/equipment.js';
-import { SPECIES_PROFILES } from '../src/data/species-profiles.js';
-import { MORPH_TRAITS } from '../src/data/morphs.js';
-import { EQUIPMENT_CATALOG } from '../src/data/equipment-catalog.js';
+import { Economy, createInitialGameState } from '../../../src/modules/shop/business/economy.js';
+import { EquipmentShop } from '../../../src/modules/shop/business/equipment.js';
+import { SPECIES_PROFILES } from '../../../src/modules/shop/data/species-profiles.js';
+import { MORPH_TRAITS } from '../../../src/modules/shop/data/morphs.js';
+import { EQUIPMENT_CATALOG } from '../../../src/modules/shop/data/equipment-catalog.js';
 
 // Test counter
 let passed = 0;

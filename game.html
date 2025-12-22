@@ -34,9 +34,10 @@
     <!-- Main Navigation -->
     <nav class="main-nav">
       <button class="nav-btn active" data-view="farm">🏡 My Farm</button>
-      <button class="nav-btn" data-view="catalog">📖 Catalog</button>
+      <a href="catalog.html" class="nav-btn" style="text-decoration: none;">🛒 Shop</a>
       <button class="nav-btn" data-view="encyclopedia">📚 Encyclopedia</button>
       <button class="nav-btn" data-view="calculator">🧬 Genetics</button>
+      <a href="debug.html" class="nav-btn" style="text-decoration: none; opacity: 0.7;">🔍 Debug</a>
     </nav>
 
     <!-- Main Content -->
@@ -191,6 +192,6 @@
   </div>
 
   <!-- Game Logic -->
-  <script type="module" src="src/game-controller.js"></script>
+  <script type="module" src="src/modules/game/game-controller.js"></script>
 </body>
 </html>

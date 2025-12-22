@@ -1,24 +1,30 @@
-# 🐍 Serpent Town v0.2.0
+# 🐍 Serpent Town v0.3.0
 
 Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care mechanics.
 
 [![Tests](https://img.shields.io/badge/tests-86%2F86%20passing-brightgreen)]()
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue)]()
-[![Version](https://img.shields.io/badge/version-0.2.0-purple)]()
+[![Version](https://img.shields.io/badge/version-0.3.0-purple)]()
+[![Architecture](https://img.shields.io/badge/architecture-modular-orange)]()
 
 ---
 
 ## 📖 Documentation
 
-**Full documentation is in the [`docs/`](docs/) directory**
-
 ### Quick Links
 
-- **[📑 INDEX](docs/INDEX.md)** - Project overview & version index (START HERE)
-- **[📘 v0.2.0 Technical Docs](docs/v0.2.0.md)** - Current version details
+- **[🧩 Module System](docs/modules/README.md)** - Modular architecture (NEW!)
 - **[⚙️ Setup Guide](docs/SETUP.md)** - Installation & deployment
-- **[☁️ Cloudflare Setup](docs/CLOUDFLARE-SETUP-COMPLETE.md)** - Worker configuration
-- **[📝 Changelog](docs/CHANGES_SUMMARY.md)** - Version history
+- **[📚 API Reference](docs/project-api.md)** - API endpoints
+- **[🔐 Credentials](docs/API_CREDENTIALS.md)** - API keys setup
+
+### Module Docs
+
+- **[💳 Payment](docs/modules/payment.md)** - Stripe integration
+- **[🛒 Shop](docs/modules/shop.md)** - Product catalog & economy
+- **[🎮 Game](docs/modules/game.md)** - Tamagotchi mechanics
+- **[🔐 Auth](docs/modules/auth.md)** - User authentication
+- **[🔧 Common](docs/modules/common.md)** - Shared utilities
 
 ---
 
@@ -47,9 +53,10 @@ http://localhost:8000/game.html         # Play Tamagotchi game
 
 ## 🎯 Key Features
 
+- ✅ **Modular Architecture** - Enable/disable features with one line
+- ✅ **5 Core Modules** - Payment, Shop, Game, Auth, Common
 - ✅ **3-Section Catalog** - Available / Virtual / Sold (collapsible)
-- ✅ **Sold Status Tracking** - Real snakes marked sold via Cloudflare KV
-- ✅ **Developer Dashboard** - All tools in one place
+- ✅ **Sold Status via KV** - Real-time product status from Cloudflare
 - ✅ **Tamagotchi Care** - 8 stats, equipment shop, multiple species
 - ✅ **Stripe Integration** - Secure payments with webhooks
 - ✅ **Zero Dependencies** - Pure ES6 modules
@@ -63,7 +70,19 @@ http://localhost:8000/game.html         # Play Tamagotchi game
 Frontend (GitHub Pages) → Backend (Cloudflare Workers) → Storage (KV)
 ```
 
-See [docs/v0.2.0.md](docs/v0.2.0.md) or [docs/INDEX.md](docs/INDEX.md) for complete details.
+### Modular Structure
+```
+src/modules/
+├── payment/    # Stripe webhooks & checkout
+├── shop/       # Catalog, economy, UI
+├── game/       # Tamagotchi mechanics
+├── auth/       # User authentication
+└── common/     # Shared utilities
+```
+
+**Enable/disable any module:** Edit `src/module-config.js` (one line change)
+
+See [Module Docs](docs/modules/README.md) for details.
 
 ---
 
@@ -73,12 +92,24 @@ See [docs/v0.2.0.md](docs/v0.2.0.md) or [docs/INDEX.md](docs/INDEX.md) for compl
 
 **Quick Commands:**
 ```bash
-npm test                              # Run all tests
-cd worker && wrangler publish         # Deploy worker
-bash scripts/clean-kv.sh              # Clean KV data
+npm test                  # Run all tests
+npm test:payment          # Test payment module
+npm test:game             # Test game module
+npm test:shop             # Test shop module
+cd worker && wrangler publish  # Deploy worker
+bash scripts/clean-kv.sh  # Clean KV data
 ```
 
-**Full guide:** [docs/INDEX.md](docs/INDEX.md)
+**Module Management:**
+```javascript
+// Disable a module (src/module-config.js)
+export const MODULE_CONFIG = {
+  payment: { enabled: false },  // Turns off Stripe
+  game: { enabled: false },     // Shop-only mode
+};
+```
+
+**Full guide:** [Module System](docs/modules/README.md)
 
 ---
 
@@ -89,6 +120,7 @@ MIT
 ---
 
 **Repository:** https://github.com/vinas8/catalog  
-**Version:** 0.2.0  
+**Version:** 0.3.0  
 **Live Demo:** https://vinas8.github.io/catalog/  
-**Documentation:** [docs/](docs/)
+**Documentation:** [docs/](docs/)  
+**Modules:** [docs/modules/](docs/modules/)

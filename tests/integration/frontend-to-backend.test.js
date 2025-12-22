@@ -3,7 +3,7 @@
 // Tests from USER'S VIEW: Check HTML pages first, then dig into backend if broken
 
 import { readFileSync } from 'fs';
-import { WORKER_CONFIG, PAGE_URLS } from '../src/config/worker-config.js';
+import { WORKER_CONFIG, PAGE_URLS } from '../../src/config/worker-config.js';
 
 let passed = 0;
 let failed = 0;
@@ -68,7 +68,7 @@ await test('✓ register.html has username generator', async () => {
 
 await test('✓ game.html loads from worker (not local file)', async () => {
   const html = readFileSync('./game.html', 'utf8');
-  const controllerJs = readFileSync('./src/game-controller.js', 'utf8');
+  const controllerJs = readFileSync('./src/modules/game/game-controller.js', 'utf8');
   
   assert(!controllerJs.includes('/data/user-products.json'), 
     '🚨 STILL LOADING FROM LOCAL FILE! Should use worker API');
@@ -92,7 +92,7 @@ await test('✓ game.html displays user profile', async () => {
 console.log('\n📜 LAYER 2: Checking JavaScript Logic...\n');
 
 await test('✓ game-controller.js loads user profile', async () => {
-  const js = readFileSync('./src/game-controller.js', 'utf8');
+  const js = readFileSync('./src/modules/game/game-controller.js', 'utf8');
   assert(js.includes('loadUserProfile'), 'Missing loadUserProfile function');
   assert(js.includes('USER_DATA'), 'Not fetching user data');
   assert(js.includes('displayUserProfile'), 'Not displaying profile');
@@ -100,7 +100,7 @@ await test('✓ game-controller.js loads user profile', async () => {
 });
 
 await test('✓ game-controller.js loads snakes from worker', async () => {
-  const js = readFileSync('./src/game-controller.js', 'utf8');
+  const js = readFileSync('./src/modules/game/game-controller.js', 'utf8');
   assert(js.includes('loadUserSnakes'), 'Missing loadUserSnakes function');
   assert(js.includes('USER_PRODUCTS'), 'Not fetching from USER_PRODUCTS endpoint');
   assert(js.includes('WORKER_CONFIG'), 'Not using worker config');

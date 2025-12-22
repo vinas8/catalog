@@ -1,13 +1,14 @@
 // Main Game Logic - Serpent Town v3.4
 // User authentication via URL hash + user-specific data loading
 
-import { Economy, createInitialGameState } from './business/economy.js';
-import { EquipmentShop } from './business/equipment.js';
-import { openShop } from './ui/shop-view.js';
-import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from './data/species-profiles.js';
-import { getMorphsForSpecies } from './data/morphs.js';
-import { getProductsBySpecies } from './data/catalog.js';
-import { UserAuth, initializeUser } from './auth/user-auth.js';
+import { Economy, createInitialGameState } from '../shop/business/economy.js';
+import { EquipmentShop } from '../shop/business/equipment.js';
+import { openShop } from '../shop/ui/shop-view.js';
+import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from '../shop/data/species-profiles.js';
+import { getMorphsForSpecies } from '../shop/data/morphs.js';
+import { getProductsBySpecies, loadCatalog } from '../shop/data/catalog.js';
+import { renderGameCatalog } from '../shop/ui/catalog-renderer.js';
+import { UserAuth, initializeUser } from '../../auth/user-auth.js';
 
 class SerpentTown {
   constructor() {
@@ -54,7 +55,7 @@ class SerpentTown {
   async loadUserProfile() {
     try {
       // Import worker config
-      const { WORKER_CONFIG } = await import('./config/worker-config.js');
+      const { WORKER_CONFIG } = await import('../../config/worker-config.js');
       
       // Try loading from worker first
       const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_DATA', this.currentUser.user_id);
@@ -113,7 +114,7 @@ class SerpentTown {
       debug('🔄 Starting loadUserSnakes...');
       
       // Import worker config
-      const { WORKER_CONFIG } = await import('./config/worker-config.js');
+      const { WORKER_CONFIG } = await import('../../config/worker-config.js');
       debug(`✅ Config loaded: ${WORKER_CONFIG.WORKER_URL}`);
       
       // Load user's snakes from Cloudflare Worker KV
@@ -356,6 +357,14 @@ class SerpentTown {
   }
   
   switchView(viewName) {
+    // External page navigation
+    if (viewName === 'catalog') {
+      // Preserve user hash when navigating to catalog
+      const userHash = new URLSearchParams(window.location.search).get('user');
+      window.location.href = userHash ? `catalog.html?user=${userHash}` : 'catalog.html';
+      return;
+    }
+    
     // Hide all views
     document.querySelectorAll('.view-content').forEach(view => {
       view.classList.remove('active');
@@ -376,9 +385,6 @@ class SerpentTown {
     switch(viewName) {
       case 'farm':
         this.renderFarmView();
-        break;
-      case 'catalog':
-        this.renderCatalogView();
         break;
       case 'encyclopedia':
         this.renderEncyclopediaView();
@@ -611,42 +617,21 @@ class SerpentTown {
     const speciesFilter = document.getElementById('species-filter');
     const selectedSpecies = speciesFilter ? speciesFilter.value : 'all';
     
-    // Show loading state
-    container.innerHTML = '<div class="loading">Loading catalog...</div>';
-    
-    try {
-      // Load products from JSON file
-      console.log('🔄 Loading products for species:', selectedSpecies);
-      const products = await getProductsBySpecies(selectedSpecies);
-      console.log('✅ Loaded products:', products);
-      
-      if (products.length === 0) {
-        container.innerHTML = '<div class="empty-state">No snakes available in this category</div>';
-        return;
-      }
-      
-      // Render products
-      container.innerHTML = products.map(item => `
-        <div class="catalog-item" data-species="${item.species}">
-          <div class="item-image">${item.image || '🐍'}</div>
-          <h3>${item.name}</h3>
-          <p class="species-info">${SPECIES_PROFILES[item.species]?.common_name || item.species} - ${item.morph}</p>
-          <p class="item-description">${item.description}</p>
-          <p class="item-info">${item.info}</p>
-          <div class="item-price">$${typeof item.price === 'number' ? item.price.toFixed(2) : item.price}</div>
-          <a href="${item.stripe_link}" target="_blank" class="primary-btn">
-            💳 Buy with Stripe
-          </a>
-        </div>
-      `).join('');
-    } catch (error) {
-      console.error('❌ Error loading catalog:', error);
-      container.innerHTML = '<div class="error-state">Failed to load catalog. Please try again.</div>';
-    }
+    // Use reusable catalog renderer
+    await renderGameCatalog(container, selectedSpecies);
   }
   
   renderEncyclopediaView() {
-    console.log('Encyclopedia view (to be implemented with markdown files)');
+    const container = document.querySelector('#encyclopedia-view .encyclopedia-categories');
+    if (!container) return;
+    
+    // Add click handlers to category cards
+    container.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const category = card.dataset.category;
+        this.showNotification(`📚 Encyclopedia: ${category} (Coming soon!)`, 'info');
+      });
+    });
   }
   
   renderCalculatorView() {

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Debug - Check LocalStorage</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    .section { background: #f5f5f5; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+    .error { color: #e74c3c; font-weight: bold; }
+    .success { color: #27ae60; font-weight: bold; }
+    .warning { color: #f39c12; font-weight: bold; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🔍 LocalStorage Debugger</h1>
+  
+  <div class="section">
+    <h2>Step 1: Check LocalStorage</h2>
+    <div id="localStorage-check"></div>
+  </div>
+
+  <div class="section">
+    <h2>Step 2: Check Worker Connection</h2>
+    <div id="worker-check"></div>
+    <button onclick="testWorker()">Test Worker</button>
+  </div>
+
+  <div class="section">
+    <h2>Step 3: Check Your Snakes in KV</h2>
+    <div id="snakes-check"></div>
+    <button onclick="checkSnakes()">Check My Snakes</button>
+  </div>
+
+  <div class="section">
+    <h2>Step 4: Manual Fix</h2>
+    <button onclick="generateNewHash()">Generate New Hash</button>
+    <button onclick="clearAll()">Clear Everything & Start Over</button>
+  </div>
+
+  <script type="module">
+    import { WORKER_CONFIG } from './src/config/worker-config.js';
+    window.WORKER_CONFIG = WORKER_CONFIG;
+
+    // Check localStorage immediately
+    function checkLocalStorage() {
+      const output = document.getElementById('localStorage-check');
+      const keys = ['serpent_user_hash', 'serpent_last_purchase_hash', 'serpent_pending_purchase_hash', 'serpent_user'];
+      
+      let html = '<ul>';
+      let hasHash = false;
+      
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          html += `<li class="success">✅ ${key}: ${value.substring(0, 50)}...</li>`;
+          if (key.includes('hash')) hasHash = true;
+        } else {
+          html += `<li class="error">❌ ${key}: NOT FOUND</li>`;
+        }
+      });
+      html += '</ul>';
+      
+      if (!hasHash) {
+        html += '<p class="error">💥 PROBLEM: No user hash found! You need to buy from catalog.html first!</p>';
+      }
+      
+      output.innerHTML = html;
+    }
+
+    window.testWorker = async function() {
+      const output = document.getElementById('worker-check');
+      output.innerHTML = '⏳ Testing...';
+      
+      try {
+        const response = await fetch(WORKER_CONFIG.WORKER_URL);
+        if (response) {
+          output.innerHTML = `<span class="success">✅ Worker reachable: ${WORKER_CONFIG.WORKER_URL}</span>`;
+        } else {
+          output.innerHTML = `<span class="error">❌ Worker not responding</span>`;
+        }
+      } catch (err) {
+        output.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+      }
+    };
+
+    window.checkSnakes = async function() {
+      const output = document.getElementById('snakes-check');
+      const userHash = localStorage.getItem('serpent_user_hash') || 
+                       localStorage.getItem('serpent_last_purchase_hash');
+      
+      if (!userHash) {
+        output.innerHTML = '<span class="error">❌ No user hash found! Buy from catalog first.</span>';
+        return;
+      }
+      
+      output.innerHTML = `⏳ Checking snakes for user: ${userHash}...`;
+      
+      try {
+        const url = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', userHash);
+        console.log('Fetching from:', url);
+        
+        const response = await fetch(url);
+        const products = await response.json();
+        
+        if (products && products.length > 0) {
+          let html = `<p class="success">✅ Found ${products.length} snake(s)!</p><ul>`;
+          products.forEach(p => {
+            html += `<li>🐍 ${p.product_id} (assigned ${new Date(p.acquired_at).toLocaleString()})</li>`;
+          });
+          html += '</ul>';
+          html += `<p><a href="/game.html?user=${userHash}">Go to game with this hash →</a></p>`;
+          output.innerHTML = html;
+        } else {
+          output.innerHTML = `<p class="error">❌ NO SNAKES FOUND for user ${userHash}</p>
+            <p>This means:</p>
+            <ul>
+              <li>Either webhook didn't fire</li>
+              <li>Or hash mismatch between purchase and game</li>
+              <li>Try buying again from catalog.html</li>
+            </ul>`;
+        }
+      } catch (err) {
+        output.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+      }
+    };
+
+    window.generateNewHash = function() {
+      const timestamp = Date.now().toString(36);
+      const random = Math.random().toString(36).substring(2, 15);
+      const hash = timestamp + random;
+      
+      localStorage.setItem('serpent_user_hash', hash);
+      localStorage.setItem('serpent_last_purchase_hash', hash);
+      localStorage.setItem('serpent_pending_purchase_hash', hash);
+      
+      alert(`New hash generated: ${hash}\n\nNow go buy from catalog.html`);
+      location.reload();
+    };
+
+    window.clearAll = function() {
+      if (confirm('Clear ALL localStorage and start fresh?')) {
+        localStorage.clear();
+        alert('Cleared! Now go to catalog.html and buy again.');
+        location.reload();
+      }
+    };
+
+    // Run check on load
+    checkLocalStorage();
+  </script>
+</body>
+</html>
