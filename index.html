@@ -52,7 +52,7 @@
   </div>
 
   <script type="module">
-    import { getProductsBySpecies } from './src/data/catalog.js';
+    import { getProductsBySpecies } from './src/modules/shop/data/catalog.js';
     async function loadSnakes() {
       try {
         const products = await getProductsBySpecies('all');

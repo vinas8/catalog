@@ -12,6 +12,11 @@ id = "3b88d32c0a0540a8b557c5fb698ff61a"
 binding = "PRODUCT_STATUS"
 id = "57da5a83146147c8939e4070d4b4d4c1"
 
+# KV Namespace for product catalog ⭐ NEW
+[[kv_namespaces]]
+binding = "PRODUCTS"
+id = "ecbcb79f3df64379863872965f993991"
+
 # Routes (uncomment when deploying to custom domain)
 # routes = [
 #   { pattern = "api.serpenttown.com/*", zone_name = "serpenttown.com" }

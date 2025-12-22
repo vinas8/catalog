@@ -2,7 +2,7 @@
 // Integration Test - Worker API & Purchase Flow
 // Tests the complete purchase flow with worker config
 
-import { WORKER_CONFIG } from '../../src/config/worker-config.js';
+import { WORKER_CONFIG } from '../../../src/config/worker-config.js';
 
 let passed = 0;
 let failed = 0;

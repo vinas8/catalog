@@ -3,8 +3,8 @@
  * Tests payment provider abstraction and merchant functionality
  */
 
-import { PaymentAdapterFactory } from '../src/payment/payment-adapter.js';
-import { PAYMENT_PROVIDER } from '../src/payment/config.js';
+import { PaymentAdapterFactory } from '../../../src/modules/payment/payment-adapter.js';
+import { PAYMENT_PROVIDER } from '../../../src/modules/payment/config.js';
 
 const WORKER_URL = 'https://serpent-town.vinatier8.workers.dev';
 

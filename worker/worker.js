@@ -1,14 +1,15 @@
 /**
- * Cloudflare Worker for Serpent Town v3.4
+ * Cloudflare Worker for Serpent Town v3.5
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
  * - PRODUCT_STATUS (KV namespace) - Tracks which products are sold
+ * - PRODUCTS (KV namespace) - Product catalog ⭐ NEW
  *
  * Endpoints:
  * - POST /stripe-webhook  (Stripe webhook)
  * - GET  /user-products?user=<hash>  (Get user's snakes)
- * - GET  /products  (Get available products)
+ * - GET  /products  (Get product catalog from KV)
  * - GET  /product-status?id=<product_id>  (Check if product is sold)
  *
  * Features:
@@ -17,10 +18,11 @@
  * - Handles Stripe checkout.session.completed events
  * - Assigns snakes to users by hash
  * - Tracks sold status for unique real snakes
+ * - Serves product catalog from KV (not JSON files)
  *
  * Deployment:
  * - wrangler publish
- * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS
+ * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS
  */
 
 export default {
@@ -257,8 +259,11 @@ async function handleGetProductStatus(request, env, corsHeaders) {
       });
     }
 
-    // Return status data
-    return new Response(statusData, {
+    // Parse and enrich status data
+    const parsedStatus = JSON.parse(statusData);
+    parsedStatus.product_id = productId; // Add product_id to response
+    
+    return new Response(JSON.stringify(parsedStatus), {
       status: 200,
       headers: corsHeaders
     });
@@ -318,14 +323,59 @@ async function handleGetUserProducts(request, env, corsHeaders) {
  * Get all available products (from GitHub Pages fallback)
  */
 async function handleGetProducts(request, env, corsHeaders) {
-  // For now, just return a message
-  // In production, this could proxy to GitHub Pages or maintain a cache
-  return new Response(JSON.stringify({
-    message: 'Load products from GitHub Pages: /data/products.json'
-  }), {
-    status: 200,
-    headers: corsHeaders
-  });
+  try {
+    // Check if PRODUCTS namespace is bound
+    if (!env.PRODUCTS) {
+      console.warn('⚠️ PRODUCTS namespace not bound');
+      return new Response(JSON.stringify({
+        error: 'PRODUCTS namespace not configured',
+        message: 'Load products from GitHub Pages: /data/products.json'
+      }), {
+        status: 503,
+        headers: corsHeaders
+      });
+    }
+
+    // Get product index
+    const indexData = await env.PRODUCTS.get('_index:products');
+    if (!indexData) {
+      console.warn('⚠️ Product index not found in KV');
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    const productIds = JSON.parse(indexData);
+    console.log(`📦 Loading ${productIds.length} products from KV`);
+
+    // Fetch all products
+    const products = [];
+    for (const id of productIds) {
+      const key = `product:${id}`;
+      const productData = await env.PRODUCTS.get(key);
+      if (productData) {
+        products.push(JSON.parse(productData));
+      }
+    }
+
+    console.log(`✅ Returning ${products.length} products from KV`);
+    return new Response(JSON.stringify(products), {
+      status: 200,
+      headers: corsHeaders
+    });
+
+  } catch (err) {
+    console.error('❌ Error loading products from KV:', err);
+    return new Response(JSON.stringify({
+      error: 'Failed to load products',
+      details: err.message,
+      message: 'Fallback to GitHub Pages: /data/products.json'
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
 }
 
 /**

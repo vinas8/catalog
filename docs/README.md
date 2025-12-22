@@ -2,7 +2,10 @@
 
 ## 🏗️ Core Documentation
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - **Module system, structure, enable/disable modules**
+- **[COPILOT-RULES.md](COPILOT-RULES.md)** - **🤖 Architectural rules for AI assistants** ⭐
+- **[architecture/](architecture/)** - **System architecture and design** (2 docs)
+  - [ARCHITECTURE.md](architecture/ARCHITECTURE.md) - Module system
+  - [KV-ARCHITECTURE.md](architecture/KV-ARCHITECTURE.md) - KV storage design
 - **[SETUP.md](SETUP.md)** - Installation and deployment guide
 - **[API_CREDENTIALS.md](API_CREDENTIALS.md)** - API access for AI assistants
 
@@ -25,14 +28,16 @@
 - **[encyclopedia/](encyclopedia/)** - Snake species and morph database
 - **[photos/](photos/)** - Game screenshots and visual documentation
 - **[releases/](releases/)** - Version release notes
-- **[archive/](archive/)** - Historical development documentation (includes old v0.1.0-v0.3.0 docs)
+- **[temp/](temp/)** - Temporary docs and historical setup guides (not current)
 
 ## 📁 Documentation Structure
 
 ```
 /docs/
 ├── README.md              # This file (documentation index)
-├── ARCHITECTURE.md        # Module system and design principles ⭐
+├── COPILOT-RULES.md       # AI assistant guidelines ⭐
+├── ARCHITECTURE.md        # Module system and design principles
+├── KV-ARCHITECTURE.md     # KV storage architecture ⭐ NEW
 ├── SETUP.md              # Setup and deployment
 ├── API_CREDENTIALS.md    # API keys management
 ├── project-api.md        # Core API reference
@@ -49,7 +54,8 @@
 │   └── v0.0.x-consolidation.md
 ├── encyclopedia/         # Species and morph data
 ├── photos/              # Screenshots
-└── archive/             # Historical docs (v0.1.0, v0.2.0, v0.3.0, etc.)
+└── temp/                # Temporary docs and historical setup guides
+    └── test/            # Test session summaries
 ```
 
 ---
