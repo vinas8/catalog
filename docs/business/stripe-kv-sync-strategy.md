@@ -6,6 +6,23 @@
 
 ---
 
+## 📋 TL;DR
+
+**Goal:** Catalog loads from KV, KV auto-syncs with Stripe
+
+**Solution:** Add Stripe webhook endpoint to Worker
+- Listen: `product.created`, `product.updated`, `product.deleted`
+- Action: Update PRODUCTS KV namespace automatically
+- Benefit: Real-time sync, no manual intervention
+
+**Implementation:** 
+1. Add `/stripe-product-webhook` endpoint to Worker
+2. Configure webhook in Stripe Dashboard
+3. Handle events → update KV
+4. Done! Products auto-sync 🎉
+
+---
+
 ## 🎯 Goal
 
 **Catalog data should come from KV, and KV should automatically sync with Stripe.**
