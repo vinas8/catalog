@@ -11,9 +11,13 @@ Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care me
 
 ## 📖 Documentation
 
+📚 **[Complete Documentation Index](docs/DOCUMENTATION_INDEX.md)** - All docs organized by topic
+
 ### Quick Links
 
-- **[🧩 Module System](docs/modules/README.md)** - Modular architecture (NEW!)
+- **[🚀 Developer Reference](docs/DEVELOPER_REFERENCE.md)** - Command cheatsheet (⭐ START HERE)
+- **[☁️ Cloudflare API](docs/CLOUDFLARE_API_EXAMPLES.md)** - KV storage & curl examples
+- **[🧩 Module System](docs/modules/README.md)** - Modular architecture
 - **[⚙️ Setup Guide](docs/SETUP.md)** - Installation & deployment
 - **[📚 API Reference](docs/project-api.md)** - API endpoints
 - **[🔐 Credentials](docs/API_CREDENTIALS.md)** - API keys setup
@@ -53,10 +57,10 @@ http://localhost:8000/game.html         # Play Tamagotchi game
 
 ## 🎯 Key Features
 
-- ✅ **Modular Architecture** - Enable/disable features with one line
+- ✅ **Modular Architecture** - Enable/disable features with feature flags
 - ✅ **5 Core Modules** - Payment, Shop, Game, Auth, Common
-- ✅ **3-Section Catalog** - Available / Virtual / Sold (collapsible)
-- ✅ **Sold Status via KV** - Real-time product status from Cloudflare
+- ✅ **Feature Flags** - Toggle virtual snakes, breeding, marketplace
+- ✅ **Real-Time Product Status** - KV-backed availability tracking
 - ✅ **Tamagotchi Care** - 8 stats, equipment shop, multiple species
 - ✅ **Stripe Integration** - Secure payments with webhooks
 - ✅ **Zero Dependencies** - Pure ES6 modules
@@ -80,7 +84,16 @@ src/modules/
 └── common/     # Shared utilities
 ```
 
-**Enable/disable any module:** Edit `src/module-config.js` (one line change)
+**Enable/disable features:** Edit `src/config/feature-flags.js`
+
+```javascript
+// src/config/feature-flags.js
+export const FEATURE_FLAGS = {
+  ENABLE_VIRTUAL_SNAKES: false,  // ❌ Disabled
+  ENABLE_BREEDING: false,
+  ENABLE_MARKETPLACE: false
+};
+```
 
 See [Module Docs](docs/modules/README.md) for details.
 

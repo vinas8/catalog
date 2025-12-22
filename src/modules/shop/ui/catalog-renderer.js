@@ -3,6 +3,7 @@
 
 import { getProductsBySpecies, loadCatalog } from '../data/catalog.js';
 import { SPECIES_PROFILES } from '../data/species-profiles.js';
+import { FEATURE_FLAGS } from '../../config/feature-flags.js';
 
 /**
  * Render catalog items for game.html
@@ -67,7 +68,9 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
     
     // Separate by type
     const realProducts = filteredProducts.filter(p => p.type === 'real');
-    const virtualProducts = filteredProducts.filter(p => p.type === 'virtual');
+    const virtualProducts = FEATURE_FLAGS.ENABLE_VIRTUAL_SNAKES 
+      ? filteredProducts.filter(p => p.type === 'virtual')
+      : [];
     
     // Check status from worker for real snakes
     const statusPromises = realProducts.map(p => checkProductStatus(p.id));

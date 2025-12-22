@@ -12,5 +12,19 @@
     "type": "real",
     "status": "available",
     "source": "stripe"
+  },
+  {
+    "id": "prod_TeTICJsKnUh6Xz",
+    "name": "Amelanistic Corn Snake",
+    "description": "Beautiful orange and red amelanistic corn snake, captive bred",
+    "images": [],
+    "species": "corn_snake",
+    "morph": "amelanistic",
+    "price": 80.0,
+    "currency": "eur",
+    "stripe_link": "https://buy.stripe.com/test_28E4gy89X3nW9JM6mHbjW01",
+    "type": "real",
+    "status": "available",
+    "source": "stripe"
   }
 ]
