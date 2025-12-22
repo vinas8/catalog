@@ -1,65 +1,78 @@
-# Documentation Index - Serpent Town v0.3.0
+# 📚 Serpent Town Documentation
 
-## 🏗️ Core Documentation
-
-- **[COPILOT-RULES.md](COPILOT-RULES.md)** - **🤖 Architectural rules for AI assistants** ⭐
-- **[architecture/](architecture/)** - **System architecture and design** (2 docs)
-  - [ARCHITECTURE.md](architecture/ARCHITECTURE.md) - Module system
-  - [KV-ARCHITECTURE.md](architecture/KV-ARCHITECTURE.md) - KV storage design
-- **[SETUP.md](SETUP.md)** - Installation and deployment guide
-- **[API_CREDENTIALS.md](API_CREDENTIALS.md)** - API access for AI assistants
-
-## 📦 Module Documentation
-
-- **[modules/README.md](modules/README.md)** - Modules overview and index
-- [payment.md](modules/payment.md) - Stripe payments and webhooks
-- [shop.md](modules/shop.md) - Product catalog and breeding economy
-- [game.md](modules/game.md) - Tamagotchi mechanics and stats
-- [auth.md](modules/auth.md) - User authentication
-- [common.md](modules/common.md) - Shared utilities
-
-## 🔧 API Reference
-
-- **[project-api.md](project-api.md)** - Core API reference
-- **[test-api.md](test-api.md)** - Testing utilities
-
-## 📚 Additional Resources
-
-- **[encyclopedia/](encyclopedia/)** - Snake species and morph database
-- **[photos/](photos/)** - Game screenshots and visual documentation
-- **[releases/](releases/)** - Version release notes
-- **[temp/](temp/)** - Temporary docs and historical setup guides (not current)
-
-## 📁 Documentation Structure
-
-```
-/docs/
-├── README.md              # This file (documentation index)
-├── COPILOT-RULES.md       # AI assistant guidelines ⭐
-├── ARCHITECTURE.md        # Module system and design principles
-├── KV-ARCHITECTURE.md     # KV storage architecture ⭐ NEW
-├── SETUP.md              # Setup and deployment
-├── API_CREDENTIALS.md    # API keys management
-├── project-api.md        # Core API reference
-├── test-api.md           # Testing API
-├── modules/              # Per-module documentation
-│   ├── README.md         # Modules index
-│   ├── payment.md
-│   ├── shop.md
-│   ├── game.md
-│   ├── auth.md
-│   └── common.md
-├── releases/             # Release notes by version
-│   ├── v0.1.0-release-notes.md
-│   └── v0.0.x-consolidation.md
-├── encyclopedia/         # Species and morph data
-├── photos/              # Screenshots
-└── temp/                # Temporary docs and historical setup guides
-    └── test/            # Test session summaries
-```
+**Version:** 0.3.0  
+**Last Updated:** 2025-12-22
 
 ---
 
-**Version**: 0.3.0  
-**Last Updated**: 2025-12-22  
-**Modules**: 5 (payment, shop, game, auth, common)
+## 📖 Quick Start
+
+- **[📋 Documentation Index](DOCUMENTATION_INDEX.md)** - Complete list of all docs
+- **[🚀 Developer Reference](DEVELOPER_REFERENCE.md)** - Command cheatsheet (⭐ START HERE)
+
+---
+
+## 📁 Documentation Structure
+
+### 🔌 `/api/` - API References
+- `cloudflare-api.md` - Cloudflare Workers & KV API reference
+- `CLOUDFLARE_API_EXAMPLES.md` - KV storage curl examples
+- `project-api.md` - Frontend/backend API documentation
+- `test-api.md` - Test suite API reference
+
+### 📖 `/guides/` - Setup & How-To Guides
+- `SETUP.md` - Project setup instructions
+- `API_CREDENTIALS.md` - API token configuration
+
+### 📚 `/reference/` - Technical Reference
+- `PROJECT-STRUCTURE.md` - Code architecture overview
+- `COPILOT-RULES.md` - AI assistant guidelines
+- `DOC-USAGE-MAP.md` - Documentation usage guide
+
+### 🏛️ `/architecture/` - Design Documents
+Architecture decisions and system design.
+
+### 📦 `/modules/` - Module System Documentation
+Modular architecture documentation.
+
+### 🐍 `/encyclopedia/` - Game Content
+Snake species, morphs, genetics, care guides.
+
+### 📦 `/releases/` - Version History
+Release notes and changelogs.
+
+### 📸 `/photos/` - Visual Assets
+Snake photos and diagrams.
+
+### 🗄️ `/archive/` - Deprecated Content
+Old versions, unused code, deprecated features.
+
+### 🧪 `/temp/` - Temporary/Work-in-Progress
+Session notes, bug reports, work-in-progress docs.
+
+---
+
+## 🎯 Core Documentation Files (Docs Root)
+
+- **README.md** (this file) - Documentation overview
+- **DOCUMENTATION_INDEX.md** - Complete doc listing
+- **DEVELOPER_REFERENCE.md** - Quick command reference
+
+---
+
+## 📝 Documentation Standards
+
+1. **Keep docs updated** - Update when code changes
+2. **Use clear naming** - UPPERCASE for important docs, lowercase for specialized
+3. **Organize by type** - API docs in /api, guides in /guides, etc.
+4. **Archive old content** - Move deprecated docs to /archive
+5. **Use temp for WIP** - Session notes go in /temp
+
+---
+
+## 🔗 External Links
+
+- **Repository:** https://github.com/vinas8/catalog
+- **Live Site:** https://vinas8.github.io/catalog/
+- **Worker:** https://serpent-town.your-subdomain.workers.dev
+
