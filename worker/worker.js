@@ -81,6 +81,11 @@ export default {
       return handleGetUserData(request, env, corsHeaders);
     }
 
+    // Route: POST /stripe-product-webhook (Stripe product sync)
+    if (pathname === '/stripe-product-webhook' && request.method === 'POST') {
+      return handleStripeProductWebhook(request, env, corsHeaders);
+    }
+
     return new Response(JSON.stringify({ error: 'Not found' }), { 
       status: 404,
       headers: corsHeaders
@@ -568,4 +573,157 @@ async function handleGetUserData(request, env, corsHeaders) {
       headers: corsHeaders
     });
   }
+}
+
+/**
+ * Handle Stripe Product Webhook - Auto-sync products to KV
+ * Events: product.created, product.updated, product.deleted, price.updated
+ */
+export async function handleStripeProductWebhook(eventOrRequest, env, corsHeaders) {
+  console.log('📥 Product webhook received');
+  
+  let event;
+  
+  // Handle both Request objects (from Worker) and plain event objects (from tests)
+  if (eventOrRequest.json) {
+    // It's a Request object from the Worker
+    try {
+      event = await eventOrRequest.json();
+    } catch (err) {
+      return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+  } else {
+    // It's a plain event object from tests
+    event = eventOrRequest;
+  }
+  
+  const eventType = event.type;
+  console.log('Event type:', eventType);
+  
+  try {
+    switch (eventType) {
+      case 'product.created':
+      case 'product.updated':
+        await updateProductInKV(event.data.object, env);
+        break;
+      
+      case 'product.deleted':
+        await deleteProductFromKV(event.data.object.id, env);
+        break;
+      
+      case 'price.created':
+      case 'price.updated':
+        await updatePriceInKV(event.data.object, env);
+        break;
+      
+      default:
+        console.log('Ignoring event type:', eventType);
+    }
+    
+    // Return Response if called from Worker, void if called from test
+    if (corsHeaders) {
+      return new Response(JSON.stringify({ received: true, eventType }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+  } catch (err) {
+    console.error('❌ Webhook error:', err);
+    if (corsHeaders) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+    throw err;
+  }
+}
+
+/**
+ * Convert Stripe product to our schema and save to KV
+ */
+async function updateProductInKV(stripeProduct, env) {
+  console.log('📝 Updating product:', stripeProduct.id);
+  
+  // Convert Stripe format to our format
+  const product = {
+    id: stripeProduct.id,
+    name: stripeProduct.name,
+    description: stripeProduct.description || '',
+    images: stripeProduct.images || [],
+    species: stripeProduct.metadata?.species || 'ball_python',
+    morph: stripeProduct.metadata?.morph || 'normal',
+    sex: stripeProduct.metadata?.sex || 'unknown',
+    birth_year: parseInt(stripeProduct.metadata?.birth_year || '2024'),
+    weight_grams: parseInt(stripeProduct.metadata?.weight_grams || '100'),
+    type: 'real',
+    status: 'available',
+    source: 'stripe'
+  };
+  
+  // Save to KV
+  const key = `product:${product.id}`;
+  await env.PRODUCTS.put(key, JSON.stringify(product));
+  console.log('✅ Product saved to KV:', product.id);
+  
+  // Rebuild product index
+  await rebuildProductIndex(env);
+}
+
+/**
+ * Delete product from KV
+ */
+async function deleteProductFromKV(productId, env) {
+  console.log('🗑️ Deleting product:', productId);
+  
+  const key = `product:${productId}`;
+  await env.PRODUCTS.delete(key);
+  console.log('✅ Product deleted from KV:', productId);
+  
+  // Rebuild product index
+  await rebuildProductIndex(env);
+}
+
+/**
+ * Update product price from Stripe price object
+ */
+async function updatePriceInKV(stripePrice, env) {
+  console.log('💰 Updating price for product:', stripePrice.product);
+  
+  // Get existing product
+  const productKey = `product:${stripePrice.product}`;
+  const productData = await env.PRODUCTS.get(productKey);
+  
+  if (!productData) {
+    console.warn('⚠️ Product not found for price update:', stripePrice.product);
+    return;
+  }
+  
+  const product = JSON.parse(productData);
+  
+  // Update price (convert cents to dollars)
+  product.price = stripePrice.unit_amount / 100;
+  product.currency = stripePrice.currency;
+  
+  // Save back to KV
+  await env.PRODUCTS.put(productKey, JSON.stringify(product));
+  console.log('✅ Price updated for product:', stripePrice.product);
+}
+
+/**
+ * Rebuild the product index after changes
+ */
+async function rebuildProductIndex(env) {
+  console.log('🔄 Rebuilding product index...');
+  
+  // List all product keys
+  const list = await env.PRODUCTS.list({ prefix: 'product:' });
+  const productIds = list.keys.map(k => k.name.replace('product:', ''));
+  
+  // Save index
+  await env.PRODUCTS.put('_index:products', JSON.stringify(productIds));
+  console.log('✅ Product index rebuilt:', productIds.length, 'products');
 }
