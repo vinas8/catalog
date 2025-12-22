@@ -331,36 +331,15 @@ async function handleGetProducts(request, env, corsHeaders) {
       // Return default snakes with Stripe link
       const defaultProducts = [
         {
-          id: "prod_default_banana_ball",
-          name: "Banana Ball Python",
+          id: "prod_TdKcnyjt5Jk0U2",
+          name: "Batman Ball",
+          description: "Premium Ball Python",
+          images: ["https://files.stripe.com/links/MDB8YWNjdF8xU2czczBCakw3MnBlOVhzfGZsX3Rlc3RfWFB6ckpsNG9yUThEbGVObnBLeTlIOW5i00TIJlhXUK"],
           species: "ball_python",
           morph: "banana",
-          price: 450.00,
-          currency: "usd",
-          stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
-          status: "available",
-          source: "default"
-        },
-        {
-          id: "prod_default_piebald_ball",
-          name: "Piebald Ball Python",
-          species: "ball_python",
-          morph: "piebald",
-          price: 600.00,
-          currency: "usd",
-          stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
-          status: "available",
-          source: "default"
-        },
-        {
-          id: "prod_stripe_snake_001",
-          name: "Premium Ball Python",
-          species: "ball_python",
-          morph: "banana",
-          price: 100.00,
+          price: 1000.00,
           currency: "eur",
           stripe_link: "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
-          description: "Beautiful ball python available via Stripe",
           status: "available",
           source: "stripe"
         }
