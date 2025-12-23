@@ -200,7 +200,12 @@
   <h1>🏥 SMRI System Health Check</h1>
   <p class="subtitle">
     <strong>SMRI:</strong> S6.5-11.1-12.03 | <strong>Module:</strong> v1.5 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 9 grouped by service<br>
-    <span style="font-size: 11px; color: #8b949e;">Common (6) → Worker (5) + KV (11.1) + Stripe (12)</span><br>
+    <span style="display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;">
+      <strong style="color: #8b949e;">Dependencies:</strong>
+      <span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Worker (S5.x)</span>
+      <span style="background: #1f6feb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">KV (S11.1.x)</span>
+      <span style="background: #8957e5; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Stripe (S12.x)</span>
+    </span><br>
     <a href="#smri-table" style="color: #58a6ff; text-decoration: none; font-size: 12px;">📋 View SMRI Code Reference</a>
   </p>
   
@@ -548,12 +553,16 @@
     
     function renderTests() {
       const listDiv = document.getElementById('test-list');
-      listDiv.innerHTML = testGroups.map(group => `
+      listDiv.innerHTML = testGroups.map((group, idx) => `
         <div class="service-group">
           <div class="service-header">
             <h2>${group.service}</h2>
             <span class="service-badge">${group.badge}</span>
             <span class="service-badge">${group.tests.length} tests</span>
+            ${idx === 0 ? '<span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">BASE LAYER</span>' : ''}
+            ${idx === 1 ? '<span style="background: #1f6feb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker</span>' : ''}
+            ${idx === 2 ? '<span style="background: #8957e5; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker + KV</span>' : ''}
+            ${idx === 3 ? '<span style="background: #6e7681; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker</span>' : ''}
           </div>
           ${group.tests.map(test => `
             <div class="test-card" id="test-${test.id}">
