@@ -42,12 +42,43 @@
       font-size: 12px;
     }
     
+    .service-group {
+      margin-bottom: 30px;
+    }
+    
+    .service-header {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .service-header h2 {
+      flex: 1;
+      font-size: 18px;
+      color: #c9d1d9;
+    }
+    
+    .service-badge {
+      background: #21262d;
+      color: #8b949e;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
     .test-card {
       background: #161b22;
       border: 1px solid #30363d;
       border-radius: 8px;
       margin-bottom: 10px;
       overflow: hidden;
+      margin-left: 20px;
     }
     
     .test-header {
@@ -168,7 +199,8 @@
 <body>
   <h1>🏥 SMRI System Health Check</h1>
   <p class="subtitle">
-    <strong>SMRI:</strong> S6.0.03 | <strong>Module:</strong> v1.4 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 9 (Browser) / 10 (CLI)
+    <strong>SMRI:</strong> S6.0.03 | <strong>Module:</strong> v1.5 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 9 grouped by service<br>
+    <a href="#smri-table" style="color: #58a6ff; text-decoration: none; font-size: 12px;">📋 View SMRI Code Reference</a>
   </p>
   
   <div class="run-btn-container">
@@ -183,132 +215,231 @@
   <div class="progress-text" id="progress-text">Ready</div>
   
   <div id="test-list"></div>
+  
+  <div id="smri-table" style="margin-top: 40px; padding: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 8px;">
+    <h2 style="color: #c9d1d9; margin-bottom: 15px; font-size: 18px;">📋 SMRI Code Reference</h2>
+    <p style="color: #8b949e; font-size: 13px; margin-bottom: 20px;">
+      SMRI (Scenario-Module-Relation-Instance) codes map to external services and internal modules.
+    </p>
+    
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <thead>
+        <tr style="border-bottom: 2px solid #30363d;">
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">SMRI Code</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Service</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Description</th>
+          <th style="text-align: right; padding: 10px; color: #8b949e; font-weight: 600;">Tests</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S5.x</td>
+          <td style="padding: 10px;">☁️ Cloudflare Worker</td>
+          <td style="padding: 10px; color: #8b949e;">Worker API, routing, endpoints</td>
+          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S11.1.x</td>
+          <td style="padding: 10px;">🗄️ Cloudflare KV</td>
+          <td style="padding: 10px; color: #8b949e;">Key-value storage, products, user data</td>
+          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S12.x</td>
+          <td style="padding: 10px;">💳 Stripe</td>
+          <td style="padding: 10px; color: #8b949e;">Payment integration, checkout links</td>
+          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">2</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S6.x</td>
+          <td style="padding: 10px;">🧪 Common Utils</td>
+          <td style="padding: 10px; color: #8b949e;">Data validation, format checks</td>
+          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">1</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #58a6ff;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">Internal Modules (not tested here)</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #8b949e; font-size: 12px;">
+        <div><strong style="color: #58a6ff;">S1.x</strong> - Shop (Catalog)</div>
+        <div><strong style="color: #58a6ff;">S2.x</strong> - Game (Tamagotchi)</div>
+        <div><strong style="color: #58a6ff;">S3.x</strong> - Auth (Hash Identity)</div>
+        <div><strong style="color: #58a6ff;">S4.x</strong> - Payment (Webhooks)</div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #d29922;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">Other External Services</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #8b949e; font-size: 12px;">
+        <div><strong style="color: #58a6ff;">S11.2.x</strong> - Cloudflare Workers Runtime</div>
+        <div><strong style="color: #58a6ff;">S11.3.x</strong> - Cloudflare CDN</div>
+        <div><strong style="color: #58a6ff;">S12.1.x</strong> - Stripe Checkout</div>
+        <div><strong style="color: #58a6ff;">S12.2.x</strong> - Stripe Webhooks</div>
+        <div><strong style="color: #58a6ff;">S13.1.x</strong> - GitHub Pages</div>
+        <div><strong style="color: #58a6ff;">S13.2.x</strong> - GitHub Actions</div>
+      </div>
+    </div>
+    
+    <p style="margin-top: 15px; color: #8b949e; font-size: 12px;">
+      <strong>Format:</strong> S = Scenario, M = Module (1-13), R = Relations, II = Instance<br>
+      <strong>Full documentation:</strong> <a href="../docs/test/E2E_TEST_SCENARIOS.md" style="color: #58a6ff;">E2E Test Scenarios</a>
+    </p>
+  </div>
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
     
-    const tests = [
+    const testGroups = [
       {
-        id: 1,
-        name: 'Worker URL Validation',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Verify Worker URL is valid HTTPS endpoint',
-        run: async () => {
-          if (!WORKER_URL.startsWith('http')) throw new Error('Invalid URL');
-          return { valid: true, url: WORKER_URL };
-        }
+        service: '☁️ Cloudflare Worker',
+        badge: 'S5.x',
+        description: 'Worker API health and connectivity',
+        tests: [
+          {
+            id: 1,
+            name: 'Worker URL Validation',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Verify Worker URL is valid HTTPS endpoint',
+            run: async () => {
+              if (!WORKER_URL.startsWith('http')) throw new Error('Invalid URL');
+              return { valid: true, url: WORKER_URL };
+            }
+          },
+          {
+            id: 2,
+            name: 'Worker Online Check',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Ping Worker to verify it responds',
+            run: async () => {
+              const start = Date.now();
+              const res = await fetch(WORKER_URL + '/products');
+              const time = Date.now() - start;
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              return { online: true, responseTime: time + 'ms', status: res.status };
+            }
+          },
+          {
+            id: 3,
+            name: 'Response Time',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Measure API response latency',
+            run: async () => {
+              const start = Date.now();
+              await fetch(WORKER_URL + '/products');
+              const time = Date.now() - start;
+              if (time > 5000) throw new Error(`Too slow: ${time}ms`);
+              return { responseTime: time + 'ms', threshold: '5000ms' };
+            }
+          }
+        ]
       },
       {
-        id: 2,
-        name: 'Worker Online Check',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Ping Worker to verify it responds',
-        run: async () => {
-          const start = Date.now();
-          const res = await fetch(WORKER_URL + '/products');
-          const time = Date.now() - start;
-          if (!res.ok) throw new Error(`Status ${res.status}`);
-          return { online: true, responseTime: time + 'ms', status: res.status };
-        }
+        service: '🗄️ Cloudflare KV',
+        badge: 'S11.1.x',
+        description: 'KV storage and product data',
+        tests: [
+          {
+            id: 4,
+            name: 'Get Products',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Load products from KV storage',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const data = await res.json();
+              if (!Array.isArray(data)) throw new Error('Not an array');
+              if (data.length === 0) throw new Error('No products');
+              return { count: data.length, sample: data.slice(0, 1) };
+            }
+          },
+          {
+            id: 5,
+            name: 'Product Schema',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Validate required product fields',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const required = ['id', 'name', 'species', 'morph', 'price'];
+              const first = products[0];
+              const missing = required.filter(f => !(f in first));
+              if (missing.length > 0) throw new Error(`Missing: ${missing.join(', ')}`);
+              return { valid: true, fields: required };
+            }
+          },
+          {
+            id: 6,
+            name: 'Get User Products',
+            method: 'GET',
+            endpoint: '/user-products?user=test',
+            description: 'Test user-specific product retrieval',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/user-products?user=test_hash');
+              if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected status ${res.status}`);
+              return { status: res.status, message: res.status === 404 ? 'No products (expected for test user)' : 'Has products' };
+            }
+          }
+        ]
       },
       {
-        id: 3,
-        name: 'Products API',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Load products from KV storage',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const data = await res.json();
-          if (!Array.isArray(data)) throw new Error('Not an array');
-          if (data.length === 0) throw new Error('No products');
-          return { count: data.length, sample: data.slice(0, 1) };
-        }
+        service: '💳 Stripe Integration',
+        badge: 'S12.x',
+        description: 'Stripe products and payment links',
+        tests: [
+          {
+            id: 7,
+            name: 'Stripe Products',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Find products with Stripe payment integration',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const stripe = products.filter(p => p.source === 'stripe' && p.stripe_link);
+              if (stripe.length === 0) throw new Error('No Stripe products');
+              return { count: stripe.length, sample: stripe[0].name };
+            }
+          },
+          {
+            id: 8,
+            name: 'Checkout Links',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Validate payment link URLs',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const valid = products.filter(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
+              if (valid.length === 0) throw new Error('No valid links');
+              return { count: valid.length, sample: valid[0].stripe_link.substring(0, 50) + '...' };
+            }
+          }
+        ]
       },
       {
-        id: 4,
-        name: 'Product Schema Validation',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Validate required product fields',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const products = await res.json();
-          const required = ['id', 'name', 'species', 'morph', 'price'];
-          const first = products[0];
-          const missing = required.filter(f => !(f in first));
-          if (missing.length > 0) throw new Error(`Missing: ${missing.join(', ')}`);
-          return { valid: true, fields: required };
-        }
-      },
-      {
-        id: 5,
-        name: 'User Products Endpoint',
-        method: 'GET',
-        endpoint: '/user-products?user=test',
-        description: 'Test user-specific product retrieval',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/user-products?user=test_hash');
-          if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected status ${res.status}`);
-          return { status: res.status, message: res.status === 404 ? 'No products (expected for test user)' : 'Has products' };
-        }
-      },
-      {
-        id: 6,
-        name: 'Stripe Products Check',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Find products with Stripe payment integration',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const products = await res.json();
-          const stripe = products.filter(p => p.source === 'stripe' && p.stripe_link);
-          if (stripe.length === 0) throw new Error('No Stripe products');
-          return { count: stripe.length, sample: stripe[0].name };
-        }
-      },
-      {
-        id: 7,
-        name: 'Response Time Test',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Measure API response latency',
-        run: async () => {
-          const start = Date.now();
-          await fetch(WORKER_URL + '/products');
-          const time = Date.now() - start;
-          if (time > 5000) throw new Error(`Too slow: ${time}ms`);
-          return { responseTime: time + 'ms', threshold: '5000ms' };
-        }
-      },
-      {
-        id: 8,
-        name: 'JSON Format Validation',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Verify response is valid JSON',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const text = await res.text();
-          JSON.parse(text);
-          return { valid: true, size: text.length + ' bytes' };
-        }
-      },
-      {
-        id: 9,
-        name: 'Stripe Checkout Links',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Validate payment link URLs',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const products = await res.json();
-          const valid = products.filter(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
-          if (valid.length === 0) throw new Error('No valid links');
-          return { count: valid.length, sample: valid[0].stripe_link.substring(0, 50) + '...' };
-        }
+        service: '🧪 Data Validation',
+        badge: 'S6.x',
+        description: 'Format and structure checks',
+        tests: [
+          {
+            id: 9,
+            name: 'JSON Format',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Verify response is valid JSON',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const text = await res.text();
+              JSON.parse(text);
+              return { valid: true, size: text.length + ' bytes' };
+            }
+          }
+        ]
       }
     ];
     
@@ -316,35 +447,48 @@
     
     function renderTests() {
       const listDiv = document.getElementById('test-list');
-      listDiv.innerHTML = tests.map(test => `
-        <div class="test-card" id="test-${test.id}">
-          <div class="test-header" onclick="toggleTest(${test.id})">
-            <span class="test-number">#${test.id}</span>
-            <span class="test-method">${test.method}</span>
-            <span class="test-title">${test.name}</span>
-            <span class="test-status" id="status-${test.id}">⚪</span>
+      listDiv.innerHTML = testGroups.map(group => `
+        <div class="service-group">
+          <div class="service-header">
+            <h2>${group.service}</h2>
+            <span class="service-badge">${group.badge}</span>
+            <span class="service-badge">${group.tests.length} tests</span>
           </div>
-          <div class="test-body" id="body-${test.id}">
-            <div class="test-section">
-              <h4>Description</h4>
-              <p style="color: #8b949e; font-size: 13px;">${test.description}</p>
-            </div>
-            <div class="test-section">
-              <h4>Request</h4>
-              <div class="code-block">
-                <div><strong>${test.method}</strong> ${WORKER_URL}${test.endpoint}</div>
+          ${group.tests.map(test => `
+            <div class="test-card" id="test-${test.id}">
+              <div class="test-header" onclick="toggleTest(${test.id})">
+                <span class="test-number">#${test.id}</span>
+                <span class="test-method">${test.method}</span>
+                <span class="test-title">${test.name}</span>
+                <span class="test-status" id="status-${test.id}">⚪</span>
+              </div>
+              <div class="test-body" id="body-${test.id}">
+                <div class="test-section">
+                  <h4>Description</h4>
+                  <p style="color: #8b949e; font-size: 13px;">${test.description}</p>
+                </div>
+                <div class="test-section">
+                  <h4>Request</h4>
+                  <div class="code-block">
+                    <div><strong>${test.method}</strong> ${WORKER_URL}${test.endpoint}</div>
+                  </div>
+                </div>
+                <div class="test-section">
+                  <h4>Response</h4>
+                  <div class="code-block" id="response-${test.id}">
+                    <div style="color: #8b949e;">Not run yet. Click "Run Test" or "Run All Tests"</div>
+                  </div>
+                </div>
+                <button onclick="runSingleTest(${test.id})" class="btn btn-small">▶ Run Test</button>
               </div>
             </div>
-            <div class="test-section">
-              <h4>Response</h4>
-              <div class="code-block" id="response-${test.id}">
-                <div style="color: #8b949e;">Not run yet. Click "Run Test" or "Run All Tests"</div>
-              </div>
-            </div>
-            <button onclick="runSingleTest(${test.id})" class="btn btn-small">▶ Run Test</button>
-          </div>
+          `).join('')}
         </div>
       `).join('');
+    }
+    
+    function getAllTests() {
+      return testGroups.flatMap(g => g.tests);
     }
     
     function toggleTest(id) {
@@ -361,7 +505,7 @@
     }
     
     async function runSingleTest(id) {
-      const test = tests[id - 1];
+      const test = getAllTests().find(t => t.id === id);
       const statusEl = document.getElementById(`status-${id}`);
       const responseEl = document.getElementById(`response-${id}`);
       
@@ -391,13 +535,15 @@
       progressText.style.display = 'block';
       testResults = {};
       
-      for (let i = 0; i < tests.length; i++) {
-        const percent = Math.round(((i + 1) / tests.length) * 100);
+      const allTests = getAllTests();
+      
+      for (let i = 0; i < allTests.length; i++) {
+        const percent = Math.round(((i + 1) / allTests.length) * 100);
         progressBar.style.width = percent + '%';
         progressBar.textContent = percent + '%';
-        progressText.innerHTML = `🔍 Test ${i + 1}/${tests.length} - <strong>${tests[i].name}</strong>`;
+        progressText.innerHTML = `🔍 Test ${i + 1}/${allTests.length} - <strong>${allTests[i].name}</strong>`;
         
-        await runSingleTest(tests[i].id);
+        await runSingleTest(allTests[i].id);
         await new Promise(r => setTimeout(r, 200));
       }
       
@@ -405,9 +551,9 @@
       progressText.style.color = '#3fb950';
       
       const passed = Object.values(testResults).filter(r => r.status === 'ok').length;
-      const failed = tests.length - passed;
+      const failed = allTests.length - passed;
       
-      console.log(`Tests: ${passed}/${tests.length} passed`);
+      console.log(`Tests: ${passed}/${allTests.length} passed`);
     }
     
     // Initialize
