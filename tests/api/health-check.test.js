@@ -4,7 +4,7 @@
  */
 
 const WORKER_URL = process.env.WORKER_URL || 'https://catalog.navickaszilvinas.workers.dev';
-const SMRI_VERSION = 'S6.0.03';
+const SMRI_VERSION = 'S6.5-11.1-12.03';
 const MODULE_VERSION = 'v1.2';
 const APP_VERSION = '0.5.0';
 
