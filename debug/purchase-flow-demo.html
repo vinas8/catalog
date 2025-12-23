@@ -463,8 +463,17 @@
           const userData = await verifyResponse.json();
           
           if (userData.products && userData.products.length > 0) {
-            updateStep(6, 'completed', `KV: ${userData.products.length} snake(s) assigned`);
-            showAlert('✅ Snake assigned to user!', 'success');
+            const snake = userData.products[0];
+            const kvData = {
+              snakes_count: userData.products.length,
+              assignment_id: snake.assignment_id,
+              product_id: snake.product_id,
+              nickname: snake.nickname,
+              acquired_at: snake.acquired_at,
+              stats: snake.stats
+            };
+            updateStep(6, 'completed', JSON.stringify(kvData, null, 2));
+            showAlert(`✅ Snake assigned! ${userData.products.length} snake(s) in KV`, 'success');
           } else {
             updateStep(6, 'error', 'Snake not found in KV');
             showAlert('❌ Snake assignment failed', 'error');
