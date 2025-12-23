@@ -88,42 +88,63 @@
 </head>
 <body>
   <h1>🎯 SMRI Executor</h1>
-  <p class="subtitle">Break down SMRI scenarios into clickable steps. Execute and verify each action.</p>
+  <p class="subtitle">
+    Break down SMRI scenarios into clickable steps. Execute and verify each action.<br>
+    <strong>Version:</strong> 0.5.0 | <strong>Active Modules:</strong> 1/6
+  </p>
   
   <div class="modules">
     <a href="healthcheck.html" class="module-card">
       <h2>🏥 Health Check</h2>
       <p>Verify system health: Worker online, products loaded, endpoints responding, CORS headers present.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S6.0.03
+      </div>
       <span class="status ready">READY</span>
     </a>
     
     <a href="modules/stripe.html" class="module-card">
       <h2>💳 Stripe Operations</h2>
       <p>Test Stripe API: Get products, create checkout, verify webhooks, sync to KV.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S12.x (Stripe external service)
+      </div>
       <span class="status planned">PLANNED</span>
     </a>
     
     <a href="modules/cloudflare.html" class="module-card">
       <h2>☁️ Cloudflare KV</h2>
       <p>Test KV operations: List products, get user data, write purchases, delete test data.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S11.1.x (Cloudflare KV)
+      </div>
       <span class="status planned">PLANNED</span>
     </a>
     
     <a href="modules/catalog.html" class="module-card">
       <h2>📦 Catalog Tests</h2>
       <p>Frontend catalog: Load products, display prices, render images, filter by species.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S1.x (Shop module)
+      </div>
       <span class="status planned">PLANNED</span>
     </a>
     
     <a href="modules/game.html" class="module-card">
       <h2>🎮 Game Tests</h2>
       <p>Tamagotchi mechanics: Load snake, feed/water/clean, check stats, equipment shop.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S2.x (Game module)
+      </div>
       <span class="status planned">PLANNED</span>
     </a>
     
     <a href="modules/auth.html" class="module-card">
       <h2>🔐 Auth & Identity</h2>
       <p>User identity: Generate hash, store hash, retrieve user, link purchases to hash.</p>
+      <div style="margin-top: 10px; font-size: 11px; color: #8b949e;">
+        <strong>SMRI:</strong> S3.x (Auth module)
+      </div>
       <span class="status planned">PLANNED</span>
     </a>
   </div>
