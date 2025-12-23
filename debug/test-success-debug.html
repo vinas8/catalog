@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Success Page Debug</title>
+  <style>
+    body { padding: 40px; background: #0a0e14; color: white; font-family: monospace; }
+    #log { background: #161b22; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    .error { color: #f85149; }
+    .success { color: #3fb950; }
+    .info { color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <h1>Success.html Debug Test</h1>
+  <p>Simulating success.html behavior...</p>
+  
+  <button onclick="testFlow()">Test Flow</button>
+  <button onclick="clearLog()">Clear</button>
+  
+  <div id="log"></div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const logEl = document.getElementById('log');
+
+    function log(msg, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.innerHTML += `<div class="${type}">[${timestamp}] ${msg}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function clearLog() {
+      logEl.innerHTML = '';
+    }
+
+    async function testFlow() {
+      clearLog();
+      log('🧪 Starting success.html debug test...', 'info');
+      
+      // Simulate URL params
+      const sessionId = 'cs_test_debug_' + Date.now();
+      log(`Session ID: ${sessionId}`, 'info');
+      
+      // Get user hash from localStorage
+      let userHash = localStorage.getItem('serpent_user_hash') || 
+                     localStorage.getItem('serpent_last_purchase_hash') ||
+                     localStorage.getItem('serpent_pending_purchase_hash');
+      
+      log(`User hash from localStorage: ${userHash || 'NOT FOUND'}`, userHash ? 'success' : 'error');
+      
+      if (!userHash) {
+        log('❌ PROBLEM: No user hash in localStorage!', 'error');
+        log('This means the hash was not saved when clicking "Buy Now"', 'error');
+        log('Catalog.html should save hash before redirecting', 'error');
+        
+        // Create test hash
+        userHash = 'test_' + Date.now();
+        log(`Creating test hash: ${userHash}`, 'info');
+      }
+      
+      // Test webhook
+      log('Step 1: Sending webhook to assign snake...', 'info');
+      
+      const webhookPayload = {
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: sessionId,
+            client_reference_id: userHash,
+            payment_intent: `pi_test_${userHash}`,
+            amount_total: 100000,
+            currency: 'eur',
+            metadata: { product_id: 'prod_TdKcnyjt5Jk0U2' }
+          }
+        }
+      };
+      
+      try {
+        const webhookResponse = await fetch(`${WORKER_URL}/stripe-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookPayload)
+        });
+        
+        const webhookResult = await webhookResponse.json();
+        log(`Webhook response: ${JSON.stringify(webhookResult)}`, webhookResult.success ? 'success' : 'error');
+        
+        if (!webhookResult.success) {
+          log('❌ Webhook failed!', 'error');
+          return;
+        }
+        
+        // Wait a bit
+        log('Step 2: Waiting 2 seconds...', 'info');
+        await new Promise(r => setTimeout(r, 2000));
+        
+        // Poll for snake (like success.html does)
+        log('Step 3: Polling for snake (up to 20 attempts)...', 'info');
+        
+        let attempts = 0;
+        const maxAttempts = 20;
+        let found = false;
+        
+        while (attempts < maxAttempts && !found) {
+          attempts++;
+          log(`Poll attempt ${attempts}/${maxAttempts}...`, 'info');
+          
+          const checkResponse = await fetch(`${WORKER_URL}/user-products?user=${userHash}`);
+          const data = await checkResponse.json();
+          
+          log(`Response status: ${checkResponse.status}`, 'info');
+          log(`Response data: ${JSON.stringify(data)}`, 'info');
+          
+          const products = Array.isArray(data) ? data : (data.products || []);
+          log(`Products found: ${products.length}`, products.length > 0 ? 'success' : 'info');
+          
+          if (products.length > 0) {
+            log('✅ SUCCESS! Snake found!', 'success');
+            log(`Snake details: ${JSON.stringify(products[0], null, 2)}`, 'success');
+            found = true;
+            break;
+          }
+          
+          if (attempts < maxAttempts) {
+            await new Promise(r => setTimeout(r, 1000));
+          }
+        }
+        
+        if (!found) {
+          log('❌ Snake not found after 20 attempts!', 'error');
+          log('Possible issues:', 'error');
+          log('1. Webhook did not actually assign snake', 'error');
+          log('2. User hash mismatch', 'error');
+          log('3. KV write failed', 'error');
+          log('4. Worker API error', 'error');
+        }
+        
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>

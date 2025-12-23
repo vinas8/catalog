@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Real Flow Test</title>
+  <style>
+    body { padding: 40px; background: #0a0e14; color: white; font-family: monospace; font-size: 14px; }
+    button { padding: 12px 24px; margin: 10px; background: #238636; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #2ea043; }
+    #log { background: #161b22; padding: 20px; border-radius: 8px; margin-top: 20px; max-height: 600px; overflow-y: auto; }
+    .error { color: #f85149; }
+    .success { color: #3fb950; }
+    .info { color: #58a6ff; }
+    .warn { color: #d29922; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Real Purchase Flow Debug</h1>
+  <p>This simulates the EXACT flow that a customer experiences</p>
+  
+  <div>
+    <button onclick="step1()">Step 1: Visit Catalog</button>
+    <button onclick="step2()">Step 2: Click Buy Now</button>
+    <button onclick="step3()">Step 3: Simulate Stripe Payment</button>
+    <button onclick="step4()">Step 4: Return to Success Page</button>
+    <button onclick="clearLog()">Clear Log</button>
+  </div>
+  
+  <div id="log"></div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const logEl = document.getElementById('log');
+    let testHash = null;
+    let sessionId = null;
+
+    function log(msg, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      logEl.innerHTML += `<div class="${type}">[${timestamp}] ${msg}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(msg);
+    }
+
+    function clearLog() {
+      logEl.innerHTML = '';
+      testHash = null;
+      sessionId = null;
+    }
+
+    async function step1() {
+      log('═══ STEP 1: Customer Visits Catalog ═══', 'info');
+      log('Customer opens: catalog.html', 'info');
+      
+      // Check what products are available
+      try {
+        const response = await fetch(`${WORKER_URL}/products`);
+        const products = await response.json();
+        const productsArray = Array.isArray(products) ? products : [];
+        log(`✅ Catalog loaded: ${productsArray.length} products`, 'success');
+        if (productsArray.length > 0) {
+          log(`Sample: ${productsArray[0].name} - €${(productsArray[0].price/100).toFixed(2)}`, 'info');
+        }
+      } catch (error) {
+        log(`❌ Error loading catalog: ${error.message}`, 'error');
+      }
+    }
+
+    function step2() {
+      log('═══ STEP 2: Customer Clicks Buy Now ═══', 'info');
+      
+      // Generate hash (same as catalog does)
+      const timestamp = Date.now().toString(36);
+      const random = Math.random().toString(36).substring(2, 15);
+      testHash = timestamp + random;
+      
+      log(`Generated user hash: ${testHash}`, 'info');
+      
+      // Save to localStorage (exactly like catalog does)
+      localStorage.setItem('serpent_pending_purchase_hash', testHash);
+      localStorage.setItem('serpent_last_purchase_hash', testHash);
+      localStorage.setItem('serpent_user_hash', testHash);
+      
+      log('✅ Hash saved to localStorage:', 'success');
+      log(`  - serpent_pending_purchase_hash: ${localStorage.getItem('serpent_pending_purchase_hash')}`, 'success');
+      log(`  - serpent_last_purchase_hash: ${localStorage.getItem('serpent_last_purchase_hash')}`, 'success');
+      log(`  - serpent_user_hash: ${localStorage.getItem('serpent_user_hash')}`, 'success');
+      
+      log('Redirecting to Stripe with client_reference_id=' + testHash, 'info');
+      log('(In real flow, customer pays here)', 'warn');
+    }
+
+    async function step3() {
+      log('═══ STEP 3: Stripe Payment Completed ═══', 'info');
+      
+      if (!testHash) {
+        log('❌ ERROR: No hash! Run Step 2 first!', 'error');
+        return;
+      }
+      
+      sessionId = `cs_test_${testHash}`;
+      log(`Session ID: ${sessionId}`, 'info');
+      log('Customer entered card: 4242 4242 4242 4242', 'info');
+      log('Payment successful!', 'success');
+      
+      // Stripe fires webhook
+      log('Stripe firing checkout.session.completed webhook...', 'info');
+      
+      const webhookPayload = {
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: sessionId,
+            client_reference_id: testHash,
+            payment_intent: `pi_test_${testHash}`,
+            amount_total: 100000,
+            currency: 'eur',
+            customer_email: `test_${testHash}@example.com`,
+            metadata: { product_id: 'prod_TdKcnyjt5Jk0U2' }
+          }
+        }
+      };
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/stripe-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookPayload)
+        });
+        
+        const result = await response.json();
+        log(`Webhook response: ${JSON.stringify(result)}`, result.success ? 'success' : 'error');
+        
+        if (result.success) {
+          log('✅ Worker assigned snake to user in KV!', 'success');
+        } else {
+          log('❌ Webhook failed!', 'error');
+        }
+      } catch (error) {
+        log(`❌ Webhook error: ${error.message}`, 'error');
+      }
+      
+      log('Stripe redirects to: success.html?session_id=' + sessionId, 'info');
+    }
+
+    async function step4() {
+      log('═══ STEP 4: Success Page Polling ═══', 'info');
+      
+      if (!testHash) {
+        log('❌ ERROR: No hash! Run Steps 1-3 first!', 'error');
+        return;
+      }
+      
+      log('success.html opened', 'info');
+      log('Checking localStorage for user hash...', 'info');
+      
+      // Check what success.html would see
+      const hash1 = localStorage.getItem('serpent_user_hash');
+      const hash2 = localStorage.getItem('serpent_last_purchase_hash');
+      const hash3 = localStorage.getItem('serpent_pending_purchase_hash');
+      
+      log(`  serpent_user_hash: ${hash1 || 'NOT FOUND'}`, hash1 ? 'success' : 'error');
+      log(`  serpent_last_purchase_hash: ${hash2 || 'NOT FOUND'}`, hash2 ? 'success' : 'error');
+      log(`  serpent_pending_purchase_hash: ${hash3 || 'NOT FOUND'}`, hash3 ? 'success' : 'error');
+      
+      const userHash = hash1 || hash2 || hash3;
+      
+      if (!userHash) {
+        log('❌ CRITICAL: No hash found! Customer will see error!', 'error');
+        return;
+      }
+      
+      log(`Using hash: ${userHash}`, 'success');
+      log('Starting polling (max 20 attempts)...', 'info');
+      
+      let attempts = 0;
+      const maxAttempts = 20;
+      
+      while (attempts < maxAttempts) {
+        attempts++;
+        log(`Poll attempt ${attempts}/${maxAttempts}...`, 'info');
+        
+        try {
+          const response = await fetch(`${WORKER_URL}/user-products?user=${userHash}`);
+          const data = await response.json();
+          const products = Array.isArray(data) ? data : (data.products || []);
+          
+          log(`  Response: ${products.length} product(s)`, products.length > 0 ? 'success' : 'warn');
+          
+          if (products.length > 0) {
+            log('✅ SUCCESS! Snake found!', 'success');
+            log(`Snake: ${products[0].nickname}`, 'success');
+            log(`Stats: Health ${products[0].stats.health}, Hunger ${products[0].stats.hunger}`, 'success');
+            log('🎉 Customer will see "Register Now" button!', 'success');
+            return;
+          }
+          
+        } catch (error) {
+          log(`  Error: ${error.message}`, 'error');
+        }
+        
+        if (attempts < maxAttempts) {
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+      
+      log('❌ Snake NOT FOUND after 20 attempts!', 'error');
+      log('Customer will see timeout message', 'error');
+    }
+
+    log('Ready! Click Step 1 to start...', 'info');
+  </script>
+</body>
+</html>
