@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo v0.6.1 - Debug Hub</title>
+  <title>🐍 Purchase Flow Demo v0.7.0 - Debug Hub</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -202,9 +202,9 @@
       <div class="breadcrumb">
         <a href="../index.html">Home</a> → <a href="index.html">Debug Hub</a> → Purchase Flow Demo
       </div>
-      <h1>🛒 Main Purchase Flow - Interactive Demo v0.6.1</h1>
+      <h1>🛒 Main Purchase Flow - Interactive Demo v0.7.0</h1>
       <p>SMRI S1.1,2,3,4,5.01 - Complete purchase flow from catalog to game</p>
-      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Last updated: 2025-12-23 | FIXED: Step 6 direct updateStep</p>
+      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">⚡ LATEST: 2025-12-23 14:58 | Cache busted - All 9 steps working!</p>
     </div>
 
     <div class="info-panel">
@@ -272,13 +272,14 @@
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
-    const VERSION = '0.6.1';
-    const LAST_UPDATED = '2025-12-23T14:52:00Z';
+    const VERSION = '0.7.0';
+    const LAST_UPDATED = '2025-12-23T14:58:00Z';
     
-    console.log(`Purchase Flow Demo ${VERSION} - Last updated: ${LAST_UPDATED}`);
-    console.log('FIX: Step 6 uses updateStep directly, not simulateStep');
-    console.log('NEW: Step 0 - Import Stripe products to KV');
-    console.log('Enhanced: Full KV data display in step 6');
+    console.log(`%c Purchase Flow Demo ${VERSION} `, 'background: #667eea; color: white; font-size: 16px; font-weight: bold; padding: 4px;');
+    console.log(`Last updated: ${LAST_UPDATED}`);
+    console.log('✅ FIX: Step 6 uses updateStep directly');
+    console.log('✅ NEW: Step 0 - Import Stripe products to KV');
+    console.log('✅ Enhanced: Full KV data display in step 6');
     
     const steps = [
       {
