@@ -228,6 +228,7 @@
           <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">SMRI Code</th>
           <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Service</th>
           <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Description</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Dependencies</th>
           <th style="text-align: right; padding: 10px; color: #8b949e; font-weight: 600;">Tests</th>
         </tr>
       </thead>
@@ -236,37 +237,62 @@
           <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S5.x</td>
           <td style="padding: 10px;">☁️ Cloudflare Worker</td>
           <td style="padding: 10px; color: #8b949e;">Worker API, routing, endpoints</td>
+          <td style="padding: 10px; color: #8b949e; font-size: 11px;">None (base layer)</td>
           <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
           <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S11.1.x</td>
           <td style="padding: 10px;">🗄️ Cloudflare KV</td>
           <td style="padding: 10px; color: #8b949e;">Key-value storage, products, user data</td>
+          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x)</td>
           <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
           <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S12.x</td>
           <td style="padding: 10px;">💳 Stripe</td>
           <td style="padding: 10px; color: #8b949e;">Payment integration, checkout links</td>
+          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x), → KV (S11.1.x)</td>
           <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">2</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
           <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S6.x</td>
           <td style="padding: 10px;">🧪 Common Utils</td>
           <td style="padding: 10px; color: #8b949e;">Data validation, format checks</td>
+          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x)</td>
           <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">1</td>
         </tr>
       </tbody>
     </table>
     
+    <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #d29922;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">⚠️ Dependency Chain</h3>
+      <div style="color: #8b949e; font-size: 12px; line-height: 1.8;">
+        <div><strong style="color: #58a6ff;">Level 0 (No deps):</strong> S5.x (Worker) - Must be tested first</div>
+        <div><strong style="color: #58a6ff;">Level 1 (Deps: S5):</strong> S11.1.x (KV), S6.x (Utils) - Require Worker</div>
+        <div><strong style="color: #58a6ff;">Level 2 (Deps: S5+S11.1):</strong> S12.x (Stripe) - Requires Worker + KV</div>
+      </div>
+    </div>
+    
     <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #58a6ff;">
       <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">Internal Modules (not tested here)</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #8b949e; font-size: 12px;">
-        <div><strong style="color: #58a6ff;">S1.x</strong> - Shop (Catalog)</div>
-        <div><strong style="color: #58a6ff;">S2.x</strong> - Game (Tamagotchi)</div>
-        <div><strong style="color: #58a6ff;">S3.x</strong> - Auth (Hash Identity)</div>
-        <div><strong style="color: #58a6ff;">S4.x</strong> - Payment (Webhooks)</div>
-      </div>
+      <table style="width: 100%; font-size: 12px; color: #8b949e;">
+        <tr>
+          <td style="padding: 5px;"><strong style="color: #58a6ff;">S1.x</strong> - Shop</td>
+          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → KV (S11.1.x)</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px;"><strong style="color: #58a6ff;">S2.x</strong> - Game</td>
+          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → KV (S11.1.x)</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px;"><strong style="color: #58a6ff;">S3.x</strong> - Auth</td>
+          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → localStorage</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px;"><strong style="color: #58a6ff;">S4.x</strong> - Payment</td>
+          <td style="padding: 5px; color: #d29922;">→ Stripe (S12.x), → Worker (S5.x)</td>
+        </tr>
+      </table>
     </div>
     
     <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #d29922;">
