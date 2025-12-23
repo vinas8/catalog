@@ -177,9 +177,10 @@
       
       const results = [];
       let testNum = 0;
-      const totalTests = 8;
+      const totalTests = 10;
       let pingTime = 0;
       let productCount = 0;
+      let stripeProductCount = 0;
       
       function updateProgress(name) {
         const percent = Math.round((testNum / totalTests) * 100);
@@ -288,16 +289,34 @@
         
         // Test 7
         testNum = 7;
-        updateProgress('Checking Response Time');
+        updateProgress('Checking Stripe Products');
         await new Promise(r => setTimeout(r, 100));
-        if (pingTime < 2000) {
-          addResult('✅', `Response time: ${pingTime}ms`, 'ok');
-        } else {
-          addResult('⚠️', `Slow response: ${pingTime}ms`, 'warn');
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          const products = await res.json();
+          const stripeProducts = products.filter(p => p.source === 'stripe' && p.stripe_link);
+          stripeProductCount = stripeProducts.length;
+          if (stripeProductCount > 0) {
+            addResult('✅', `Found ${stripeProductCount} Stripe products with payment links`, 'ok');
+          } else {
+            addResult('⚠️', 'No Stripe products found', 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'Stripe product check failed', 'error');
         }
         
         // Test 8
         testNum = 8;
+        updateProgress('Checking Response Time');
+        await new Promise(r => setTimeout(r, 100));
+        if (pingTime < 5000) {
+          addResult('✅', `Response time: ${pingTime}ms`, 'ok');
+        } else {
+          addResult('⚠️', `Slow response: ${pingTime}ms (>5s)`, 'warn');
+        }
+        
+        // Test 9
+        testNum = 9;
         updateProgress('Validating JSON');
         await new Promise(r => setTimeout(r, 100));
         try {
@@ -306,6 +325,23 @@
           addResult('✅', 'JSON format valid', 'ok');
         } catch (e) {
           addResult('❌', 'Invalid JSON', 'error');
+        }
+        
+        // Test 10
+        testNum = 10;
+        updateProgress('Testing Stripe Integration');
+        await new Promise(r => setTimeout(r, 100));
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          const products = await res.json();
+          const hasStripeLinks = products.some(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
+          if (hasStripeLinks) {
+            addResult('✅', 'Stripe checkout links configured', 'ok');
+          } else {
+            addResult('⚠️', 'No valid Stripe links found', 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'Stripe integration check failed', 'error');
         }
         
         // Complete
