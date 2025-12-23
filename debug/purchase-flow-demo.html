@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo v0.8.0 - Debug Hub</title>
+  <title>🐍 Purchase Flow Demo v0.8.1 - Debug Hub</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -96,9 +96,9 @@
       <div class="breadcrumb">
         <a href="index.html">Debug Hub</a> → Purchase Flow Demo
       </div>
-      <h1>🛒 Main Purchase Flow - Interactive Demo v0.8.0</h1>
+      <h1>🛒 Main Purchase Flow - Interactive Demo v0.8.1</h1>
       <p style="color: rgba(255,255,255,0.9); font-size: 14px;">SMRI S1.1,2,3,4,5.01 - Complete purchase flow from catalog to game</p>
-      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">✅ FIXED: Buttons working! | 2025-12-23 16:05</p>
+      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">✅ Step-by-step mode working! | 2025-12-23 16:10</p>
     </div>
 
     <div class="info-panel">
@@ -131,10 +131,10 @@
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
-    const VERSION = '0.8.0';
+    const VERSION = '0.8.1';
     
     console.log(`%c Purchase Flow Demo ${VERSION} `, 'background: #667eea; color: white; font-size: 16px; font-weight: bold; padding: 4px;');
-    console.log('✅ FIXED: Using addEventListener instead of onclick');
+    console.log('✅ Step-by-step mode implemented!');
     
     let testUserHash = null;
     const output = document.getElementById('output');
@@ -221,8 +221,58 @@
     }
 
     async function runStepByStep() {
-      log('⏯️ Step-by-step mode not implemented yet');
-      showAlert('Step-by-step mode coming soon', 'info');
+      log('⏯️ Starting step-by-step mode...', 'info');
+      showAlert('Step-by-step mode started - click button again to advance', 'info');
+      
+      if (!testUserHash) {
+        // Step 0: Generate hash
+        testUserHash = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        log(`Step 0: User hash generated: ${testUserHash}`);
+        return;
+      }
+      
+      // Check if webhook already sent
+      const checkResponse = await fetch(`${WORKER_URL}/user-products?user=${testUserHash}`);
+      const products = await checkResponse.json();
+      const productArray = Array.isArray(products) ? products : (products.products || []);
+      
+      if (productArray.length === 0) {
+        // Step 1: Send webhook
+        log('Step 1: Sending webhook to Worker...');
+        
+        const webhookPayload = {
+          type: 'checkout.session.completed',
+          data: {
+            object: {
+              id: `cs_test_${testUserHash}`,
+              client_reference_id: testUserHash,
+              payment_intent: `pi_test_${testUserHash}`,
+              amount_total: 100000,
+              currency: 'eur',
+              customer_email: `test_${testUserHash}@example.com`,
+              metadata: { product_id: 'prod_TdKcnyjt5Jk0U2' }
+            }
+          }
+        };
+        
+        const webhookResponse = await fetch(`${WORKER_URL}/stripe-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookPayload)
+        });
+        
+        const webhookResult = await webhookResponse.json();
+        log(`Webhook result: ${JSON.stringify(webhookResult)}`, webhookResult.success ? 'success' : 'error');
+        showAlert('Step 1 complete! Click again to verify...', 'success');
+        return;
+      }
+      
+      // Step 2: Verify
+      log('Step 2: Verifying snake assignment in KV...');
+      log(`Products found: ${productArray.length}`, 'success');
+      log(`Snake details: ${JSON.stringify(productArray[0], null, 2)}`);
+      showAlert(`✅ Step-by-step complete! ${productArray.length} snake(s)`, 'success');
+      testUserHash = null; // Reset for next run
     }
 
     async function testWebhook() {
