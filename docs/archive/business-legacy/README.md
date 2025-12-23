@@ -1,6 +1,7 @@
 # Business Folder - Documentation Index
 
-**Purpose:** Centralized business rules, requirements, and strategy documents for Serpent Town.
+**Status:** ⚠️ ARCHIVED - See [MAIN_PURCHASE_FLOW.md](../../MAIN_PURCHASE_FLOW.md) for current flow  
+**Purpose:** Historical business rules, requirements, and strategy documents for Serpent Town.
 
 ---
 

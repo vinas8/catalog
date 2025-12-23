@@ -1,5 +1,7 @@
 # Business Facts - Serpent Town
 
+**Status:** ⚠️ ARCHIVED - See [MAIN_PURCHASE_FLOW.md](../MAIN_PURCHASE_FLOW.md) for current purchase flow
+
 **Extracted from:** E2E_TEST_SCENARIOS.md  
 **Version:** v0.5.0  
 **Purpose:** Abstract business rules independent of implementation

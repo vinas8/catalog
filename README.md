@@ -50,7 +50,8 @@ cat .github/copilot-instructions.md
 
 ### Quick Links
 
-- **[🚀 Developer Reference](docs/DEVELOPER_REFERENCE.md)** - Command cheatsheet (⭐ START HERE)
+- **[🎯 Main Purchase Flow](docs/MAIN_PURCHASE_FLOW.md)** - Complete E2E flow (⭐ START HERE)
+- **[🚀 Developer Reference](docs/DEVELOPER_REFERENCE.md)** - Command cheatsheet
 - **[☁️ Cloudflare API](docs/CLOUDFLARE_API_EXAMPLES.md)** - KV storage & curl examples
 - **[🧩 Module System](docs/modules/README.md)** - Modular architecture
 - **[⚙️ Setup Guide](docs/SETUP.md)** - Installation & deployment

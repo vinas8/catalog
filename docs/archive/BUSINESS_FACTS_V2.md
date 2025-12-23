@@ -1,5 +1,6 @@
 # Business Facts v2 - Serpent Town
 
+**Status:** ⚠️ ARCHIVED - See [MAIN_PURCHASE_FLOW.md](../MAIN_PURCHASE_FLOW.md) for current purchase flow  
 **Extracted from:** E2E_TEST_SCENARIOS.md (1344 lines, 45 scenarios)  
 **Method:** Manual reading + SMRI pattern analysis  
 **Version:** v0.5.0  

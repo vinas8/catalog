@@ -1,5 +1,6 @@
 # Business Facts V3 - Extracted Using Fabric Pattern
 
+**Status:** ⚠️ ARCHIVED - See [MAIN_PURCHASE_FLOW.md](../MAIN_PURCHASE_FLOW.md) for current flow  
 **Method:** Fabric `extract_wisdom` pattern applied to E2E_TEST_SCENARIOS.md  
 **Source:** 1344 lines, 45 scenarios  
 **Pattern:** Atomic facts + System patterns + Abstractions  
