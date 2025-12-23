@@ -60,10 +60,20 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
   virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
 
   try {
-    // Load ALL products (not just available)
-    console.log('📡 Calling loadCatalog()...');
-    const allProducts = await loadCatalog();
-    console.log('✅ loadCatalog returned:', allProducts.length, 'products');
+    // Use same approach as debug demo - direct fetch
+    console.log('📡 Fetching products from Worker API directly...');
+    const workerUrl = 'https://catalog.navickaszilvinas.workers.dev/products';
+    const response = await fetch(workerUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    // Handle array response (same as debug demo)
+    const allProducts = Array.isArray(data) ? data : (data.products || []);
+    console.log('✅ Loaded products:', allProducts.length);
     
     // Filter by species if needed
     const filteredProducts = selectedSpecies === 'all' 
