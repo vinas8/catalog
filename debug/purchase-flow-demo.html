@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo v0.5.1 - Debug Hub</title>
+  <title>🐍 Purchase Flow Demo v0.5.2 - Debug Hub</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -202,9 +202,9 @@
       <div class="breadcrumb">
         <a href="../index.html">Home</a> → <a href="index.html">Debug Hub</a> → Purchase Flow Demo
       </div>
-      <h1>🛒 Main Purchase Flow - Interactive Demo v0.5.1</h1>
+      <h1>🛒 Main Purchase Flow - Interactive Demo v0.5.2</h1>
       <p>SMRI S1.1,2,3,4,5.01 - Complete purchase flow from catalog to game</p>
-      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Last updated: 2025-12-23 | Enhanced KV data display</p>
+      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">Last updated: 2025-12-23 | FIXED: Array response handling</p>
     </div>
 
     <div class="info-panel">
@@ -272,10 +272,11 @@
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
-    const VERSION = '0.5.1';
-    const LAST_UPDATED = '2025-12-23T13:03:00Z';
+    const VERSION = '0.5.2';
+    const LAST_UPDATED = '2025-12-23T13:06:00Z';
     
     console.log(`Purchase Flow Demo ${VERSION} - Last updated: ${LAST_UPDATED}`);
+    console.log('FIXED: API returns array directly, not { products: [...] }');
     console.log('Enhanced: Full KV data display in step 6');
     
     const steps = [
@@ -468,10 +469,13 @@
           const verifyResponse = await fetch(`${WORKER_URL}/user-products?user=${testUserHash}`);
           const userData = await verifyResponse.json();
           
-          if (userData.products && userData.products.length > 0) {
-            const snake = userData.products[0];
+          // API returns array directly, not { products: [...] }
+          const products = Array.isArray(userData) ? userData : (userData.products || []);
+          
+          if (products.length > 0) {
+            const snake = products[0];
             const kvData = {
-              snakes_count: userData.products.length,
+              snakes_count: products.length,
               assignment_id: snake.assignment_id,
               product_id: snake.product_id,
               nickname: snake.nickname,
@@ -479,7 +483,7 @@
               stats: snake.stats
             };
             updateStep(6, 'completed', JSON.stringify(kvData, null, 2));
-            showAlert(`✅ Snake assigned! ${userData.products.length} snake(s) in KV`, 'success');
+            showAlert(`✅ Snake assigned! ${products.length} snake(s) in KV`, 'success');
           } else {
             updateStep(6, 'error', 'Snake not found in KV');
             showAlert('❌ Snake assignment failed', 'error');
