@@ -76,6 +76,25 @@
       gap: 8px;
       margin-top: 10px;
     }
+    .module-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    .module-link {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 8px;
+      background: #0d1117;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .module-link:hover {
+      background: #1c2128;
+      transform: translateX(5px);
+    }
     .subcat-badge {
       background: #21262d;
       color: #8b949e;
@@ -102,6 +121,25 @@
     <strong>SMRI:</strong> <span id="smri-count">Loading...</span> scenarios | 
     <strong>Progress:</strong> <span id="overall-progress">Loading...</span>
   </p>
+
+  <!-- Quick Access -->
+  <div style="background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+    <h2 style="color: #58a6ff; margin-bottom: 15px; font-size: 18px;">🚀 Quick Access</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+      <a href="purchase-flow-demo.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        🛒 Purchase Flow Demo<br>
+        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Interactive E2E test (S1.1,2,3,4,5.01)</span>
+      </a>
+      <a href="healthcheck.html" style="background: linear-gradient(135deg, #238636 0%, #2ea043 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        🏥 System Health Check<br>
+        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Test all API endpoints</span>
+      </a>
+      <a href="../smri/" style="background: linear-gradient(135deg, #6e40c9 0%, #7d4fd3 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        📋 All SMRI Scenarios<br>
+        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Browse complete test suite</span>
+      </a>
+    </div>
+  </div>
 
   <div class="modules-grid" id="modules-grid">
     Loading modules...
