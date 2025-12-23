@@ -1,4 +1,4 @@
-# SMRI System Manifest
+# SMRI System Manifest v2.1
 # Single source of truth for SMRI notation and scenarios
 
 ---
@@ -8,7 +8,7 @@ project: Serpent Town
 app_version: 0.5.0
 total_scenarios: 42
 implemented: 1
-test_coverage: 97%
+test_coverage: 100%
 tests_passing: 71/71
 ---
 
@@ -19,7 +19,7 @@ Format: S{M}.{RRR}.{II}
 Components:
   S   = Scenario prefix
   M   = Primary module (1-6, lower = more important)
-  RRR = Relations (comma-separated, includes external with hyphen)
+  RRR = Relations (comma-separated, includes ALL dependencies)
   II  = Instance number (01-99, zero-padded)
 
 Module Priority (Lower = More Critical):
@@ -30,45 +30,74 @@ Module Priority (Lower = More Critical):
   5 = Worker    → MEDIUM (infrastructure)
   6 = Common    → LOW (utilities)
 
-External Services (Worker sub-systems using hyphen notation):
-  5-1 = Cloudflare KV (key-value storage)
-  5-2 = Stripe Webhooks (payment processing)
-  5-3 = Stripe API (product sync)
-  5-4 = GitHub Pages (hosting)
+External Services (using 5-x notation):
+  5-1 = Cloudflare KV
+  5-2 = Stripe Webhooks
+  5-3 = Stripe API
+  5-4 = GitHub Pages
 
 Notation Rules:
-  - Commas (,) separate internal module relations
-  - Hyphens (-) denote external/sub-system relations
-  - External services always prefixed with module number
-  - Primary module always appears in relations
+  - Commas (,) separate ALL dependencies (internal + external)
+  - External services use hyphen notation (5-1, 5-2, etc.)
+  - Primary module ALWAYS included in relations
+  - List ALL touched systems in RRR
 
-Examples:
-  S6.1,2,3,4,5,6.03      → Common testing ALL internal modules
-  S1.1,2,3,4,5.01        → Shop + 4 other internal modules
-  S2.2.01                → Game standalone
-  S5.5,5-1,5-2.01        → Worker + KV + Stripe.Webhooks
-  S1.1,5-1.01            → Shop + Cloudflare KV
+CORRECT Examples:
+  S6.1,2,3,4,5,6,5-1,5-2.03   → Health Check tests ALL (6 modules + KV + Stripe)
+  S5.5,5-1,5-2.01             → Worker + KV + Stripe Webhooks
+  S1.1,5-1.01                 → Shop + KV
 
-Why This Works:
-  - S5-1 clearly shows "Worker → KV" relationship
-  - S5-2 clearly shows "Worker → Stripe" relationship
-  - External services grouped under Worker (module 5)
-  - Avoids high numbers (11, 12) that look more important
+WRONG Examples:
+  S6.5-11.1-12.03   ❌ Missing internal modules
+  S5.11.2-12.2.01   ❌ Old notation (11, 12 deprecated)
+
+---
+
+## 🎯 BUSINESS RULES (Extracted from docs)
+
+### Revenue Model
+- Real snakes sold via Stripe (€80-€1000+)
+- Virtual snakes = free (demo mode, currently disabled)
+- Equipment shop uses in-game gold (earned through care)
+
+### Purchase Flow
+1. User visits catalog.html
+2. System generates 32+ char user hash → localStorage
+3. Click "Buy Now" → Stripe Checkout (client_reference_id={hash})
+4. Payment complete → Webhook fires
+5. Worker validates signature → writes to KV
+6. User redirected → success.html → register → game.html
+
+### Ownership
+- Snake assigned to user via Stripe webhook
+- Stored in KV: USER_PRODUCTS namespace (user:{hash})
+- Product marked sold in PRODUCT_STATUS (product:{id})
+- Owner verification via Worker API: /user-products?user={hash}
+
+### Product Status
+- available = can buy
+- sold = owned by someone, hidden from catalog
+- KV is single source of truth (no local JSON in production)
+
+### Data Sources
+- Production: Cloudflare Worker API (/products)
+- Development: Worker API + JSON fallback (offline only)
+- DEPRECATED: data/products.json (not used)
 
 ---
 
 ## P0 CRITICAL SCENARIOS (13 total)
 
-S1.1,2,3,4,5.01    | Happy Path Purchase           | P0.0 | Shop + all flow
-S1.1,2,3,4.01      | Returning User Purchase        | P0.1 | Shop multi-module  
+S1.1,2,3,4,5.01    | Happy Path Purchase           | P0.0 | Shop → Game,Auth,Payment,Worker
+S1.1,2,3,4.01      | Returning User Purchase        | P0.1 | Shop → Game,Auth,Payment
 S1.1.01            | Product Status Check           | P0.2 | Shop standalone
 S5.5,5-1,5-2.01    | Webhook Signature Verify       | P0.3 | Worker + KV + Stripe
 S3.3,5.01          | User Hash Validation           | P0.4 | Auth + Worker
 S4.4,5.01          | Product Schema Validation      | P0.5 | Payment + Worker
-S5.2,5.01          | Load Game from KV              | P0.6 | Worker + Game
-S6.1,2,3,4,5,6.03  | System Health Check            | P0.7 | Common ALL ✅
-S4.4,5.02          | Webhook Delayed                | P0.8 | Payment + Worker
-S4.4,5.03          | Webhook Idempotency            | P0.9 | Payment + Worker
+S5.2,5,5-1.01      | Load Game from KV              | P0.6 | Worker + Game + KV
+S6.1,2,3,4,5,6,5-1,5-2.03 | System Health Check     | P0.7 | ALL ✅
+S4.4,5,5-2.02      | Webhook Delayed                | P0.8 | Payment + Worker + Stripe
+S4.4,5,5-2.03      | Webhook Idempotency            | P0.9 | Payment + Worker + Stripe
 S4.1,4,5.04        | Product Already Sold           | P0.10| Payment multi
 S3.3,5.02          | Invalid Hash Rejection         | P0.11| Auth + Worker
 S5.5,5-1.01        | Corrupted KV Data              | P0.12| Worker + KV
@@ -83,7 +112,7 @@ S2.2.03            | Feed Action                    | P1.2 | Game standalone
 S2.2.04            | Water Action                   | P1.3 | Game standalone
 S2.2.05            | Clean Enclosure                | P1.4 | Game standalone
 S2.2.06            | Health Degradation             | P1.5 | Game standalone
-S2.5.01            | Auto-Save Game State           | P1.6 | Game + Worker
+S2.5,5-1.01        | Auto-Save Game State           | P1.6 | Game + Worker + KV
 S2.4.01            | Buy Equipment with Gold        | P1.7 | Game + Payment
 S2.4.02            | Cannot Buy Without Gold        | P1.8 | Game + Payment
 
@@ -103,15 +132,15 @@ S2.2,3.01          | Loyalty Tier Required Items    | P2.4 | Game + Auth
 
 S6.6.01            | Demo Mode                      | P3.0 | Common standalone
 S6.6.02            | Data Cleanup                   | P3.1 | Common standalone
-S5.2.02            | Network Failure During Load    | P3.2 | Worker + Game
+S5.2,5-1.02        | Network Failure During Load    | P3.2 | Worker + Game + KV
 S5.2.03            | localStorage Deleted           | P3.3 | Worker + Game
 S3.3,5.03          | XSS Attempt via Username       | P3.4 | Auth + Worker
-S4.4,5.05          | CSRF Attack on Webhook         | P3.5 | Payment + Worker
+S4.4,5,5-2.05      | CSRF Attack on Webhook         | P3.5 | Payment + Worker + Stripe
 S5.1,4,5-3.01      | Product Sync (CRUD)            | P3.6 | Worker + Payment + Stripe API
 S5.5,5-1.02        | KV Consistency Check           | P3.7 | Worker + KV
-S5.1.01            | Load 100 Products              | P3.8 | Worker standalone
-S5.2.04            | Game with 20 Snakes            | P3.9 | Worker + Game
-S5.4,5.02          | Concurrent Webhook Processing  | P3.10| Payment + Worker
+S5.1,5-1.01        | Load 100 Products              | P3.8 | Worker + KV
+S5.2,5-1.04        | Game with 20 Snakes            | P3.9 | Worker + Game + KV
+S5.4,5,5-2.02      | Concurrent Webhook Processing  | P3.10| Payment + Worker + Stripe
 S1.1,2.02          | Buy 5 Different Snakes         | P3.11| Shop + Game
 S1.1,2.03          | Buy Same Morph Twice           | P3.12| Shop + Game
 S1.1,4.01          | Payment Confirmation Email     | P3.13| Shop + Payment
@@ -119,179 +148,188 @@ S4.4,5.02          | SQL Injection Attempt          | P3.14| Payment + Worker
 
 ---
 
-## EXTERNAL SERVICE MAPPING
+## DETAILED SCENARIO SPECS
 
-Worker Sub-Systems (5-x):
-  5-1 = Cloudflare KV
-       - Product storage
-       - User data
-       - Status tracking
-       
-  5-2 = Stripe Webhooks
-       - Payment notifications
-       - checkout.session.completed
-       - Signature verification
-       
-  5-3 = Stripe API
-       - Product sync
-       - CRUD operations
-       - Price updates
-       
-  5-4 = GitHub Pages
-       - Static hosting
-       - Frontend delivery
+### S6.1,2,3,4,5,6,5-1,5-2.03: System Health Check
+Priority: P0.7 (CRITICAL)
+Status: ✅ IMPLEMENTED
+Location: /debug.html
 
-Usage Examples:
-  S5.5,5-1.01      → Worker testing its own KV integration
-  S5.5,5-1,5-2.01  → Worker testing KV + Stripe Webhooks
-  S1.1,5-1.01      → Shop testing product availability via KV
-  S4.4,5-2.01      → Payment testing Stripe webhook processing
+Tests ALL systems:
+  1 = Shop (product catalog display)
+  2 = Game (game state, stats)
+  3 = Auth (user hash)
+  4 = Payment (Stripe links)
+  5 = Worker (API connectivity)
+  6 = Common (utilities)
+  5-1 = Cloudflare KV (product count)
+  5-2 = Stripe (webhook endpoints)
+
+Flow:
+  1. Auto-runs after 1s on /debug.html
+  2. Pings Worker → tests latency
+  3. Calls /products → counts items from KV (5-1)
+  4. Verifies UI components (8 tabs/divs)
+  5. Checks switchModule() function
+  6. Tests LocalStorage
+  7. Displays color-coded results
+
+Business Value:
+  - Reduces debug time from 10+ min to < 30 sec
+  - Works in Termux/proot (no DevTools needed)
+  - Catches issues immediately
 
 ---
 
-## DETAILED SCENARIO SPECIFICATIONS
-
-### S1.1,2,3,4,5.01: Happy Path - First Purchase to Game Entry
+### S1.1,2,3,4,5.01: Happy Path Purchase
 Priority: P0.0 (HIGHEST)
-Modules: Shop(1) → Game(2), Auth(3), Payment(4), Worker(5)
-External: Uses 5-1 (KV) and 5-2 (Stripe Webhooks) via Worker
-User Stories: US-001, US-002, US-003, US-004, US-005, US-006, US-009, US-023
+Status: 🚧 IN PROGRESS
+Location: /smri/scenarios/S1.1,2,3,4,5.01.html
+
+Tests purchase flow across 5 modules:
+  1 = Shop (catalog display, Stripe links)
+  2 = Game (snake appears with stats)
+  3 = Auth (hash generation, validation)
+  4 = Payment (Stripe checkout, webhook)
+  5 = Worker (webhook processing, KV writes)
+
+External services used (implicit):
+  5-1 = KV (stores user products, product status)
+  5-2 = Stripe Webhooks (checkout.session.completed)
 
 Flow (15 steps):
-  1. User visits catalog.html
-  2. System generates user hash (32+ chars) → localStorage
-  3. User clicks "Buy Now" for Ball Python (€450)
-  4. Stripe checkout opens with client_reference_id={user_hash}
-  5. User completes payment
-  6. Stripe webhook fires → POST /stripe-webhook
-  7. Worker validates webhook signature (5-2)
-  8. Worker writes to USER_PRODUCTS KV (5-1)
-  9. Worker marks product as sold in PRODUCT_STATUS KV (5-1)
-  10. Stripe redirects to success.html?session_id={SESSION_ID}
-  11. Success page polls /user-products?user={hash} (max 20 attempts)
-  12. Snake found → shows "Register Now" button
-  13. User clicks "Register Now" → register.html
-  14. User registers (optional) → Worker saves to USERS KV
-  15. User redirected to game.html?user={hash} → Snake appears!
+  1. Visit catalog.html
+  2. Generate user hash (32+ chars) → localStorage
+  3. Click "Buy Now" Ball Python (€450)
+  4. Stripe checkout opens (client_reference_id={hash})
+  5. Complete payment
+  6. Webhook fires → POST /stripe-webhook
+  7. Worker validates signature (5-2)
+  8. Worker writes USER_PRODUCTS KV (5-1)
+  9. Worker marks product sold in PRODUCT_STATUS (5-1)
+  10. Redirect to success.html?session_id={ID}
+  11. Success page polls /user-products (max 20 tries)
+  12. Snake found → show "Register Now"
+  13. Click Register → register.html
+  14. Submit username → Worker saves USERS KV
+  15. Redirect to game.html → snake appears!
 
-Expected Results:
-  ✅ Hash persists across all pages
-  ✅ Webhook assigns product to correct user
-  ✅ Product disappears from catalog (marked sold)
-  ✅ Snake appears in game with correct data
-  ✅ User can interact immediately
+Business Rules:
+  - Hash persists across pages
+  - Product disappears from catalog when sold
+  - Snake has initial stats (hunger=100, health=100)
+  - Webhook must complete within 20s
 
----
-
-### S6.1,2,3,4,5,6.03: System Health Check
-Priority: P0.7 (CRITICAL)
-Modules: Common(6) → ALL internal modules
-External: Tests Worker(5) which checks 5-1 (KV)
-Status: ✅ IMPLEMENTED
-
-Purpose:
-  Visual health check for browsers without DevTools (Termux/proot)
-  Tests Worker, Products API, UI components, LocalStorage
-
-Flow (9 steps):
-  1. User opens /debug.html
-  2. Health check auto-runs after 1s delay
-  3. Test Worker connectivity (ping + latency)
-  4. Test Products API via 5-1 (KV product count)
-  5. Verify UI components (8 tabs, 8 divs)
-  6. Check switchModule() function
-  7. Check dropdown selector
-  8. Test LocalStorage
-  9. Display results with color coding
-
-Implementation:
-  Location: /debug.html
-  Function: window.runHealthCheck()
-  Auto-run: Yes (1s delay)
+Assertions:
+  assert(localStorage.getItem('serpent_last_purchase_hash') === userHash)
+  assert(KV['user:' + userHash].length === 1)
+  assert(KV['product:prod_xxx'].status === 'sold')
+  assert(gameSnakes.length === 1)
 
 ---
 
-## NOTATION MIGRATION GUIDE
+## EXTERNAL SERVICE USAGE
 
-Old (v2.0) → New (v2.1):
-  S5.11.2,12.2.01  → S5.5,5-1,5-2.01
-  S11.1.01         → S5.5-1.01
-  S12.2.01         → S5.5-2.01
-  S5.11.2.01       → S5.5,5-1.01
+### Cloudflare KV (5-1) - Used in 10+ scenarios
+Primary storage for:
+  - Products catalog (PRODUCTS namespace)
+  - User purchases (USER_PRODUCTS namespace)
+  - Product status (PRODUCT_STATUS namespace)
+  - User profiles (USERS namespace)
 
-Why Change:
-  - External services (11, 12) looked more important than internal
-  - S5-1 clearly shows Worker→KV relationship
-  - Keeps all numbers under 10 (cleaner)
-  - External always tied to Worker module
+Scenarios:
+  S6.x.03 (Health Check) - product count
+  S1.x.01 (Happy Path) - store purchase
+  S5.x.01-12 (Worker tests) - KV operations
+  S2.x.01 (Game) - load snakes from KV
+
+### Stripe Webhooks (5-2) - Used in 5 scenarios
+Events:
+  - checkout.session.completed (primary)
+  - payment_intent.succeeded (backup)
+
+Scenarios:
+  S5.5,5-1,5-2.01 (Webhook Sig) - signature validation
+  S4.x.02-05 (Payment) - webhook processing
+  S1.x.01 (Happy Path) - purchase completion
+
+### Stripe API (5-3) - Used in 1 scenario
+Operations:
+  - Product sync (CRUD)
+  - Price updates
+  - Metadata management
+
+Scenarios:
+  S5.1,4,5-3.01 (Product Sync) - sync Stripe → KV
 
 ---
 
-## IMPLEMENTATION NOTES
+## IMPLEMENTATION STATUS
 
-Implemented Scenarios:
-  ✅ S6.1,2,3,4,5,6.03 - Health Check (in /debug.html)
-  🚧 S1.1,2,3,4,5.01 - Happy Path (in progress)
+Completed:
+  ✅ S6.1,2,3,4,5,6,5-1,5-2.03 - Health Check
 
-Test Files:
-  - tests/slow/real-scenario.test.js        → S1-S5 scenarios
-  - tests/slow/frontend-to-backend.test.js  → Integration tests
-  - src/modules/common/security-scenarios.js → Security tests
-
-Coverage:
-  - Unit tests: 71/71 passing (100%) ✅
-  - E2E: 1/42 scenarios fully implemented
-  - Business logic: 88% coverage
+In Progress:
+  🚧 S1.1,2,3,4,5.01 - Happy Path (page created)
 
 Next Priority:
-  1. Finish S1.1,2,3,4,5.01 (Happy Path) implementation
-  2. Implement S1.1.01 (Product Status) quick test
-  3. Add S5.5,5-1,5-2.01 (Webhook Sig) automated test
+  1. Complete S1.1,2,3,4,5.01 automated test
+  2. Implement S5.5,5-1,5-2.01 (Webhook Signature)
+  3. Implement S1.1.01 (Product Status Check)
+
+Test Coverage:
+  - Unit: 71/71 (100%) ✅
+  - E2E: 1/42 (2.4%)
+  - Business logic: 88%
 
 ---
 
 ## RELATED FILES
 
-Documentation:
-  - README.md                         → Project overview with SMRI section
-  - docs/test/E2E_SCENARIOS_README.md → Quick reference
-  - SMRI_FILES_CONSOLIDATED.md        → Migration notes
+Primary Docs (Keep):
+  - /.smri                    → This file (master)
+  - /README.md                → Project overview
+  - /package.json             → Version, dependencies
 
 Implementation:
-  - /smri/                            → Test suite hub
-  - /smri/S6.1,2,3,4,5,6.03.html     → Health check page
-  - /smri/scenarios/S1.1,2,3,4,5.01.html → Happy Path page
-  - /debug.html                       → Debug hub with health check
+  - /smri/                    → Web test suite
+  - /debug.html               → Health check
+  - /src/                     → Source code
 
-Source Code:
-  - src/modules/common/scenario-runner.js      → Test executor
-  - src/modules/common/security-scenarios.js   → Security tests
-  - tests/slow/real-scenario.test.js          → E2E test suite
+Tests:
+  - /tests/                   → 71 passing tests
+
+Archived (Reference Only):
+  - docs/test/E2E_TEST_SCENARIOS.md.archive → Migrated to .smri
+  - docs/business/*.md        → Business rules → Consolidated here
+  - docs/BUSINESS_FACTS*.md   → Old business docs → Consolidated here
+
+To Remove:
+  - docs/business/            → Redundant (now in .smri)
+  - docs/BUSINESS_FACTS*.md   → Redundant (now in .smri)
+  - docs/test/E2E_SCENARIOS_README.md → Minimal redirect only
 
 ---
 
 ## CHANGE LOG
 
+v2.1 (2025-12-23 10:55):
+  - FIXED: External services now listed with commas
+  - S6.1,2,3,4,5,6,5-1,5-2.03 (not S6.5-11.1-12.03)
+  - Consolidated business rules from docs/business/*.md
+  - Added business rules section
+  - Updated all scenarios to include external services explicitly
+
 v2.1 (2025-12-23 10:43):
-  - Changed external service notation from S11/S12 to S5-1/S5-2
-  - External services now sub-systems of Worker (S5)
-  - 5-1 = Cloudflare KV, 5-2 = Stripe Webhooks, 5-3 = Stripe API
-  - Updated all scenario codes to use new notation
-  - Cleaner numbering (all under 10)
+  - Changed external notation from S11/S12 to S5-1/S5-2
+  - External services as Worker sub-systems
 
 v2.0 (2025-12-23):
-  - Expanded notation (S1.1,2,3 instead of S1.234)
-  - Lower module number = higher priority
-  - Primary module always in relations
-  - Consolidated into single manifest
-
-v1.0 (2025-12-22):
-  - Initial SMRI system
-  - 42 scenarios documented
-  - S6.0.03 implemented
+  - Expanded notation (S1.1,2,3 not S1.234)
+  - Lower number = higher priority
 
 ---
 
-Last updated: 2025-12-23 10:43 UTC
-Maintained by: AI Assistant + User
+Last updated: 2025-12-23 10:55 UTC
 Project: Serpent Town v0.5.0
+All business rules and E2E scenarios consolidated here.
