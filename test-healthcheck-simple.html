@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Healthcheck Functions</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #0a0e14; color: #c9d1d9; }
+    button { padding: 10px; margin: 5px; }
+    #output { background: #161b22; padding: 15px; margin-top: 10px; border: 1px solid #30363d; }
+  </style>
+</head>
+<body>
+  <h1>Debug Healthcheck Test</h1>
+  
+  <button onclick="testImport()">Test Import</button>
+  <button onclick="testFunctions()">Test Functions</button>
+  
+  <div id="output">Click buttons to test...</div>
+  
+  <script type="module">
+    import { VERSION, VERSION_CONFIG, getSMRIScenario, getSMRIStats } from './src/config/version.js';
+    
+    window.testImport = function() {
+      const output = document.getElementById('output');
+      output.innerHTML = `
+        <strong>Import Test:</strong><br>
+        VERSION: ${VERSION}<br>
+        getSMRIScenario: ${typeof getSMRIScenario}<br>
+        getSMRIStats: ${typeof getSMRIStats}<br>
+      `;
+    };
+    
+    window.testFunctions = function() {
+      const healthScenario = getSMRIScenario('S0.1,2,3,4,5,5-1,5-2.03');
+      const stats = getSMRIStats();
+      
+      const output = document.getElementById('output');
+      output.innerHTML = `
+        <strong>Function Test:</strong><br>
+        Health Scenario: ${JSON.stringify(healthScenario, null, 2)}<br><br>
+        Stats: ${JSON.stringify(stats, null, 2)}
+      `;
+    };
+    
+    console.log('✅ Module loaded successfully');
+  </script>
+</body>
+</html>
