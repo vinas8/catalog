@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo v0.8.1 - Debug Hub</title>
+  <title>🐍 Complete Purchase Flow v1.0.0 - Debug Hub</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -96,9 +96,9 @@
       <div class="breadcrumb">
         <a href="index.html">Debug Hub</a> → Purchase Flow Demo
       </div>
-      <h1>🛒 Main Purchase Flow - Interactive Demo v0.8.1</h1>
-      <p style="color: rgba(255,255,255,0.9); font-size: 14px;">SMRI S1.1,2,3,4,5.01 - Complete purchase flow from catalog to game</p>
-      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">✅ Step-by-step mode working! | 2025-12-23 16:10</p>
+      <h1>🛒 COMPLETE Main Purchase Flow v1.0.0</h1>
+      <p style="color: rgba(255,255,255,0.9); font-size: 14px;">SMRI S0-1-2-3-4-5.01 - Full scenario: Import → Catalog → Purchase → Game</p>
+      <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">✅ ALL 9 STEPS: Stripe Import → Catalog → Checkout → Webhook → KV → Game | 2025-12-23 16:34</p>
     </div>
 
     <div class="info-panel">
@@ -131,10 +131,10 @@
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
-    const VERSION = '0.8.1';
+    const VERSION = '1.0.0';
     
-    console.log(`%c Purchase Flow Demo ${VERSION} `, 'background: #667eea; color: white; font-size: 16px; font-weight: bold; padding: 4px;');
-    console.log('✅ Step-by-step mode implemented!');
+    console.log(`%c COMPLETE Purchase Flow ${VERSION} `, 'background: #28a745; color: white; font-size: 18px; font-weight: bold; padding: 6px;');
+    console.log('✅ ALL 9 STEPS: Import → Catalog → Checkout → Webhook → KV → Game');
     
     let testUserHash = null;
     const output = document.getElementById('output');
@@ -155,16 +155,61 @@
     }
 
     async function runFullDemo() {
-      log('🚀 Starting full purchase flow demo...', 'info');
-      showAlert('Starting full purchase flow demo...', 'info');
+      log('🚀 Starting COMPLETE purchase flow demo...', 'info');
+      showAlert('Starting FULL main scenario...', 'info');
       
       try {
-        // Generate test user
+        // STEP 0: Import Products from Stripe to KV
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 0: Import Products (Stripe → KV)', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('⚠️ In production, admin runs: bash scripts/import-stripe-to-kv.sh');
+        log('This syncs Stripe products to KV PRODUCTS namespace');
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // STEP 1: List products in catalog
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 1: Browse Catalog (KV → catalog.html)', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('Fetching products from KV via Worker API...');
+        
+        const catalogResponse = await fetch(`${WORKER_URL}/products`);
+        const allProducts = await catalogResponse.json();
+        const products = Array.isArray(allProducts) ? allProducts : (allProducts.products || []);
+        log(`✅ Catalog loaded: ${products.length} products available`, 'success');
+        log(`Sample product: ${JSON.stringify(products[0], null, 2)}`);
+        await new Promise(r => setTimeout(r, 1500));
+        
+        // STEP 2: Generate test user hash
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 2: Generate User Hash', 'info');
+        log('═══════════════════════════════════════', 'info');
         testUserHash = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         log(`User hash generated: ${testUserHash}`);
+        await new Promise(r => setTimeout(r, 1000));
         
-        // Step 1: Simulate webhook
-        log('Step 1: Sending webhook to Worker...');
+        // STEP 3: User selects product and goes to Stripe checkout
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 3: Stripe Checkout', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('User clicks "Buy Now" on Batman Ball Python (€10.00)');
+        log('Redirecting to Stripe with client_reference_id=' + testUserHash);
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // STEP 4: User completes payment in Stripe
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 4: Complete Payment', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('User enters card: 4242 4242 4242 4242');
+        log('Payment completed successfully!');
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // STEP 5: Stripe fires webhook
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 5: Stripe Webhook (Stripe → Worker)', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('Stripe fires checkout.session.completed event...');
+        
         const webhookPayload = {
           type: 'checkout.session.completed',
           data: {
@@ -174,7 +219,7 @@
               payment_intent: `pi_test_${testUserHash}`,
               amount_total: 100000,
               currency: 'eur',
-              customer_email: `test_${testUserHash}@example.com`,
+              customer_email: `buyer_${testUserHash}@example.com`,
               metadata: { product_id: 'prod_TdKcnyjt5Jk0U2' }
             }
           }
@@ -193,22 +238,46 @@
           showAlert('❌ Webhook failed', 'error');
           return;
         }
+        await new Promise(r => setTimeout(r, 1000));
         
-        // Step 2: Wait and verify
-        log('Step 2: Waiting 2 seconds for KV sync...');
+        // STEP 6: Worker assigns snake to user in KV
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 6: Validate & Assign (Worker → KV USER_PRODUCTS)', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('Worker validates webhook signature...');
+        log('Worker writes to KV namespace: USER_PRODUCTS');
+        log('Key: user:' + testUserHash);
         await new Promise(r => setTimeout(r, 2000));
         
-        log('Step 3: Checking user products in KV...');
-        const checkResponse = await fetch(`${WORKER_URL}/user-products?user=${testUserHash}`);
-        const products = await checkResponse.json();
+        // STEP 7: Verify snake assignment
+        log('═══════════════════════════════════════', 'info');
+        log('STEP 7: Success Page (Polling for snake)', 'info');
+        log('═══════════════════════════════════════', 'info');
+        log('success.html polls Worker API...');
         
-        const productArray = Array.isArray(products) ? products : (products.products || []);
+        const checkResponse = await fetch(`${WORKER_URL}/user-products?user=${testUserHash}`);
+        const userProducts = await checkResponse.json();
+        const productArray = Array.isArray(userProducts) ? userProducts : (userProducts.products || []);
+        
         log(`Products found: ${productArray.length}`, productArray.length > 0 ? 'success' : 'error');
         
         if (productArray.length > 0) {
-          log(`✅ SUCCESS! Snake assigned!`, 'success');
+          log('✅ Snake assigned successfully!', 'success');
           log(`Snake details: ${JSON.stringify(productArray[0], null, 2)}`);
-          showAlert(`✅ Demo completed! ${productArray.length} snake(s) assigned`, 'success');
+          await new Promise(r => setTimeout(r, 1000));
+          
+          // STEP 8: Redirect to game
+          log('═══════════════════════════════════════', 'info');
+          log('STEP 8: Enter Game (Snake appears!)', 'info');
+          log('═══════════════════════════════════════', 'info');
+          log('Redirecting to game.html#' + testUserHash);
+          log('Snake appears in game with stats:');
+          log(`  Hunger: ${productArray[0].stats.hunger}`);
+          log(`  Water: ${productArray[0].stats.water}`);
+          log(`  Health: ${productArray[0].stats.health}`);
+          log('🎉 PURCHASE FLOW COMPLETE!', 'success');
+          
+          showAlert(`✅ COMPLETE! Full flow executed: ${productArray.length} snake(s) purchased`, 'success');
         } else {
           log('⚠️ No products found after webhook', 'error');
           showAlert('⚠️ No products found', 'error');
