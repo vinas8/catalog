@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 SMRI Executor - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #58a6ff;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      color: #8b949e;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .module-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .module-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+    }
+    
+    .module-card h2 {
+      color: #c9d1d9;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .module-card p {
+      color: #8b949e;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    .module-card .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .status.ready { background: #238636; color: white; }
+    .status.planned { background: #6e7681; color: white; }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #30363d;
+      text-align: center;
+      color: #8b949e;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 SMRI Executor</h1>
+  <p class="subtitle">Break down SMRI scenarios into clickable steps. Execute and verify each action.</p>
+  
+  <div class="modules">
+    <a href="healthcheck.html" class="module-card">
+      <h2>🏥 Health Check</h2>
+      <p>Verify system health: Worker online, products loaded, endpoints responding, CORS headers present.</p>
+      <span class="status ready">READY</span>
+    </a>
+    
+    <a href="modules/stripe.html" class="module-card">
+      <h2>💳 Stripe Operations</h2>
+      <p>Test Stripe API: Get products, create checkout, verify webhooks, sync to KV.</p>
+      <span class="status planned">PLANNED</span>
+    </a>
+    
+    <a href="modules/cloudflare.html" class="module-card">
+      <h2>☁️ Cloudflare KV</h2>
+      <p>Test KV operations: List products, get user data, write purchases, delete test data.</p>
+      <span class="status planned">PLANNED</span>
+    </a>
+    
+    <a href="modules/catalog.html" class="module-card">
+      <h2>📦 Catalog Tests</h2>
+      <p>Frontend catalog: Load products, display prices, render images, filter by species.</p>
+      <span class="status planned">PLANNED</span>
+    </a>
+    
+    <a href="modules/game.html" class="module-card">
+      <h2>🎮 Game Tests</h2>
+      <p>Tamagotchi mechanics: Load snake, feed/water/clean, check stats, equipment shop.</p>
+      <span class="status planned">PLANNED</span>
+    </a>
+    
+    <a href="modules/auth.html" class="module-card">
+      <h2>🔐 Auth & Identity</h2>
+      <p>User identity: Generate hash, store hash, retrieve user, link purchases to hash.</p>
+      <span class="status planned">PLANNED</span>
+    </a>
+  </div>
+  
+  <div class="footer">
+    <p><strong>SMRI Executor v0.5.0</strong> - Click-through testing for all scenarios</p>
+    <p>Each module breaks down complex SMRI codes into simple, executable steps</p>
+  </div>
+</body>
+</html>

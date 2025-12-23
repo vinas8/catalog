@@ -86,6 +86,16 @@ export default {
       return handleStripeProductWebhook(request, env, corsHeaders);
     }
 
+    // Route: GET /kv/list-products (proxy to KV API for browser)
+    if (pathname === '/kv/list-products' && request.method === 'GET') {
+      return handleKVListProducts(env, corsHeaders);
+    }
+
+    // Route: GET /kv/get-product?id=PRODUCT_ID (proxy to KV API)
+    if (pathname === '/kv/get-product' && request.method === 'GET') {
+      return handleKVGetProduct(request, env, corsHeaders);
+    }
+
     return new Response(JSON.stringify({ error: 'Not found' }), { 
       status: 404,
       headers: corsHeaders
@@ -834,6 +844,78 @@ async function handleGetAllPurchases(env, corsHeaders) {
     
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+
+/**
+ * Handle GET /kv/list-products - List all product keys in KV
+ */
+async function handleKVListProducts(env, corsHeaders) {
+  try {
+    const keys = await env.PRODUCTS.list();
+    return new Response(JSON.stringify({
+      success: true,
+      result: keys.keys,
+      count: keys.keys.length
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ KV list error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to list products',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/get-product?id=PRODUCT_ID - Get product from KV
+ */
+async function handleKVGetProduct(request, env, corsHeaders) {
+  const url = new URL(request.url);
+  const productId = url.searchParams.get('id');
+  
+    return new Response(JSON.stringify({ error: 'Missing product ID' }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
+  
+  try {
+    const productKey = `product:${productId}`;
+    const productData = await env.PRODUCTS.get(productKey);
+    
+      return new Response(JSON.stringify({ 
+        error: 'Product not found',
+        product_id: productId 
+      }), {
+        status: 404,
+        headers: corsHeaders
+      });
+    }
+    
+    return new Response(JSON.stringify({
+      success: true,
+      result: JSON.parse(productData)
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ KV get error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to get product',
+      message: error.message 
+    }), {
       status: 500,
       headers: corsHeaders
     });

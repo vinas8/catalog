@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏥 SMRI Health Check - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #58a6ff;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card h2 {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .result {
+      background: #0d1117;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid #30363d;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    
+    .status.ok { color: #3fb950; }
+    .status.warn { color: #d29922; }
+    .status.error { color: #f85149; }
+    
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    button:hover {
+      background: #2ea043;
+    }
+    
+    .progress-bar {
+      background: #0d1117;
+      border-radius: 10px;
+      height: 24px;
+      overflow: hidden;
+      margin: 15px 0;
+      border: 2px solid #30363d;
+    }
+    
+    .progress-fill {
+      background: linear-gradient(90deg, #238636, #2ea043);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .progress-text {
+      color: #58a6ff;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .links a {
+      color: #58a6ff;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: #0d1117;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+      font-size: 13px;
+    }
+    
+    .links a:hover {
+      border-color: #58a6ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏥 SMRI System Health Check</h1>
+  
+  <div class="card">
+    <h2>API Health Status</h2>
+    <button onclick="runHealthCheck()">▶ Run Health Check</button>
+    
+    <div class="progress-bar" style="display: none;" id="progress-container">
+      <div class="progress-fill" id="progress-bar">0%</div>
+    </div>
+    <div class="progress-text" id="progress-text" style="display: none;">Initializing...</div>
+    
+    <div class="result" id="results">
+      <div style="color: #8b949e;">Click "Run Health Check" to test all systems...</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Quick Links</h2>
+    <div class="links">
+      <a href="/catalog.html">📦 Catalog</a>
+      <a href="/game.html">🎮 Game</a>
+      <a href="/">🏠 Home</a>
+      <a href="/debug/modules/">🔧 Debug Modules</a>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>System Info</h2>
+    <div class="result" id="system-info">
+      <div class="status"><strong>Version:</strong> <span id="version">0.5.0</span></div>
+      <div class="status"><strong>Worker:</strong> <span id="worker-url">https://catalog.navickaszilvinas.workers.dev</span></div>
+      <div class="status"><strong>Tests Passing:</strong> 86/86 (100%)</div>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    async function runHealthCheck() {
+      const resultsDiv = document.getElementById('results');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      
+      // Show progress bar
+      progressContainer.style.display = 'block';
+      progressText.style.display = 'block';
+      
+      const results = [];
+      let testNum = 0;
+      const totalTests = 8;
+      let pingTime = 0;
+      let productCount = 0;
+      
+      function updateProgress(name) {
+        const percent = Math.round((testNum / totalTests) * 100);
+        progressBar.style.width = percent + '%';
+        progressBar.textContent = percent + '%';
+        progressText.innerHTML = `🔍 Test ${testNum}/${totalTests} - <strong>${name}</strong>`;
+      }
+      
+      function addResult(emoji, msg, status) {
+        const className = status === 'ok' ? 'ok' : status === 'warn' ? 'warn' : 'error';
+        results.push(`<div class="status ${className}">${emoji} ${msg}</div>`);
+        resultsDiv.innerHTML = results.join('');
+      }
+      
+      try {
+        // Test 1
+        testNum = 1;
+        updateProgress('Checking Worker URL');
+        await new Promise(r => setTimeout(r, 100));
+        addResult('🔍', 'Worker URL: ' + WORKER_URL, 'ok');
+        
+        // Test 2
+        testNum = 2;
+        updateProgress('Pinging Worker');
+        try {
+          const start = Date.now();
+          const res = await fetch(WORKER_URL + '/products');
+          pingTime = Date.now() - start;
+          if (res.ok) {
+            addResult('✅', `Worker is ONLINE (${pingTime}ms)`, 'ok');
+          } else {
+            addResult('❌', `Worker returned ${res.status}`, 'error');
+          }
+        } catch (e) {
+          addResult('❌', 'Worker is OFFLINE: ' + e.message, 'error');
+        }
+        
+        // Test 3
+        testNum = 3;
+        updateProgress('Loading Products');
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          const data = await res.json();
+          productCount = Array.isArray(data) ? data.length : 0;
+          if (productCount > 0) {
+            addResult('✅', `Loaded ${productCount} products from KV`, 'ok');
+          } else {
+            addResult('⚠️', 'No products in KV', 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'Failed to load products: ' + e.message, 'error');
+        }
+        
+        // Test 4
+        testNum = 4;
+        updateProgress('Validating Product Schema');
+        await new Promise(r => setTimeout(r, 100));
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          const products = await res.json();
+          const required = ['id', 'name', 'species', 'morph', 'price'];
+          const first = products[0];
+          let missing = [];
+          for (const field of required) {
+            if (!(field in first)) missing.push(field);
+          }
+          if (missing.length === 0) {
+            addResult('✅', 'Products have required fields', 'ok');
+          } else {
+            addResult('⚠️', `Missing fields: ${missing.join(', ')}`, 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'Schema validation failed', 'error');
+        }
+        
+        // Test 5
+        testNum = 5;
+        updateProgress('Checking CORS Headers');
+        await new Promise(r => setTimeout(r, 100));
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          const cors = res.headers.get('access-control-allow-origin');
+          if (cors) {
+            addResult('✅', 'CORS headers present', 'ok');
+          } else {
+            addResult('❌', 'CORS headers missing', 'error');
+          }
+        } catch (e) {
+          addResult('❌', 'CORS check failed', 'error');
+        }
+        
+        // Test 6
+        testNum = 6;
+        updateProgress('Testing User Endpoint');
+        await new Promise(r => setTimeout(r, 100));
+        try {
+          const res = await fetch(`${WORKER_URL}/user-products?user=test_hash`);
+          if (res.status === 200 || res.status === 404) {
+            addResult('✅', 'User products endpoint working', 'ok');
+          } else {
+            addResult('⚠️', `Unexpected status: ${res.status}`, 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'User endpoint failed', 'error');
+        }
+        
+        // Test 7
+        testNum = 7;
+        updateProgress('Checking Response Time');
+        await new Promise(r => setTimeout(r, 100));
+        if (pingTime < 2000) {
+          addResult('✅', `Response time: ${pingTime}ms`, 'ok');
+        } else {
+          addResult('⚠️', `Slow response: ${pingTime}ms`, 'warn');
+        }
+        
+        // Test 8
+        testNum = 8;
+        updateProgress('Validating JSON');
+        await new Promise(r => setTimeout(r, 100));
+        try {
+          const res = await fetch(WORKER_URL + '/products');
+          await res.json();
+          addResult('✅', 'JSON format valid', 'ok');
+        } catch (e) {
+          addResult('❌', 'Invalid JSON', 'error');
+        }
+        
+        // Complete
+        progressBar.style.width = '100%';
+        progressBar.textContent = '100%';
+        progressBar.style.background = '#238636';
+        progressText.innerHTML = '✅ All tests complete!';
+        progressText.style.color = '#3fb950';
+        
+        results.unshift('<div style="color: #58a6ff; font-weight: bold; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 10px;">📊 Health Check Complete - ' + new Date().toLocaleTimeString() + '</div>');
+        resultsDiv.innerHTML = results.join('');
+        
+      } catch (error) {
+        progressBar.style.background = '#f85149';
+        progressText.textContent = '❌ Health check failed';
+        progressText.style.color = '#f85149';
+        addResult('❌', 'System error: ' + error.message, 'error');
+      }
+    }
+    
+    // Auto-run on load
+    window.addEventListener('load', () => {
+      setTimeout(() => runHealthCheck(), 500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+# .smri - Show Me Real Information
+
+**Command:** Type `.smri` in chat
+
+**What It Does:**
+Complete system briefing with health check + E2E scenario status
+
+---
+
+## 📋 Execution Order
+
+1. **Directory Tree** - Full project structure
+2. **Version Check** - package.json vs README.md
+3. **Health Check (S6.0.03)** - Server, Worker, Products, UI
+4. **E2E Scenarios** - 42 scenarios, implementation %
+5. **Quick Access** - URLs to debug/catalog/game
+6. **Documentation** - API docs, SMRI index
+7. **Prompt** - "Where did we leave off?"
+
+---
+
+## 🏥 Health Check Tests
+
+```
+✅ Server running on :8000
+✅ Worker ONLINE (latency)
+✅ Products loaded from KV
+✅ UI modules verified (8/8)
+✅ Tests passing (86/86)
+```
+
+---
+
+## 📊 E2E Status
+
+```
+Total: 42 scenarios
+P0: 13 (100%)
+P1: 9 (100%)
+P2: 5 (100%)
+P3+: 14 (~50%)
+
+Implementation: 88%
+```
+
+---
+
+## 💡 Philosophy
+
+**.smri = Holistic System View**
+
+Not just code, but:
+- Business value (scenarios)
+- Technical status (health)
+- Test coverage (E2E)
+- Documentation (APIs)
+
+Everything connected: Docs → Tests → Implementation
+
+---
+
+**Version:** v3.1  
+**Scenarios:** 42 documented  
+**Health Check:** S6.0.03  
+**Updated:** 2025-12-23

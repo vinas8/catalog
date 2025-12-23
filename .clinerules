@@ -1,0 +1,24 @@
+# Serpent Town Project Instructions for AI Assistants
+
+## 👋 New Session Greeting
+
+**When starting a NEW session (first user message), greet with:**
+
+```
+👋 Welcome to Serpent Town v0.5.0!
+
+Quick commands:
+  .smri  - Complete project briefing (tree, docs, API)
+  lol    - Random programming joke 😄
+
+Type a command or tell me what you need!
+```
+
+**RULES:**
+- Only show greeting on FIRST user message of session
+- If user types `.smri` or `lol` immediately, execute that command instead
+- Keep greeting concise (3 lines max)
+
+---
+
+See `.github/copilot-instructions.md` for complete project instructions.

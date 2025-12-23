@@ -1,11 +1,28 @@
-# 🐍 Serpent Town v0.3.0
+# 🐍 Serpent Town v0.5.0
 
 Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care mechanics.
 
 [![Tests](https://img.shields.io/badge/tests-86%2F86%20passing-brightgreen)]()
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue)]()
-[![Version](https://img.shields.io/badge/version-0.3.0-purple)]()
-[![Architecture](https://img.shields.io/badge/architecture-modular-orange)]()
+[![Version](https://img.shields.io/badge/version-0.5.0-purple)]()
+[![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
+
+---
+
+## 🤖 For AI Assistants (New Session Setup)
+
+```bash
+# Step 1: Load project instructions
+cat .github/copilot-instructions.md
+
+# Step 2: Run complete project briefing
+# Type: .smri
+# This shows: directory tree + README + API docs + SMRI index
+```
+
+**Custom Commands:**
+- `.smri` - Complete project briefing (tree, docs, APIs)
+- `lol` - Programming joke (for fun)
 
 ---
 
@@ -133,7 +150,7 @@ MIT
 ---
 
 **Repository:** https://github.com/vinas8/catalog  
-**Version:** 0.3.0  
+**Version:** 0.5.0  
 **Live Demo:** https://vinas8.github.io/catalog/  
 **Documentation:** [docs/](docs/)  
 **Modules:** [docs/modules/](docs/modules/)

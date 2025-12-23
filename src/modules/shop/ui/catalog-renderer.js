@@ -167,6 +167,10 @@ async function checkProductStatus(productId) {
  * Render product card (real snake)
  */
 function renderProductCard(item, userHash, isSold) {
+  // Safely handle price - default to 0 if missing or invalid
+  const price = typeof item.price === 'number' && !isNaN(item.price) ? item.price : 0;
+  const priceFormatted = price.toFixed(2);
+  
   let checkoutUrl = item.stripe_link;
   if (checkoutUrl && checkoutUrl.includes('stripe.com')) {
     checkoutUrl += `?client_reference_id=${userHash}&prefilled_email={CHECKOUT_SESSION_EMAIL}`;
@@ -174,19 +178,24 @@ function renderProductCard(item, userHash, isSold) {
 
   const soldClass = isSold ? 'sold' : '';
   const soldBadge = isSold ? '<span class="sold-badge">SOLD</span>' : '';
+  
+  // Hide buy button if no valid stripe link or price
+  const canBuy = checkoutUrl && price > 0;
   const buyButton = isSold ? 
     '<button class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
-    `<a href="${checkoutUrl}" target="_blank" class="primary-btn" rel="noopener" 
-       onclick="
-         console.log('🛒 Initiating purchase with hash:', '${userHash}');
-         localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
-         localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
-         localStorage.setItem('serpent_user_hash', '${userHash}');
-         sessionStorage.setItem('serpent_purchase_hash', '${userHash}');
-         console.log('✅ Hash saved to all storage locations');
-       ">
-      💳 Buy Now - $${item.price.toFixed(2)}
-    </a>`;
+    canBuy ? 
+      `<a href="${checkoutUrl}" target="_blank" class="primary-btn" rel="noopener" 
+         onclick="
+           console.log('🛒 Initiating purchase with hash:', '${userHash}');
+           localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
+           localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
+           localStorage.setItem('serpent_user_hash', '${userHash}');
+           sessionStorage.setItem('serpent_purchase_hash', '${userHash}');
+           console.log('✅ Hash saved to all storage locations');
+         ">
+        💳 Buy Now - $${priceFormatted}
+      </a>` :
+      '<button class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Price Not Set</button>';
 
   return `
     <div class="catalog-item ${soldClass}" itemscope itemtype="http://schema.org/Product">
@@ -194,10 +203,10 @@ function renderProductCard(item, userHash, isSold) {
       <div class="item-image">${item.image || '🐍'}</div>
       <h3 itemprop="name">${item.name}</h3>
       <p class="species-info">${SPECIES_PROFILES[item.species]?.common_name || item.species} - ${item.morph}</p>
-      <p itemprop="description">${item.description}</p>
-      <p class="item-info">${item.info}</p>
+      <p itemprop="description">${item.description || ''}</p>
+      <p class="item-info">${item.info || ''}</p>
       <div class="item-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-        <span itemprop="price">$${item.price.toFixed(2)}</span>
+        <span itemprop="price">$${priceFormatted}</span>
         <meta itemprop="priceCurrency" content="USD">
       </div>
       ${buyButton}
@@ -209,16 +218,18 @@ function renderProductCard(item, userHash, isSold) {
  * Render virtual card
  */
 function renderVirtualCard(item) {
+  const price = typeof item.price === 'number' && !isNaN(item.price) ? item.price : 0;
+  
   return `
     <div class="catalog-item virtual" itemscope itemtype="http://schema.org/Product">
       <span class="virtual-badge">VIRTUAL</span>
       <div class="item-image">${item.image || '🐍'}</div>
       <h3 itemprop="name">${item.name}</h3>
-      <p class="species-info">${SPECIES_PROFILES[item.species]?.common_name || item.species} - ${item.morph}</p>
-      <p itemprop="description">${item.description}</p>
-      <p class="item-info">${item.info}</p>
+      <p class="species-info">${SPECIES_PROFILES[item.species]?.common_name || item.species} - ${item.morph || 'unknown'}</p>
+      <p itemprop="description">${item.description || ''}</p>
+      <p class="item-info">${item.info || ''}</p>
       <div class="item-price gold-price">
-        <span>🪙 ${item.price} Gold</span>
+        <span>🪙 ${price} Gold</span>
       </div>
       <button class="primary-btn" onclick="alert('Open game.html to buy virtual snakes with gold!')">
         🎮 Buy in Game

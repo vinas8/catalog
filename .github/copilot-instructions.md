@@ -1,7 +1,28 @@
 # Serpent Town Project Instructions for AI Assistants
 
+## 👋 New Session Greeting
+
+**When starting a NEW session (first user message), greet with:**
+
+```
+👋 Welcome to Serpent Town v0.5.0!
+
+Quick commands:
+  .smri  - Complete project briefing (tree, docs, API)
+  lol    - Random programming joke 😄
+
+Type a command or tell me what you need!
+```
+
+**RULES:**
+- Only show greeting on FIRST user message of session
+- If user types `.smri` or `lol` immediately, execute that command instead
+- Keep greeting concise (3 lines max)
+
+---
+
 ## 🎯 Project Overview
-**Serpent Town v0.1.0** - Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care mechanics.
+**Serpent Town v0.5.0** - Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care mechanics.
 
 **Tech Stack:**
 - Frontend: Plain JavaScript ES6 modules, HTML, CSS (zero dependencies)
@@ -206,9 +227,9 @@ npm test  # Always run before committing changes
 
 ### Documentation Workflow
 **When user asks about the project:**
-1. Check `package.json` for current version (currently **v0.1.0**)
+1. Check `package.json` for current version (currently **v0.5.0**)
 2. Reference **README.md** for overview and quick links
-3. Reference **docs/v0.1.0.md** for detailed technical information
+3. Reference **docs/v0.5.0.md** for detailed technical information
 
 **When updating/creating documentation:**
 1. Always check `package.json` for current version
@@ -218,7 +239,9 @@ npm test  # Always run before committing changes
 
 ### File Priority
 - **README.md** → Index, overview, quick start, links to detailed docs
-- **docs/v0.1.0.md** → Complete technical reference (PRIMARY for details)
+- **docs/v0.5.0.md** → Complete technical reference (PRIMARY for details)
+- **src/SMRI.md** → Project index and quick reference
+- **docs/reference/PROMPT_INSTRUCTIONS.md** → Complete AI assistant guidelines
 - **SETUP.md** → Setup/deployment guide
 - **CLOUDFLARE-SETUP-COMPLETE.md** → Cloudflare-specific setup
 - **CHANGES_SUMMARY.md** → Change log
@@ -244,10 +267,11 @@ npm test  # Always run before committing changes
 ## ⚡ Quick Reference
 
 **Repository:** https://github.com/vinas8/catalog  
-**Version:** 0.1.0  
+**Version:** 0.5.0  
 **Lines of Code:** ~3,600  
 **Dependencies:** 0  
-**Tests:** 86/86 (100%) ✅
+**Tests:** 86/86 (100%) ✅  
+**Status:** In Development 🚧
 
 **Species:** Ball Python, Corn Snake  
 **Morphs:** 10+ (Banana, Piebald, Pastel, etc.)  
@@ -306,3 +330,45 @@ Examples:
 - "What's a snake's favorite programming language? Python, obviously! 🐍"
 - "Why do programmers always confuse Halloween and Christmas? Because Oct 31 == Dec 25! 🎃🎄"
 - "How do snakes deploy code? They use pip install! 🐍📦"
+
+**When user types ".smri"** → Run a complete project briefing in this exact order:
+
+1. **Display COMPLETE Directory Tree**
+   - Run: `find /root/catalog -type f -o -type d | grep -v node_modules | grep -v '\.git' | grep -v venv | grep -v __pycache__ | sort`
+   - Show **entire project structure** (not just src/)
+   - Format as readable tree with file counts
+
+2. **Load & Display README.md**
+   - Check current version from `package.json`
+   - Display `/root/catalog/README.md` (project overview)
+   - Note any version mismatches between README and package.json
+
+3. **Check & Update README Version**
+   - Compare README version badges/numbers with package.json version
+   - If mismatch found, **automatically update** README.md:
+     - Line 1: `# 🐍 Serpent Town v{version}`
+     - Line 7: `[![Version](https://img.shields.io/badge/version-{version}-purple)]()`
+     - Bottom section: `**Version:** {version}`
+   - Show before/after diff of changes made
+
+4. **Load Complete API Documentation**
+   - Display `/root/catalog/docs/v{version}.md` (use version from package.json)
+   - Show full API definitions, endpoints, and module reference
+   - If version doc doesn't exist, show latest available in docs/
+
+5. **Display SMRI Index**
+   - Show `/root/catalog/src/SMRI.md` (quick reference and project index)
+
+6. **Summary Output**
+   - Project version and status
+   - Module count and test status (86/86 passing)
+   - Quick command reference
+   - Links to key documentation files
+
+7. **Session Continuation Prompt**
+   - End with: "📍 **Where did we leave off?** (or type what you need help with)"
+   - Wait for user to provide context or new task
+
+**Purpose:** Complete project onboarding in one command. Shows structure, documentation, APIs, and current state. Always asks user to pick up where they left off.
+
+**Keywords for search:** .smri, smri, project index, structure, overview, quickref, api, documentation, onboarding

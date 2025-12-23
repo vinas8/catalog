@@ -1,7 +1,8 @@
-# 🤖 Copilot Rules - Serpent Town v0.3.0
+# 🤖 Copilot Rules - Serpent Town v0.5.0
 
-**Last Updated:** 2025-12-22  
-**Purpose:** Architectural guidelines for AI assistants working on Serpent Town
+**Last Updated:** 2025-12-23  
+**Purpose:** Architectural guidelines and working rules for AI assistants  
+**Startup Instructions:** See `.github/copilot-instructions.md` (GitHub Copilot reads this automatically)
 
 ---
 
@@ -396,3 +397,15 @@ touch src/modules/newmodule/index.js
 **Remember:** This is a production codebase with 100% test coverage. Make surgical changes, maintain quality, and always ask if uncertain.
 
 **Questions?** Reference `docs/README.md` for documentation index.
+
+---
+
+**Version:** 0.5.0  
+**Last Updated:** 2025-12-23  
+
+## 📚 Related Documentation
+
+- **`.github/copilot-instructions.md`** - Startup instructions (GitHub Copilot reads this)
+- **`docs/reference/PROMPT_INSTRUCTIONS.md`** - General AI assistant guidelines  
+- **`prompts/system_context.md`** - System context for Claude/other AIs
+- **`docs/reference/DEBUG-COMMANDS.md`** - `.smri` and other debug commands

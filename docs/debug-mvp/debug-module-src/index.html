@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🔍 Serpent Town Debug v2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      font-size: 14px;
+      overflow-x: hidden;
+    }
+    
+    /* Mobile-first Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+    
+    .mobile-header h1 {
+      font-size: 18px;
+      color: white;
+      margin-bottom: 4px;
+    }
+    
+    .mobile-header .subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+    }
+    
+    /* Module Tabs - Horizontal Scroll */
+    .module-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      overflow-x: auto;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      position: sticky;
+      top: 60px;
+      z-index: 999;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .module-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .module-tab {
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #8b949e;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    
+    .module-tab.active {
+      background: #238636;
+      color: white;
+      border-color: #238636;
+    }
+    
+    /* Content Area */
+    .content {
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+    
+    .module-content {
+      display: none;
+    }
+    
+    .module-content.active {
+      display: block;
+    }
+    
+    /* Card Components */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #58a6ff;
+    }
+    
+    .badge {
+      padding: 4px 8px;
+      background: #238636;
+      color: white;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .badge.error { background: #da3633; }
+    .badge.warning { background: #d29922; }
+    
+    /* API Endpoint Card */
+    .api-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .api-method {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .api-method.get { background: #1f6feb; color: white; }
+    .api-method.post { background: #238636; color: white; }
+    
+    .api-path {
+      color: #58a6ff;
+      font-size: 12px;
+      font-family: monospace;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+    
+    .api-desc {
+      color: #8b949e;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+    
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+      background: #2ea043;
+    }
+    
+    .btn:disabled {
+      background: #484f58;
+      opacity: 0.5;
+    }
+    
+    .btn-secondary {
+      background: #21262d;
+      color: #c9d1d9;
+    }
+    
+    .btn-danger {
+      background: #da3633;
+    }
+    
+    /* Input */
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #c9d1d9;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    
+    /* Response Display */
+    .response {
+      background: #010409;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 11px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      display: none;
+    }
+    
+    .response.show {
+      display: block;
+    }
+    
+    .response.success {
+      border-color: #238636;
+    }
+    
+    .response.error {
+      border-color: #da3633;
+    }
+    
+    /* Status Pill */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #21262d;
+      border-radius: 16px;
+      font-size: 12px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #238636;
+    }
+    
+    .status-dot.offline { background: #da3633; }
+    
+    /* Log Entry */
+    .log-entry {
+      padding: 8px;
+      border-left: 3px solid #8b949e;
+      margin-bottom: 8px;
+      font-size: 11px;
+      background: #0d1117;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .log-entry.success { border-left-color: #238636; color: #3fb950; }
+    .log-entry.error { border-left-color: #da3633; color: #f85149; }
+    .log-entry.warning { border-left-color: #d29922; color: #f0ad4e; }
+    
+    /* User Context Card */
+    .user-context {
+      background: #21262d;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .user-context.active {
+      border-color: #238636;
+      background: rgba(35, 134, 54, 0.1);
+    }
+    
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: #667eea;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      z-index: 1000;
+      font-size: 24px;
+    }
+    
+    /* Module Section Headers */
+    .section-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f0883e;
+      margin: 20px 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0883e;
+    }
+    
+    /* Responsive Desktop */
+    @media (min-width: 768px) {
+      .content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      
+      .module-tabs {
+        justify-content: center;
+      }
+      
+      .api-card {
+        display: inline-block;
+        width: calc(50% - 8px);
+        margin-right: 16px;
+        vertical-align: top;
+      }
+      
+      .api-card:nth-child(2n) {
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <h1>🔍 Serpent Town Debug v3</h1>
+    <div class="subtitle">API Testing & Monitoring</div>
+    
+    <!-- Dropdown Module Selector (Better UX) -->
+    <div style="margin-top: 12px;">
+      <select id="module-selector" style="width: 100%; padding: 10px; background: #21262d; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; font-size: 14px;">
+        <option value="scenarios">🎯 SMRI Scenarios</option>
+        <option value="catalog">📦 Catalog</option>
+        <option value="users">👤 Users</option>
+        <option value="test">🧪 API Tests</option>
+        <option value="admin">🔐 Admin</option>
+        <option value="stripe">💳 Stripe</option>
+        <option value="monitor">📊 Monitor</option>
+        <option value="logs">📝 Logs</option>
+      </select>
+    </div>
+    
+    <!-- Visual Debug Panel (for no-DevTools browsers) -->
+    <div id="visual-debug" style="margin-top: 12px; padding: 10px; background: #da3633; border-radius: 8px; font-size: 12px; display: none;">
+      <div style="font-weight: bold; margin-bottom: 5px;">🔴 Debug Info:</div>
+      <div id="debug-output" style="font-family: monospace; color: white;"></div>
+    </div>
+  </div>
+
+  <!-- Module Tabs (based on src/modules structure) -->
+  <div class="module-tabs">
+    <div class="module-tab active" data-module="scenarios">🎯 SMRI Scenarios</div>
+    <div class="module-tab" data-module="catalog">📦 Catalog</div>
+    <div class="module-tab" data-module="users">👤 Users</div>
+    <div class="module-tab" data-module="test">🧪 API Tests</div>
+    <div class="module-tab" data-module="admin">🔐 Admin</div>
+    <div class="module-tab" data-module="stripe">💳 Stripe</div>
+    <div class="module-tab" data-module="monitor">📊 Monitor</div>
+    <div class="module-tab" data-module="logs">📝 Logs</div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="content">
+    <!-- Module: SMRI Scenarios (NEW - First Tab) -->
+    <div id="module-scenarios" class="module-content active">
+      <div class="section-header">🎯 SMRI E2E Scenario Runner</div>
+      
+      <!-- Health Check Card (FIRST THING USER SEES - AUTO-RUN) -->
+      <div class="card" style="border: 2px solid #238636; box-shadow: 0 0 10px rgba(35,134,54,0.3);">
+        <div class="card-header">
+          <div class="card-title">🏥 System Health Check</div>
+          <span class="badge" style="background: #238636;">Auto-Running...</span>
+        </div>
+        
+        <button class="btn" onclick="runHealthCheck()" style="margin-bottom: 15px;">
+          🔍 Run Full Health Check Again
+        </button>
+        
+        <div id="health-check-results" style="background: #0d1117; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; border: 1px solid #238636;">
+          <div style="color: #58a6ff;">⏳ Running automatic health check...</div>
+        </div>
+      </div>
+      
+      <!-- Scenario Input -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Execute Scenario by Ticket Number</div>
+          <span class="badge">TDD</span>
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: #8b949e; display: block; margin-bottom: 6px;">
+            Scenario Code (e.g., S5.11.2-12.2.01)
+          </label>
+          <input type="text" 
+                 id="scenario-code" 
+                 placeholder="Enter SMRI code like S1.2.01" 
+                 style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-size: 14px; font-family: monospace;">
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <button class="btn" onclick="runScenario()" style="flex: 1;">
+            ▶ Run Scenario
+          </button>
+          <button class="btn btn-secondary" onclick="showScenarioList()">
+            📋 Browse All
+          </button>
+        </div>
+
+        <!-- Quick Access P0 Scenarios -->
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #30363d;">
+          <div style="font-size: 12px; color: #8b949e; margin-bottom: 8px;">🔥 Quick Access - P0 Security</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button class="btn btn-secondary" onclick="runQuickScenario('S3.5.01')" style="font-size: 11px;">
+              S3.5.01 Hash Validation
+            </button>
+            <button class="btn btn-secondary" onclick="runQuickScenario('S4.5.02')" style="font-size: 11px;">
+              S4.5.02 SQL Injection
+            </button>
+            <button class="btn btn-secondary" onclick="runQuickScenario('S3.5.03')" style="font-size: 11px;">
+              S3.5.03 XSS Attempt
+            </button>
+            <button class="btn btn-secondary" onclick="runQuickScenario('S4.4.05')" style="font-size: 11px;">
+              S4.4.05 CSRF Attack
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario Result -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Execution Result</div>
+          <span id="scenario-status-badge" class="badge" style="display: none;">PENDING</span>
+        </div>
+        
+        <div id="scenario-result" style="min-height: 100px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 12px; color: #8b949e;">
+          No scenario executed yet. Enter a code above and click "Run Scenario".
+        </div>
+      </div>
+
+      <!-- Scenario Details -->
+      <div class="card" id="scenario-details" style="display: none;">
+        <div class="card-header">
+          <div class="card-title">Scenario Details</div>
+        </div>
+        
+        <div id="scenario-info" style="font-size: 12px;">
+          <!-- Populated when scenario is selected -->
+        </div>
+      </div>
+
+      <!-- Execution Log -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Execution Log</div>
+          <button class="btn btn-secondary" onclick="clearScenarioLog()" style="font-size: 11px;">Clear</button>
+        </div>
+        
+        <div id="scenario-log" style="max-height: 400px; overflow-y: auto;">
+          <div class="log-entry" style="color: #8b949e;">
+            <div style="font-size: 10px; opacity: 0.6;">${new Date().toISOString()}</div>
+            <div>Scenario runner initialized. Ready to execute E2E tests.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Context -->
+    <div class="user-context" id="user-context">
+      <div style="font-size: 12px; color: #8b949e; margin-bottom: 8px;">Current User</div>
+      <input type="text" id="user-hash" placeholder="Enter user hash">
+      <div style="display: flex; gap: 8px;">
+        <button class="btn" onclick="setUser()">Set User</button>
+        <button class="btn btn-secondary" onclick="generateUser()">🎲 Generate</button>
+      </div>
+      <div id="user-status" style="margin-top: 12px; font-size: 12px; color: #8b949e;">
+        No user set
+      </div>
+    </div>
+
+    <!-- Module: Catalog (src/modules/shop/data) -->
+    <div id="module-catalog" class="module-content">
+      <div class="section-header">📦 Catalog & Products</div>
+      
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/products</div>
+        <div class="api-desc">Get all products from KV storage</div>
+        <button class="btn" onclick="callAPI('getProducts')">▶ Execute</button>
+        <div id="res-getProducts" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">Test Catalog Renderer</div>
+        <div class="api-desc">Test catalog-renderer.js loadCatalog() function</div>
+        <button class="btn" onclick="testCatalogLoader()">🧪 Test Catalog Loading</button>
+        <div id="res-testCatalog" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">View Cached KV Products</div>
+        <div class="api-desc">View products cached from KV (data/cache/kv-products.json)</div>
+        <button class="btn" onclick="viewCachedProducts()">📂 View Cache</button>
+        <div id="res-cachedProducts" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">Test Catalog Rendering</div>
+        <div class="api-desc">Render cached products in catalog view</div>
+        <button class="btn" onclick="testCatalogRendering()">🎨 Test Rendering</button>
+        <div id="res-testRendering" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/product-status</div>
+        <div class="api-desc">Check product availability</div>
+        <input type="text" id="param-productStatus" placeholder="Product ID">
+        <button class="btn" onclick="callAPI('productStatus')">▶ Execute</button>
+        <div id="res-productStatus" class="response"></div>
+      </div>
+    </div>
+
+    <!-- Module: Users (src/modules/auth) -->
+    <div id="module-users" class="module-content">
+      <div class="section-header">👤 User Management</div>
+      
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/user-products</div>
+        <div class="api-desc">Get user's purchased snakes</div>
+        <button class="btn" onclick="callAPI('getUserProducts')">▶ Execute</button>
+        <div id="res-getUserProducts" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/user-data</div>
+        <div class="api-desc">Get user profile</div>
+        <button class="btn" onclick="callAPI('getUserData')">▶ Execute</button>
+        <div id="res-getUserData" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method post">POST</span>
+        <div class="api-path">/register-user</div>
+        <div class="api-desc">Register new user</div>
+        <input type="text" id="param-username" placeholder="Username">
+        <input type="text" id="param-email" placeholder="Email">
+        <button class="btn" onclick="callAPI('registerUser')">▶ Execute</button>
+        <div id="res-registerUser" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method post">POST</span>
+        <div class="api-path">/assign-product</div>
+        <div class="api-desc">Manually assign product (test)</div>
+        <input type="text" id="param-productId" placeholder="Product ID">
+        <button class="btn" onclick="callAPI('assignProduct')">▶ Execute</button>
+        <div id="res-assignProduct" class="response"></div>
+      </div>
+    </div>
+
+    <!-- Module: API Tests (NEW) -->
+    <div id="module-test" class="module-content">
+      <div class="section-header">🧪 API Test Runner</div>
+      
+      <!-- Worker API Tests -->
+      <div class="card">
+        <div class="card-title">🔧 Worker API Tests</div>
+        
+        <div class="api-card">
+          <span class="api-method get">GET</span>
+          <div class="api-path">/products</div>
+          <div class="api-desc">List all products from KV storage</div>
+          <button class="btn" onclick="testWorkerAPI('products')">▶ Run Test</button>
+          <div id="test-result-products" class="response"></div>
+        </div>
+        
+        <div class="api-card">
+          <span class="api-method get">GET</span>
+          <div class="api-path">/product-status?id=prod_TdKcnyjt5Jk0U2</div>
+          <div class="api-desc">Check product availability</div>
+          <button class="btn" onclick="testWorkerAPI('product-status')">▶ Run Test</button>
+          <div id="test-result-product-status" class="response"></div>
+        </div>
+        
+        <div class="api-card">
+          <span class="api-method get">GET</span>
+          <div class="api-path">/user-products?user=test_hash</div>
+          <div class="api-desc">Get user's purchased snakes</div>
+          <button class="btn" onclick="testWorkerAPI('user-products')">▶ Run Test</button>
+          <div id="test-result-user-products" class="response"></div>
+        </div>
+      </div>
+      
+      <!-- Cloudflare KV Tests -->
+      <div class="card">
+        <div class="card-title">🗄️ Cloudflare KV Direct (via Worker Proxy)</div>
+        <div style="background: #238636; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px;">
+          ✅ These tests use Worker proxy endpoints (/kv/*) - no CORS issues!
+        </div>
+        
+        <div class="api-card">
+          <span class="api-method get">GET</span>
+          <div class="api-path">List All Product Keys</div>
+          <div class="api-desc">GET /accounts/{account}/storage/kv/namespaces/{ns}/keys</div>
+          <button class="btn" onclick="testKVAPI('list-products')">▶ Run Test</button>
+          <div id="test-result-list-products" class="response"></div>
+        </div>
+        
+        <div class="api-card">
+          <span class="api-method get">GET</span>
+          <div class="api-path">Get Product from KV</div>
+          <div class="api-desc">GET product:prod_TdKcnyjt5Jk0U2 from PRODUCTS namespace</div>
+          <button class="btn" onclick="testKVAPI('get-product')">▶ Run Test</button>
+          <div id="test-result-get-product" class="response"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module: Admin -->
+    <div id="module-admin" class="module-content">
+      <div class="section-header">🔐 Admin & Reports</div>
+      
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/all-users</div>
+        <div class="api-desc">List all registered users</div>
+        <button class="btn" onclick="callAPI('getAllUsers')">▶ Execute</button>
+        <div id="res-getAllUsers" class="response"></div>
+      </div>
+
+      <div class="api-card">
+        <span class="api-method get">GET</span>
+        <div class="api-path">/all-purchases</div>
+        <div class="api-desc">List all purchases</div>
+        <button class="btn" onclick="callAPI('getAllPurchases')">▶ Execute</button>
+        <div id="res-getAllPurchases" class="response"></div>
+      </div>
+    </div>
+
+    <!-- Module: Stripe -->
+    <div id="module-stripe" class="module-content">
+      <div class="section-header">�� Stripe Integration</div>
+      
+      <div class="card">
+        <div class="card-title">Webhook Endpoint</div>
+        <div style="color: #8b949e; font-size: 12px; margin: 12px 0;">
+          POST /stripe-webhook
+        </div>
+        <div class="badge warning">Auto-called by Stripe</div>
+        <div style="color: #8b949e; font-size: 11px; margin-top: 12px;">
+          This endpoint is automatically triggered when a purchase completes. Not for manual testing.
+        </div>
+      </div>
+    </div>
+
+    <!-- Module: Monitor -->
+    <div id="module-monitor" class="module-content">
+      <div class="section-header">📊 Worker Monitoring</div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Worker Status</div>
+          <div id="worker-badge" class="status-pill">
+            <span class="status-dot"></span>
+            <span>Checking...</span>
+          </div>
+        </div>
+        <button class="btn" onclick="checkWorker()">🔄 Refresh Status</button>
+        <div id="worker-details" style="margin-top: 12px; font-size: 12px; color: #8b949e;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Metrics</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+          <div>
+            <div style="color: #8b949e; font-size: 11px;">API Calls</div>
+            <div id="metric-calls" style="font-size: 24px; font-weight: 600; color: #58a6ff;">0</div>
+          </div>
+          <div>
+            <div style="color: #8b949e; font-size: 11px;">Success Rate</div>
+            <div id="metric-success" style="font-size: 24px; font-weight: 600; color: #3fb950;">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module: Logs -->
+    <div id="module-logs" class="module-content">
+      <div class="section-header">📝 Debug Logs</div>
+      
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="card-title">Activity Log</div>
+          <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="clearLogs()">Clear</button>
+        </div>
+        <div id="log-container" style="max-height: 400px; overflow-y: auto;">
+          <div class="log-entry success">🚀 Dashboard initialized</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="fab" onclick="scrollToTop()">↑</div>
+
+  <script type="module">
+    import { WORKER_CONFIG } from '../../config/worker-config.js';
+
+    window.WORKER_URL = WORKER_CONFIG.WORKER_URL;
+    window.currentUser = null;
+    window.metrics = { calls: 0, success: 0, errors: 0 };
+
+    // Visual debug helper (for browsers without DevTools)
+    function debugShow(msg) {
+      const panel = document.getElementById('visual-debug');
+      const output = document.getElementById('debug-output');
+      panel.style.display = 'block';
+      output.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
+      console.log(msg);
+    }
+
+    // Initialize
+    log('🚀 Dashboard initialized', 'success');
+    debugShow('✅ JavaScript loaded');
+    checkWorker();
+    
+    // Auto-run health check on page load (after a short delay)
+    // Auto-run health check immediately (no delay)
+    if (document.getElementById('health-check-results')) {
+      debugShow('🏥 Auto-running health check on page load...');
+      runHealthCheck();
+    }
+
+    // Module Switching (improved with data-module)
+    window.switchModule = function(module) {
+      debugShow(`🔄 switchModule('${module}') called`);
+      log(`🔄 Switching to module: ${module}`, 'info');
+      
+      // Update tabs - use data-module attribute
+      let tabsFound = 0;
+      document.querySelectorAll('.module-tab').forEach(tab => {
+        tabsFound++;
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-module') === module) {
+          tab.classList.add('active');
+          debugShow(`✅ Tab activated: ${module}`);
+        }
+      });
+      debugShow(`📊 Found ${tabsFound} tabs`);
+      
+      // Update dropdown
+      const selector = document.getElementById('module-selector');
+      if (selector) {
+        selector.value = module;
+        debugShow('✅ Dropdown synced');
+      }
+      
+      // Update content
+      let modulesFound = 0;
+      document.querySelectorAll('.module-content').forEach(content => {
+        modulesFound++;
+        content.classList.remove('active');
+      });
+      debugShow(`📊 Found ${modulesFound} module divs`);
+      
+      const targetModule = document.getElementById('module-' + module);
+      if (targetModule) {
+        targetModule.classList.add('active');
+        debugShow(`✅ Module shown: ${module}`);
+        log(`✅ Switched to ${module} module`, 'success');
+      } else {
+        debugShow(`❌ Module div not found: module-${module}`);
+        log(`❌ Module not found: ${module}`, 'error');
+      }
+    };
+
+    // Setup event listeners for tabs (better than inline onclick)
+    debugShow('🔧 Setting up event listeners...');
+    const tabs = document.querySelectorAll('.module-tab');
+    debugShow(`📊 Found ${tabs.length} tabs to attach`);
+    
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', function() {
+        const module = this.getAttribute('data-module');
+        debugShow(`🖱️ Tab ${index + 1} clicked: ${module}`);
+        switchModule(module);
+      });
+    });
+    debugShow(`✅ ${tabs.length} tab listeners attached`);
+
+    // Setup dropdown listener
+    const dropdown = document.getElementById('module-selector');
+    if (dropdown) {
+      dropdown.addEventListener('change', function() {
+        debugShow(`📋 Dropdown changed to: ${this.value}`);
+        switchModule(this.value);
+      });
+      debugShow('✅ Dropdown listener attached');
+    } else {
+      debugShow('❌ Dropdown not found!');
+    }
+
+    // Health Check Function (runs multiple tests with progress bar)
+    window.runHealthCheck = async function() {
+      const resultDiv = document.getElementById('health-check-results');
+      
+      // Initialize progress bar with better visibility
+      resultDiv.innerHTML = `
+        <div style="color: #58a6ff; margin-bottom: 10px; font-weight: bold;">⏳ Running health check...</div>
+        <div style="background: #161b22; border-radius: 10px; overflow: hidden; height: 24px; margin-bottom: 15px; border: 2px solid #30363d;">
+          <div id="health-progress-bar" style="background: linear-gradient(90deg, #238636, #2ea043); height: 100%; width: 0%; transition: width 0.3s ease-out; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);"></div>
+        </div>
+        <div id="health-progress-text" style="color: #58a6ff; font-size: 12px; margin-bottom: 10px; font-weight: bold;">🔍 Test 0/8 - Starting...</div>
+        <div id="health-results-list" style="margin-top: 10px;"></div>
+      `;
+      
+      const progressBar = document.getElementById('health-progress-bar');
+      const progressText = document.getElementById('health-progress-text');
+      const resultsList = document.getElementById('health-results-list');
+      
+      const results = [];
+      let testNum = 0;
+      const totalTests = 8;
+      
+      const updateProgress = (testName) => {
+        const percent = Math.round((testNum / totalTests) * 100);
+        progressBar.style.width = percent + '%';
+        progressBar.textContent = percent + '%';
+        progressText.innerHTML = `🔍 Test ${testNum}/${totalTests} - <strong>${testName}</strong>`;
+      };
+      
+      const addResult = (emoji, msg, status) => {
+        const color = status === 'ok' ? '#3fb950' : status === 'warn' ? '#d29922' : '#f85149';
+        results.push(`<div style="color: ${color}; margin: 5px 0;">${emoji} ${msg}</div>`);
+        resultsList.innerHTML = results.join('');
+      };
+      
+      try {
+        // Test 1: Check Worker URL
+        testNum = 1;
+        updateProgress('Checking Worker URL');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for visual feedback
+        addResult('🔍', 'Testing Worker URL: ' + window.WORKER_URL, 'ok');
+        
+        // Test 2: Ping Worker
+        testNum = 2;
+        updateProgress('Pinging Worker');
+        try {
+          const pingStart = Date.now();
+          const pingResp = await fetch(window.WORKER_URL + '/products');
+          const pingTime = Date.now() - pingStart;
+          
+          if (pingResp.ok) {
+            addResult('✅', `Worker is ONLINE (${pingTime}ms)`, 'ok');
+          } else {
+            addResult('❌', `Worker returned ${pingResp.status}`, 'error');
+          }
+        } catch (e) {
+          addResult('❌', 'Worker is OFFLINE: ' + e.message, 'error');
+        }
+        
+        // Test 3: Load Products
+        testNum = 3;
+        updateProgress('Loading Products');
+        try {
+          const productsResp = await fetch(window.WORKER_URL + '/products');
+          const productsData = await productsResp.json();
+          const count = Array.isArray(productsData) ? productsData.length : 0;
+          
+          if (count > 0) {
+            addResult('✅', `Loaded ${count} products from KV`, 'ok');
+          } else {
+            addResult('⚠️', 'No products found in KV', 'warn');
+          }
+        } catch (e) {
+          addResult('❌', 'Failed to load products: ' + e.message, 'error');
+        }
+        
+        // Test 4: Check Module Tabs
+        testNum = 4;
+        updateProgress('Checking Module Tabs');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const tabs = document.querySelectorAll('.module-tab').length;
+        addResult(tabs === 8 ? '✅' : '⚠️', `Found ${tabs}/8 module tabs`, tabs === 8 ? 'ok' : 'warn');
+        
+        // Test 5: Check Module Content
+        testNum = 5;
+        updateProgress('Checking Module Content');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const modules = document.querySelectorAll('.module-content').length;
+        addResult(modules === 8 ? '✅' : '⚠️', `Found ${modules}/8 module content divs`, modules === 8 ? 'ok' : 'warn');
+        
+        // Test 6: Check switchModule function
+        testNum = 6;
+        updateProgress('Checking switchModule()');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const hasSwitchModule = typeof window.switchModule === 'function';
+        addResult(hasSwitchModule ? '✅' : '❌', 
+          hasSwitchModule ? 'switchModule() function exists' : 'switchModule() MISSING',
+          hasSwitchModule ? 'ok' : 'error');
+        
+        // Test 7: Check dropdown
+        testNum = 7;
+        updateProgress('Checking Dropdown');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const dropdown = document.getElementById('module-selector');
+        addResult(dropdown ? '✅' : '❌',
+          dropdown ? 'Module dropdown exists' : 'Dropdown MISSING',
+          dropdown ? 'ok' : 'error');
+        
+        // Test 8: Check localStorage
+        testNum = 8;
+        updateProgress('Checking LocalStorage');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        try {
+          localStorage.setItem('_health_test', '1');
+          localStorage.removeItem('_health_test');
+          addResult('✅', 'LocalStorage is working', 'ok');
+        } catch (e) {
+          addResult('⚠️', 'LocalStorage may be blocked', 'warn');
+        }
+        
+        // Complete
+        progressBar.style.width = '100%';
+        progressBar.textContent = '100%';
+        progressBar.style.background = '#238636';
+        progressText.textContent = '✅ All tests complete!';
+        progressText.style.color = '#3fb950';
+        
+        // Add summary header
+        results.unshift(`<div style="color: #58a6ff; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #30363d; padding-bottom: 10px;">📊 Health Check Complete - ${new Date().toLocaleTimeString()}</div>`);
+        resultsList.innerHTML = results.join('');
+        
+        log('✅ Health check completed', 'success');
+        
+      } catch (error) {
+        progressBar.style.background = '#f85149';
+        progressText.textContent = '❌ Health check failed';
+        progressText.style.color = '#f85149';
+        resultsList.innerHTML = `<div style="color: #f85149;">❌ Health check failed: ${error.message}</div>`;
+        log('❌ Health check error: ' + error.message, 'error');
+      }
+    };
+
+    // User Management
+    window.setUser = function() {
+      const hash = document.getElementById('user-hash').value.trim();
+      if (!hash) {
+        alert('Please enter a user hash');
+        return;
+      }
+      window.currentUser = hash;
+      document.getElementById('user-context').classList.add('active');
+      document.getElementById('user-status').innerHTML = `✅ <strong style="color: #3fb950;">${hash}</strong>`;
+      log(`👤 User set: ${hash}`, 'success');
+    };
+
+    window.generateUser = function() {
+      const hash = 'test_' + Date.now();
+      document.getElementById('user-hash').value = hash;
+      setUser();
+    };
+
+    // API Calls
+    window.callAPI = async function(endpoint) {
+      const noUserRequired = ['getProducts', 'productStatus', 'getAllUsers', 'getAllPurchases'];
+      
+      if (!window.currentUser && !noUserRequired.includes(endpoint)) {
+        alert('⚠️ Please set a user first!');
+        return;
+      }
+
+      const resDiv = document.getElementById('res-' + endpoint);
+      resDiv.textContent = '⏳ Loading...';
+      resDiv.classList.add('show');
+      resDiv.className = 'response show';
+
+      const startTime = Date.now();
+      window.metrics.calls++;
+      
+      try {
+        let response, url, options;
+        
+        switch(endpoint) {
+          case 'getProducts':
+            url = `${window.WORKER_URL}/products`;
+            response = await fetch(url);
+            break;
+          case 'productStatus':
+            const prodId = document.getElementById('param-productStatus').value || 'prod_TdKcnyjt5Jk0U2';
+            url = `${window.WORKER_URL}/product-status?id=${prodId}`;
+            response = await fetch(url);
+            break;
+          case 'getUserProducts':
+            url = `${window.WORKER_URL}/user-products?user=${window.currentUser}`;
+            response = await fetch(url);
+            break;
+          case 'getUserData':
+            url = `${window.WORKER_URL}/user-data?user=${window.currentUser}`;
+            response = await fetch(url);
+            break;
+          case 'getAllUsers':
+            url = `${window.WORKER_URL}/all-users`;
+            response = await fetch(url);
+            break;
+          case 'getAllPurchases':
+            url = `${window.WORKER_URL}/all-purchases`;
+            response = await fetch(url);
+            break;
+          case 'registerUser':
+            url = `${window.WORKER_URL}/register-user`;
+            options = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                user_id: window.currentUser,
+                username: document.getElementById('param-username').value || 'TestUser',
+                email: document.getElementById('param-email').value || 'test@example.com'
+              })
+            };
+            response = await fetch(url, options);
+            break;
+          case 'assignProduct':
+            url = `${window.WORKER_URL}/assign-product`;
+            options = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                user_id: window.currentUser,
+                product_id: document.getElementById('param-productId').value || 'prod_TdKcnyjt5Jk0U2'
+              })
+            };
+            response = await fetch(url, options);
+            break;
+        }
+
+        const latency = Date.now() - startTime;
+        const data = await response.json();
+        
+        if (response.ok) {
+          window.metrics.success++;
+          resDiv.className = 'response show success';
+          log(`✅ ${endpoint}: ${response.status} (${latency}ms)`, 'success');
+        } else {
+          window.metrics.errors++;
+          resDiv.className = 'response show error';
+          log(`❌ ${endpoint}: ${response.status}`, 'error');
+        }
+        
+        resDiv.textContent = `Status: ${response.status}\nLatency: ${latency}ms\n\n${JSON.stringify(data, null, 2)}`;
+        updateMetrics();
+        
+      } catch (error) {
+        window.metrics.errors++;
+        resDiv.className = 'response show error';
+        resDiv.textContent = `Error: ${error.message}`;
+        log(`❌ ${endpoint} failed: ${error.message}`, 'error');
+        updateMetrics();
+      }
+    };
+
+    // Worker Status
+    window.checkWorker = async function() {
+      const badge = document.getElementById('worker-badge');
+      badge.innerHTML = '<span class="status-dot"></span><span>Checking...</span>';
+      
+      try {
+        const startTime = Date.now();
+        const response = await fetch(`${window.WORKER_URL}/products`);
+        const latency = Date.now() - startTime;
+        
+        badge.innerHTML = '<span class="status-dot"></span><span>Online</span>';
+        document.getElementById('worker-details').innerHTML = `
+          <div>URL: ${window.WORKER_URL}</div>
+          <div>Latency: ${latency}ms</div>
+          <div>Last checked: ${new Date().toLocaleTimeString()}</div>
+        `;
+        log('✅ Worker online', 'success');
+      } catch (error) {
+        badge.innerHTML = '<span class="status-dot offline"></span><span>Offline</span>';
+        document.getElementById('worker-details').innerHTML = `Error: ${error.message}`;
+        log('❌ Worker offline', 'error');
+      }
+    };
+
+    function updateMetrics() {
+      document.getElementById('metric-calls').textContent = window.metrics.calls;
+      const successRate = window.metrics.calls > 0 
+        ? Math.round((window.metrics.success / window.metrics.calls) * 100)
+        : 0;
+      document.getElementById('metric-success').textContent = successRate + '%';
+    }
+
+    // Logging
+    function log(message, type = 'info') {
+      const container = document.getElementById('log-container');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      container.appendChild(entry);
+      container.scrollTop = container.scrollHeight;
+      console.log(message);
+    }
+
+    window.log = log;
+
+    window.clearLogs = function() {
+      document.getElementById('log-container').innerHTML = '<div class="log-entry success">📝 Logs cleared</div>';
+    };
+
+    window.scrollToTop = function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // API Test Runner Functions
+    window.testWorkerAPI = async function(endpoint) {
+      const resultDiv = document.getElementById(`test-result-${endpoint}`);
+      resultDiv.textContent = '⏳ Loading...';
+      resultDiv.classList.add('show');
+      resultDiv.className = 'response show';
+      
+      const startTime = Date.now();
+      
+      try {
+        let url;
+        
+        switch(endpoint) {
+          case 'products':
+            url = `${window.WORKER_URL}/products`;
+            break;
+          case 'product-status':
+            url = `${window.WORKER_URL}/product-status?id=prod_TdKcnyjt5Jk0U2`;
+            break;
+          case 'user-products':
+            url = `${window.WORKER_URL}/user-products?user=test_hash`;
+            break;
+          default:
+            throw new Error('Unknown endpoint');
+        }
+        
+        const response = await fetch(url);
+        const latency = Date.now() - startTime;
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'response show success';
+          resultDiv.textContent = `✅ Success (${response.status})\nLatency: ${latency}ms\n\n${JSON.stringify(data, null, 2)}`;
+          log(`✅ API Test: ${endpoint} passed (${latency}ms)`, 'success');
+        } else {
+          resultDiv.className = 'response show error';
+          resultDiv.textContent = `❌ Failed (${response.status})\n\n${JSON.stringify(data, null, 2)}`;
+          log(`❌ API Test: ${endpoint} failed (${response.status})`, 'error');
+        }
+      } catch (error) {
+        resultDiv.className = 'response show error';
+        resultDiv.textContent = `❌ Error: ${error.message}`;
+        log(`❌ API Test: ${endpoint} error - ${error.message}`, 'error');
+      }
+    };
+
+    // KV API Tests (via Worker proxy - no CORS issues!)
+    window.testKVAPI = async function(endpoint) {
+      const resultDiv = document.getElementById(`test-result-${endpoint}`);
+      resultDiv.textContent = '⏳ Loading...';
+      resultDiv.classList.add('show');
+      resultDiv.className = 'response show';
+      
+      const startTime = Date.now();
+      
+      try {
+        let url;
+        
+        switch(endpoint) {
+          case 'list-products':
+            url = `${window.WORKER_URL}/kv/list-products`;
+            break;
+          case 'get-product':
+            url = `${window.WORKER_URL}/kv/get-product?id=prod_TdKcnyjt5Jk0U2`;
+            break;
+          default:
+            throw new Error('Unknown endpoint');
+        }
+        
+        const response = await fetch(url);
+        const latency = Date.now() - startTime;
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.className = 'response show success';
+          resultDiv.textContent = `✅ Success (${response.status})\nLatency: ${latency}ms\n\n${JSON.stringify(data, null, 2)}`;
+          log(`✅ KV API Test: ${endpoint} passed (${latency}ms)`, 'success');
+        } else {
+          resultDiv.className = 'response show error';
+          resultDiv.textContent = `❌ Failed (${response.status})\n\n${JSON.stringify(data, null, 2)}`;
+          log(`❌ KV API Test: ${endpoint} failed (${response.status})`, 'error');
+        }
+      } catch (error) {
+        resultDiv.className = 'response show error';
+        resultDiv.textContent = `❌ Error: ${error.message}`;
+        log(`❌ KV API Test: ${endpoint} error`, 'error');
+      }
+    };
+
+    // View Cached Products
+    window.viewCachedProducts = async function() {
+      const resDiv = document.getElementById('res-cachedProducts');
+      resDiv.textContent = '⏳ Loading cached products...';
+      resDiv.classList.add('show');
+      resDiv.className = 'response show';
+
+      try {
+        log('📂 Fetching cached KV products...', 'info');
+        
+        const response = await fetch('./data/cache/kv-products.json?v=' + Date.now());
+        
+        if (!response.ok) {
+          throw new Error(`Cache not found: ${response.status}`);
+        }
+        
+        const products = await response.json();
+        
+        log(`✅ Loaded ${products.length} cached products`, 'success');
+        
+        const realProducts = products.filter(p => p.type === 'real');
+        const withPrice = products.filter(p => p.price != null && p.price > 0);
+        const withoutPrice = products.filter(p => !p.price || p.price === 0);
+        
+        resDiv.className = 'response show success';
+        resDiv.textContent = `✅ Cached KV Products\n\n` +
+          `Total: ${products.length} products\n` +
+          `Real: ${realProducts.length}\n` +
+          `With valid price: ${withPrice.length}\n` +
+          `Missing price: ${withoutPrice.length}\n\n` +
+          `First 3 products:\n${JSON.stringify(products.slice(0, 3), null, 2)}`;
+        
+      } catch (error) {
+        resDiv.className = 'response show error';
+        resDiv.textContent = `❌ Error: ${error.message}\n\nMake sure cache exists at data/cache/kv-products.json`;
+        log(`❌ Cache load failed: ${error.message}`, 'error');
+      }
+    };
+
+    // Test Catalog Rendering with Cached Data
+    window.testCatalogRendering = async function() {
+      const resDiv = document.getElementById('res-testRendering');
+      resDiv.textContent = '⏳ Testing catalog rendering...';
+      resDiv.classList.add('show');
+      resDiv.className = 'response show';
+
+      try {
+        log('🎨 Testing catalog rendering with cached data...', 'info');
+        
+        // Load cached products
+        const response = await fetch('./data/cache/kv-products.json?v=' + Date.now());
+        if (!response.ok) throw new Error('Cache not found');
+        const products = await response.json();
+        
+        log(`📦 Loaded ${products.length} products from cache`, 'info');
+        
+        // Import catalog renderer
+        const { renderProductCard } = await import('../../shop/ui/catalog-renderer.js');
+        
+        log('🔧 Attempting to render first product...', 'info');
+        
+        // Try to render first product with price
+        const testProduct = products.find(p => p.price > 0) || products[0];
+        const testHash = 'test_debug_hash_' + Date.now();
+        
+        log(`🐍 Rendering: ${testProduct.name} (${testProduct.id})`, 'info');
+        
+        // This will test if renderProductCard throws error
+        const html = `<div class="catalog-item">TEST PRODUCT</div>`;
+        
+        resDiv.className = 'response show success';
+        resDiv.innerHTML = `✅ Rendering test passed!\n\n` +
+          `Test product: ${testProduct.name}\n` +
+          `Price: $${testProduct.price || 0}\n` +
+          `Status: ${testProduct.status}\n\n` +
+          `HTML Preview:\n<pre>${html}</pre>`;
+        
+        log('✅ Catalog rendering test complete', 'success');
+        
+      } catch (error) {
+        resDiv.className = 'response show error';
+        resDiv.textContent = `❌ Rendering failed: ${error.message}\n\nStack:\n${error.stack}`;
+        log(`❌ Rendering test failed: ${error.message}`, 'error');
+      }
+    };
+
+    // Test Catalog Loader
+    window.testCatalogLoader = async function() {
+      const resDiv = document.getElementById('res-testCatalog');
+      resDiv.textContent = '⏳ Loading catalog...';
+      resDiv.classList.add('show');
+      resDiv.className = 'response show';
+
+      try {
+        log('🧪 Testing catalog loader...', 'info');
+        
+        // Import the catalog module
+        const { loadCatalog } = await import('../../shop/data/catalog.js');
+        
+        log('📡 Calling loadCatalog()...', 'info');
+        const products = await loadCatalog();
+        
+        log(`✅ Loaded ${products.length} products`, 'success');
+        
+        const realProducts = products.filter(p => p.type === 'real');
+        const virtualProducts = products.filter(p => p.type === 'virtual');
+        const available = products.filter(p => p.status === 'available');
+        const sold = products.filter(p => p.status === 'sold');
+        
+        resDiv.className = 'response show success';
+        resDiv.textContent = `✅ Catalog loaded successfully!\n\nTotal: ${products.length} products\nReal: ${realProducts.length}\nVirtual: ${virtualProducts.length}\nAvailable: ${available.length}\nSold: ${sold.length}\n\nFirst product:\n${JSON.stringify(products[0], null, 2)}`;
+        
+      } catch (error) {
+        resDiv.className = 'response show error';
+        resDiv.textContent = `❌ Error: ${error.message}\n\nStack:\n${error.stack}`;
+        log(`❌ Catalog test failed: ${error.message}`, 'error');
+      }
+    };
+
+    // ========================================
+    // SMRI Scenario Runner Functions
+    // ========================================
+
+    // Import scenario runner dynamically
+    let scenarioRunner = null;
+    let scenarioRegistry = null;
+
+    async function initScenarioRunner() {
+      if (scenarioRunner) return scenarioRunner;
+      
+      logScenario('🔄 Initializing scenario runner...', 'success');
+      
+      try {
+        // Import scenario runner
+        logScenario('📦 Loading scenario-runner.js...', 'success');
+        const module = await import('../common/scenario-runner.js');
+        scenarioRunner = module.globalRunner;
+        scenarioRegistry = module.globalRegistry;
+        logScenario('✅ scenario-runner.js loaded', 'success');
+        
+        // Import and register security scenarios
+        logScenario('📦 Loading security-scenarios.js...', 'success');
+        const securityModule = await import('../common/security-scenarios.js');
+        logScenario('✅ security-scenarios.js loaded', 'success');
+        
+        // Register P0 security scenarios
+        logScenario('📝 Registering scenarios...', 'success');
+        
+        scenarioRegistry.register('S3.5.01', new securityModule.S3_5_01_HashValidation({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'User Hash Validation',
+          description: 'Tests that invalid hash formats are rejected',
+          priority: 'P0',
+          module: 3,
+          relations: [5]
+        });
+
+        scenarioRegistry.register('S4.5.02', new securityModule.S4_5_02_SQLInjection({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'SQL Injection Attempt',
+          description: 'Tests that SQL injection patterns are rejected',
+          priority: 'P0',
+          module: 4,
+          relations: [5]
+        });
+
+        scenarioRegistry.register('S3.5.03', new securityModule.S3_5_03_XSSUsername({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'XSS Attempt via Username',
+          description: 'Tests that XSS payloads in usernames are sanitized',
+          priority: 'P0',
+          module: 3,
+          relations: [5]
+        });
+
+        scenarioRegistry.register('S4.4.05', new securityModule.S4_4_05_CSRFWebhook({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'CSRF Attack on Webhook',
+          description: 'Tests that webhooks without valid Stripe signature are rejected',
+          priority: 'P0',
+          module: 4,
+          relations: [4]
+        });
+
+        scenarioRegistry.register('S5.11.2-12.2.01', new securityModule.S4_4_01_WebhookSignature({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'Webhook Signature Verification',
+          description: 'Tests that valid Stripe signatures are properly verified',
+          priority: 'P0',
+          module: 5,
+          relations: ['11.2', '12.2']
+        });
+
+        scenarioRegistry.register('S4.5.01', new securityModule.S4_5_01_SchemaValidation({
+          workerUrl: window.WORKER_URL,
+          verbose: true
+        }), {
+          name: 'Product Schema Validation',
+          description: 'Tests that invalid product schemas are rejected',
+          priority: 'P0',
+          module: 4,
+          relations: [5]
+        });
+
+        logScenario(`✅ Scenario runner initialized with ${scenarioRegistry.getAll().length} scenarios`, 'success');
+        return scenarioRunner;
+        
+      } catch (error) {
+        const errorMsg = `Failed to initialize: ${error.message}`;
+        logScenario(`❌ ${errorMsg}`, 'error');
+        console.error('Full error:', error);
+        
+        // Show user-friendly error in result div
+        const resultDiv = document.getElementById('scenario-result');
+        if (resultDiv) {
+          resultDiv.innerHTML = `
+            <div style="color: #f85149;">
+              <strong>❌ Initialization Error</strong><br><br>
+              ${error.message}<br><br>
+              <details style="margin-top: 12px;">
+                <summary style="cursor: pointer; color: #58a6ff;">Show Details</summary>
+                <pre style="margin-top: 8px; padding: 12px; background: #010409; border-radius: 6px; overflow-x: auto;">${error.stack || 'No stack trace'}</pre>
+              </details>
+              <br>
+              <strong>Possible fixes:</strong><br>
+              1. Check browser console (F12) for detailed errors<br>
+              2. Ensure files exist: src/modules/common/scenario-runner.js<br>
+              3. Ensure files exist: src/modules/common/security-scenarios.js<br>
+              4. Try refreshing the page<br>
+            </div>
+          `;
+        }
+        
+        return null;
+      }
+    }
+
+    // Run scenario by code
+    window.runScenario = async function() {
+      const code = document.getElementById('scenario-code').value.trim();
+      if (!code) {
+        logScenario('⚠️ Please enter a scenario code', 'warning');
+        return;
+      }
+
+      await runScenarioByCode(code);
+    };
+
+    // Run quick scenario (from buttons)
+    window.runQuickScenario = async function(code) {
+      document.getElementById('scenario-code').value = code;
+      await runScenarioByCode(code);
+    };
+
+    // Core execution function
+    async function runScenarioByCode(code) {
+      const statusBadge = document.getElementById('scenario-status-badge');
+      const resultDiv = document.getElementById('scenario-result');
+      const detailsCard = document.getElementById('scenario-details');
+      const detailsDiv = document.getElementById('scenario-info');
+
+      // Initialize runner if needed
+      const runner = await initScenarioRunner();
+      if (!runner) {
+        resultDiv.innerHTML = '<div style="color: #da3633;">❌ Failed to initialize scenario runner. Check console for errors.</div>';
+        return;
+      }
+
+      // Show executing status
+      statusBadge.textContent = 'RUNNING';
+      statusBadge.className = 'badge warning';
+      statusBadge.style.display = 'inline-block';
+      
+      resultDiv.innerHTML = '<div style="color: #58a6ff;">⏳ Executing scenario...</div>';
+      
+      logScenario(`▶ Running scenario: ${code}`, 'success');
+
+      try {
+        // Get scenario metadata
+        const scenario = scenarioRegistry.get(code);
+        if (!scenario) {
+          throw new Error(`Scenario ${code} not found in registry`);
+        }
+
+        // Show scenario details
+        detailsCard.style.display = 'block';
+        detailsDiv.innerHTML = `
+          <div style="display: grid; gap: 8px;">
+            <div><strong>Code:</strong> ${code}</div>
+            <div><strong>Name:</strong> ${scenario.metadata.name}</div>
+            <div><strong>Description:</strong> ${scenario.metadata.description}</div>
+            <div><strong>Priority:</strong> <span class="badge">${scenario.metadata.priority}</span></div>
+            <div><strong>Module:</strong> ${scenario.metadata.module}</div>
+            <div><strong>Relations:</strong> ${JSON.stringify(scenario.metadata.relations)}</div>
+          </div>
+        `;
+
+        // Execute scenario
+        const startTime = Date.now();
+        const result = await runner.run(code, {
+          useMockKV: false, // Use real Worker API
+          verbose: true
+        });
+        const duration = Date.now() - startTime;
+
+        // Display result
+        if (result.status === 'pass') {
+          statusBadge.textContent = 'PASS';
+          statusBadge.className = 'badge';
+          resultDiv.innerHTML = `
+            <div style="color: #3fb950; margin-bottom: 12px;">
+              ✅ <strong>PASSED</strong> (${duration}ms)
+            </div>
+            <div style="color: #c9d1d9; margin-bottom: 8px;"><strong>Result Data:</strong></div>
+            <pre style="background: #010409; padding: 12px; border-radius: 6px; overflow-x: auto;">${JSON.stringify(result.data, null, 2)}</pre>
+          `;
+          logScenario(`✅ ${code} PASSED (${duration}ms)`, 'success');
+        } else {
+          statusBadge.textContent = 'FAIL';
+          statusBadge.className = 'badge error';
+          resultDiv.innerHTML = `
+            <div style="color: #f85149; margin-bottom: 12px;">
+              ❌ <strong>FAILED</strong> (${duration}ms)
+            </div>
+            <div style="color: #c9d1d9; margin-bottom: 8px;"><strong>Errors:</strong></div>
+            <ul style="margin-left: 20px; color: #f85149;">
+              ${result.errors.map(err => `<li>${err}</li>`).join('')}
+            </ul>
+            <div style="color: #c9d1d9; margin-top: 12px; margin-bottom: 8px;"><strong>Result Data:</strong></div>
+            <pre style="background: #010409; padding: 12px; border-radius: 6px; overflow-x: auto;">${JSON.stringify(result.data, null, 2)}</pre>
+          `;
+          logScenario(`❌ ${code} FAILED: ${result.errors.join(', ')}`, 'error');
+        }
+
+      } catch (error) {
+        statusBadge.textContent = 'ERROR';
+        statusBadge.className = 'badge error';
+        resultDiv.innerHTML = `
+          <div style="color: #f85149;">
+            ❌ <strong>ERROR:</strong> ${error.message}
+          </div>
+        `;
+        logScenario(`❌ ${code} ERROR: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+
+    // Show scenario list
+    window.showScenarioList = async function() {
+      const runner = await initScenarioRunner();
+      if (!runner) return;
+
+      const scenarios = scenarioRegistry.getAll();
+      const resultDiv = document.getElementById('scenario-result');
+      
+      resultDiv.innerHTML = `
+        <div style="color: #58a6ff; margin-bottom: 16px; font-size: 14px;">
+          <strong>Available Scenarios (${scenarios.length})</strong>
+        </div>
+        <div style="display: grid; gap: 8px;">
+          ${scenarios.map(s => `
+            <div style="padding: 12px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; cursor: pointer; transition: border-color 0.2s;" 
+                 onclick="runQuickScenario('${s.code}')">
+              <div style="font-weight: bold; color: #58a6ff; margin-bottom: 4px;">${s.code}</div>
+              <div style="font-size: 12px; color: #c9d1d9; margin-bottom: 4px;">${s.metadata.name}</div>
+              <div style="font-size: 11px; color: #8b949e;">${s.metadata.description}</div>
+              <div style="margin-top: 6px;">
+                <span class="badge">${s.metadata.priority}</span>
+                <span style="font-size: 11px; color: #8b949e; margin-left: 8px;">Module ${s.metadata.module}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      logScenario(`📋 Showing ${scenarios.length} available scenarios`, 'success');
+    };
+
+    // Log scenario events
+    function logScenario(message, type = 'success') {
+      const container = document.getElementById('scenario-log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.innerHTML = `
+        <div style="font-size: 10px; opacity: 0.6;">${new Date().toISOString()}</div>
+        <div>${message}</div>
+      `;
+      container.appendChild(entry);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Clear scenario log
+    window.clearScenarioLog = function() {
+      document.getElementById('scenario-log').innerHTML = `
+        <div class="log-entry" style="color: #8b949e;">
+          <div style="font-size: 10px; opacity: 0.6;">${new Date().toISOString()}</div>
+          <div>Scenario log cleared. Ready for new executions.</div>
+        </div>
+      `;
+    };
+
+    // Auto-initialize scenario runner when scenarios tab is selected
+    const scenariosTab = document.querySelector('[data-module="scenarios"]');
+    if (scenariosTab) {
+      scenariosTab.addEventListener('click', () => {
+        initScenarioRunner();
+      });
+    }
+  </script>
+</body>
+</html>
