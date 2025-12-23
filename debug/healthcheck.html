@@ -283,8 +283,82 @@
     
     <p style="margin-top: 15px; color: #8b949e; font-size: 12px;">
       <strong>Format:</strong> S = Scenario, M = Module (1-13), R = Relations, II = Instance<br>
-      <strong>Full documentation:</strong> <a href="../docs/test/E2E_TEST_SCENARIOS.md" style="color: #58a6ff;">E2E Test Scenarios</a>
+      <strong>Full documentation:</strong> <a href="../docs/test/E2E_TEST_SCENARIOS.md" style="color: #58a6ff;">E2E Test Scenarios</a> | 
+      <a href="SMRI_OVERVIEW.md" style="color: #58a6ff;">All 45+ Tickets</a>
     </p>
+    
+    <details style="margin-top: 20px;">
+      <summary style="cursor: pointer; color: #58a6ff; font-weight: bold; padding: 10px; background: #0d1117; border-radius: 6px;">
+        📋 Show All SMRI Tickets (45+)
+      </summary>
+      <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; max-height: 500px; overflow-y: auto;">
+        <h4 style="color: #c9d1d9; margin-bottom: 10px;">🎯 Priority 0 (Must Work)</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>✅ <strong>S6.0.03</strong> - API Health Check (implemented)</li>
+          <li>⏳ <strong>S1.2345.01</strong> - Happy Path: First Purchase to Game Entry</li>
+          <li>⏳ <strong>S3.5.01</strong> - User Hash Validation</li>
+          <li>⏳ <strong>S4.5.02</strong> - Webhook Ownership Security</li>
+          <li>⏳ <strong>S3.5.03</strong> - XSS Attempt via Username</li>
+          <li>⏳ <strong>S5.11.2-12.2.01</strong> - Webhook Signature Verification</li>
+        </ul>
+        
+        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🎮 Priority 1 (Core Gameplay)</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>⏳ <strong>S2.0.01</strong> - View Snake Stats</li>
+          <li>⏳ <strong>S2.0.02</strong> - Stats Decay Over Time</li>
+          <li>⏳ <strong>S2.0.03</strong> - Feed Action</li>
+          <li>⏳ <strong>S2.0.04</strong> - Water Action</li>
+          <li>⏳ <strong>S2.0.05</strong> - Clean Enclosure Action</li>
+          <li>⏳ <strong>S2.0.06</strong> - Health Degradation</li>
+          <li>⏳ <strong>S2.5.01</strong> - Auto-Save Game State</li>
+          <li>⏳ <strong>S5.2.01</strong> - Load Game from KV (Cold Start)</li>
+        </ul>
+        
+        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">👤 Priority 2 (User Flow)</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>⏳ <strong>S1.234.01</strong> - Returning User: Second Purchase</li>
+          <li>⏳ <strong>S3.4.01</strong> - Register After Purchase</li>
+          <li>⏳ <strong>S3.0.01</strong> - Skip Registration</li>
+          <li>⏳ <strong>S3.4.02</strong> - Loyalty Points Earning</li>
+          <li>⏳ <strong>S3.0.02</strong> - Loyalty Tier Progression</li>
+          <li>⏳ <strong>S2.4.01</strong> - Buy Equipment with Gold</li>
+          <li>⏳ <strong>S2.4.02</strong> - Cannot Buy Without Gold</li>
+          <li>⏳ <strong>S2.3.01</strong> - Loyalty Tier Required Items</li>
+        </ul>
+        
+        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🛒 Priority 2 (Shop & Catalog)</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>⏳ <strong>S1.0.01</strong> - Product Status Check: Availability</li>
+          <li>⏳ <strong>S4.5.01</strong> - Product Schema Validation</li>
+        </ul>
+        
+        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">⚠️ Priority 3 (Error Handling)</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>⏳ <strong>S4.4.02</strong> - Webhook Delayed: Long Wait</li>
+          <li>⏳ <strong>S4.4.03</strong> - Webhook Idempotency</li>
+          <li>⏳ <strong>S4.4.04</strong> - Product Already Sold: Race Condition</li>
+          <li>⏳ <strong>S3.5.02</strong> - Invalid Hash in URL</li>
+          <li>⏳ <strong>S5.2.02</strong> - Network Failure During Game Load</li>
+          <li>⏳ <strong>S5.5.01</strong> - Corrupted KV Data</li>
+          <li>⏳ <strong>S5.2.03</strong> - User Deletes localStorage Mid-Session</li>
+        </ul>
+        
+        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🔧 Infrastructure & Testing</h4>
+        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
+          <li>⏳ <strong>S5.11.1.01</strong> - KV Data Integrity</li>
+          <li>⏳ <strong>S12.1.01</strong> - Stripe Checkout Session</li>
+          <li>⏳ <strong>S12.2.01</strong> - Stripe Webhook Delivery</li>
+          <li>⏳ <strong>S11.1.01</strong> - List Products from KV</li>
+          <li>⏳ <strong>S11.1.02</strong> - Get User Products from KV</li>
+        </ul>
+        
+        <p style="margin-top: 20px; padding: 10px; background: #161b22; border-radius: 6px; color: #8b949e; font-size: 12px;">
+          <strong>Legend:</strong><br>
+          ✅ Implemented | ⏳ Planned | 🔜 Next Priority<br>
+          <strong>Total:</strong> 45+ scenarios | <strong>Implemented:</strong> 1 (2%) | <strong>Next:</strong> S3.5.01, S12.2.01
+        </p>
+      </div>
+    </details>
   </div>
 
   <script>
