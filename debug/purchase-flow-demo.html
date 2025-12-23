@@ -497,7 +497,7 @@
           updateStep(5, 'completed', `Webhook: ${JSON.stringify(result, null, 2)}`);
           
           // Step 6: KV Write
-          await simulateStep(6, 'active', 'Writing to KV...');
+          updateStep(6, 'active', 'Writing to KV (USER_PRODUCTS)...');
           await new Promise(r => setTimeout(r, 1000));
           
           // Verify in KV
