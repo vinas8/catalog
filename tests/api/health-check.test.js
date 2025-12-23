@@ -5,6 +5,7 @@
 
 const WORKER_URL = process.env.WORKER_URL || 'https://catalog.navickaszilvinas.workers.dev';
 const SMRI_VERSION = 'S6.0.03';
+const MODULE_VERSION = 'v1.2';
 const APP_VERSION = '0.5.0';
 
 let passed = 0;
@@ -30,8 +31,9 @@ async function test(name, fn) {
 }
 
 async function runHealthCheck() {
-  console.log('\n🏥 API Health Check - SMRI ' + SMRI_VERSION);
-  console.log('📦 Version: ' + APP_VERSION);
+  console.log('\n🏥 API Health Check');
+  console.log('📋 SMRI: ' + SMRI_VERSION + ' | Module: ' + MODULE_VERSION);
+  console.log('📦 App Version: ' + APP_VERSION);
   console.log('🔗 Worker: ' + WORKER_URL + '\n');
   
   await test('Worker URL is valid', async () => {
