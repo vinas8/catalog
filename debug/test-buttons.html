@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Button Test v1.0</title>
+  <style>
+    body { padding: 40px; background: #0a0e14; color: white; font-family: sans-serif; }
+    button { padding: 12px 24px; margin: 10px; font-size: 14px; cursor: pointer; background: #238636; color: white; border: none; border-radius: 6px; }
+    button:hover { background: #2ea043; }
+    #output { margin-top: 20px; padding: 20px; background: #161b22; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Button Test - v1.0</h1>
+  <p>Testing if buttons work...</p>
+  
+  <button onclick="test1()">Test 1</button>
+  <button onclick="test2()">Test 2</button>
+  <button onclick="test3()">Test 3</button>
+  
+  <div id="output">No button clicked yet</div>
+  
+  <script>
+    console.log('Button test loaded v1.0');
+    
+    function test1() {
+      console.log('Test 1 clicked!');
+      document.getElementById('output').textContent = '✅ Test 1 works!';
+    }
+    
+    function test2() {
+      console.log('Test 2 clicked!');
+      document.getElementById('output').textContent = '✅ Test 2 works!';
+    }
+    
+    function test3() {
+      console.log('Test 3 clicked!');
+      document.getElementById('output').textContent = '✅ Test 3 works!';
+    }
+    
+    // Test functions are defined
+    console.log('test1 exists:', typeof test1 === 'function');
+    console.log('test2 exists:', typeof test2 === 'function');
+    console.log('test3 exists:', typeof test3 === 'function');
+  </script>
+</body>
+</html>
