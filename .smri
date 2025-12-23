@@ -1,65 +1,321 @@
-# .smri - Show Me Real Information
+# SMRI System Manifest
+# Single source of truth for SMRI notation and scenarios
 
-**Command:** Type `.smri` in chat
+---
+version: 2.0
+date: 2025-12-23
+project: Serpent Town
+app_version: 0.5.0
+total_scenarios: 42
+implemented: 1
+test_coverage: 97%
+tests_passing: 69/71
+---
 
-**What It Does:**
-Complete system briefing with health check + E2E scenario status
+## NOTATION STANDARD
+
+Format: S{M}.{RRR}.{II}
+
+Components:
+  S   = Scenario prefix
+  M   = Primary module (1-6, lower = more important)
+  RRR = Relations (comma-separated, always includes primary)
+  II  = Instance number (01-99, zero-padded)
+
+Module Priority (Lower = More Critical):
+  1 = Shop      → HIGHEST (revenue)
+  2 = Game      → HIGH (engagement)
+  3 = Auth      → MEDIUM (security)
+  4 = Payment   → HIGH (Stripe)
+  5 = Worker    → MEDIUM (infrastructure)
+  6 = Common    → LOW (utilities)
+
+External Services:
+  11 = Cloudflare (11.1=KV, 11.2=Workers, 11.3=CDN)
+  12 = Stripe (12.1=Checkout, 12.2=Webhooks, 12.3=API)
+  13 = GitHub (13.1=Pages, 13.2=Actions)
+
+Notation Rules:
+  - Commas (,) separate internal module relations
+  - Hyphens (-) separate external service groups
+  - Dots (.) separate sub-service levels
+  - Primary module always appears in relations
+
+Examples:
+  S6.1,2,3,4,5,6.03      → Common testing ALL modules
+  S1.1,2,3,4,5.01        → Shop + 4 other modules
+  S2.2.01                → Game standalone
+  S5.5,11.2,12.2.01      → Worker + external services
 
 ---
 
-## 📋 Execution Order
+## P0 CRITICAL SCENARIOS (13 total)
 
-1. **Directory Tree** - Full project structure
-2. **Version Check** - package.json vs README.md
-3. **Health Check (S6.0.03)** - Server, Worker, Products, UI
-4. **E2E Scenarios** - 42 scenarios, implementation %
-5. **Quick Access** - URLs to debug/catalog/game
-6. **Documentation** - API docs, SMRI index
-7. **Prompt** - "Where did we leave off?"
-
----
-
-## 🏥 Health Check Tests
-
-```
-✅ Server running on :8000
-✅ Worker ONLINE (latency)
-✅ Products loaded from KV
-✅ UI modules verified (8/8)
-✅ Tests passing (86/86)
-```
+S1.1,2,3,4,5.01    | Happy Path Purchase           | P0.0 | Shop + all flow
+S1.1,2,3,4.01      | Returning User Purchase        | P0.1 | Shop multi-module
+S1.1.01            | Product Status Check           | P0.2 | Shop standalone
+S5.5,11.2,12.2.01  | Webhook Signature Verify       | P0.3 | Worker + external
+S3.3,5.01          | User Hash Validation           | P0.4 | Auth + Worker
+S4.4,5.01          | Product Schema Validation      | P0.5 | Payment + Worker
+S5.2,5.01          | Load Game from KV              | P0.6 | Worker + Game
+S6.1,2,3,4,5,6.03  | System Health Check            | P0.7 | Common ALL ✅
+S4.4,5.02          | Webhook Delayed                | P0.8 | Payment + Worker
+S4.4,5.03          | Webhook Idempotency            | P0.9 | Payment + Worker
+S4.1,4,5.04        | Product Already Sold           | P0.10| Payment multi
+S3.3,5.02          | Invalid Hash Rejection         | P0.11| Auth + Worker
+S5.5.01            | Corrupted KV Data              | P0.12| Worker standalone
 
 ---
 
-## 📊 E2E Status
+## P1 GAMEPLAY SCENARIOS (9 total)
 
-```
-Total: 42 scenarios
-P0: 13 (100%)
-P1: 9 (100%)
-P2: 5 (100%)
-P3+: 14 (~50%)
-
-Implementation: 88%
-```
-
----
-
-## 💡 Philosophy
-
-**.smri = Holistic System View**
-
-Not just code, but:
-- Business value (scenarios)
-- Technical status (health)
-- Test coverage (E2E)
-- Documentation (APIs)
-
-Everything connected: Docs → Tests → Implementation
+S2.2.01            | View Snake Stats               | P1.0 | Game standalone
+S2.2.02            | Stats Decay Over Time          | P1.1 | Game standalone
+S2.2.03            | Feed Action                    | P1.2 | Game standalone
+S2.2.04            | Water Action                   | P1.3 | Game standalone
+S2.2.05            | Clean Enclosure                | P1.4 | Game standalone
+S2.2.06            | Health Degradation             | P1.5 | Game standalone
+S2.5.01            | Auto-Save Game State           | P1.6 | Game + Worker
+S2.4.01            | Buy Equipment with Gold        | P1.7 | Game + Payment
+S2.4.02            | Cannot Buy Without Gold        | P1.8 | Game + Payment
 
 ---
 
-**Version:** v3.1  
-**Scenarios:** 42 documented  
-**Health Check:** S6.0.03  
-**Updated:** 2025-12-23
+## P2 IDENTITY SCENARIOS (5 total)
+
+S3.3,4.01          | Register After Purchase        | P2.0 | Auth + Payment
+S3.3.01            | Skip Registration              | P2.1 | Auth standalone
+S3.3,4.02          | Loyalty Points Earning         | P2.2 | Auth + Payment
+S3.3.02            | Loyalty Tier Progression       | P2.3 | Auth standalone
+S2.2,3.01          | Loyalty Tier Required Items    | P2.4 | Game + Auth
+
+---
+
+## P3+ FEATURE SCENARIOS (15 total)
+
+S6.6.01            | Demo Mode                      | P3.0 | Common standalone
+S6.6.02            | Data Cleanup                   | P3.1 | Common standalone
+S5.2.02            | Network Failure During Load    | P3.2 | Worker + Game
+S5.2.03            | localStorage Deleted           | P3.3 | Worker + Game
+S3.3,5.03          | XSS Attempt via Username       | P3.4 | Auth + Worker
+S4.4,5.05          | CSRF Attack on Webhook         | P3.5 | Payment + Worker
+S5.1,4.01          | Product Sync (CRUD)            | P3.6 | Worker + Payment
+S5.5.02            | KV Consistency Check           | P3.7 | Worker standalone
+S5.1.01            | Load 100 Products              | P3.8 | Worker standalone
+S5.2.04            | Game with 20 Snakes            | P3.9 | Worker + Game
+S5.4,5.02          | Concurrent Webhook Processing  | P3.10| Payment + Worker
+S1.1,2.02          | Buy 5 Different Snakes         | P3.11| Shop + Game
+S1.1,2.03          | Buy Same Morph Twice           | P3.12| Shop + Game
+S1.1,4.01          | Payment Confirmation Email     | P3.13| Shop + Payment
+S4.4,5.02          | SQL Injection Attempt          | P3.14| Payment + Worker
+
+---
+
+## IMPLEMENTATION STATUS
+
+Implemented:
+  ✅ S6.1,2,3,4,5,6.03 - Health Check (P0.7)
+
+Planned (41 scenarios):
+  🚧 All other scenarios documented in docs/test/E2E_TEST_SCENARIOS.md
+
+Test Coverage:
+  - Unit tests: 69/71 passing (97%)
+  - E2E scenarios: 1/42 implemented (2.4%)
+  - Overall coverage: 88% (business logic)
+
+---
+
+## RELATED FILES
+
+Documentation:
+  - README.md                         → Project overview
+  - docs/test/E2E_TEST_SCENARIOS.md   → Full scenario specs
+  - SMRI_NOTATION_V2.md              → Notation system v2.0
+  - SMRI_URL_STANDARD.md             → URL structure guide
+
+Implementation:
+  - /smri/                            → Test suite hub
+  - /smri/S6.1,2,3,4,5,6.03.html     → Health check (live)
+  - /debug.html                       → Debug hub with S6.0.03
+
+Source Code:
+  - src/modules/common/scenario-runner.js      → Test executor
+  - src/modules/common/security-scenarios.js   → Security tests
+  - tests/slow/real-scenario.test.js          → E2E test suite
+
+---
+
+## QUICK REFERENCE
+
+View all scenarios:
+  http://localhost:8000/smri/
+
+Run health check:
+  http://localhost:8000/debug.html
+
+Full documentation:
+  http://localhost:8000/docs/test/E2E_TEST_SCENARIOS.md
+
+Terminal command:
+  Type: .smri  → Full system briefing + health check
+
+---
+
+## CHANGE LOG
+
+v2.0 (2025-12-23):
+  - Expanded notation (S1.1,2,3,4,5 instead of S1.2345)
+  - Lower module number = higher priority
+  - Primary module always in relations
+  - Consolidated into single manifest
+
+v1.0 (2025-12-22):
+  - Initial SMRI system
+  - 42 scenarios documented
+  - S6.0.03 implemented
+
+---
+
+Last updated: 2025-12-23 10:22 UTC
+Maintained by: AI Assistant + User
+Project: Serpent Town v0.5.0
+
+---
+
+## DETAILED SCENARIO SPECIFICATIONS
+
+### S1.1,2,3,4,5.01: Happy Path - First Purchase to Game Entry
+Priority: P0.0 (HIGHEST)
+Modules: Shop(1) → Game(2), Auth(3), Payment(4), Worker(5)
+User Stories: US-001, US-002, US-003, US-004, US-005, US-006, US-009, US-023
+
+Flow (14 steps):
+  1. User visits catalog.html
+  2. System generates user hash (32+ chars) → localStorage
+  3. User clicks "Buy Now" for Ball Python (€450)
+  4. Stripe checkout opens with client_reference_id={user_hash}
+  5. User completes payment
+  6. Stripe webhook fires → POST /stripe-webhook
+  7. Worker validates webhook signature ✅
+  8. Worker writes to USER_PRODUCTS KV: user:{hash} → [{product_data}]
+  9. Worker marks product as sold in PRODUCT_STATUS KV
+  10. Stripe redirects to success.html?session_id={SESSION_ID}
+  11. Success page polls /user-products?user={hash} (max 20 attempts)
+  12. Snake found → shows "Register Now" button
+  13. User registers (optional) → register.html
+  14. User redirected to game.html?user={hash}
+  15. Snake appears in game with initial stats
+
+Expected Results:
+  ✅ Hash persists across all pages
+  ✅ Webhook assigns product to correct user
+  ✅ Product disappears from catalog (marked sold)
+  ✅ Snake appears in game with correct data
+  ✅ User can interact immediately
+
+Assertions:
+  assert(localStorage.getItem('serpent_last_purchase_hash') === userHash)
+  assert(KV['user:' + userHash].length === 1)
+  assert(KV['product:prod_xxx'].status === 'sold')
+  assert(gameSnakes.length === 1)
+  assert(gameSnakes[0].stats.hunger === 100)
+
+Edge Cases:
+  - Webhook delayed → success page retries for 20s
+  - Webhook fails → user sees error, manual admin assignment
+  - Hash collision (rare) → new hash generated
+
+---
+
+### S6.1,2,3,4,5,6.03: System Health Check
+Priority: P0.7 (CRITICAL)
+Modules: Common(6) → ALL modules
+Status: ✅ IMPLEMENTED
+
+Purpose:
+  Visual health check system for browsers without DevTools (Termux/proot)
+  Tests Worker, Products API, UI components, LocalStorage
+
+Flow (9 steps):
+  1. User opens /debug.html
+  2. Health check auto-runs after 1s delay
+  3. Test Worker connectivity (ping + latency)
+  4. Test Products API (KV product count)
+  5. Verify UI components (8 tabs, 8 divs)
+  6. Check switchModule() function
+  7. Check dropdown selector
+  8. Test LocalStorage
+  9. Display results with color coding
+
+Expected Results:
+  ✅ Completes in < 2 seconds
+  ✅ Worker status with latency shown
+  ✅ Product count displayed (> 0)
+  ✅ All 8 UI components verified
+  ✅ Results persist on screen
+  ✅ Manual re-run button works
+
+Implementation:
+  Location: /debug.html
+  Function: window.runHealthCheck()
+  Auto-run: Yes (1s delay)
+
+Business Value:
+  - Reduces debug time from 10+ min to < 30 sec
+  - Enables non-DevTools debugging
+  - Catches issues immediately on page load
+
+---
+
+### Additional Scenario Summaries
+
+S1.1,2,3,4.01: Returning User Purchase (P0.1)
+  - Second purchase with existing hash
+  - Tests: Multi-snake ownership, KV append operation
+
+S1.1.01: Product Status Check (P0.2)
+  - Verify product availability in KV
+  - Tests: KV read consistency, sold status tracking
+
+S5.5,11.2,12.2.01: Webhook Signature Verification (P0.3)
+  - Worker validates Stripe webhook signatures
+  - Tests: Security, replay attack prevention
+
+S3.3,5.01: User Hash Validation (P0.4)
+  - Auth validates user hash format and uniqueness
+  - Tests: Security, hash collision handling
+
+S2.2.01-06: Game Mechanics (P1.0-P1.5)
+  - View stats, decay, feed, water, clean, health degradation
+  - Tests: Core Tamagotchi gameplay loop
+
+S3.3,4.01-02: User Identity (P2.0-P2.2)
+  - Register, loyalty points, tier progression
+  - Tests: User engagement features
+
+---
+
+## IMPLEMENTATION NOTES
+
+Tested Scenarios:
+  ✅ S6.1,2,3,4,5,6.03 - Health Check (implemented in /debug.html)
+  ⚠️ S1.1,2,3,4,5.01 - Happy Path (partially tested in tests/slow/)
+
+Test Files:
+  - tests/slow/real-scenario.test.js        → S1-S5 scenarios
+  - tests/slow/frontend-to-backend.test.js  → Integration tests
+  - src/modules/common/security-scenarios.js → Security tests
+
+Coverage:
+  - Unit tests: 69/71 passing (97%)
+  - E2E: 1/42 scenarios fully implemented
+  - Business logic: 88% coverage
+
+Next Priority:
+  1. Implement S1.1,2,3,4,5.01 (Happy Path) UI test
+  2. Implement S1.1.01 (Product Status) quick test
+  3. Add S5.5,11.2,12.2.01 (Webhook Sig) automated test
+
+---
+

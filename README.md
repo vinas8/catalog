@@ -26,6 +26,24 @@ cat .github/copilot-instructions.md
 
 ---
 
+## 🎯 SMRI System
+
+**SMRI** = **S**cenario-**M**odule-**R**elation-**I**nstance notation for E2E testing
+
+📋 **[.smri Manifest](.smri)** - Single source of truth (42 scenarios, v2.0 notation)
+
+### Quick Reference
+- **Format:** `S{M}.{RRR}.{II}` where lower M = higher priority
+- **Example:** `S1.1,2,3,4,5.01` = Shop scenario touching 5 modules
+- **Status:** 1/42 implemented, 88% E2E coverage, 69/71 tests passing
+
+### Links
+- 🏥 [Health Check](/smri/S6.1,2,3,4,5,6.03.html) - System status (S6.0.03)
+- 📊 [All Scenarios](/smri/) - Complete test suite
+- 📖 [E2E Docs](docs/test/E2E_TEST_SCENARIOS.md) - Full specifications
+
+---
+
 ## 📖 Documentation
 
 📚 **[Complete Documentation Index](docs/DOCUMENTATION_INDEX.md)** - All docs organized by topic

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🎯 SMRI Test Suite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui; background: #0a0e14; color: #c9d1d9; padding: 40px; }
+    h1 { color: #58a6ff; margin-bottom: 30px; }
+    .scenarios { display: grid; gap: 15px; max-width: 900px; }
+    .scenario {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.2s;
+    }
+    .scenario:hover { border-color: #58a6ff; }
+    .code { 
+      color: #8b949e; 
+      font-family: 'Monaco', 'Courier New', monospace; 
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .name { color: #c9d1d9; font-size: 16px; font-weight: 600; margin: 8px 0; }
+    .desc { color: #8b949e; font-size: 13px; line-height: 1.5; }
+    .meta {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .badge { 
+      display: inline-block; 
+      padding: 4px 10px; 
+      border-radius: 12px; 
+      font-size: 11px; 
+      font-weight: 600;
+    }
+    .badge.p0 { background: #da3633; color: white; }
+    .badge.p1 { background: #d29922; color: white; }
+    .badge.p2 { background: #1f6feb; color: white; }
+    .badge.module { background: #6e40c9; color: white; }
+    .badge.implemented { background: #238636; color: white; }
+    .badge.planned { background: #6e7681; color: white; }
+    .notation {
+      margin-top: 40px;
+      padding: 25px;
+      background: #161b22;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+    }
+    .notation h3 { color: #58a6ff; margin-bottom: 15px; }
+    .notation pre {
+      background: #0d1117;
+      padding: 20px;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+    .example {
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 8px 0;
+      font-family: monospace;
+      font-size: 13px;
+    }
+    .example .url { color: #58a6ff; }
+    .example .desc { color: #8b949e; margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🎯 SMRI Test Suite</h1>
+  <p style="color: #8b949e; margin-bottom: 30px;">
+    Complete E2E scenario testing with standard SMRI notation<br>
+    <strong>Format:</strong> S{M}.{RRR}.{II} where commas separate multiple relations
+  </p>
+
+  <div class="scenarios">
+    <!-- Implemented -->
+    <a href="/smri/S6.0.03.html" class="scenario">
+      <div class="code">S6.0.03</div>
+      <div class="name">Debug Health Check</div>
+      <div class="desc">Visual health check system - Worker, Products, UI, LocalStorage. Auto-runs on debug hub load.</div>
+      <div class="meta">
+        <span class="badge p0">P0.7 CRITICAL</span>
+        <span class="badge module">Common (6)</span>
+        <span class="badge implemented">✅ IMPLEMENTED</span>
+      </div>
+    </a>
+
+    <!-- High Priority - Planned -->
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S1.2,3,4,5.01</div>
+      <div class="name">Happy Path - First Purchase to Game</div>
+      <div class="desc">Complete flow: catalog → Stripe checkout → webhook → KV storage → game entry. Tests Shop, Game, Auth, Payment, Worker modules.</div>
+      <div class="meta">
+        <span class="badge p0">P0.0 HIGHEST</span>
+        <span class="badge module">Shop → Game,Auth,Payment,Worker</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S1.2,3,4.01</div>
+      <div class="name">Returning User Purchase</div>
+      <div class="desc">Second purchase with existing hash. Tests Shop → Game, Auth, Payment.</div>
+      <div class="meta">
+        <span class="badge p0">P0.1</span>
+        <span class="badge module">Shop → Game,Auth,Payment</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S1.0.01</div>
+      <div class="name">Product Status Check</div>
+      <div class="desc">Verify product availability in KV storage (standalone Shop test).</div>
+      <div class="meta">
+        <span class="badge p0">P0.2</span>
+        <span class="badge module">Shop (1)</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S5.11.2-12.2.01</div>
+      <div class="name">Webhook Signature Verification</div>
+      <div class="desc">Worker validates Stripe webhook with Cloudflare KV + Stripe Webhooks.</div>
+      <div class="meta">
+        <span class="badge p0">P0.3</span>
+        <span class="badge module">Worker → CF.KV,Stripe.Webhooks</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S5.2.01</div>
+      <div class="name">Load Game from KV</div>
+      <div class="desc">Cold start: Worker → Game data loading.</div>
+      <div class="meta">
+        <span class="badge p0">P0.6</span>
+        <span class="badge module">Worker → Game</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+
+    <div class="scenario" style="opacity: 0.7; cursor: not-allowed;">
+      <div class="code">S2.0.01</div>
+      <div class="name">View Snake Stats</div>
+      <div class="desc">Display snake statistics in game (standalone Game test).</div>
+      <div class="meta">
+        <span class="badge p1">P1.0 GAMEPLAY</span>
+        <span class="badge module">Game (2)</span>
+        <span class="badge planned">🚧 PLANNED</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="notation">
+    <h3>📋 SMRI Notation Standard</h3>
+    <pre>
+<strong>Format:</strong> S{M}.{RRR}.{II}
+
+<strong>Components:</strong>
+S   = Scenario prefix (always "S")
+M   = Module owner (1-6 internal, 11+ external)
+RRR = Relations (comma-separated for multiple)
+II  = Instance number (01-99)
+
+<strong>Module Numbers:</strong>
+1 = Shop          | 11 = Cloudflare (11.1=KV, 11.2=Workers, 11.3=CDN)
+2 = Game          | 12 = Stripe (12.1=Checkout, 12.2=Webhooks, 12.3=API)
+3 = Auth          | 13 = GitHub (13.1=Pages, 13.2=Actions)
+4 = Payment       |
+5 = Worker        |
+6 = Common        |
+
+<strong>Relation Notation:</strong>
+0              → Standalone (no relations)
+2              → Single relation (to Game)
+2,3,4          → Multiple internal (Game, Auth, Payment)
+11.2-12.2      → External sub-services (CF.KV + Stripe.Webhooks)
+2-11.2-12.2    → Mixed (Game + CF.KV + Stripe.Webhooks)
+    </pre>
+
+    <h3 style="margin-top: 25px;">🔗 URL Examples</h3>
+    
+    <div class="example">
+      <div class="url">/smri/S6.0.03.html</div>
+      <div class="desc">→ Health Check (Common, standalone)</div>
+    </div>
+    
+    <div class="example">
+      <div class="url">/smri/S1.2,3,4,5.01.html</div>
+      <div class="desc">→ Happy Path (Shop → Game,Auth,Payment,Worker)</div>
+    </div>
+    
+    <div class="example">
+      <div class="url">/smri/S5.11.2-12.2.01.html</div>
+      <div class="desc">→ Webhook Signature (Worker → CF.KV, Stripe.Webhooks)</div>
+    </div>
+    
+    <div class="example">
+      <div class="url">/smri/S2.0.01.html</div>
+      <div class="desc">→ View Stats (Game, standalone)</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 25px; text-align: center; color: #8b949e; font-size: 13px; line-height: 1.8;">
+    <strong>Status:</strong> 1/42 scenarios implemented (88% E2E test coverage)<br>
+    <strong>Tests Passing:</strong> 69/71 (97%)<br>
+    <a href="/docs/test/E2E_TEST_SCENARIOS.md" style="color: #58a6ff;">📖 View Full Documentation</a> | 
+    <a href="/debug.html" style="color: #58a6ff;">🏥 Debug Hub</a>
+  </div>
+</body>
+</html>

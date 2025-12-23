@@ -1,0 +1,4 @@
+# Allow dots in URLs for SMRI codes
+Options +MultiViews
+RewriteEngine On
+RewriteRule ^S([0-9]+)\.([0-9]+)\.([0-9]+)$ $0.html [L]
