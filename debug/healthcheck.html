@@ -12,55 +12,19 @@
       background: #0a0e14;
       color: #c9d1d9;
       padding: 20px;
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     
-    h1 {
-      color: #58a6ff;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
+    h1 { color: #58a6ff; margin-bottom: 10px; font-size: 24px; }
     
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .card h2 {
+    .subtitle {
       color: #8b949e;
-      font-size: 14px;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .result {
-      background: #0d1117;
-      padding: 15px;
-      border-radius: 8px;
-      font-family: monospace;
+      margin-bottom: 20px;
       font-size: 13px;
-      line-height: 1.6;
-      border: 1px solid #30363d;
     }
     
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      margin: 5px 0;
-    }
-    
-    .status.ok { color: #3fb950; }
-    .status.warn { color: #d29922; }
-    .status.error { color: #f85149; }
-    
-    button {
+    .btn {
       background: #238636;
       color: white;
       border: none;
@@ -71,17 +35,100 @@
       font-weight: 600;
     }
     
-    button:hover {
-      background: #2ea043;
+    .btn:hover { background: #2ea043; }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .test-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    
+    .test-header {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+    
+    .test-header:hover { background: #1c2128; }
+    
+    .test-number {
+      background: #21262d;
+      color: #8b949e;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 35px;
+      text-align: center;
+    }
+    
+    .test-method {
+      background: #238636;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 45px;
+      text-align: center;
+    }
+    
+    .test-title { flex: 1; font-weight: 500; }
+    
+    .test-status {
+      font-size: 18px;
+    }
+    
+    .test-body {
+      display: none;
+      padding: 16px;
+      border-top: 1px solid #30363d;
+      background: #0d1117;
+    }
+    
+    .test-body.show { display: block; }
+    
+    .test-section {
+      margin-bottom: 16px;
+    }
+    
+    .test-section h4 {
+      color: #8b949e;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    
+    .code-block {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      line-height: 1.5;
     }
     
     .progress-bar {
-      background: #0d1117;
+      background: #161b22;
       border-radius: 10px;
       height: 24px;
       overflow: hidden;
       margin: 15px 0;
       border: 2px solid #30363d;
+      display: none;
     }
     
     .progress-fill {
@@ -103,272 +150,285 @@
       font-size: 12px;
       font-weight: bold;
       margin-top: 10px;
+      display: none;
     }
     
-    .links {
+    .status-ok { color: #3fb950; }
+    .status-warn { color: #d29922; }
+    .status-error { color: #f85149; }
+    
+    .run-btn-container {
       display: flex;
       gap: 10px;
-      flex-wrap: wrap;
-    }
-    
-    .links a {
-      color: #58a6ff;
-      text-decoration: none;
-      padding: 8px 16px;
-      background: #0d1117;
-      border-radius: 6px;
-      border: 1px solid #30363d;
-      font-size: 13px;
-    }
-    
-    .links a:hover {
-      border-color: #58a6ff;
+      align-items: center;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
   <h1>🏥 SMRI System Health Check</h1>
-  <p class="subtitle" style="color: #8b949e; margin-bottom: 20px;">
-    <strong>SMRI:</strong> S6.0.03 - Health Check Module<br>
-    <strong>Module Version:</strong> v1.2 | <strong>App Version:</strong> 0.5.0 | <strong>Tests:</strong> 10
+  <p class="subtitle">
+    <strong>SMRI:</strong> S6.0.03 | <strong>Module:</strong> v1.3 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 10
   </p>
   
-  <div class="card">
-    <h2>API Health Status</h2>
-    <button onclick="runHealthCheck()">▶ Run Health Check</button>
-    
-    <div class="progress-bar" style="display: none;" id="progress-container">
-      <div class="progress-fill" id="progress-bar">0%</div>
-    </div>
-    <div class="progress-text" id="progress-text" style="display: none;">Initializing...</div>
-    
-    <div class="result" id="results">
-      <div style="color: #8b949e;">Click "Run Health Check" to test all systems...</div>
-    </div>
+  <div class="run-btn-container">
+    <button onclick="runAllTests()" class="btn">▶ Run All Tests</button>
+    <button onclick="collapseAll()" class="btn btn-small">Collapse All</button>
+    <button onclick="expandAll()" class="btn btn-small">Expand All</button>
   </div>
   
-  <div class="card">
-    <h2>Quick Links</h2>
-    <div class="links">
-      <a href="/catalog.html">📦 Catalog</a>
-      <a href="/game.html">🎮 Game</a>
-      <a href="/">🏠 Home</a>
-      <a href="/debug/modules/">🔧 Debug Modules</a>
-    </div>
+  <div class="progress-bar" id="progress-container">
+    <div class="progress-fill" id="progress-bar">0%</div>
   </div>
+  <div class="progress-text" id="progress-text">Ready</div>
   
-  <div class="card">
-    <h2>System Info</h2>
-    <div class="result" id="system-info">
-      <div class="status"><strong>Version:</strong> <span id="version">0.5.0</span></div>
-      <div class="status"><strong>Worker:</strong> <span id="worker-url">https://catalog.navickaszilvinas.workers.dev</span></div>
-      <div class="status"><strong>Tests Passing:</strong> 86/86 (100%)</div>
-    </div>
-  </div>
+  <div id="test-list"></div>
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
     
-    async function runHealthCheck() {
-      const resultsDiv = document.getElementById('results');
-      const progressContainer = document.getElementById('progress-container');
-      const progressBar = document.getElementById('progress-bar');
-      const progressText = document.getElementById('progress-text');
-      
-      // Show progress bar
-      progressContainer.style.display = 'block';
-      progressText.style.display = 'block';
-      
-      const results = [];
-      let testNum = 0;
-      const totalTests = 10;
-      let pingTime = 0;
-      let productCount = 0;
-      let stripeProductCount = 0;
-      
-      function updateProgress(name) {
-        const percent = Math.round((testNum / totalTests) * 100);
-        progressBar.style.width = percent + '%';
-        progressBar.textContent = percent + '%';
-        progressText.innerHTML = `🔍 Test ${testNum}/${totalTests} - <strong>${name}</strong>`;
-      }
-      
-      function addResult(emoji, msg, status) {
-        const className = status === 'ok' ? 'ok' : status === 'warn' ? 'warn' : 'error';
-        results.push(`<div class="status ${className}">${emoji} ${msg}</div>`);
-        resultsDiv.innerHTML = results.join('');
-      }
-      
-      try {
-        // Test 1
-        testNum = 1;
-        updateProgress('Checking Worker URL');
-        await new Promise(r => setTimeout(r, 100));
-        addResult('🔍', 'Worker URL: ' + WORKER_URL, 'ok');
-        
-        // Test 2
-        testNum = 2;
-        updateProgress('Pinging Worker');
-        try {
+    const tests = [
+      {
+        id: 1,
+        name: 'Worker URL Validation',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Verify Worker URL is valid HTTPS endpoint',
+        run: async () => {
+          if (!WORKER_URL.startsWith('http')) throw new Error('Invalid URL');
+          return { valid: true, url: WORKER_URL };
+        }
+      },
+      {
+        id: 2,
+        name: 'Worker Online Check',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Ping Worker to verify it responds',
+        run: async () => {
           const start = Date.now();
           const res = await fetch(WORKER_URL + '/products');
-          pingTime = Date.now() - start;
-          if (res.ok) {
-            addResult('✅', `Worker is ONLINE (${pingTime}ms)`, 'ok');
-          } else {
-            addResult('❌', `Worker returned ${res.status}`, 'error');
-          }
-        } catch (e) {
-          addResult('❌', 'Worker is OFFLINE: ' + e.message, 'error');
+          const time = Date.now() - start;
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          return { online: true, responseTime: time + 'ms', status: res.status };
         }
-        
-        // Test 3
-        testNum = 3;
-        updateProgress('Loading Products');
-        try {
+      },
+      {
+        id: 3,
+        name: 'Products API',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Load products from KV storage',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
           const data = await res.json();
-          productCount = Array.isArray(data) ? data.length : 0;
-          if (productCount > 0) {
-            addResult('✅', `Loaded ${productCount} products from KV`, 'ok');
-          } else {
-            addResult('⚠️', 'No products in KV', 'warn');
-          }
-        } catch (e) {
-          addResult('❌', 'Failed to load products: ' + e.message, 'error');
+          if (!Array.isArray(data)) throw new Error('Not an array');
+          if (data.length === 0) throw new Error('No products');
+          return { count: data.length, sample: data.slice(0, 1) };
         }
-        
-        // Test 4
-        testNum = 4;
-        updateProgress('Validating Product Schema');
-        await new Promise(r => setTimeout(r, 100));
-        try {
+      },
+      {
+        id: 4,
+        name: 'Product Schema Validation',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Validate required product fields',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
           const products = await res.json();
           const required = ['id', 'name', 'species', 'morph', 'price'];
           const first = products[0];
-          let missing = [];
-          for (const field of required) {
-            if (!(field in first)) missing.push(field);
-          }
-          if (missing.length === 0) {
-            addResult('✅', 'Products have required fields', 'ok');
-          } else {
-            addResult('⚠️', `Missing fields: ${missing.join(', ')}`, 'warn');
-          }
-        } catch (e) {
-          addResult('❌', 'Schema validation failed', 'error');
+          const missing = required.filter(f => !(f in first));
+          if (missing.length > 0) throw new Error(`Missing: ${missing.join(', ')}`);
+          return { valid: true, fields: required };
         }
-        
-        // Test 5
-        testNum = 5;
-        updateProgress('Checking CORS Headers');
-        await new Promise(r => setTimeout(r, 100));
-        try {
+      },
+      {
+        id: 5,
+        name: 'CORS Headers Check',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Verify Cross-Origin Resource Sharing headers',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
           const cors = res.headers.get('access-control-allow-origin');
-          if (cors) {
-            addResult('✅', 'CORS headers present', 'ok');
-          } else {
-            addResult('❌', 'CORS headers missing', 'error');
-          }
-        } catch (e) {
-          addResult('❌', 'CORS check failed', 'error');
+          if (!cors || cors === 'null') throw new Error('No CORS');
+          return { cors, methods: res.headers.get('access-control-allow-methods') };
         }
-        
-        // Test 6
-        testNum = 6;
-        updateProgress('Testing User Endpoint');
-        await new Promise(r => setTimeout(r, 100));
-        try {
-          const res = await fetch(`${WORKER_URL}/user-products?user=test_hash`);
-          if (res.status === 200 || res.status === 404) {
-            addResult('✅', 'User products endpoint working', 'ok');
-          } else {
-            addResult('⚠️', `Unexpected status: ${res.status}`, 'warn');
-          }
-        } catch (e) {
-          addResult('❌', 'User endpoint failed', 'error');
+      },
+      {
+        id: 6,
+        name: 'User Products Endpoint',
+        method: 'GET',
+        endpoint: '/user-products?user=test',
+        description: 'Test user-specific product retrieval',
+        run: async () => {
+          const res = await fetch(WORKER_URL + '/user-products?user=test_hash');
+          if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected status ${res.status}`);
+          return { status: res.status, message: res.status === 404 ? 'No products (expected for test user)' : 'Has products' };
         }
-        
-        // Test 7
-        testNum = 7;
-        updateProgress('Checking Stripe Products');
-        await new Promise(r => setTimeout(r, 100));
-        try {
+      },
+      {
+        id: 7,
+        name: 'Stripe Products Check',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Find products with Stripe payment integration',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
           const products = await res.json();
-          const stripeProducts = products.filter(p => p.source === 'stripe' && p.stripe_link);
-          stripeProductCount = stripeProducts.length;
-          if (stripeProductCount > 0) {
-            addResult('✅', `Found ${stripeProductCount} Stripe products with payment links`, 'ok');
-          } else {
-            addResult('⚠️', 'No Stripe products found', 'warn');
-          }
-        } catch (e) {
-          addResult('❌', 'Stripe product check failed', 'error');
+          const stripe = products.filter(p => p.source === 'stripe' && p.stripe_link);
+          if (stripe.length === 0) throw new Error('No Stripe products');
+          return { count: stripe.length, sample: stripe[0].name };
         }
-        
-        // Test 8
-        testNum = 8;
-        updateProgress('Checking Response Time');
-        await new Promise(r => setTimeout(r, 100));
-        if (pingTime < 5000) {
-          addResult('✅', `Response time: ${pingTime}ms`, 'ok');
-        } else {
-          addResult('⚠️', `Slow response: ${pingTime}ms (>5s)`, 'warn');
+      },
+      {
+        id: 8,
+        name: 'Response Time Test',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Measure API response latency',
+        run: async () => {
+          const start = Date.now();
+          await fetch(WORKER_URL + '/products');
+          const time = Date.now() - start;
+          if (time > 5000) throw new Error(`Too slow: ${time}ms`);
+          return { responseTime: time + 'ms', threshold: '5000ms' };
         }
-        
-        // Test 9
-        testNum = 9;
-        updateProgress('Validating JSON');
-        await new Promise(r => setTimeout(r, 100));
-        try {
+      },
+      {
+        id: 9,
+        name: 'JSON Format Validation',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Verify response is valid JSON',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
-          await res.json();
-          addResult('✅', 'JSON format valid', 'ok');
-        } catch (e) {
-          addResult('❌', 'Invalid JSON', 'error');
+          const text = await res.text();
+          JSON.parse(text);
+          return { valid: true, size: text.length + ' bytes' };
         }
-        
-        // Test 10
-        testNum = 10;
-        updateProgress('Testing Stripe Integration');
-        await new Promise(r => setTimeout(r, 100));
-        try {
+      },
+      {
+        id: 10,
+        name: 'Stripe Checkout Links',
+        method: 'GET',
+        endpoint: '/products',
+        description: 'Validate payment link URLs',
+        run: async () => {
           const res = await fetch(WORKER_URL + '/products');
           const products = await res.json();
-          const hasStripeLinks = products.some(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
-          if (hasStripeLinks) {
-            addResult('✅', 'Stripe checkout links configured', 'ok');
-          } else {
-            addResult('⚠️', 'No valid Stripe links found', 'warn');
-          }
-        } catch (e) {
-          addResult('❌', 'Stripe integration check failed', 'error');
+          const valid = products.filter(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
+          if (valid.length === 0) throw new Error('No valid links');
+          return { count: valid.length, sample: valid[0].stripe_link.substring(0, 50) + '...' };
         }
-        
-        // Complete
-        progressBar.style.width = '100%';
-        progressBar.textContent = '100%';
-        progressBar.style.background = '#238636';
-        progressText.innerHTML = '✅ All tests complete!';
-        progressText.style.color = '#3fb950';
-        
-        results.unshift('<div style="color: #58a6ff; font-weight: bold; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 10px;">📊 Health Check Complete - ' + new Date().toLocaleTimeString() + '</div>');
-        resultsDiv.innerHTML = results.join('');
-        
+      }
+    ];
+    
+    let testResults = {};
+    
+    function renderTests() {
+      const listDiv = document.getElementById('test-list');
+      listDiv.innerHTML = tests.map(test => `
+        <div class="test-card" id="test-${test.id}">
+          <div class="test-header" onclick="toggleTest(${test.id})">
+            <span class="test-number">#${test.id}</span>
+            <span class="test-method">${test.method}</span>
+            <span class="test-title">${test.name}</span>
+            <span class="test-status" id="status-${test.id}">⚪</span>
+          </div>
+          <div class="test-body" id="body-${test.id}">
+            <div class="test-section">
+              <h4>Description</h4>
+              <p style="color: #8b949e; font-size: 13px;">${test.description}</p>
+            </div>
+            <div class="test-section">
+              <h4>Request</h4>
+              <div class="code-block">
+                <div><strong>${test.method}</strong> ${WORKER_URL}${test.endpoint}</div>
+              </div>
+            </div>
+            <div class="test-section">
+              <h4>Response</h4>
+              <div class="code-block" id="response-${test.id}">
+                <div style="color: #8b949e;">Not run yet. Click "Run Test" or "Run All Tests"</div>
+              </div>
+            </div>
+            <button onclick="runSingleTest(${test.id})" class="btn btn-small">▶ Run Test</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function toggleTest(id) {
+      const body = document.getElementById(`body-${id}`);
+      body.classList.toggle('show');
+    }
+    
+    function collapseAll() {
+      document.querySelectorAll('.test-body').forEach(b => b.classList.remove('show'));
+    }
+    
+    function expandAll() {
+      document.querySelectorAll('.test-body').forEach(b => b.classList.add('show'));
+    }
+    
+    async function runSingleTest(id) {
+      const test = tests[id - 1];
+      const statusEl = document.getElementById(`status-${id}`);
+      const responseEl = document.getElementById(`response-${id}`);
+      
+      statusEl.textContent = '⏳';
+      responseEl.innerHTML = '<div style="color: #58a6ff;">Running...</div>';
+      
+      try {
+        const result = await test.run();
+        statusEl.textContent = '✅';
+        statusEl.className = 'test-status status-ok';
+        responseEl.innerHTML = `<pre style="margin: 0; color: #3fb950;">${JSON.stringify(result, null, 2)}</pre>`;
+        testResults[id] = { status: 'ok', result };
       } catch (error) {
-        progressBar.style.background = '#f85149';
-        progressText.textContent = '❌ Health check failed';
-        progressText.style.color = '#f85149';
-        addResult('❌', 'System error: ' + error.message, 'error');
+        statusEl.textContent = '❌';
+        statusEl.className = 'test-status status-error';
+        responseEl.innerHTML = `<pre style="margin: 0; color: #f85149;">Error: ${error.message}</pre>`;
+        testResults[id] = { status: 'error', error: error.message };
       }
     }
     
+    async function runAllTests() {
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      const progressContainer = document.getElementById('progress-container');
+      
+      progressContainer.style.display = 'block';
+      progressText.style.display = 'block';
+      testResults = {};
+      
+      for (let i = 0; i < tests.length; i++) {
+        const percent = Math.round(((i + 1) / tests.length) * 100);
+        progressBar.style.width = percent + '%';
+        progressBar.textContent = percent + '%';
+        progressText.innerHTML = `🔍 Test ${i + 1}/${tests.length} - <strong>${tests[i].name}</strong>`;
+        
+        await runSingleTest(tests[i].id);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      
+      progressText.innerHTML = '✅ All tests complete!';
+      progressText.style.color = '#3fb950';
+      
+      const passed = Object.values(testResults).filter(r => r.status === 'ok').length;
+      const failed = tests.length - passed;
+      
+      console.log(`Tests: ${passed}/${tests.length} passed`);
+    }
+    
+    // Initialize
+    renderTests();
+    
     // Auto-run on load
     window.addEventListener('load', () => {
-      setTimeout(() => runHealthCheck(), 500);
+      setTimeout(() => runAllTests(), 500);
     });
   </script>
 </body>
