@@ -39,7 +39,6 @@
       <h3>🐍 Available Snakes (Real Money)</h3>
       <div id="available-snakes" class="catalog-grid">
         <div class="loading">Loading...</div>
-        <!-- Buy Now buttons rendered dynamically by catalog-renderer.js -->
       </div>
     </section>
 
@@ -64,13 +63,11 @@
     </section>
   </main>
 
-  <script type="module">
-    import { renderStandaloneCatalog } from './src/modules/shop/ui/catalog-renderer.js';
-    import { PAGE_URLS } from './src/config/worker-config.js';
-
-    // Generate or get user hash for purchase tracking
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    // Generate or get user hash
     function getUserHash() {
-      // Try to get existing hash from any of the possible keys
       let hash = localStorage.getItem('serpent_user_hash') || 
                  localStorage.getItem('serpent_last_purchase_hash') ||
                  localStorage.getItem('serpent_pending_purchase_hash');
@@ -79,34 +76,151 @@
         const timestamp = Date.now().toString(36);
         const random = Math.random().toString(36).substring(2, 15);
         hash = timestamp + random;
-        // Store in multiple keys for compatibility
         localStorage.setItem('serpent_pending_purchase_hash', hash);
         localStorage.setItem('serpent_last_purchase_hash', hash);
+        localStorage.setItem('serpent_user_hash', hash);
       }
       return hash;
     }
 
-    // Check if returning from successful payment
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
-      const notification = document.createElement('div');
-      notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:1.5rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;animation:slideIn 0.3s;';
-      notification.innerHTML = '✅ Payment successful! Thank you for your purchase!';
-      document.body.appendChild(notification);
+    // Render product card
+    function renderProductCard(product, userHash, isSold) {
+      const price = typeof product.price === 'number' ? product.price : 0;
+      const priceFormatted = price.toFixed(2);
       
-      setTimeout(() => {
-        notification.remove();
-        // Clean URL
-        window.history.replaceState({}, '', 'catalog.html');
-      }, 5000);
+      let checkoutUrl = product.stripe_link;
+      if (checkoutUrl && checkoutUrl.includes('stripe.com')) {
+        checkoutUrl += `?client_reference_id=${userHash}`;
+      }
+      
+      const soldClass = isSold ? 'sold' : '';
+      const soldBadge = isSold ? '<span class="sold-badge">SOLD</span>' : '';
+      
+      const canBuy = checkoutUrl && price > 0;
+      const buyButton = isSold ? 
+        '<button class="primary-btn" disabled style="opacity: 0.5;">Sold Out</button>' :
+        canBuy ? 
+          `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
+            localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
+            localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
+            localStorage.setItem('serpent_user_hash', '${userHash}');
+          ">💳 Buy Now - €${priceFormatted}</a>` :
+          '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
+      
+      return `
+        <div class="catalog-item ${soldClass}">
+          ${soldBadge}
+          <div class="item-image">${product.image || '🐍'}</div>
+          <h3>${product.name}</h3>
+          <p class="species-info">${(product.species || '').replace('_', ' ')} - ${(product.morph || '').replace('_', ' ')}</p>
+          <p>${product.description || ''}</p>
+          <p class="item-info">${product.info || ''}</p>
+          <div class="item-price">€${priceFormatted}</div>
+          ${buyButton}
+        </div>
+      `;
     }
 
-    async function renderCatalog() {
-      const filter = document.getElementById('species-filter');
-      const species = filter.value;
+    function renderVirtualCard(product) {
+      const price = typeof product.price === 'number' ? product.price : 0;
       
-      // Use reusable catalog renderer
-      await renderStandaloneCatalog(species, getUserHash);
+      return `
+        <div class="catalog-item virtual">
+          <span class="virtual-badge">VIRTUAL</span>
+          <div class="item-image">${product.image || '🐍'}</div>
+          <h3>${product.name}</h3>
+          <p class="species-info">${(product.species || '').replace('_', ' ')} - ${(product.morph || 'normal').replace('_', ' ')}</p>
+          <p>${product.description || ''}</p>
+          <p class="item-info">${product.info || ''}</p>
+          <div class="item-price">${price} Gold</div>
+          <button class="primary-btn" disabled style="opacity: 0.5;">Available In-Game</button>
+        </div>
+      `;
+    }
+
+    async function loadAndRenderCatalog() {
+      const availableContainer = document.getElementById('available-snakes');
+      const virtualContainer = document.getElementById('virtual-snakes');
+      const soldContainer = document.getElementById('sold-snakes');
+      const soldCount = document.getElementById('sold-count');
+      const speciesFilter = document.getElementById('species-filter').value;
+      
+      console.log('🔄 Loading catalog, species filter:', speciesFilter);
+      
+      availableContainer.innerHTML = '<div class="loading">Loading...</div>';
+      virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
+      
+      try {
+        // Fetch products from Worker API
+        console.log('📡 Fetching from:', WORKER_URL + '/products');
+        const response = await fetch(WORKER_URL + '/products');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ Raw response:', data);
+        
+        // Handle array response
+        const allProducts = Array.isArray(data) ? data : (data.products || []);
+        console.log('✅ Total products:', allProducts.length);
+        
+        // Filter by species
+        const filteredProducts = speciesFilter === 'all' 
+          ? allProducts 
+          : allProducts.filter(p => p.species === speciesFilter);
+        
+        console.log('✅ After species filter:', filteredProducts.length);
+        
+        // Separate by type
+        const realProducts = filteredProducts.filter(p => p.type === 'real');
+        const virtualProducts = filteredProducts.filter(p => p.type === 'virtual');
+        
+        console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
+        
+        // Separate by status
+        const available = realProducts.filter(p => p.status === 'available');
+        const sold = realProducts.filter(p => p.status === 'sold');
+        
+        console.log('✅ Available:', available.length, 'Sold:', sold.length);
+        
+        const userHash = getUserHash();
+        
+        // Render available
+        if (available.length === 0) {
+          availableContainer.innerHTML = '<div class="empty-state">No snakes available</div>';
+        } else {
+          availableContainer.innerHTML = available.map(p => renderProductCard(p, userHash, false)).join('');
+        }
+        
+        // Render virtual
+        if (virtualProducts.length === 0) {
+          virtualContainer.innerHTML = '<div class="empty-state">No virtual snakes</div>';
+        } else {
+          virtualContainer.innerHTML = virtualProducts.map(p => renderVirtualCard(p)).join('');
+        }
+        
+        // Render sold
+        soldCount.textContent = `(${sold.length})`;
+        if (sold.length === 0) {
+          soldContainer.innerHTML = '<div class="empty-state">No snakes sold yet</div>';
+        } else {
+          soldContainer.innerHTML = sold.map(p => renderProductCard(p, userHash, true)).join('');
+        }
+        
+        console.log('✅ Catalog rendering complete!');
+        
+      } catch (error) {
+        console.error('❌ Error loading catalog:', error);
+        availableContainer.innerHTML = `
+          <div class="error-state">
+            Failed to load catalog: ${error.message}<br>
+            <a href="debug/catalog-demo.html">Try Debug Demo</a>
+          </div>
+        `;
+        virtualContainer.innerHTML = '<div class="error-state">Error</div>';
+      }
     }
 
     // Toggle sold section
@@ -122,11 +236,25 @@
       }
     });
 
+    // Check for success parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      const notification = document.createElement('div');
+      notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:1.5rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;';
+      notification.innerHTML = '✅ Payment successful! Thank you!';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+        window.history.replaceState({}, '', 'catalog.html');
+      }, 5000);
+    }
+
     // Initial load
-    renderCatalog();
+    loadAndRenderCatalog();
 
     // Filter change
-    document.getElementById('species-filter').addEventListener('change', renderCatalog);
+    document.getElementById('species-filter').addEventListener('change', loadAndRenderCatalog);
   </script>
 </body>
 </html>
