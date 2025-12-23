@@ -168,7 +168,7 @@
 <body>
   <h1>🏥 SMRI System Health Check</h1>
   <p class="subtitle">
-    <strong>SMRI:</strong> S6.0.03 | <strong>Module:</strong> v1.3 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 10
+    <strong>SMRI:</strong> S6.0.03 | <strong>Module:</strong> v1.4 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 9 (Browser) / 10 (CLI)
   </p>
   
   <div class="run-btn-container">
@@ -245,29 +245,6 @@
       },
       {
         id: 5,
-        name: 'CORS Headers Check',
-        method: 'GET',
-        endpoint: '/products',
-        description: 'Verify Cross-Origin Resource Sharing headers (may fail locally due to browser security)',
-        run: async () => {
-          const res = await fetch(WORKER_URL + '/products');
-          const cors = res.headers.get('access-control-allow-origin');
-          const methods = res.headers.get('access-control-allow-methods');
-          
-          // Note: Browsers sometimes hide CORS headers in JS for security
-          // CLI test (npm run smri) shows headers correctly
-          if (!cors) {
-            return { 
-              warning: 'Headers not visible to JavaScript (browser security)',
-              note: 'Run `npm run smri` to verify CORS in CLI',
-              workerSendsCORS: 'Worker configured with CORS: *'
-            };
-          }
-          return { cors, methods };
-        }
-      },
-      {
-        id: 6,
         name: 'User Products Endpoint',
         method: 'GET',
         endpoint: '/user-products?user=test',
@@ -279,7 +256,7 @@
         }
       },
       {
-        id: 7,
+        id: 6,
         name: 'Stripe Products Check',
         method: 'GET',
         endpoint: '/products',
@@ -293,7 +270,7 @@
         }
       },
       {
-        id: 8,
+        id: 7,
         name: 'Response Time Test',
         method: 'GET',
         endpoint: '/products',
@@ -307,7 +284,7 @@
         }
       },
       {
-        id: 9,
+        id: 8,
         name: 'JSON Format Validation',
         method: 'GET',
         endpoint: '/products',
@@ -320,7 +297,7 @@
         }
       },
       {
-        id: 10,
+        id: 9,
         name: 'Stripe Checkout Links',
         method: 'GET',
         endpoint: '/products',
