@@ -91,11 +91,15 @@
 
     async function loadAllProducts() {
       try {
-        const response = await fetch('../data/products.json');
+        // Fetch from worker API, not products.json
+        const response = await fetch(`${WORKER_URL}/products`);
         const data = await response.json();
+        // Worker returns {products: [...], count: N}
         allProducts = data.products || [];
+        console.log('📦 Loaded products from worker:', allProducts.length);
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error loading products:', error);
+        allProducts = [];
       }
     }
 
