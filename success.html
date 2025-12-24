@@ -60,6 +60,12 @@
       <a href="#" id="register-now-btn" class="primary-btn" style="display: none;">Register Now</a>
       <a href="/catalog.html" class="secondary-btn" id="secondary-btn">Continue Shopping</a>
     </div>
+
+    <!-- Debug: Show snake details -->
+    <div id="snake-debug" style="margin-top: 2rem; padding: 1rem; background: #f0f8ff; border-radius: 8px; text-align: left; display: none;">
+      <h4 style="margin-bottom: 0.5rem;">🐍 Your Snake Details:</h4>
+      <pre id="snake-data" style="background: white; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem;"></pre>
+    </div>
   </div>
 
   <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: #f8f9fa; padding: 0.5rem; font-size: 0.8rem; color: #666; border-top: 1px solid #ddd;">
@@ -109,6 +115,7 @@
     
     // Poll for snake assignment (same as purchase flow demo)
     let checkAttempts = 0;
+    let pollInterval = null;
     const maxAttempts = 20;
     
     const checkForSnake = async () => {
@@ -127,6 +134,18 @@
         if (products.length > 0) {
           console.log('✅ Snake found!', products);
           
+          // STOP POLLING IMMEDIATELY
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+          }
+          
+          // Show snake details in debug section
+          const snakeDebug = document.getElementById('snake-debug');
+          const snakeData = document.getElementById('snake-data');
+          snakeDebug.style.display = 'block';
+          snakeData.textContent = JSON.stringify(products[0], null, 2);
+          
           // Success!
           document.getElementById('redirect-message').textContent = 'Your snake is ready!';
           document.getElementById('countdown').innerHTML = '🎉 Snake assigned successfully!';
@@ -143,7 +162,7 @@
           } else {
             // Returning customer - go to game
             document.getElementById('secondary-btn').textContent = '�� Go to My Farm';
-            document.getElementById('secondary-btn').href = `/game.html?user=${userHash}`;
+            document.getElementById('secondary-btn').href = `/game.html#${userHash}`;
             document.getElementById('secondary-btn').className = 'primary-btn';
             document.getElementById('countdown').innerHTML = '🎮 Your new snake is waiting at the farm!';
           }
@@ -154,7 +173,7 @@
         if (checkAttempts >= maxAttempts) {
           console.warn('⚠️ Timeout waiting for snake');
           document.getElementById('redirect-message').textContent = 'Processing delay';
-          document.getElementById('countdown').innerHTML = '⏰ Taking longer than expected. <a href="/game.html?user=' + userHash + '">Check game</a>';
+          document.getElementById('countdown').innerHTML = '⏰ Taking longer than expected. <a href="/game.html#' + userHash + '">Check game</a>';
           return true; // Stop checking
         }
         
@@ -173,7 +192,7 @@
     // Start polling
     document.getElementById('countdown').textContent = 'Waiting for confirmation...';
     
-    const pollInterval = setInterval(async () => {
+    pollInterval = setInterval(async () => {
       const shouldStop = await checkForSnake();
       if (shouldStop) {
         clearInterval(pollInterval);

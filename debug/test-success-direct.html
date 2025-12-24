@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Direct Success Test</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { padding: 2rem; }
+    .test-container { max-width: 800px; margin: 0 auto; }
+    button { margin: 0.5rem; padding: 1rem; }
+    pre { background: #f5f5f5; padding: 1rem; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 Test Success Page Directly</h1>
+    
+    <div style="margin: 2rem 0;">
+      <h3>Step 1: Create Test Purchase</h3>
+      <button class="primary-btn" onclick="createTestPurchase()">🛒 Create Test Purchase</button>
+      <p id="purchase-result"></p>
+    </div>
+
+    <div style="margin: 2rem 0;">
+      <h3>Step 2: Open Success Page</h3>
+      <button class="secondary-btn" onclick="openSuccess()" id="open-btn" disabled>
+        📄 Open Success Page
+      </button>
+      <p id="open-result"></p>
+    </div>
+
+    <div style="margin: 2rem 0;">
+      <h3>Response Data:</h3>
+      <pre id="response-data">Click "Create Test Purchase" to start...</pre>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    let testData = {};
+
+    async function createTestPurchase() {
+      const resultEl = document.getElementById('purchase-result');
+      const dataEl = document.getElementById('response-data');
+      
+      resultEl.innerHTML = '⏳ Creating test purchase...';
+      
+      // Generate unique user hash
+      const userHash = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const sessionId = `cs_test_${Date.now()}`;
+      
+      // Store in localStorage (simulating catalog.html behavior)
+      localStorage.setItem('serpent_pending_purchase_hash', userHash);
+      localStorage.setItem('serpent_last_purchase_hash', userHash);
+      
+      // Simulate webhook
+      const webhookPayload = {
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: sessionId,
+            client_reference_id: userHash,
+            payment_intent: `pi_test_${Date.now()}`,
+            amount_total: 45000,
+            currency: 'eur',
+            metadata: {
+              product_id: 'prod_TdKcnyjt5Jk0U2'
+            }
+          }
+        }
+      };
+      
+      try {
+        // Trigger webhook
+        const webhookResponse = await fetch(`${WORKER_URL}/stripe-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(webhookPayload)
+        });
+        
+        const webhookResult = await webhookResponse.json();
+        
+        // Wait 1 second then verify
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check if product assigned
+        const productsResponse = await fetch(`${WORKER_URL}/user-products?user=${userHash}`);
+        const products = await productsResponse.json();
+        
+        testData = {
+          userHash,
+          sessionId,
+          webhookResult,
+          products
+        };
+        
+        dataEl.textContent = JSON.stringify(testData, null, 2);
+        
+        if (products.length > 0) {
+          resultEl.innerHTML = `✅ Purchase created!<br>User: <code>${userHash}</code><br>Products: ${products.length}`;
+          document.getElementById('open-btn').disabled = false;
+        } else {
+          resultEl.innerHTML = `❌ Purchase created but no products found!`;
+        }
+        
+      } catch (error) {
+        resultEl.innerHTML = `❌ Error: ${error.message}`;
+        dataEl.textContent = error.stack;
+      }
+    }
+
+    function openSuccess() {
+      if (!testData.sessionId) {
+        alert('Run Step 1 first!');
+        return;
+      }
+      
+      const url = `/success.html?session_id=${testData.sessionId}`;
+      document.getElementById('open-result').innerHTML = 
+        `Opening: <a href="${url}" target="_blank">${url}</a>`;
+      
+      // Open in new tab
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>

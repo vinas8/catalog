@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Success Page</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    button { padding: 1rem 2rem; margin: 0.5rem; font-size: 1rem; cursor: pointer; }
+    .primary-btn { background: #28a745; color: white; border: none; border-radius: 6px; }
+    .secondary-btn { background: #6c757d; color: white; border: none; border-radius: 6px; }
+    pre { background: #f5f5f5; padding: 1rem; overflow-x: auto; }
+    .section { margin: 2rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Success Page Flow</h1>
+  
+  <div class="section">
+    <h2>Step 1: Simulate Purchase</h2>
+    <button class="primary-btn" onclick="simulatePurchase()">🛒 Simulate Stripe Purchase</button>
+    <p id="purchase-status"></p>
+  </div>
+
+  <div class="section">
+    <h2>Step 2: Test Flows</h2>
+    <button class="secondary-btn" onclick="openSuccessPage()">📄 Open Success Page (New User)</button>
+    <button class="secondary-btn" onclick="openSuccessPageReturning()">📄 Open Success Page (Returning)</button>
+    <p id="redirect-status"></p>
+  </div>
+
+  <div class="section">
+    <h3>Test Data:</h3>
+    <pre id="test-data"></pre>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    async function simulatePurchase() {
+      const statusEl = document.getElementById('purchase-status');
+      const dataEl = document.getElementById('test-data');
+      
+      statusEl.innerHTML = '⏳ Creating test purchase...';
+      
+      // Generate test user hash
+      const userHash = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('serpent_pending_purchase_hash', userHash);
+      
+      // Simulate webhook call
+      const testPurchase = {
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            client_reference_id: userHash,
+            payment_intent: `pi_test_${Date.now()}`,
+            amount_total: 45000,
+            currency: 'eur',
+            metadata: {
+              product_id: 'prod_TdKcnyjt5Jk0U2'
+            }
+          }
+        }
+      };
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/stripe-webhook`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testPurchase)
+        });
+        
+        const result = await response.json();
+        statusEl.innerHTML = `✅ Purchase simulated!<br>User: ${userHash}`;
+        dataEl.textContent = JSON.stringify(result, null, 2);
+        
+        // Store for next steps
+        window.testUserHash = userHash;
+        window.testSessionId = `cs_test_${Date.now()}`;
+        
+      } catch (error) {
+        statusEl.innerHTML = `❌ Error: ${error.message}`;
+      }
+    }
+    
+    function openSuccessPage() {
+      if (!window.testUserHash) {
+        alert('Run Step 1 first!');
+        return;
+      }
+      
+      // Clear existing user to simulate new user
+      localStorage.removeItem('serpent_user');
+      
+      const url = `/success.html?session_id=${window.testSessionId}`;
+      window.open(url, '_blank');
+      
+      document.getElementById('redirect-status').innerHTML = 
+        `✅ Opened success page for NEW user<br>User hash: ${window.testUserHash}`;
+    }
+    
+    function openSuccessPageReturning() {
+      if (!window.testUserHash) {
+        alert('Run Step 1 first!');
+        return;
+      }
+      
+      // Set existing user to simulate returning user
+      localStorage.setItem('serpent_user', JSON.stringify({
+        id: window.testUserHash,
+        email: 'test@example.com'
+      }));
+      
+      const url = `/success.html?session_id=${window.testSessionId}`;
+      window.open(url, '_blank');
+      
+      document.getElementById('redirect-status').innerHTML = 
+        `✅ Opened success page for RETURNING user<br>User hash: ${window.testUserHash}`;
+    }
+  </script>
+</body>
+</html>
