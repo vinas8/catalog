@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Dex - Snake Muffin</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .dex-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+    .dex-header { text-align: center; margin-bottom: 3rem; }
+    .dex-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .dex-stats { display: flex; gap: 2rem; justify-content: center; margin-top: 1rem; }
+    .dex-stat { text-align: center; }
+    .dex-stat-value { font-size: 2rem; font-weight: bold; color: var(--primary); }
+    .dex-stat-label { color: var(--muted); font-size: 0.9rem; }
+    .dex-filters { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .filter-btn { padding: 0.6rem 1.2rem; border: 2px solid var(--border); background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover { border-color: var(--primary); }
+    .filter-btn.active { background: var(--pastel-yellow); border-color: var(--pastel-yellow-dark); font-weight: 600; }
+    .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .dex-card { background: white; border: 3px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: all 0.3s; cursor: pointer; position: relative; }
+    .dex-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px var(--shadow); border-color: var(--primary); }
+    .dex-card.owned { border-color: var(--pastel-yellow-dark); }
+    .dex-card.owned::before { content: "✓ OWNED"; position: absolute; top: 8px; right: 8px; background: var(--pastel-yellow); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 2px solid var(--pastel-yellow-dark); }
+    .snake-emoji { font-size: 4rem; text-align: center; margin-bottom: 1rem; }
+    .snake-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .snake-species { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .snake-info { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+    .info-label { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="game-header">
+    <div class="header-left">
+      <h1>🐍 Snake Muffin</h1>
+      <p class="tagline">Snake Dex</p>
+    </div>
+    <nav class="header-right">
+      <a href="../game.html" class="header-btn">🏡 Back to Farm</a>
+      <a href="../catalog.html" class="header-btn">🛒 Shop</a>
+    </nav>
+  </header>
+
+  <div class="dex-container">
+    <div class="dex-header">
+      <h1>🐍 Snake Dex</h1>
+      <p style="color: var(--muted); font-size: 1.1rem;">Your complete snake collection tracker</p>
+      
+      <div class="dex-stats">
+        <div class="dex-stat">
+          <div class="dex-stat-value" id="owned-count">0</div>
+          <div class="dex-stat-label">Owned</div>
+        </div>
+        <div class="dex-stat">
+          <div class="dex-stat-value" id="total-count">0</div>
+          <div class="dex-stat-label">Total Species</div>
+        </div>
+        <div class="dex-stat">
+          <div class="dex-stat-value" id="completion-rate">0%</div>
+          <div class="dex-stat-label">Completion</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dex-filters">
+      <button class="filter-btn active" data-filter="all">All Snakes</button>
+      <button class="filter-btn" data-filter="owned">Owned Only</button>
+      <button class="filter-btn" data-filter="ball_python">Ball Pythons</button>
+      <button class="filter-btn" data-filter="corn_snake">Corn Snakes</button>
+    </div>
+
+    <div id="dex-grid" class="dex-grid">
+      <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+        <p style="color: var(--muted);">Loading snake dex...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    let allProducts = [];
+    let userProducts = [];
+    let currentFilter = 'all';
+
+    const getUserHash = () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) return hash;
+      return localStorage.getItem('serpent_user_hash') || localStorage.getItem('serpent_last_purchase_hash') || null;
+    };
+
+    async function loadAllProducts() {
+      try {
+        const response = await fetch('../data/products.json');
+        const data = await response.json();
+        allProducts = data.products || [];
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function loadUserProducts() {
+      const userHash = getUserHash();
+      if (!userHash) return;
+      try {
+        const response = await fetch(`${WORKER_URL}/user-products?user=${userHash}`);
+        const data = await response.json();
+        userProducts = Array.isArray(data) ? data : (data.products || []);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    function isOwned(productId) {
+      return userProducts.some(p => p.product_id === productId);
+    }
+
+    function renderDex() {
+      const grid = document.getElementById('dex-grid');
+      let filtered = allProducts;
+      if (currentFilter === 'owned') {
+        filtered = allProducts.filter(p => isOwned(p.id));
+      } else if (currentFilter === 'ball_python' || currentFilter === 'corn_snake') {
+        filtered = allProducts.filter(p => p.species === currentFilter);
+      }
+
+      grid.innerHTML = filtered.map(product => {
+        const owned = isOwned(product.id);
+        return `
+          <div class="dex-card ${owned ? 'owned' : ''}">
+            <div class="snake-emoji">🐍</div>
+            <div class="snake-name">${product.name}</div>
+            <div class="snake-species">${product.species}</div>
+            <div class="snake-info">
+              <div class="info-row">
+                <span class="info-label">Morph:</span>
+                <span>${product.morph}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Price:</span>
+                <span>€${product.price}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const ownedCount = allProducts.filter(p => isOwned(p.id)).length;
+      const totalCount = allProducts.length;
+      const completionRate = totalCount > 0 ? Math.round((ownedCount / totalCount) * 100) : 0;
+
+      document.getElementById('owned-count').textContent = ownedCount;
+      document.getElementById('total-count').textContent = totalCount;
+      document.getElementById('completion-rate').textContent = `${completionRate}%`;
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderDex();
+      });
+    });
+
+    async function init() {
+      await loadAllProducts();
+      await loadUserProducts();
+      renderDex();
+    }
+
+    init();
+  </script>
+</body>
+</html>
