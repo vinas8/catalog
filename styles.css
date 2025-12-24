@@ -2,15 +2,16 @@
 /* Based on v3.2_FINAL.md specification */
 
 :root {
-  --primary: #0b6efd;
+  --primary: #F0E68C;
+  --primary-hover: #E6D77A;
   --success: #28a745;
   --warning: #ffc107;
   --danger: #dc3545;
   --gold: #FFD700;
   --purple: #8B5CF6;
-  --pastel-yellow: #FFF9C4;
-  --pastel-yellow-light: #FFFDE7;
-  --pastel-yellow-dark: #FFF59D;
+  --pastel-yellow: #FFFACD;
+  --pastel-yellow-light: #FFF8DC;
+  --pastel-yellow-dark: #FFE4B5;
   --bg: #ffffff;
   --text: #111111;
   --muted: #666666;
@@ -27,20 +28,19 @@
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--text);
-  background: linear-gradient(135deg, #FFFDE7 0%, #FFF9C4 50%, #FFF59D 100%);
-  background-attachment: fixed;
+  background: #ffffff;
   line-height: 1.6;
 }
 
 /* Header */
 .game-header {
-  background: var(--pastel-yellow-light);
-  border-bottom: 3px solid var(--pastel-yellow-dark);
+  background: var(--bg);
+  border-bottom: 3px solid var(--pastel-yellow);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(255, 249, 196, 0.3);
+  box-shadow: 0 2px 4px var(--shadow);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -66,8 +66,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--pastel-yellow-light);
-  border: 2px solid var(--gold);
+  background: white;
+  border: 2px solid var(--pastel-yellow-dark);
   padding: 0.5rem 1rem;
   border-radius: 8px;
 }
@@ -101,25 +101,26 @@ body {
 .tier-platinum { background: #E5E4E2; color: black; }
 
 .header-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
+  background: var(--pastel-yellow);
+  color: var(--text);
+  border: 2px solid var(--pastel-yellow-dark);
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
 .header-btn:hover {
-  background: #0a5dd6;
+  background: var(--primary);
+  border-color: var(--primary-hover);
   transform: translateY(-1px);
 }
 
 /* Navigation */
 .main-nav {
-  background: var(--pastel-yellow);
+  background: var(--bg);
   padding: 0.5rem 2rem;
   display: flex;
   gap: 0.5rem;
@@ -138,13 +139,14 @@ body {
 }
 
 .nav-btn:hover {
-  background: var(--pastel-yellow-light);
+  background: white;
 }
 
 .nav-btn.active {
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
+  background: #fafafa;
+  color: var(--text);
+  font-weight: 600;
+  border: 2px solid var(--pastel-yellow-dark);
 }
 
 /* Main Content */
@@ -191,7 +193,7 @@ body {
   padding: 1.5rem;
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
-  background: var(--pastel-yellow-light);
+  background: white;
 }
 
 .snake-card:hover {
@@ -201,8 +203,13 @@ body {
 
 /* Real vs Virtual Styling */
 .snake-card.real {
-  border-color: var(--gold);
-  background: linear-gradient(135deg, var(--pastel-yellow-light) 0%, var(--pastel-yellow) 100%);
+  border-color: var(--pastel-yellow-dark);
+  background: white;
+}
+
+.snake-card.real:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 16px rgba(240, 230, 140, 0.3);
 }
 
 .snake-card.real::before {
@@ -210,12 +217,13 @@ body {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--gold);
+  background: var(--pastel-yellow);
   color: #000;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: bold;
+  border: 2px solid var(--pastel-yellow-dark);
 }
 
 .snake-card.virtual {
@@ -338,7 +346,7 @@ body {
 }
 
 .modal-content {
-  background: var(--pastel-yellow-light);
+  background: white;
   border-radius: 12px;
   max-width: 900px;
   max-height: 90vh;
@@ -374,7 +382,7 @@ body {
 
 .shop-info {
   padding: 1rem 1.5rem;
-  background: var(--pastel-yellow);
+  background: #fafafa;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -391,7 +399,7 @@ body {
 .category-btn {
   padding: 0.6rem 1rem;
   border: 2px solid var(--border);
-  background: var(--pastel-yellow-light);
+  background: white;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -420,7 +428,7 @@ body {
   padding: 1rem;
   border: 2px solid var(--border);
   border-radius: 8px;
-  background: var(--pastel-yellow-light);
+  background: white;
   transition: all 0.2s;
 }
 
@@ -445,7 +453,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--pastel-yellow);
+  background: #fafafa;
   border-radius: 8px;
 }
 
@@ -581,7 +589,7 @@ body {
   right: 2rem;
   padding: 1rem 1.5rem;
   border-radius: 8px;
-  background: var(--pastel-yellow-light);
+  background: white;
   box-shadow: 0 4px 12px var(--shadow);
   animation: slideInRight 0.3s;
   z-index: 2000;
@@ -717,7 +725,7 @@ body {
 }
 
 .category-card {
-  background: var(--pastel-yellow-light);
+  background: white;
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 2rem;
@@ -785,7 +793,7 @@ body {
 }
 
 .catalog-item {
-  background: var(--pastel-yellow-light);
+  background: white;
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
@@ -837,7 +845,7 @@ body {
 
 .catalog-filters {
   padding: 1rem 1.5rem;
-  background: var(--pastel-yellow-light);
+  background: white;
   border-bottom: 2px solid var(--border);
 }
 
@@ -846,7 +854,7 @@ body {
   border: 2px solid var(--border);
   border-radius: 6px;
   font-size: 1rem;
-  background: var(--pastel-yellow-light);
+  background: white;
   cursor: pointer;
   transition: border-color 0.2s;
 }
@@ -870,7 +878,7 @@ body {
 }
 
 .catalog-item {
-  background: var(--pastel-yellow-light);
+  background: white;
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
@@ -890,7 +898,7 @@ body {
   font-size: 4rem;
   text-align: center;
   padding: 1rem;
-  background: var(--pastel-yellow);
+  background: #fafafa;
   border-radius: 8px;
 }
 
