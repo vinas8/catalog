@@ -1,4 +1,4 @@
-# 🐍 Serpent Town v0.5.0
+# 🐍 Snake Muffin v0.5.0
 
 Snake breeding e-commerce game with Stripe payments and Tamagotchi-style care mechanics.
 

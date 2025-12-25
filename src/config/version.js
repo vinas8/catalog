@@ -101,7 +101,7 @@ export const VERSION_CONFIG = {
   },
   
   BUILD: {
-    name: 'Serpent Town',
+    name: 'Snake Muffin',
     codename: 'Special One',
     status: 'development',
     target: 'production'

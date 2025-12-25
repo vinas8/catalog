@@ -1,5 +1,5 @@
 {
-  "name": "serpent-town",
+  "name": "snake-muffin",
   "version": "0.5.0",
   "description": "Snake care simulation game with Stripe integration",
   "type": "module",
@@ -32,11 +32,11 @@
     "simulation",
     "stripe"
   ],
-  "author": "Serpent Town Team",
+  "author": "Snake Muffin Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/serpent-town.git"
+    "url": "https://github.com/YOUR_USERNAME/snake-muffin.git"
   },
   "devDependencies": {
     "playwright": "^1.57.0"

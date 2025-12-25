@@ -1,7 +1,7 @@
 {
-  "name": "serpent-town-worker",
+  "name": "snake-muffin-worker",
   "version": "3.4.0",
-  "description": "Cloudflare Worker for Serpent Town - handles Stripe webhooks and user data",
+  "description": "Cloudflare Worker for Snake Muffin - handles Stripe webhooks and user data",
   "scripts": {
     "deploy": "wrangler publish",
     "dev": "wrangler dev",
@@ -12,6 +12,6 @@
     "test": "node test-worker.js"
   },
   "keywords": ["cloudflare", "worker", "stripe", "webhook"],
-  "author": "Serpent Town",
+  "author": "Snake Muffin",
   "license": "MIT"
 }

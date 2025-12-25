@@ -1,4 +1,4 @@
-// Main Game Logic - Serpent Town v3.4
+// Main Game Logic - Snake Muffin v3.4
 // User authentication via URL hash + user-specific data loading
 
 import { Economy, createInitialGameState } from '../shop/business/economy.js';
@@ -10,7 +10,7 @@ import { getProductsBySpecies, loadCatalog } from '../shop/data/catalog.js';
 import { renderGameCatalog } from '../shop/ui/catalog-renderer.js';
 import { UserAuth, initializeUser } from '../../auth/user-auth.js';
 
-class SerpentTown {
+class SnakeMuffin {
   constructor() {
     this.currentUser = null;
     this.gameState = null;
@@ -21,7 +21,7 @@ class SerpentTown {
   }
   
   async init() {
-    console.log('🐍 Serpent Town v3.4 - Starting...');
+    console.log('🐍 Snake Muffin v3.4 - Starting...');
     
     // Load user from URL
     this.currentUser = await initializeUser();
@@ -769,10 +769,10 @@ class SerpentTown {
 // Initialize game when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
-    window.game = new SerpentTown();
+    window.game = new SnakeMuffin();
   });
 } else {
-  window.game = new SerpentTown();
+  window.game = new SnakeMuffin();
 }
 
-export default SerpentTown;
+export default SnakeMuffin;

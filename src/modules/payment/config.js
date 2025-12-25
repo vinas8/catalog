@@ -10,7 +10,7 @@ export const PAYMENT_PROVIDER = 'stripe';
 // Fee configuration (industry standard)
 export const FEE_CONFIG = {
   // Platform commission
-  platform_percent: 5,        // 5% to Serpent Town
+  platform_percent: 5,        // 5% to Snake Muffin
   
   // Payment processing (provider-dependent)
   stripe: {
