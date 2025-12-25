@@ -1,16 +1,22 @@
 /**
- * Cloudflare Worker for Snake Muffin v3.5
+ * Cloudflare Worker for Snake Muffin v0.5.0
+ * 
+ * Version: 0.5.0
+ * Last Updated: 2025-12-25
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
  * - PRODUCT_STATUS (KV namespace) - Tracks which products are sold
  * - PRODUCTS (KV namespace) - Product catalog ⭐ NEW
+ * - STRIPE_SECRET_KEY (secret) - Stripe API key for session fetch
  *
  * Endpoints:
  * - POST /stripe-webhook  (Stripe webhook)
  * - GET  /user-products?user=<hash>  (Get user's snakes)
  * - GET  /products  (Get product catalog from KV)
  * - GET  /product-status?id=<product_id>  (Check if product is sold)
+ * - GET  /session-info?session_id=<id>  (Get Stripe session data) ⭐ NEW
+ * - GET  /version  (Get worker version) ⭐ NEW
  *
  * Features:
  * - Hash-based user authentication (user ID in URL)
@@ -19,11 +25,15 @@
  * - Assigns snakes to users by hash
  * - Tracks sold status for unique real snakes
  * - Serves product catalog from KV (not JSON files)
+ * - Fetches user hash from Stripe session API
  *
  * Deployment:
  * - wrangler publish
  * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS
  */
+
+const WORKER_VERSION = '0.5.0';
+const WORKER_UPDATED = '2025-12-25T15:59:00Z';
 
 export default {
   async fetch(request, env) {
@@ -99,6 +109,26 @@ export default {
     // Route: GET /kv/get-product?id=PRODUCT_ID (proxy to KV API)
     if (pathname === '/kv/get-product' && request.method === 'GET') {
       return handleKVGetProduct(request, env, corsHeaders);
+    }
+
+    // Route: GET /version (get worker version)
+    if (pathname === '/version' && request.method === 'GET') {
+      return new Response(JSON.stringify({
+        version: WORKER_VERSION,
+        updated: WORKER_UPDATED,
+        timestamp: new Date().toISOString(),
+        endpoints: [
+          'POST /stripe-webhook',
+          'GET /user-products?user=<hash>',
+          'GET /products',
+          'GET /product-status?id=<id>',
+          'GET /session-info?session_id=<id>',
+          'GET /version'
+        ]
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
     }
 
     return new Response(JSON.stringify({ error: 'Not found' }), { 

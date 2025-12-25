@@ -1,11 +1,33 @@
 #!/bin/bash
 # Deploy worker using wrangler
 
-export CLOUDFLARE_API_TOKEN=$(grep CLOUDFLARE_API_TOKEN ../.env | cut -d '=' -f2)
-export CLOUDFLARE_ACCOUNT_ID=$(grep CLOUDFLARE_ACCOUNT_ID ../.env | cut -d '=' -f2)
+set -e
 
-echo "🚀 Deploying worker to Cloudflare..."
-echo "Account ID: $CLOUDFLARE_ACCOUNT_ID"
+echo "🚀 Deploying Cloudflare Worker v0.5.0..."
 echo ""
 
-npx wrangler@latest deploy worker.js --compatibility-date 2024-12-21
+# Load env
+if [ -f .env ]; then
+  export $(cat .env | grep -v '^#' | xargs)
+fi
+
+# Check wrangler
+if ! command -v wrangler &> /dev/null; then
+  echo "❌ wrangler not found. Installing..."
+  npm install -g wrangler
+fi
+
+echo "📦 Deploying worker.js..."
+wrangler deploy worker.js --name catalog
+
+echo ""
+echo "✅ Deployment complete!"
+echo ""
+echo "Testing /version endpoint..."
+sleep 2
+
+VERSION_RESPONSE=$(curl -s "https://catalog.navickaszilvinas.workers.dev/version")
+echo "$VERSION_RESPONSE" | python3 -m json.tool
+
+echo ""
+echo "🎉 Worker deployed successfully!"
