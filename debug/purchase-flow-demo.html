@@ -249,12 +249,25 @@
         log('Key: user:' + testUserHash);
         await new Promise(r => setTimeout(r, 2000));
         
-        // STEP 7: Verify snake assignment
+        // STEP 7: Open REAL success page
         log('═══════════════════════════════════════', 'info');
-        log('STEP 7: Success Page (Polling for snake)', 'info');
+        log('STEP 7: Open Real Success Page', 'info');
         log('═══════════════════════════════════════', 'info');
-        log('success.html polls Worker API...');
         
+        const successUrl = `/success.html?session_id=cs_test_${testUserHash}`;
+        log(`Opening: ${successUrl}`);
+        
+        // Open in new tab
+        const successWindow = window.open(successUrl, '_blank');
+        if (successWindow) {
+          log('✅ Success page opened in new tab!', 'success');
+          log('The page will automatically fetch user hash and load snake', 'info');
+        } else {
+          log('⚠️ Popup blocked. Please allow popups to test full flow', 'error');
+        }
+        
+        // Still verify in background
+        await new Promise(r => setTimeout(r, 2000));
         const checkResponse = await fetch(`${WORKER_URL}/user-products?user=${testUserHash}`);
         const userProducts = await checkResponse.json();
         const productArray = Array.isArray(userProducts) ? userProducts : (userProducts.products || []);
@@ -266,18 +279,18 @@
           log(`Snake details: ${JSON.stringify(productArray[0], null, 2)}`);
           await new Promise(r => setTimeout(r, 1000));
           
-          // STEP 8: Redirect to game
+          // STEP 8: Confirm game ready
           log('═══════════════════════════════════════', 'info');
-          log('STEP 8: Enter Game (Snake appears!)', 'info');
+          log('STEP 8: Game Ready!', 'info');
           log('═══════════════════════════════════════', 'info');
-          log('Redirecting to game.html#' + testUserHash);
-          log('Snake appears in game with stats:');
+          log('Game URL: game.html#' + testUserHash);
+          log('Snake ready in game with stats:');
           log(`  Hunger: ${productArray[0].stats.hunger}`);
           log(`  Water: ${productArray[0].stats.water}`);
           log(`  Health: ${productArray[0].stats.health}`);
           log('🎉 PURCHASE FLOW COMPLETE!', 'success');
           
-          showAlert(`✅ COMPLETE! Full flow executed: ${productArray.length} snake(s) purchased`, 'success');
+          showAlert(`✅ COMPLETE! Check the success page tab for real UI test`, 'success');
         } else {
           log('⚠️ No products found after webhook', 'error');
           showAlert('⚠️ No products found', 'error');
