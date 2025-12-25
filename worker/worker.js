@@ -1,5 +1,5 @@
 /**
- * Cloudflare Worker for Serpent Town v3.5
+ * Cloudflare Worker for Snake Muffin v3.5
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
@@ -79,6 +79,11 @@ export default {
     // Route: GET /user-data?user=HASH (get user profile)
     if (pathname === '/user-data' && request.method === 'GET') {
       return handleGetUserData(request, env, corsHeaders);
+    }
+
+    // Route: GET /session-info?session_id=xxx (get Stripe session data)
+    if (pathname === '/session-info' && request.method === 'GET') {
+      return handleGetSessionInfo(request, env, corsHeaders);
     }
 
     // Route: POST /stripe-product-webhook (Stripe product sync)
@@ -914,6 +919,72 @@ async function handleKVGetProduct(request, env, corsHeaders) {
     console.error('❌ KV get error:', error);
     return new Response(JSON.stringify({ 
       error: 'Failed to get product',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /session-info?session_id=xxx - Get Stripe session client_reference_id
+ */
+async function handleGetSessionInfo(request, env, corsHeaders) {
+  const url = new URL(request.url);
+  const sessionId = url.searchParams.get('session_id');
+  
+  if (!sessionId) {
+    return new Response(JSON.stringify({ error: 'Missing session_id' }), {
+      status: 400,
+      headers: corsHeaders
+    });
+  }
+  
+  try {
+    // Fetch session from Stripe
+    const stripeKey = env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: 'Stripe key not configured' }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+    
+    const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
+      headers: {
+        'Authorization': `Bearer ${stripeKey}`
+      }
+    });
+    
+    if (!stripeResponse.ok) {
+      return new Response(JSON.stringify({ 
+        error: 'Failed to fetch session from Stripe',
+        status: stripeResponse.status 
+      }), {
+        status: stripeResponse.status,
+        headers: corsHeaders
+      });
+    }
+    
+    const session = await stripeResponse.json();
+    
+    return new Response(JSON.stringify({
+      client_reference_id: session.client_reference_id,
+      user_hash: session.client_reference_id,
+      session_id: session.id,
+      amount_total: session.amount_total,
+      currency: session.currency,
+      customer_email: session.customer_details?.email
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+    
+  } catch (error) {
+    console.error('❌ Session fetch error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to fetch session',
       message: error.message 
     }), {
       status: 500,

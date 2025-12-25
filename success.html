@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You - SnakeMuffin</title>
+  <title>Thank You - Snake Muffin</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     .success-container {
@@ -26,7 +26,7 @@
 <body>
   <header class="game-header">
     <div class="header-left">
-      <h1>🐍 SnakeMuffin</h1>
+      <h1>🐍 Snake Muffin</h1>
     </div>
     <nav class="main-nav">
       <a href="/">Home</a>
@@ -99,15 +99,34 @@
       return;
     }
     
-    // Get user hash
-    const userHash = localStorage.getItem('serpent_user_hash') || 
-                     localStorage.getItem('serpent_last_purchase_hash') || 
-                     localStorage.getItem('serpent_pending_purchase_hash');
+    // Try to get user hash from localStorage first
+    let userHash = localStorage.getItem('serpent_user_hash') || 
+                   localStorage.getItem('serpent_last_purchase_hash') || 
+                   localStorage.getItem('serpent_pending_purchase_hash');
+    
+    // If no hash in localStorage, fetch from worker using session_id
+    if (!userHash) {
+      console.log('🔍 No user hash in localStorage, fetching from session...');
+      try {
+        const sessionResponse = await fetch(`${WORKER_URL}/session-info?session_id=${sessionId}`);
+        const sessionData = await sessionResponse.json();
+        userHash = sessionData.client_reference_id || sessionData.user_hash;
+        
+        if (userHash) {
+          console.log('✅ Got user hash from session:', userHash);
+          // Store for future use
+          localStorage.setItem('serpent_user_hash', userHash);
+          localStorage.setItem('serpent_last_purchase_hash', userHash);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching session:', error);
+      }
+    }
     
     console.log('🔍 User hash:', userHash);
     
     if (!userHash) {
-      console.error('❌ No user hash found');
+      console.error('❌ No user hash found in localStorage or session');
       document.getElementById('redirect-message').textContent = 'Error: No user ID';
       document.getElementById('countdown').innerHTML = '❌ Please contact support';
       return;
