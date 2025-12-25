@@ -919,6 +919,7 @@ async function handleKVGetProduct(request, env, corsHeaders) {
   const url = new URL(request.url);
   const productId = url.searchParams.get('id');
   
+  if (!productId) {
     return new Response(JSON.stringify({ error: 'Missing product ID' }), {
       status: 400,
       headers: corsHeaders
@@ -929,6 +930,7 @@ async function handleKVGetProduct(request, env, corsHeaders) {
     const productKey = `product:${productId}`;
     const productData = await env.PRODUCTS.get(productKey);
     
+    if (!productData) {
       return new Response(JSON.stringify({ 
         error: 'Product not found',
         product_id: productId 
