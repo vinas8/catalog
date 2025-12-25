@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buy Snakes Online - SnakeMuffin</title>
-  <meta name="description" content="Buy ball pythons and corn snakes online. Safe shipping, captive bred, quality guaranteed. SnakeMuffin snake shop.">
+  <title>Buy Snakes Online - Snake Muffin</title>
+  <meta name="description" content="Buy ball pythons and corn snakes online. Safe shipping, captive bred, quality guaranteed. Snake Muffin snake shop.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="game-header">
     <div class="header-left">
-      <h1>🐍 SnakeMuffin</h1>
+      <h1>🐍 Snake Muffin</h1>
       <p class="tagline">Buy Snakes Online</p>
     </div>
     <nav class="main-nav">
       <a href="index.html">Home</a>
       <a href="catalog.html" class="active">Shop Snakes</a>
-      <a href="game.html">Care Game</a>
+      <a href="game.html">Info Game</a>
     </nav>
   </header>
 
@@ -173,9 +173,17 @@
         
         console.log('✅ After species filter:', filteredProducts.length);
         
-        // Separate by type
-        const realProducts = filteredProducts.filter(p => p.type === 'real');
-        const virtualProducts = filteredProducts.filter(p => p.type === 'virtual');
+        // Separate by type (check for product_type, type, or default to real if has stripe_link)
+        const realProducts = filteredProducts.filter(p => {
+          const productType = p.product_type || p.type;
+          if (productType) return productType === 'real';
+          // If no type field but has stripe_link, assume real
+          return p.stripe_link || p.source === 'stripe';
+        });
+        const virtualProducts = filteredProducts.filter(p => {
+          const productType = p.product_type || p.type;
+          return productType === 'virtual';
+        });
         
         console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
         
