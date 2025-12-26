@@ -23,6 +23,9 @@ export const APP_CONFIG = {
   IS_LOCAL: isLocalhost,
   IS_GITHUB_PAGES: isGitHubPages,
   
+  // Debug mode - controls console logs and debug UI
+  DEBUG: isLocalhost, // true in localhost, false in production
+  
   // URLs - Dynamic based on environment
   BASE_URL: isLocalhost 
     ? (typeof window !== 'undefined' ? `http://localhost:${window.location.port || 8000}` : 'http://localhost:8000')
