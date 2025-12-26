@@ -233,8 +233,8 @@
       document.getElementById('health').textContent = `${snake.stats.health} ❤️`;
       
       // Set game button link
-      gameBtn.href = `game.html#${userHash}`;
-      collectionBtn.href = `collection.html#user=${userHash}`;
+      gameBtn.href = `game.html?user=${userHash}`;
+      collectionBtn.href = `collection.html?user=${userHash}`;
       
       log('✅ SUCCESS: Snake loaded!', snake);
     }

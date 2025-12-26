@@ -177,13 +177,12 @@
     
     async function loadUserCollection() {
       try {
-        // Get user hash from URL or localStorage
-        const hash = window.location.hash.substring(1);
-        const urlParams = new URLSearchParams(hash);
-        let userHash = urlParams.get('user') || hash;
+        // Get user hash from URL query parameters or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let userHash = urlParams.get('user');
         
-        // Fallback to localStorage if no URL hash
-        if (!userHash || userHash === 'demo_user_123') {
+        // Fallback to localStorage if no URL parameter
+        if (!userHash) {
           userHash = localStorage.getItem('serpent_user_hash') || 
                      localStorage.getItem('serpent_last_purchase_hash') || 
                      localStorage.getItem('serpent_pending_purchase_hash') ||
@@ -191,8 +190,8 @@
           
           if (userHash) {
             debug('Using hash from localStorage:', userHash);
-            // Update URL to reflect the hash
-            window.location.hash = `user=${userHash}`;
+            // Update URL to reflect the user parameter
+            window.history.replaceState({}, '', `?user=${userHash}`);
           } else {
             debug('No user hash found in URL or localStorage');
             throw new Error('No user hash found. Please complete a purchase first.');
@@ -302,7 +301,7 @@
             ` : ''}
             
             <div style="margin-top: 1rem;">
-              <a href="game.html#${new URLSearchParams(window.location.hash.substring(1)).get('user') || window.location.hash.substring(1)}" 
+              <a href="game.html?user=${new URLSearchParams(window.location.search).get('user') || ''}" 
                  class="primary-btn" 
                  style="width: 100%; text-align: center; display: block;">
                 🎮 Play with ${name}
