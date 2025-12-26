@@ -3,18 +3,46 @@
  * Central config for app name, branding, and global settings
  */
 
+// Environment detection
+const isLocalhost = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const isGitHubPages = typeof window !== 'undefined' && 
+  window.location.hostname.includes('github.io');
+
 export const APP_CONFIG = {
   // Application Identity
-  NAME: 'SnakeMuffin',
-  DISPLAY_NAME: 'SnakeMuffin',
+  NAME: 'Snake Muffin',
+  DISPLAY_NAME: 'Snake Muffin',
   TAGLINE: 'Snake Care & Breeding Game',
   
   // Version
   VERSION: '0.5.0',
   
-  // URLs
+  // Environment
+  ENVIRONMENT: isLocalhost ? 'local' : 'production',
+  IS_LOCAL: isLocalhost,
+  IS_GITHUB_PAGES: isGitHubPages,
+  
+  // URLs - Dynamic based on environment
+  BASE_URL: isLocalhost 
+    ? (typeof window !== 'undefined' ? `http://localhost:${window.location.port || 8000}` : 'http://localhost:8000')
+    : 'https://vinas8.github.io/catalog',
+  
   GITHUB_REPO: 'https://github.com/vinas8/catalog',
-  HOMEPAGE: 'https://vinas8.github.io/catalog/',
+  GITHUB_USERNAME: 'vinas8',
+  GITHUB_PAGES: 'https://vinas8.github.io/catalog',
+  
+  // Helper to get page URL
+  getPageUrl(page) {
+    if (typeof window === 'undefined') return `/${page}.html`;
+    const base = isLocalhost ? `http://localhost:${window.location.port || 8000}` : 'https://vinas8.github.io/catalog';
+    return `${base}/${page}.html`;
+  },
+  
+  // Helper to get current origin
+  getOrigin() {
+    return typeof window !== 'undefined' ? window.location.origin : '';
+  },
   
   // Branding
   EMOJI: '🐍',
