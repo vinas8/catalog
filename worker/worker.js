@@ -183,17 +183,37 @@ async function handleStripeWebhook(request, env, corsHeaders) {
 
     console.log('✅ Assigning product:', productId, 'to user:', userHash);
 
-    // Create user product entry
+    // Fetch product details from PRODUCTS KV
+    let productDetails = null;
+    try {
+      const productData = await env.PRODUCTS.get(`product:${productId}`);
+      if (productData) {
+        productDetails = JSON.parse(productData);
+        console.log('📦 Found product details:', productDetails.name);
+      } else {
+        console.log('⚠️ Product not found in KV, using generic data');
+      }
+    } catch (err) {
+      console.log('⚠️ Error fetching product:', err.message);
+    }
+
+    // Create user product entry with actual product details
     const userProduct = {
       assignment_id: `assign_${Date.now()}`,
       user_id: userHash,
       product_id: productId,
       product_type: 'real',
-      nickname: `Snake ${Date.now()}`, // User can rename later
+      // Use actual product data if available
+      name: productDetails?.name || `Snake ${Date.now()}`,
+      nickname: productDetails?.name || `Snake ${Date.now()}`,
+      species: productDetails?.species || 'unknown',
+      morph: productDetails?.morph || 'normal',
+      description: productDetails?.description || '',
+      image: productDetails?.images?.[0] || null,
       acquired_at: new Date().toISOString(),
       acquisition_type: 'stripe_purchase',
       payment_id: session.payment_intent || session.id,
-      price_paid: session.amount_total / 100,
+      price_paid: session.amount_total,
       currency: session.currency || 'eur',
       stats: {
         hunger: 100,

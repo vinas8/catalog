@@ -4,6 +4,7 @@
 export const WORKER_CONFIG = {
   // Production worker URL
   WORKER_URL: 'https://catalog.navickaszilvinas.workers.dev',
+  BASE_URL: 'https://catalog.navickaszilvinas.workers.dev',
   
   // API Endpoints
   ENDPOINTS: {

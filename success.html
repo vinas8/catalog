@@ -170,6 +170,7 @@
     <div class="error-state" id="error-message" style="display: none;"></div>
 
     <div class="actions" id="actions" style="display: none;">
+      <a href="#" id="collection-btn" class="btn btn-primary">🐍 View My Collection</a>
       <a href="#" id="game-btn" class="btn btn-primary">🎮 Go to My Farm</a>
       <a href="catalog.html" class="btn btn-secondary">🛒 Shop More</a>
     </div>
@@ -190,6 +191,7 @@
     const actions = document.getElementById('actions');
     const debugInfo = document.getElementById('debug-info');
     const gameBtn = document.getElementById('game-btn');
+    const collectionBtn = document.getElementById('collection-btn');
 
     // Get session ID from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -232,6 +234,7 @@
       
       // Set game button link
       gameBtn.href = `game.html#${userHash}`;
+      collectionBtn.href = `collection.html#user=${userHash}`;
       
       log('✅ SUCCESS: Snake loaded!', snake);
     }
