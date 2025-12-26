@@ -12,6 +12,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy Worker
+    defaults:
+      run:
+        working-directory: worker
     steps:
       - uses: actions/checkout@v3
       
