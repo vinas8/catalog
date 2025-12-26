@@ -8,7 +8,7 @@
     "morph": "banana",
     "price": 1000.0,
     "currency": "eur",
-    "stripe_link": "https://buy.stripe.com/test_cNibJ04XLbUsaNQ8uPbjW00",
+    "stripe_link": "https://buy.stripe.com/test_3cI4gygGt2jS3lo8uPbjW02",
     "type": "real",
     "status": "available",
     "source": "stripe"
