@@ -165,9 +165,34 @@ async function handleStripeWebhook(request, env, corsHeaders) {
     // Get user hash from client_reference_id
     const userHash = session.client_reference_id;
     
-    // Get product from metadata or line items
+    // Get product from metadata or fetch session with line_items
     const metadata = session.metadata || {};
-    const productId = metadata.product_id || session.line_items?.data[0]?.price?.product;
+    let productId = metadata.product_id;
+    
+    // If no product_id in metadata, fetch session with expanded line_items
+    if (!productId && env.STRIPE_SECRET_KEY) {
+      try {
+        console.log('🔍 Fetching session line items from Stripe API...');
+        const stripeResponse = await fetch(
+          `https://api.stripe.com/v1/checkout/sessions/${session.id}?expand[]=line_items`,
+          {
+            headers: {
+              'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`
+            }
+          }
+        );
+        
+        if (stripeResponse.ok) {
+          const expandedSession = await stripeResponse.json();
+          if (expandedSession.line_items?.data?.[0]?.price?.product) {
+            productId = expandedSession.line_items.data[0].price.product;
+            console.log('✅ Got product from line items:', productId);
+          }
+        }
+      } catch (err) {
+        console.error('❌ Error fetching line items:', err.message);
+      }
+    }
 
     if (!userHash || !productId) {
       console.log('❌ Missing userHash or productId');
