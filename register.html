@@ -290,7 +290,9 @@
         localStorage.setItem('serpent_user', JSON.stringify(userData));
 
         // Build game URL with user hash
-        const gameUrl = `http://localhost:8000/game.html#${playerHash}`;
+        // Build game URL with player hash
+        const baseUrl = window.location.origin;
+        const gameUrl = `${baseUrl}/catalog/game.html?user=${playerHash}`;
         
         console.log('🎮 Redirecting to game:', gameUrl);
         
