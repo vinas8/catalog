@@ -3,10 +3,6 @@ main = "worker.js"
 compatibility_date = "2024-12-21"
 workers_dev = true
 
-# Enable logs and tail
-logpush = false
-tail_consumers = []
-
 # KV Namespace for storing user products
 [[kv_namespaces]]
 binding = "USER_PRODUCTS"
@@ -26,6 +22,14 @@ id = "ecbcb79f3df64379863872965f993991"
 [vars]
 ENVIRONMENT = "production"
 
-# Observability - Enable for production monitoring
+# Observability - Logs and Traces
 [observability]
+
+[observability.logs]
 enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+head_sampling_rate = 1
