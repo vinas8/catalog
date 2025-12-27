@@ -1,13 +1,13 @@
 /**
- * Cloudflare Worker for Snake Muffin v0.5.0
+ * Cloudflare Worker for Snake Muffin v0.6.0
  * 
- * Version: 0.5.0
- * Last Updated: 2025-12-25
+ * Version: 0.6.0
+ * Last Updated: 2025-12-27
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
  * - PRODUCT_STATUS (KV namespace) - Tracks which products are sold
- * - PRODUCTS (KV namespace) - Product catalog ⭐ NEW
+ * - PRODUCTS (KV namespace) - Product catalog
  * - STRIPE_SECRET_KEY (secret) - Stripe API key for session fetch
  *
  * Endpoints:
@@ -15,8 +15,8 @@
  * - GET  /user-products?user=<hash>  (Get user's snakes)
  * - GET  /products  (Get product catalog from KV)
  * - GET  /product-status?id=<product_id>  (Check if product is sold)
- * - GET  /session-info?session_id=<id>  (Get Stripe session data) ⭐ NEW
- * - GET  /version  (Get worker version) ⭐ NEW
+ * - GET  /session-info?session_id=<id>  (Get Stripe session data)
+ * - GET  /version  (Get worker version)
  *
  * Features:
  * - Hash-based user authentication (user ID in URL)
@@ -32,8 +32,8 @@
  * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS
  */
 
-const WORKER_VERSION = '0.5.0';
-const WORKER_UPDATED = '2025-12-25T15:59:00Z';
+const WORKER_VERSION = '0.6.0';
+const WORKER_UPDATED = '2025-12-27T02:41:40Z';
 
 export default {
   async fetch(request, env) {
