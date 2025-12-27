@@ -1,0 +1,317 @@
+{
+  "version": "1.0",
+  "species": {
+    "ball_python": "Ball Python",
+    "corn_snake": "Corn Snake"
+  },
+  "pricing": {
+    "ball_python": {
+      "base_yob_2024": 350,
+      "base_yob_2023": 280,
+      "base_yob_2021": 200,
+      "morph_multipliers": {
+        "banana": 1.3,
+        "super_mojave": 1.4,
+        "pastel": 1.2,
+        "spotnose": 1.15,
+        "ivory": 1.5,
+        "black_head": 1.0,
+        "complex": 1.8,
+        "super_mystic": 1.6,
+        "leopard_lesser": 1.35
+      }
+    },
+    "corn_snake": {
+      "base_yob_2024": 180,
+      "base_yob_2023": 150,
+      "morph_multipliers": {
+        "salmon": 1.2,
+        "snow": 1.3,
+        "opal": 1.4,
+        "lavender": 1.5
+      }
+    }
+  },
+  "snakes": [
+    {
+      "name": "Pudding",
+      "species": "ball_python",
+      "morph": "Banana H. Clown",
+      "morph_key": "banana",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 455,
+      "description": "Beautiful banana morph with het clown genetics"
+    },
+    {
+      "name": "Taohu",
+      "species": "ball_python",
+      "morph": "Super Mojave",
+      "morph_key": "super_mojave",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 490,
+      "description": "Stunning super mojave male"
+    },
+    {
+      "name": "Chocolate Chip",
+      "species": "ball_python",
+      "morph": "Pastel DG",
+      "morph_key": "pastel",
+      "gender": "Male",
+      "yob": 2021,
+      "weight_g": null,
+      "price_eur": 240,
+      "description": "Mature pastel DG male, great breeder"
+    },
+    {
+      "name": "Gangsta",
+      "species": "ball_python",
+      "morph": "Spotnose Clown",
+      "morph_key": "spotnose",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 403,
+      "description": "Bold spotnose clown pattern"
+    },
+    {
+      "name": "Marshmallow",
+      "species": "ball_python",
+      "morph": "Ivory (Super Yellow Belly)",
+      "morph_key": "ivory",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 525,
+      "description": "Clean ivory super yellow belly"
+    },
+    {
+      "name": "Brownie",
+      "species": "ball_python",
+      "morph": "Black Head",
+      "morph_key": "black_head",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 350,
+      "description": "Classic black head morph"
+    },
+    {
+      "name": "Almond",
+      "species": "ball_python",
+      "morph": "Hurricane Butter Fire Yellow Belly H.Clown",
+      "morph_key": "complex",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 630,
+      "description": "Complex 5-gene combo female"
+    },
+    {
+      "name": "Caramel",
+      "species": "ball_python",
+      "morph": "Hurricane Butter Spider pos H.Ghost Clown Pied",
+      "morph_key": "complex",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 630,
+      "description": "Rare 6-gene combo with pied"
+    },
+    {
+      "name": "Cookie",
+      "species": "ball_python",
+      "morph": "HRA Pastel Fire Paradox 50% pos Het Clown",
+      "morph_key": "complex",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 630,
+      "description": "Unique paradox pattern"
+    },
+    {
+      "name": "Hershey",
+      "species": "ball_python",
+      "morph": "Super Mystic",
+      "morph_key": "super_mystic",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 560,
+      "description": "Gorgeous super mystic female"
+    },
+    {
+      "name": "Haribo",
+      "species": "ball_python",
+      "morph": "Spotnose Super Enchi H.Clown",
+      "morph_key": "spotnose",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 322,
+      "description": "Proven breeder, super enchi combo"
+    },
+    {
+      "name": "Biscuit",
+      "species": "ball_python",
+      "morph": "Leopard Lesser Pastel H. Clown",
+      "morph_key": "leopard_lesser",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 473,
+      "description": "Beautiful leopard complex"
+    },
+    {
+      "name": "Salabao",
+      "species": "ball_python",
+      "morph": "OD Highway",
+      "morph_key": "pastel",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 336,
+      "description": "OD Highway proven female"
+    },
+    {
+      "name": "Waffle",
+      "species": "ball_python",
+      "morph": "HGW Enchi Fire",
+      "morph_key": "pastel",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 336,
+      "description": "HGW triple combo"
+    },
+    {
+      "name": "Toffee",
+      "species": "ball_python",
+      "morph": "Spotnose Pastel H.DG",
+      "morph_key": "spotnose",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 322,
+      "description": "Pastel spotnose with het DG"
+    },
+    {
+      "name": "Coco",
+      "species": "ball_python",
+      "morph": "Pastel Het. DG",
+      "morph_key": "pastel",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 336,
+      "description": "Pastel het DG female"
+    },
+    {
+      "name": "Latte",
+      "species": "ball_python",
+      "morph": "Lesser Spotnose 66% pos H.Clown 50% pos H.DG Hypo",
+      "morph_key": "leopard_lesser",
+      "gender": "Female",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 378,
+      "description": "Lesser spotnose with possible hets"
+    },
+    {
+      "name": "Mochi",
+      "species": "corn_snake",
+      "morph": "Salmon Hypo Bloodred",
+      "morph_key": "salmon",
+      "gender": "Male",
+      "yob": 2023,
+      "weight_g": null,
+      "price_eur": 180,
+      "description": "Vibrant salmon bloodred male"
+    },
+    {
+      "name": "Milkshake",
+      "species": "corn_snake",
+      "morph": "Salmon Tessera H.Bloodred",
+      "morph_key": "salmon",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 216,
+      "description": "Beautiful tessera pattern"
+    },
+    {
+      "name": "Berry",
+      "species": "corn_snake",
+      "morph": "Snow poss Hypo Strawberry",
+      "morph_key": "snow",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 234,
+      "description": "Stunning snow morph"
+    },
+    {
+      "name": "Honey",
+      "species": "corn_snake",
+      "morph": "Opal",
+      "morph_key": "opal",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 252,
+      "description": "Classic opal female"
+    },
+    {
+      "name": "Peachy",
+      "species": "corn_snake",
+      "morph": "Opal Tessera",
+      "morph_key": "opal",
+      "gender": "Male",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 252,
+      "description": "Opal tessera combo"
+    },
+    {
+      "name": "Lavender",
+      "species": "corn_snake",
+      "morph": "Lavender Tessera",
+      "morph_key": "lavender",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 270,
+      "description": "Gorgeous lavender tessera"
+    },
+    {
+      "name": "Lollipop",
+      "species": "corn_snake",
+      "morph": "Salmon H. Bloodred",
+      "morph_key": "salmon",
+      "gender": "Female",
+      "yob": 2024,
+      "weight_g": null,
+      "price_eur": 216,
+      "description": "Sweet salmon het bloodred"
+    }
+  ],
+  "stripe_product_template": {
+    "name": "{snake_name} - {morph}",
+    "description": "{species} | {gender} | Born {yob}\n\n{description}",
+    "metadata": {
+      "snake_name": "{snake_name}",
+      "species": "{species}",
+      "morph": "{morph}",
+      "gender": "{gender}",
+      "yob": "{yob}",
+      "source": "serpent_town_catalog"
+    },
+    "default_price_data": {
+      "currency": "eur",
+      "unit_amount": "{price_cents}"
+    }
+  }
+}

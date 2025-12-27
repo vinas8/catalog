@@ -2,14 +2,15 @@
 # Single source of truth for SMRI notation and scenarios
 
 ---
-version: 2.1
-date: 2025-12-23
+version: 2.2
+date: 2025-12-27
 project: Serpent Town
 app_version: 0.5.0
 total_scenarios: 42
-implemented: 1
-test_coverage: 100%
-tests_passing: 71/71
+implemented: 2
+test_coverage: 4.8%
+tests_passing: 71/71 (unit)
+debug_hub: /debug/test-scenarios.html
 ---
 
 ## NOTATION STANDARD v2.1
@@ -153,7 +154,8 @@ S4.4,5.02          | SQL Injection Attempt          | P3.14| Payment + Worker
 ### S6.1,2,3,4,5,6,5-1,5-2.03: System Health Check
 Priority: P0.7 (CRITICAL)
 Status: ✅ IMPLEMENTED
-Location: /debug.html
+Location: /debug/healthcheck.html
+Test URL: https://vinas8.github.io/catalog/debug/healthcheck.html
 
 Tests ALL systems:
   1 = Shop (product catalog display)
@@ -166,7 +168,7 @@ Tests ALL systems:
   5-2 = Stripe (webhook endpoints)
 
 Flow:
-  1. Auto-runs after 1s on /debug.html
+  1. Auto-runs after 1s on /debug/healthcheck.html
   2. Pings Worker → tests latency
   3. Calls /products → counts items from KV (5-1)
   4. Verifies UI components (8 tabs/divs)
@@ -179,12 +181,20 @@ Business Value:
   - Works in Termux/proot (no DevTools needed)
   - Catches issues immediately
 
+Assertions:
+  - Worker responds within 2s
+  - /products returns valid JSON
+  - KV contains > 0 products
+  - UI has all required elements
+  - localStorage read/write works
+
 ---
 
 ### S1.1,2,3,4,5.01: Happy Path Purchase
 Priority: P0.0 (HIGHEST)
 Status: 🚧 IN PROGRESS
 Location: /smri/scenarios/S1.1,2,3,4,5.01.html
+Test URL: https://vinas8.github.io/catalog/smri/scenarios/S1.1,2,3,4,5.01.html
 
 Tests purchase flow across 5 modules:
   1 = Shop (catalog display, Stripe links)
@@ -225,6 +235,278 @@ Assertions:
   assert(KV['user:' + userHash].length === 1)
   assert(KV['product:prod_xxx'].status === 'sold')
   assert(gameSnakes.length === 1)
+
+---
+
+### S1.1.01: Product Status Check
+Priority: P0.2 (CRITICAL)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/product-status.html
+
+Tests:
+  - Sold products hidden from catalog
+  - Available products shown
+  - KV status sync accuracy
+
+Flow:
+  1. Worker loads products from KV
+  2. Filter by status: 'available'
+  3. Hide products with status: 'sold'
+  4. Verify UI shows only available items
+  5. Attempt to access sold product URL → show error
+
+Business Rules:
+  - Only 'available' products appear in catalog
+  - Sold products return 404 or redirect
+  - Status checked on every page load
+
+Assertions:
+  assert(catalog.filter(p => p.status === 'available').length === displayedProducts.length)
+  assert(soldProduct.visible === false)
+  assert(fetch('/products?status=sold').length === 0)
+
+---
+
+### S5.5,5-1,5-2.01: Webhook Signature Verify
+Priority: P0.3 (CRITICAL)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/webhook-signature.html
+
+Tests:
+  - Valid Stripe signature accepted
+  - Invalid signature rejected
+  - Missing signature rejected
+  - Replay attack prevention
+
+Flow:
+  1. Simulate webhook POST to /stripe-webhook
+  2. Include Stripe-Signature header
+  3. Worker validates using STRIPE_WEBHOOK_SECRET
+  4. Valid → process event
+  5. Invalid → return 400 error
+
+Business Rules:
+  - All webhooks MUST have valid signature
+  - Signature validation happens before processing
+  - Failed validation logged but not processed
+
+Assertions:
+  assert(validWebhook.status === 200)
+  assert(invalidWebhook.status === 400)
+  assert(noSignatureWebhook.status === 400)
+  assert(replayedWebhook.status === 400)
+
+Test Vectors:
+  - Valid signature: calculated using crypto.subtle.sign
+  - Invalid signature: random string
+  - Expired timestamp: > 5 minutes old
+  - Replayed: same event_id twice
+
+---
+
+### S3.3,5.01: User Hash Validation
+Priority: P0.4 (CRITICAL)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/user-hash.html
+
+Tests:
+  - Hash generation (32+ chars)
+  - Hash persistence (localStorage)
+  - Hash validation format
+  - Hash uniqueness
+
+Flow:
+  1. User visits catalog.html (no hash)
+  2. Generate hash: crypto.randomUUID() or similar
+  3. Store in localStorage: 'serpent_user_hash'
+  4. Verify hash exists on page reload
+  5. Use hash in Stripe checkout metadata
+
+Business Rules:
+  - Hash = 32-64 alphanumeric characters
+  - Hash persists across sessions
+  - Hash attached to all purchases
+  - Invalid hash → generate new one
+
+Assertions:
+  assert(userHash.length >= 32)
+  assert(userHash.match(/^[a-zA-Z0-9-]+$/))
+  assert(localStorage.getItem('serpent_user_hash') === userHash)
+  assert(stripeMetadata.client_reference_id === userHash)
+
+Edge Cases:
+  - localStorage disabled → use sessionStorage
+  - Hash corrupted → regenerate
+  - Multiple tabs → same hash
+
+---
+
+### S2.2.02: Stats Decay Over Time
+Priority: P1.1 (HIGH)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/stats-decay.html
+
+Tests:
+  - Hunger decreases by 2.0-2.5 per hour
+  - Water decreases by 3.0 per hour
+  - Cleanliness decreases by 1.0-1.5 per hour
+  - Stats don't go below 0
+
+Flow:
+  1. Load snake with full stats (all = 100)
+  2. Calculate time since last update
+  3. Apply decay rates
+  4. Update stats: stat = max(0, stat - (rate * hours))
+  5. Save updated stats
+
+Business Rules:
+  - Decay only applies when game not open
+  - 1x speed = real-time decay
+  - 2x speed = double decay
+  - Minimum stat value = 0
+
+Decay Rates (per hour at 1x):
+  - Hunger: -2.0 to -2.5 (species dependent)
+  - Water: -3.0
+  - Temperature: ±0.5 (toward ambient)
+  - Humidity: -1.0
+  - Cleanliness: -1.0 to -1.5
+  - Health: -0 (doesn't decay directly)
+  - Stress: +0.5 (increases when needs unmet)
+  - Happiness: -1.0
+
+Assertions:
+  assert(afterOneHour.hunger === initial.hunger - 2.5)
+  assert(afterTwoHours.water === initial.water - 6.0)
+  assert(stats.all >= 0)
+
+Test Vectors:
+  - 0 hours passed → no change
+  - 1 hour passed → apply decay
+  - 24 hours passed → multiple decay cycles
+  - 1000 hours passed → stats = 0 (capped)
+
+---
+
+### S2.4.01: Buy Equipment with Gold
+Priority: P1.7 (HIGH)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/equipment-purchase.html
+
+Tests:
+  - Purchase equipment with sufficient gold
+  - Equipment added to inventory
+  - Gold deducted correctly
+  - Equipment persists after save/load
+
+Flow:
+  1. Player has 500 gold
+  2. Open equipment shop
+  3. Select "Auto-Feeder" (cost: 300 gold)
+  4. Click "Buy"
+  5. Gold reduced to 200
+  6. Equipment added to inventory
+  7. Save game state
+
+Business Rules:
+  - Equipment costs range: 50-2000 gold
+  - Gold earned through snake care (10-50 per action)
+  - Equipment effects apply immediately after install
+  - Can own multiple equipment items
+
+Equipment Examples:
+  - Auto-Feeder (300g): Auto-feed every 6h
+  - Water Dish (50g): Doubles water retention
+  - Heat Lamp (150g): Maintains temperature
+  - Misting System (400g): Auto-humidity control
+  - UV Light (200g): Increases happiness
+
+Assertions:
+  assert(initialGold - equipmentCost === finalGold)
+  assert(inventory.includes(equipment))
+  assert(equipment.owned === true)
+  assert(equipment.installed === false) // Not auto-installed
+
+---
+
+### S4.4,5,5-2.02: Webhook Delayed
+Priority: P0.8 (CRITICAL)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/webhook-delayed.html
+
+Tests:
+  - success.html polls /user-products
+  - Polling interval: 2s
+  - Max attempts: 20 (40s total)
+  - Shows "Processing..." message
+  - Eventually receives product
+
+Flow:
+  1. User completes payment
+  2. Redirected to success.html?session_id=xxx
+  3. Page immediately polls /user-products?user=hash
+  4. Webhook not processed yet → returns empty []
+  5. Poll again after 2s → repeat
+  6. After 12s, webhook processes
+  7. Next poll returns product
+  8. Display success message + snake info
+
+Business Rules:
+  - Webhook should arrive within 5-10s normally
+  - Polling handles delays up to 40s
+  - After 40s → show "Contact support" message
+  - User can manually refresh to retry
+
+Polling Logic:
+  - Attempt 1-10: Show "Processing your purchase..."
+  - Attempt 11-15: Show "Almost there..."
+  - Attempt 16-20: Show "This is taking longer than expected..."
+  - Attempt 20+: Show "Please contact support with session ID: {id}"
+
+Assertions:
+  assert(pollAttempts <= 20)
+  assert(pollInterval === 2000ms)
+  assert(eventuallyReceivesProduct === true)
+  assert(userSeesFeedback === true)
+
+---
+
+### S4.4,5,5-2.03: Webhook Idempotency
+Priority: P0.9 (CRITICAL)
+Status: ⏳ NOT IMPLEMENTED
+Location: TBD /debug/scenarios/webhook-idempotency.html
+
+Tests:
+  - Same webhook fires twice
+  - Second webhook ignored
+  - No duplicate products created
+  - Idempotency key checked
+
+Flow:
+  1. Webhook arrives: event_id = 'evt_123'
+  2. Worker checks KV for 'webhook:evt_123'
+  3. Not found → process webhook
+  4. Save 'webhook:evt_123' = {processed: true, timestamp}
+  5. Second webhook arrives: same event_id
+  6. Found in KV → return 200 (already processed)
+  7. Do NOT create duplicate product
+
+Business Rules:
+  - Idempotency tracked by Stripe event_id
+  - Processed events stored in KV for 7 days
+  - Duplicate events return 200 (success) but don't process
+  - Log duplicate attempts
+
+Assertions:
+  assert(firstWebhook.processed === true)
+  assert(secondWebhook.processed === false) // Skipped
+  assert(userProducts.length === 1) // Only one product
+  assert(KV['webhook:evt_123'].exists === true)
+
+Edge Cases:
+  - Webhook arrives during processing → queue
+  - Different event_id, same session → process both
+  - Event_id cleanup after 7 days
 
 ---
 
