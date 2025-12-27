@@ -54,6 +54,7 @@ RESPONSE=$(curl -s -X PUT \
   -H "Authorization: Bearer ${API_TOKEN}" \
   -F "metadata=@-;type=application/json" \
   -F "worker.js=@worker.js;type=application/javascript+module" \
+  -F "email-service.js=@email-service.js;type=application/javascript+module" \
   <<< "$METADATA")
 
 echo "📡 Response:"
@@ -74,7 +75,7 @@ if [ "$SUCCESS" = "True" ]; then
   
   echo ""
   echo "2️⃣ Testing /products:"
-  curl -s "https://catalog.navickaszilvinas.workers.dev/products" | python3 -c "import sys, json; data=json.load(sys.stdin); print(f\"Products: {data.get('count', 0)}\")" || echo "Not available yet"
+  curl -s "https://catalog.navickaszilvinas.workers.dev/products" | python3 -c 'import sys, json; data=json.load(sys.stdin); print("Products:", data.get("count", 0))' || echo "Not available yet"
   
   echo ""
   echo "🎉 Deployment complete!"
