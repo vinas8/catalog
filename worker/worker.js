@@ -1,17 +1,21 @@
 /**
- * Cloudflare Worker for Snake Muffin v0.6.0
+ * Cloudflare Worker for Serpent Town v0.7.0
  * 
- * Version: 0.6.0
+ * Version: 0.7.0
  * Last Updated: 2025-12-27
  *
  * Expected bindings:
  * - USER_PRODUCTS (KV namespace) - Stores user's purchased snakes
  * - PRODUCT_STATUS (KV namespace) - Tracks which products are sold
  * - PRODUCTS (KV namespace) - Product catalog
- * - STRIPE_SECRET_KEY (secret) - Stripe API key for session fetch
+ * - STRIPE_SECRET_KEY (secret) - Stripe API key
+ * - MAILTRAP_API_TOKEN (secret) - Mailtrap API key for emails
+ * - ADMIN_EMAIL (env var) - Admin notification email
+ * - FROM_EMAIL (env var) - Sender email address
+ * - SHOP_NAME (env var) - Shop name for emails
  *
  * Endpoints:
- * - POST /stripe-webhook  (Stripe webhook)
+ * - POST /stripe-webhook  (Stripe webhook + email notifications)
  * - GET  /user-products?user=<hash>  (Get user's snakes)
  * - GET  /products  (Get product catalog from KV)
  * - GET  /product-status?id=<product_id>  (Check if product is sold)
@@ -22,6 +26,7 @@
  * - Hash-based user authentication (user ID in URL)
  * - Stores user products in KV
  * - Handles Stripe checkout.session.completed events
+ * - Sends order confirmation emails (customer + admin)
  * - Assigns snakes to users by hash
  * - Tracks sold status for unique real snakes
  * - Serves product catalog from KV (not JSON files)
@@ -32,8 +37,10 @@
  * - Bind KV namespaces: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS
  */
 
-const WORKER_VERSION = '0.6.0';
-const WORKER_UPDATED = '2025-12-27T02:41:40Z';
+import { createEmailService } from './email-service.js';
+
+const WORKER_VERSION = '0.7.0';
+const WORKER_UPDATED = '2025-12-27T06:50:00Z';
 
 export default {
   async fetch(request, env) {
@@ -287,11 +294,53 @@ async function handleStripeWebhook(request, env, corsHeaders) {
         console.log('✅ Marked product as sold in PRODUCT_STATUS KV');
       }
 
+      // 📧 Send order confirmation emails
+      try {
+        console.log('📧 Sending order confirmation emails...');
+        
+        const emailService = createEmailService(env);
+        
+        // Prepare order data for emails
+        const orderData = {
+          orderId: session.id,
+          customerEmail: session.customer_details?.email || session.customer_email || 'unknown@example.com',
+          customerName: session.customer_details?.name || 'Valued Customer',
+          items: [{
+            name: productDetails?.name || 'Snake',
+            quantity: 1,
+            amount: session.amount_total
+          }],
+          totalAmount: session.amount_total,
+          currency: session.currency || 'eur',
+          shopName: env.SHOP_NAME || 'Serpent Town'
+        };
+
+        // Send customer confirmation
+        const customerResult = await emailService.sendCustomerOrderConfirmation(orderData);
+        if (customerResult.success) {
+          console.log('✅ Customer email sent:', customerResult.messageId);
+        } else {
+          console.error('❌ Customer email failed:', customerResult.error);
+        }
+
+        // Send admin notification
+        const adminResult = await emailService.sendAdminOrderNotification(orderData);
+        if (adminResult.success) {
+          console.log('✅ Admin email sent:', adminResult.messageId);
+        } else {
+          console.error('❌ Admin email failed:', adminResult.error);
+        }
+      } catch (emailError) {
+        console.error('⚠️ Email sending error:', emailError.message);
+        // Don't fail the webhook if emails fail
+      }
+
       return new Response(JSON.stringify({ 
         success: true,
         message: 'Product assigned to user and marked as sold',
         user_id: userHash,
-        product_id: productId
+        product_id: productId,
+        emails_sent: true
       }), {
         status: 200,
         headers: corsHeaders

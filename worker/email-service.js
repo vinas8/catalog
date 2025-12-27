@@ -1,0 +1,396 @@
+/**
+ * Email Service Module for Serpent Town
+ * 
+ * Abstract email interface with multiple provider implementations:
+ * - Mailtrap (dev/testing)
+ * - SendGrid (production option)
+ * - Resend (production option)
+ * 
+ * Usage:
+ *   const emailService = createEmailService(env);
+ *   await emailService.sendOrderConfirmation(orderData);
+ */
+
+// Email provider interface
+export interface EmailProvider {
+  sendEmail(params: EmailParams): Promise<EmailResponse>;
+}
+
+export interface EmailParams {
+  to: string;
+  from: string;
+  subject: string;
+  html: string;
+  text?: string;
+}
+
+export interface EmailResponse {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}
+
+export interface OrderEmailData {
+  orderId: string;
+  customerEmail: string;
+  customerName: string;
+  items: OrderItem[];
+  totalAmount: number;
+  currency: string;
+  shopName: string;
+}
+
+export interface OrderItem {
+  name: string;
+  quantity: number;
+  amount: number;
+}
+
+/**
+ * Mailtrap Email Provider (Development/Testing)
+ */
+export class MailtrapProvider implements EmailProvider {
+  constructor(private apiToken: string) {}
+
+  async sendEmail(params: EmailParams): Promise<EmailResponse> {
+    try {
+      const response = await fetch('https://send.api.mailtrap.io/api/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: { email: params.from },
+          to: [{ email: params.to }],
+          subject: params.subject,
+          html: params.html,
+          text: params.text || params.html.replace(/<[^>]*>/g, ''),
+          category: 'order_confirmation'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Mailtrap API error: ${response.status} ${error}`);
+      }
+
+      const result = await response.json();
+      
+      return {
+        success: true,
+        messageId: result.message_id
+      };
+    } catch (error) {
+      console.error('Mailtrap send error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+}
+
+/**
+ * SendGrid Email Provider (Production Option)
+ */
+export class SendGridProvider implements EmailProvider {
+  constructor(private apiKey: string) {}
+
+  async sendEmail(params: EmailParams): Promise<EmailResponse> {
+    try {
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          personalizations: [{
+            to: [{ email: params.to }]
+          }],
+          from: { email: params.from },
+          subject: params.subject,
+          content: [
+            {
+              type: 'text/html',
+              value: params.html
+            }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`SendGrid API error: ${response.status} ${error}`);
+      }
+
+      return {
+        success: true,
+        messageId: response.headers.get('X-Message-Id') || 'sent'
+      };
+    } catch (error) {
+      console.error('SendGrid send error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+}
+
+/**
+ * Resend Email Provider (Production Option)
+ */
+export class ResendProvider implements EmailProvider {
+  constructor(private apiKey: string) {}
+
+  async sendEmail(params: EmailParams): Promise<EmailResponse> {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: params.from,
+          to: [params.to],
+          subject: params.subject,
+          html: params.html
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Resend API error: ${response.status} ${error}`);
+      }
+
+      const result = await response.json();
+      
+      return {
+        success: true,
+        messageId: result.id
+      };
+    } catch (error) {
+      console.error('Resend send error:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+}
+
+/**
+ * Email Service - Main interface
+ */
+export class EmailService {
+  constructor(
+    private provider: EmailProvider,
+    private config: {
+      fromEmail: string;
+      shopName: string;
+      adminEmail: string;
+    }
+  ) {}
+
+  /**
+   * Send order confirmation to customer
+   */
+  async sendCustomerOrderConfirmation(data: OrderEmailData): Promise<EmailResponse> {
+    const html = this.generateCustomerEmailHTML(data);
+    
+    return this.provider.sendEmail({
+      to: data.customerEmail,
+      from: this.config.fromEmail,
+      subject: `${this.config.shopName} - Order Confirmation #${data.orderId}`,
+      html
+    });
+  }
+
+  /**
+   * Send order notification to admin
+   */
+  async sendAdminOrderNotification(data: OrderEmailData): Promise<EmailResponse> {
+    const html = this.generateAdminEmailHTML(data);
+    
+    return this.provider.sendEmail({
+      to: this.config.adminEmail,
+      from: this.config.fromEmail,
+      subject: `${this.config.shopName} - New Order #${data.orderId}`,
+      html
+    });
+  }
+
+  /**
+   * Generate customer email HTML
+   */
+  private generateCustomerEmailHTML(data: OrderEmailData): string {
+    const itemsHTML = data.items.map(item => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">€${(item.amount / 100).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 32px;">🐍</h1>
+              <h2 style="color: #ffffff; margin: 10px 0 0 0; font-size: 24px;">${this.config.shopName}</h2>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="color: #333; margin: 0 0 20px 0;">Thank you for your order!</h2>
+              <p style="color: #666; line-height: 1.6; margin: 0 0 20px 0;">
+                Hi ${data.customerName},
+              </p>
+              <p style="color: #666; line-height: 1.6; margin: 0 0 30px 0;">
+                We've received your order and are preparing your new snake friend! 🎉
+              </p>
+              
+              <!-- Order Details -->
+              <div style="background-color: #f9f9f9; border-radius: 6px; padding: 20px; margin-bottom: 30px;">
+                <h3 style="color: #333; margin: 0 0 15px 0; font-size: 18px;">Order Details</h3>
+                <p style="color: #666; margin: 5px 0;"><strong>Order ID:</strong> ${data.orderId}</p>
+                <p style="color: #666; margin: 5px 0;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+              </div>
+              
+              <!-- Items Table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <thead>
+                  <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 12px; text-align: left; color: #333;">Item</th>
+                    <th style="padding: 12px; text-align: center; color: #333;">Qty</th>
+                    <th style="padding: 12px; text-align: right; color: #333;">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHTML}
+                  <tr style="background-color: #f9f9f9; font-weight: bold;">
+                    <td colspan="2" style="padding: 15px; text-align: right; color: #333;">Total:</td>
+                    <td style="padding: 15px; text-align: right; color: #667eea; font-size: 18px;">
+                      €${(data.totalAmount / 100).toFixed(2)} ${data.currency.toUpperCase()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="https://vinas8.github.io/catalog/game.html" 
+                   style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                  View Your Snake 🐍
+                </a>
+              </div>
+              
+              <p style="color: #999; font-size: 14px; line-height: 1.6; margin: 30px 0 0 0; border-top: 1px solid #eee; padding-top: 20px;">
+                Questions? Contact us at support@serpenttown.com
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9f9f9; padding: 20px; text-align: center; color: #999; font-size: 12px;">
+              © ${new Date().getFullYear()} ${this.config.shopName}. All rights reserved.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `.trim();
+  }
+
+  /**
+   * Generate admin email HTML
+   */
+  private generateAdminEmailHTML(data: OrderEmailData): string {
+    const itemsHTML = data.items.map(item => `
+      <li><strong>${item.name}</strong> x${item.quantity} - €${(item.amount / 100).toFixed(2)}</li>
+    `).join('');
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>New Order Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <h2 style="color: #667eea;">🐍 New Order Received!</h2>
+  
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 6px; margin: 20px 0;">
+    <h3>Order Information</h3>
+    <p><strong>Order ID:</strong> ${data.orderId}</p>
+    <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+    <p><strong>Customer:</strong> ${data.customerName}</p>
+    <p><strong>Email:</strong> ${data.customerEmail}</p>
+  </div>
+  
+  <div style="background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 6px; margin: 20px 0;">
+    <h3>Items Ordered</h3>
+    <ul>
+      ${itemsHTML}
+    </ul>
+    <p style="font-size: 18px; font-weight: bold; color: #667eea; margin-top: 15px;">
+      Total: €${(data.totalAmount / 100).toFixed(2)} ${data.currency.toUpperCase()}
+    </p>
+  </div>
+  
+  <p style="color: #666; font-size: 14px; margin-top: 30px;">
+    This is an automated notification from ${this.config.shopName}.
+  </p>
+</body>
+</html>
+    `.trim();
+  }
+}
+
+/**
+ * Factory function to create email service based on environment
+ */
+export function createEmailService(env: any): EmailService {
+  let provider: EmailProvider;
+  
+  // Determine which provider to use based on available credentials
+  if (env.MAILTRAP_API_TOKEN) {
+    console.log('📧 Using Mailtrap email provider');
+    provider = new MailtrapProvider(env.MAILTRAP_API_TOKEN);
+  } else if (env.SENDGRID_API_KEY) {
+    console.log('📧 Using SendGrid email provider');
+    provider = new SendGridProvider(env.SENDGRID_API_KEY);
+  } else if (env.RESEND_API_KEY) {
+    console.log('📧 Using Resend email provider');
+    provider = new ResendProvider(env.RESEND_API_KEY);
+  } else {
+    throw new Error('No email provider configured. Set MAILTRAP_API_TOKEN, SENDGRID_API_KEY, or RESEND_API_KEY');
+  }
+  
+  return new EmailService(provider, {
+    fromEmail: env.FROM_EMAIL || 'orders@serpenttown.com',
+    shopName: env.SHOP_NAME || 'Serpent Town',
+    adminEmail: env.ADMIN_EMAIL || 'admin@serpenttown.com'
+  });
+}

@@ -21,6 +21,9 @@ id = "ecbcb79f3df64379863872965f993991"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
+SHOP_NAME = "Serpent Town"
+FROM_EMAIL = "orders@serpenttown.com"
+ADMIN_EMAIL = "admin@serpenttown.com"
 
 # Observability - Logs and Traces
 [observability]
