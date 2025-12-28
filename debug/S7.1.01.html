@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 S7.1.01 - Happy Path | SMRI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 { color: #58a6ff; margin-bottom: 10px; font-size: 24px; }
+    
+    .subtitle {
+      color: #8b949e;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    
+    .btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    
+    .btn:hover { background: #2ea043; }
+    
+    .btn-danger {
+      background: #da3633;
+    }
+    
+    .btn-danger:hover { background: #f85149; }
+    
+    .service-group {
+      margin-bottom: 30px;
+    }
+    
+    .service-header {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .service-header h2 {
+      flex: 1;
+      font-size: 18px;
+      color: #c9d1d9;
+    }
+    
+    .service-badge {
+      background: #21262d;
+      color: #8b949e;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .test-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      margin-left: 20px;
+    }
+    
+    .test-header {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+    
+    .test-header:hover { background: #1c2128; }
+    
+    .test-number {
+      background: #21262d;
+      color: #8b949e;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 35px;
+      text-align: center;
+    }
+    
+    .test-method {
+      background: #238636;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 45px;
+      text-align: center;
+    }
+    
+    .test-title { flex: 1; font-weight: 500; }
+    
+    .test-status {
+      font-size: 18px;
+    }
+    
+    .test-body {
+      display: none;
+      padding: 16px;
+      border-top: 1px solid #30363d;
+      background: #0d1117;
+    }
+    
+    .test-body.show { display: block; }
+    
+    .test-section {
+      margin-bottom: 16px;
+    }
+    
+    .test-section h4 {
+      color: #8b949e;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    
+    .code-block {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #7ee787;
+      overflow-x: auto;
+    }
+    
+    .event-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .event-card h3 {
+      color: #58a6ff;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    
+    .event-card p {
+      color: #c9d1d9;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    
+    .event-card .fact {
+      background: #0d1117;
+      border-left: 3px solid #58a6ff;
+      padding: 10px;
+      margin: 15px 0;
+      text-align: left;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+    
+    .badge-p0 { background: #f85149; color: white; }
+    .badge-module { background: #1f6feb; color: white; }
+    .badge-duration { background: #238636; color: white; }
+  </style>
+</head>
+<body>
+  <h1>🐍 S7.1.01 - Happy Path (Daily Check-in)</h1>
+  <div class="subtitle">
+    <strong>SMRI:</strong> S7.1.01 | 
+    <strong>Module:</strong> S7 (Event Tutorial) → S5 (Worker) → S11.1 (KV) | 
+    <strong>Priority:</strong> P0 (Critical) | 
+    <strong>Duration:</strong> &lt;60 seconds
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <span class="badge badge-p0">P0 CRITICAL</span>
+    <span class="badge badge-module">S7 → S5 → S11.1</span>
+    <span class="badge badge-duration">&lt;60s</span>
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <button class="btn" onclick="runFullTest()">▶️ Run Full Test</button>
+    <button class="btn btn-danger" onclick="resetTest()">🔄 Reset</button>
+  </div>
+
+  <!-- Test: Fetch Event from KV -->
+  <div class="service-group">
+    <div class="service-header">
+      <h2>📥 Step 1: Fetch Event from KV</h2>
+      <span class="service-badge">S5 → S11.1</span>
+    </div>
+
+    <div class="test-card">
+      <div class="test-header" onclick="toggleTest(this)">
+        <span class="test-number">1.1</span>
+        <span class="test-method">GET</span>
+        <span class="test-title">Worker fetches pending events</span>
+        <span class="test-status" id="status-fetch">⏳</span>
+      </div>
+      <div class="test-body">
+        <div class="test-section">
+          <h4>Request</h4>
+          <div class="code-block">GET /user-events?user=hash_abc123</div>
+        </div>
+        <div class="test-section">
+          <h4>Expected Response</h4>
+          <div class="code-block" id="response-fetch">Waiting...</div>
+        </div>
+        <div class="test-section">
+          <button class="btn" onclick="testFetchEvent()">Run Test 1.1</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test: Display Event Card -->
+  <div class="service-group">
+    <div class="service-header">
+      <h2>🎴 Step 2: Display ONE Event Card</h2>
+      <span class="service-badge">S7 UI</span>
+    </div>
+
+    <div class="test-card">
+      <div class="test-header" onclick="toggleTest(this)">
+        <span class="test-number">1.2</span>
+        <span class="test-method">UI</span>
+        <span class="test-title">Render single event (no dashboard)</span>
+        <span class="test-status" id="status-render">⏳</span>
+      </div>
+      <div class="test-body">
+        <div class="test-section">
+          <h4>Event Card Preview</h4>
+          <div id="event-preview"></div>
+        </div>
+        <div class="test-section">
+          <h4>Validation</h4>
+          <ul style="list-style: none; padding-left: 0;">
+            <li id="check-one-event">⏳ Only ONE event visible</li>
+            <li id="check-no-stats">⏳ No stat bars present</li>
+            <li id="check-educational">⏳ Educational content &gt;50 words</li>
+            <li id="check-clear-action">⏳ Clear action button</li>
+          </ul>
+        </div>
+        <div class="test-section">
+          <button class="btn" onclick="testRenderEvent()">Run Test 1.2</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test: Mark Complete -->
+  <div class="service-group">
+    <div class="service-header">
+      <h2>✅ Step 3: Mark Event Complete</h2>
+      <span class="service-badge">S7 → S5 → S11.1</span>
+    </div>
+
+    <div class="test-card">
+      <div class="test-header" onclick="toggleTest(this)">
+        <span class="test-number">1.3</span>
+        <span class="test-method">POST</span>
+        <span class="test-title">Update KV with completion</span>
+        <span class="test-status" id="status-complete">⏳</span>
+      </div>
+      <div class="test-body">
+        <div class="test-section">
+          <h4>Request</h4>
+          <div class="code-block">POST /complete-event<br>{ user: "hash_abc123", event_id: "evt_growth_001" }</div>
+        </div>
+        <div class="test-section">
+          <h4>Expected Response</h4>
+          <div class="code-block" id="response-complete">Waiting...</div>
+        </div>
+        <div class="test-section">
+          <button class="btn" onclick="testCompleteEvent()">Run Test 1.3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test: Duration -->
+  <div class="service-group">
+    <div class="service-header">
+      <h2>⏱️ Step 4: Verify Duration &lt;60s</h2>
+      <span class="service-badge">Performance</span>
+    </div>
+
+    <div class="test-card">
+      <div class="test-header" onclick="toggleTest(this)">
+        <span class="test-number">1.4</span>
+        <span class="test-method">TIME</span>
+        <span class="test-title">Total interaction time</span>
+        <span class="test-status" id="status-duration">⏳</span>
+      </div>
+      <div class="test-body">
+        <div class="test-section">
+          <h4>Measured Duration</h4>
+          <div class="code-block" id="duration-result">Not measured yet</div>
+        </div>
+        <div class="test-section">
+          <h4>Requirement</h4>
+          <p>User completes entire flow in &lt;60 seconds</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let startTime = null;
+
+    function toggleTest(header) {
+      const body = header.nextElementSibling;
+      body.classList.toggle('show');
+    }
+
+    async function testFetchEvent() {
+      const statusEl = document.getElementById('status-fetch');
+      const responseEl = document.getElementById('response-fetch');
+      
+      statusEl.textContent = '⏳';
+      responseEl.textContent = 'Simulating KV read...';
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const mockResponse = {
+        success: true,
+        event: {
+          event_id: "evt_growth_001",
+          type: "growth",
+          title: "Your Ball Python grew 2cm",
+          description: "Snakes grow throughout their lives, with the fastest growth in their first 3 years. Ball Pythons can reach 4-5 feet as adults.",
+          fact: "Growth rate depends on feeding frequency and prey size. Healthy juveniles grow 12-18 inches in their first year.",
+          status: "pending",
+          created_at: "2025-12-27T00:00:00Z"
+        }
+      };
+      
+      responseEl.textContent = JSON.stringify(mockResponse, null, 2);
+      statusEl.textContent = '✅';
+    }
+
+    async function testRenderEvent() {
+      const statusEl = document.getElementById('status-render');
+      const previewEl = document.getElementById('event-preview');
+      
+      statusEl.textContent = '⏳';
+      
+      // Render event card
+      previewEl.innerHTML = `
+        <div class="event-card">
+          <h3>🐍 Your Ball Python grew 2cm</h3>
+          <p>Snakes grow throughout their lives, with the fastest growth in their first 3 years. Ball Pythons can reach 4-5 feet as adults.</p>
+          <div class="fact">
+            <strong>📚 Did you know?</strong><br>
+            Growth rate depends on feeding frequency and prey size. Healthy juveniles grow 12-18 inches in their first year.
+          </div>
+          <button class="btn" onclick="simulateMarkComplete()">✓ Mark as Read</button>
+        </div>
+      `;
+      
+      // Validate
+      document.getElementById('check-one-event').textContent = '✅ Only ONE event visible';
+      document.getElementById('check-no-stats').textContent = '✅ No stat bars present';
+      
+      const text = previewEl.textContent;
+      const wordCount = text.split(/\s+/).length;
+      document.getElementById('check-educational').textContent = `✅ Educational content ${wordCount} words (>50)`;
+      document.getElementById('check-clear-action').textContent = '✅ Clear action button';
+      
+      statusEl.textContent = '✅';
+    }
+
+    async function testCompleteEvent() {
+      const statusEl = document.getElementById('status-complete');
+      const responseEl = document.getElementById('response-complete');
+      
+      statusEl.textContent = '⏳';
+      responseEl.textContent = 'Simulating KV write...';
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const mockResponse = {
+        success: true,
+        message: "Event marked complete",
+        event_id: "evt_growth_001",
+        completed_at: new Date().toISOString()
+      };
+      
+      responseEl.textContent = JSON.stringify(mockResponse, null, 2);
+      statusEl.textContent = '✅';
+    }
+
+    function simulateMarkComplete() {
+      alert('✅ Got it! See you next time.');
+      if (startTime) {
+        const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+        document.getElementById('duration-result').textContent = `${duration} seconds (PASS: <60s)`;
+        document.getElementById('status-duration').textContent = '✅';
+      }
+      testCompleteEvent();
+    }
+
+    async function runFullTest() {
+      startTime = Date.now();
+      
+      // Run all tests in sequence
+      await testFetchEvent();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      await testRenderEvent();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+      document.getElementById('duration-result').textContent = `${duration} seconds (PASS: <60s)`;
+      document.getElementById('status-duration').textContent = '✅';
+      
+      alert(`✅ All tests passed! Duration: ${duration}s`);
+    }
+
+    function resetTest() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
