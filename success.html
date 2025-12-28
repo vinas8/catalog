@@ -7,11 +7,14 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding-top: 80px;
+    }
+    .success-container {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: calc(100vh - 80px);
     }
     .success-card {
       background: white;
@@ -133,6 +136,8 @@
   </style>
 </head>
 <body>
+  <script type="module" src="src/components/Navigation.js"></script>
+  <div class="success-container">
   <div class="success-card">
     <div class="success-icon">🎉</div>
     <h1 class="success-title">Payment Successful!</h1>

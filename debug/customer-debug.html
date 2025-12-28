@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 Customer Management - SMRI Debug</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 { color: #58a6ff; margin-bottom: 10px; }
+    .subtitle { color: #8b949e; margin-bottom: 30px; }
+    .nav { margin-bottom: 20px; }
+    .nav a { color: #58a6ff; text-decoration: none; margin-right: 15px; }
+    
+    .test-section {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .test-section h2 {
+      color: #c9d1d9;
+      font-size: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group label {
+      display: block;
+      color: #8b949e;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 10px;
+      transition: background 0.2s;
+    }
+    
+    .btn:hover { background: #2ea043; }
+    .btn-danger { background: #da3633; }
+    .btn-danger:hover { background: #f85149; }
+    .btn-secondary { background: #21262d; }
+    .btn-secondary:hover { background: #30363d; }
+    
+    .output {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #8b949e;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .success { color: #3fb950; }
+    .error { color: #f85149; }
+    .info { color: #58a6ff; }
+    
+    .customer-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .customer-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .customer-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .customer-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .customer-details h3 {
+      color: #c9d1d9;
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+    
+    .customer-details p {
+      color: #8b949e;
+      font-size: 13px;
+    }
+    
+    .customer-hash {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #58a6ff;
+      background: #161b22;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">← Back to Debug Hub</a>
+  </div>
+
+  <h1>🔍 Customer Management Debug</h1>
+  <p class="subtitle">Test customer creation, listing, and management operations</p>
+
+  <!-- Create Customer -->
+  <div class="test-section">
+    <h2>👤 Create Test Customer</h2>
+    <div class="input-group">
+      <label>Email:</label>
+      <input type="email" id="customerEmail" placeholder="test@example.com">
+    </div>
+    <div class="input-group">
+      <label>Name:</label>
+      <input type="text" id="customerName" placeholder="Test User">
+    </div>
+    <div class="input-group">
+      <label>Profile Picture URL (optional):</label>
+      <input type="text" id="customerPicture" placeholder="https://...">
+    </div>
+    <button class="btn" onclick="createCustomer()">Create Customer</button>
+    <button class="btn btn-secondary" onclick="generateRandomCustomer()">Generate Random</button>
+    <div id="createOutput" class="output" style="display: none;"></div>
+  </div>
+
+  <!-- List Customers -->
+  <div class="test-section">
+    <h2>📋 Customer List</h2>
+    <button class="btn" onclick="listCustomers()">Refresh List</button>
+    <button class="btn btn-danger" onclick="clearAllCustomers()">Clear All Customers</button>
+    <div id="customerList" class="customer-list"></div>
+    <div id="listOutput" class="output" style="display: none;"></div>
+  </div>
+
+  <!-- Get Customer Details -->
+  <div class="test-section">
+    <h2>🔎 Get Customer Details</h2>
+    <div class="input-group">
+      <label>Customer Hash:</label>
+      <input type="text" id="customerHash" placeholder="abc123def456">
+    </div>
+    <button class="btn" onclick="getCustomer()">Get Customer</button>
+    <div id="getOutput" class="output" style="display: none;"></div>
+  </div>
+
+  <!-- Test Login Flow -->
+  <div class="test-section">
+    <h2>🔐 Test Login Flow</h2>
+    <div class="input-group">
+      <label>Email:</label>
+      <input type="email" id="loginEmail" placeholder="test@example.com">
+    </div>
+    <button class="btn" onclick="testLogin()">Test Login (Generate Hash)</button>
+    <button class="btn btn-secondary" onclick="openGameWithHash()">Open Game with Hash</button>
+    <div id="loginOutput" class="output" style="display: none;"></div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+
+    function log(elementId, message, type = 'info') {
+      const output = document.getElementById(elementId);
+      output.style.display = 'block';
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+      output.innerHTML += `<div class="${className}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearLog(elementId) {
+      const output = document.getElementById(elementId);
+      output.innerHTML = '';
+      output.style.display = 'none';
+    }
+
+    async function createCustomer() {
+      clearLog('createOutput');
+      const email = document.getElementById('customerEmail').value;
+      const name = document.getElementById('customerName').value;
+      const picture = document.getElementById('customerPicture').value;
+
+      if (!email || !name) {
+        log('createOutput', 'Error: Email and name are required', 'error');
+        return;
+      }
+
+      log('createOutput', `Creating customer: ${name} (${email})...`);
+
+      try {
+        // Generate hash
+        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 12);
+
+        log('createOutput', `Generated hash: ${hash}`);
+
+        // Create customer object
+        const customer = {
+          hash,
+          email,
+          name,
+          profile_picture: picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+          created_at: new Date().toISOString(),
+          purchases: [],
+          balance: 0
+        };
+
+        // Save to KV (via worker endpoint - needs to be implemented)
+        log('createOutput', 'Customer data prepared:', 'success');
+        log('createOutput', JSON.stringify(customer, null, 2));
+        log('createOutput', `⚠️  Note: Worker endpoint for customer creation needed`, 'info');
+        log('createOutput', `Login URL: ${window.location.origin}/game.html#${hash}`, 'success');
+
+      } catch (error) {
+        log('createOutput', `Error: ${error.message}`, 'error');
+      }
+    }
+
+    function generateRandomCustomer() {
+      const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'];
+      const name = names[Math.floor(Math.random() * names.length)];
+      const email = `${name.toLowerCase()}.${Date.now()}@test.com`;
+      
+      document.getElementById('customerEmail').value = email;
+      document.getElementById('customerName').value = `${name} Test`;
+      document.getElementById('customerPicture').value = `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+      
+      log('createOutput', `Generated random customer: ${name}`, 'success');
+    }
+
+    async function listCustomers() {
+      clearLog('listOutput');
+      log('listOutput', 'Fetching customers from KV...');
+
+      try {
+        // This would call worker endpoint: /customers
+        log('listOutput', '⚠️  Worker endpoint /customers needed', 'info');
+        
+        // Mock data for demonstration
+        const mockCustomers = [
+          {
+            hash: 'abc123def456',
+            name: 'Test User 1',
+            email: 'test1@example.com',
+            profile_picture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=test1',
+            created_at: new Date().toISOString()
+          }
+        ];
+
+        displayCustomers(mockCustomers);
+        log('listOutput', `Found ${mockCustomers.length} customers`, 'success');
+
+      } catch (error) {
+        log('listOutput', `Error: ${error.message}`, 'error');
+      }
+    }
+
+    function displayCustomers(customers) {
+      const container = document.getElementById('customerList');
+      container.innerHTML = '';
+
+      customers.forEach(customer => {
+        const card = document.createElement('div');
+        card.className = 'customer-card';
+        card.innerHTML = `
+          <div class="customer-info">
+            <div class="customer-avatar">${customer.name.charAt(0)}</div>
+            <div class="customer-details">
+              <h3>${customer.name}</h3>
+              <p>${customer.email}</p>
+              <span class="customer-hash">${customer.hash}</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary" onclick="copyHash('${customer.hash}')">Copy Hash</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function getCustomer() {
+      clearLog('getOutput');
+      const hash = document.getElementById('customerHash').value;
+
+      if (!hash) {
+        log('getOutput', 'Error: Hash is required', 'error');
+        return;
+      }
+
+      log('getOutput', `Fetching customer: ${hash}...`);
+
+      try {
+        const response = await fetch(`${WORKER_URL}/customer?hash=${hash}`);
+        if (response.ok) {
+          const data = await response.json();
+          log('getOutput', JSON.stringify(data, null, 2), 'success');
+        } else {
+          log('getOutput', `Customer not found: ${hash}`, 'error');
+        }
+      } catch (error) {
+        log('getOutput', `Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testLogin() {
+      clearLog('loginOutput');
+      const email = document.getElementById('loginEmail').value;
+
+      if (!email) {
+        log('loginOutput', 'Error: Email is required', 'error');
+        return;
+      }
+
+      log('loginOutput', `Testing login for: ${email}...`);
+
+      try {
+        // Generate hash
+        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 12);
+
+        log('loginOutput', `Generated hash: ${hash}`, 'success');
+        log('loginOutput', `Login URL: ${window.location.origin}/game.html#${hash}`, 'success');
+        
+        document.getElementById('customerHash').value = hash;
+
+      } catch (error) {
+        log('loginOutput', `Error: ${error.message}`, 'error');
+      }
+    }
+
+    function openGameWithHash() {
+      const hash = document.getElementById('customerHash').value || 
+                   document.getElementById('loginEmail').value;
+      
+      if (hash) {
+        window.open(`/game.html#${hash}`, '_blank');
+      } else {
+        alert('Please generate a hash first');
+      }
+    }
+
+    function clearAllCustomers() {
+      if (confirm('⚠️  This will delete ALL customers from KV. Continue?')) {
+        clearLog('listOutput');
+        log('listOutput', 'Clearing all customers...', 'info');
+        log('listOutput', '⚠️  Run script: bash scripts/clear-customers.sh', 'info');
+      }
+    }
+
+    function copyHash(hash) {
+      navigator.clipboard.writeText(hash);
+      alert(`Hash copied: ${hash}`);
+    }
+
+    // Auto-load on page load
+    window.addEventListener('load', () => {
+      log('listOutput', 'Customer management debug ready', 'success');
+    });
+  </script>
+</body>
+</html>

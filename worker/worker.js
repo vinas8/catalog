@@ -138,6 +138,21 @@ export default {
       });
     }
 
+    // Route: POST /upload-products (Upload products to Stripe)
+    if (pathname === '/upload-products' && request.method === 'POST') {
+      return handleUploadProducts(request, env, corsHeaders);
+    }
+
+    // Route: POST /sync-stripe-to-kv (Sync from Stripe to KV)
+    if (pathname === '/sync-stripe-to-kv' && request.method === 'POST') {
+      return handleSyncStripeToKV(env, corsHeaders);
+    }
+
+    // Route: POST /clear-stripe-products (Clear all Stripe products)
+    if (pathname === '/clear-stripe-products' && request.method === 'POST') {
+      return handleClearStripeProducts(env, corsHeaders);
+    }
+
     return new Response(JSON.stringify({ error: 'Not found' }), { 
       status: 404,
       headers: corsHeaders
@@ -1113,6 +1128,236 @@ async function handleGetSessionInfo(request, env, corsHeaders) {
       error: 'Failed to fetch session',
       message: error.message 
     }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Upload products to Stripe
+ */
+async function handleUploadProducts(request, env, corsHeaders) {
+  try {
+    const { products } = await request.json();
+    
+    if (!products || !Array.isArray(products)) {
+      return new Response(JSON.stringify({ error: 'Products array required' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    const stripeKey = env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: 'Stripe key not configured' }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+
+    const results = [];
+    
+    for (const product of products) {
+      try {
+        // Create product in Stripe
+        const productData = new URLSearchParams({
+          name: product.name,
+          description: `${product.morph} - ${product.gender}, ${product.yob}`
+        });
+        
+        const productResponse = await fetch('https://api.stripe.com/v1/products', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: productData
+        });
+
+        if (!productResponse.ok) {
+          const error = await productResponse.text();
+          results.push({ name: product.name, success: false, error });
+          continue;
+        }
+
+        const stripeProduct = await productResponse.json();
+
+        // Create price
+        const priceData = new URLSearchParams({
+          product: stripeProduct.id,
+          unit_amount: Math.round(product.price * 100),
+          currency: 'eur'
+        });
+
+        const priceResponse = await fetch('https://api.stripe.com/v1/prices', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: priceData
+        });
+
+        if (!priceResponse.ok) {
+          results.push({ name: product.name, success: false, error: 'Price creation failed' });
+          continue;
+        }
+
+        const price = await priceResponse.json();
+
+        results.push({ 
+          name: product.name, 
+          success: true, 
+          product_id: stripeProduct.id,
+          price_id: price.id 
+        });
+      } catch (err) {
+        results.push({ name: product.name, success: false, error: err.message });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+
+    return new Response(JSON.stringify({ 
+      success: true,
+      total: products.length,
+      uploaded: successCount,
+      failed: products.length - successCount,
+      results
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Sync products from Stripe to KV
+ */
+async function handleSyncStripeToKV(env, corsHeaders) {
+  try {
+    const stripeKey = env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: 'Stripe key not configured' }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+
+    const response = await fetch('https://api.stripe.com/v1/products?limit=100', {
+      headers: {
+        'Authorization': `Bearer ${stripeKey}`
+      }
+    });
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'Failed to fetch from Stripe' }), {
+        status: response.status,
+        headers: corsHeaders
+      });
+    }
+
+    const { data: products } = await response.json();
+    
+    const results = [];
+    for (const product of products) {
+      try {
+        await env.PRODUCTS.put(`product:${product.id}`, JSON.stringify(product));
+        results.push({ id: product.id, name: product.name, success: true });
+      } catch (err) {
+        results.push({ id: product.id, name: product.name, success: false, error: err.message });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+
+    return new Response(JSON.stringify({
+      success: true,
+      total: products.length,
+      synced: successCount,
+      failed: products.length - successCount,
+      results
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Clear all products from Stripe
+ */
+async function handleClearStripeProducts(env, corsHeaders) {
+  try {
+    const stripeKey = env.STRIPE_SECRET_KEY;
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: 'Stripe key not configured' }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+
+    const response = await fetch('https://api.stripe.com/v1/products?limit=100', {
+      headers: {
+        'Authorization': `Bearer ${stripeKey}`
+      }
+    });
+
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: 'Failed to fetch from Stripe' }), {
+        status: response.status,
+        headers: corsHeaders
+      });
+    }
+
+    const { data: products } = await response.json();
+    
+    const results = [];
+    for (const product of products) {
+      try {
+        const deleteResponse = await fetch(`https://api.stripe.com/v1/products/${product.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`
+          }
+        });
+
+        const result = await deleteResponse.json();
+        results.push({ 
+          id: product.id, 
+          name: product.name, 
+          success: result.deleted === true 
+        });
+      } catch (err) {
+        results.push({ id: product.id, name: product.name, success: false, error: err.message });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+
+    return new Response(JSON.stringify({
+      success: true,
+      total: products.length,
+      deleted: successCount,
+      failed: products.length - successCount,
+      results
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: corsHeaders
     });

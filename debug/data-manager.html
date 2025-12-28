@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Data Manager - SMRI Debug</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 { color: #58a6ff; margin-bottom: 10px; }
+    .subtitle { color: #8b949e; margin-bottom: 30px; }
+    .nav { margin-bottom: 20px; }
+    .nav a { color: #58a6ff; text-decoration: none; }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .stat-card h2 {
+      color: #c9d1d9;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    
+    .stat-number {
+      font-size: 48px;
+      font-weight: bold;
+      color: #58a6ff;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      color: #8b949e;
+      font-size: 14px;
+    }
+    
+    .btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .btn:hover { background: #2ea043; }
+    .btn:disabled { background: #30363d; cursor: not-allowed; opacity: 0.5; }
+    
+    .btn-danger { background: #da3633; }
+    .btn-danger:hover { background: #f85149; }
+    
+    .btn-secondary { background: #21262d; }
+    .btn-secondary:hover { background: #30363d; }
+    
+    .test-section {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    
+    .test-section h2 {
+      color: #58a6ff;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    
+    .output {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .output div { margin-bottom: 3px; }
+    .success { color: #3fb950; }
+    .error { color: #f85149; }
+    .warning { color: #d29922; }
+    .info { color: #58a6ff; }
+    
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      color: #c9d1d9;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #30363d;
+    }
+    
+    th {
+      color: #58a6ff;
+      font-weight: 600;
+      background: #0d1117;
+      position: sticky;
+      top: 0;
+    }
+    
+    .preview-container {
+      max-height: 350px;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">← Back to Debug Hub</a>
+  </div>
+  
+  <h1>📊 Data Manager</h1>
+  <p class="subtitle">Manage Stripe products, KV storage, and bulk CSV imports</p>
+
+  <!-- Stats Cards -->
+  <div class="grid">
+    <div class="stat-card">
+      <h2>💳 Stripe Products</h2>
+      <div class="stat-number" id="stripeCount">-</div>
+      <div class="stat-label">Active products</div>
+      <button class="btn btn-secondary" onclick="refreshStripeCount()" style="margin-top: 10px;">Refresh</button>
+    </div>
+    
+    <div class="stat-card">
+      <h2>🗄️ KV Storage</h2>
+      <div class="stat-number" id="kvCount">-</div>
+      <div class="stat-label">Total keys</div>
+      <button class="btn btn-secondary" onclick="refreshKVCount()" style="margin-top: 10px;">Refresh</button>
+    </div>
+    
+    <div class="stat-card">
+      <h2>👥 Customers</h2>
+      <div class="stat-number" id="customerCount">-</div>
+      <div class="stat-label">Registered users</div>
+      <button class="btn btn-secondary" onclick="refreshCustomerCount()" style="margin-top: 10px;">Refresh</button>
+    </div>
+  </div>
+
+  <!-- Stripe Data Inspector -->
+  <div class="test-section">
+    <h2>💳 Stripe Data Inspector</h2>
+    <button class="btn" onclick="fetchAllStripeProducts()">Fetch All Products</button>
+    <button class="btn" onclick="fetchStripePrices()">Fetch Prices</button>
+    <button class="btn btn-danger" onclick="clearStripeProducts()">Clear</button>
+    <div id="stripeOutput" class="output"></div>
+  </div>
+
+  <!-- KV Storage Inspector -->
+  <div class="test-section">
+    <h2>🗄️ KV Storage Inspector</h2>
+    <button class="btn" onclick="listKVProducts()">List Product Keys</button>
+    <button class="btn" onclick="listKVCustomers()">List Customer Keys</button>
+    <button class="btn" onclick="listAllKVKeys()">List All Keys</button>
+    <button class="btn btn-danger" onclick="clearAllKV()">🗑️ Clear All KV</button>
+    <button class="btn btn-danger" onclick="clearKVOutput()">Clear Log</button>
+    <div id="kvOutput" class="output"></div>
+  </div>
+
+  <!-- Worker API Inspector -->
+  <div class="test-section">
+    <h2>⚙️ Worker API Inspector</h2>
+    <button class="btn" onclick="testWorkerProducts()">GET /products</button>
+    <button class="btn" onclick="testWorkerHealth()">GET /health</button>
+    <button class="btn" onclick="testWorkerCustomer()">GET /customer?hash=test</button>
+    <button class="btn btn-danger" onclick="clearWorkerOutput()">Clear</button>
+    <div id="workerOutput" class="output"></div>
+  </div>
+
+  <!-- Data Sync Verification -->
+  <div class="test-section">
+    <h2>🔄 Data Sync Verification</h2>
+    <p style="color: #8b949e; margin-bottom: 15px;">
+      Verify that data is synchronized between Stripe, KV, and Worker API
+    </p>
+    <button class="btn" onclick="runFullVerification()">Run Full Verification</button>
+    <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+    <div id="syncOutput" class="output"></div>
+  </div>
+
+  <!-- CSV Import Section -->
+  <div class="test-section">
+    <h2>📤 Import Products from CSV</h2>
+    <p style="color: #8b949e; margin-bottom: 15px;">
+      Upload snake collection CSV or paste CSV text (Name, Morph, Gender, YOB, Weight)
+    </p>
+    
+    <div style="margin-bottom: 15px;">
+      <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
+      <button class="btn" onclick="document.getElementById('csvFileInput').click()">
+        📁 Choose CSV File
+      </button>
+      <button class="btn btn-secondary" onclick="togglePasteArea()">
+        📋 Paste CSV Text
+      </button>
+      <span id="csvFileName" style="margin-left: 15px; color: #8b949e;"></span>
+    </div>
+    
+    <div id="pasteArea" style="display: none; margin-bottom: 15px;">
+      <textarea id="csvTextInput" 
+        placeholder="Paste CSV here (include headers)&#10;Example:&#10;Name,Morph,Gender,YOB,Weight&#10;Pudding,Banana H. Clown,Male,2024,"></textarea>
+      <button class="btn" onclick="parseCSVFromText()" style="margin-top: 10px;">Parse CSV</button>
+      <button class="btn btn-secondary" onclick="clearPasteArea()">Clear</button>
+    </div>
+    
+    <button class="btn" onclick="uploadToStripe()" id="uploadStripeBtn" style="display: none;">⬆️ Upload to Stripe</button>
+    <button class="btn" onclick="syncToKV()" id="syncKVBtn" style="display: none;">🔄 Sync to KV</button>
+    <button class="btn" onclick="previewCSV()" id="previewBtn" style="display: none;">👁️ Preview Data</button>
+    <button class="btn btn-secondary" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+    
+    <div id="csvPreview" style="display: none; margin-top: 20px;">
+      <h3 style="color: #58a6ff; margin-bottom: 10px;">CSV Preview (<span id="rowCount">0</span> snakes)</h3>
+      <div class="preview-container">
+        <table>
+          <thead id="csvTableHead"></thead>
+          <tbody id="csvTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="csvOutput" class="output"></div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const STRIPE_KEY = 'sk_test_51Sg3s0BjL72pe9Xs4RFYFTBPDDUhUzNTgAUbNUxhRk4pZQGZtpEXQvIFI6o2NZIujJcyGKKGn6Ml2rnoy16yVsf700BDVZxVYI';
+    const CF_ACCOUNT = 'e24c9f59eed424bd6d04e0f10fe0886f';
+    const CF_TOKEN = '2BKglg-h8Vbs-n7NsjRZzHqDj_cTlwYkx2IoBVWY';
+    const KV_NAMESPACE = 'ecbcb79f3df64379863872965f993991';
+    
+    let csvData = null;
+
+    function log(elementId, message, type = 'info') {
+      const output = document.getElementById(elementId);
+      output.style.display = 'block';
+      const time = new Date().toLocaleTimeString();
+      output.innerHTML += `<div class="${type}">[${time}] ${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearLog(elementId) {
+      const output = document.getElementById(elementId);
+      output.innerHTML = '';
+      output.style.display = 'none';
+    }
+
+    // Stats
+    async function refreshStripeCount() {
+      try {
+        log('stripeOutput', 'Fetching Stripe product count...', 'info');
+        // Add cache busting
+        const res = await fetch(`https://api.stripe.com/v1/products?limit=100&_t=${Date.now()}`, {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` },
+          cache: 'no-cache'
+        });
+        const data = await res.json();
+        const count = data.data ? data.data.length : 0;
+        document.getElementById('stripeCount').textContent = count;
+        log('stripeOutput', `✅ Stripe has ${count} products`, 'success');
+      } catch (err) {
+        document.getElementById('stripeCount').textContent = '?';
+        log('stripeOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function refreshKVCount() {
+      try {
+        log('kvOutput', 'Fetching KV product count...', 'info');
+        const res = await fetch(`${WORKER_URL}/products?_t=${Date.now()}`, { cache: 'no-cache' });
+        const products = await res.json();
+        const count = Array.isArray(products) ? products.length : 0;
+        document.getElementById('kvCount').textContent = count;
+        log('kvOutput', `✅ KV has ${count} products`, 'success');
+      } catch (err) {
+        document.getElementById('kvCount').textContent = '?';
+        log('kvOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function refreshCustomerCount() {
+      document.getElementById('customerCount').textContent = '-';
+      log('kvOutput', '👥 Customer count feature coming soon', 'warning');
+    }
+
+    // Stripe Inspector
+    async function fetchAllStripeProducts() {
+      clearLog('stripeOutput');
+      log('stripeOutput', 'Fetching all Stripe products...', 'info');
+      try {
+        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const data = await res.json();
+        log('stripeOutput', `✅ Found ${data.data.length} products:`, 'success');
+        data.data.forEach(p => {
+          log('stripeOutput', `  • ${p.name} (${p.id})`, 'info');
+        });
+      } catch (err) {
+        log('stripeOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function fetchStripePrices() {
+      clearLog('stripeOutput');
+      log('stripeOutput', 'Fetching Stripe prices...', 'info');
+      try {
+        const res = await fetch('https://api.stripe.com/v1/prices?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const data = await res.json();
+        log('stripeOutput', `✅ Found ${data.data.length} prices:`, 'success');
+        data.data.forEach(p => {
+          log('stripeOutput', `  • €${p.unit_amount/100} - ${p.product}`, 'info');
+        });
+      } catch (err) {
+        log('stripeOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function clearStripeProducts() {
+      if (!confirm('⚠️ Delete ALL Stripe products? This will remove everything!')) return;
+      
+      clearLog('stripeOutput');
+      log('stripeOutput', '🗑️ Clearing all Stripe products...', 'warning');
+      log('stripeOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
+      
+      try {
+        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const { data: products } = await res.json();
+        
+        log('stripeOutput', `Found ${products.length} products to delete`, 'info');
+        log('stripeOutput', '', 'info');
+        
+        let deleted = 0;
+        for (const product of products) {
+          try {
+            const delRes = await fetch(`https://api.stripe.com/v1/products/${product.id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+            });
+            
+            if (delRes.ok) {
+              log('stripeOutput', `  ✅ Deleted ${product.name}`, 'success');
+              deleted++;
+            } else {
+              const error = await delRes.json();
+              log('stripeOutput', `  ❌ Failed ${product.name}: ${error.error.message}`, 'error');
+            }
+          } catch (err) {
+            log('stripeOutput', `  ❌ Failed to delete ${product.name}: ${err.message}`, 'error');
+          }
+        }
+        
+        log('stripeOutput', '', 'info');
+        log('stripeOutput', `⏳ Waiting 2 seconds for Stripe to update...`, 'info');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Verify deletion
+        const verifyRes = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const { data: remaining } = await verifyRes.json();
+        
+        log('stripeOutput', `✅ Deleted: ${deleted}/${products.length}`, 'success');
+        log('stripeOutput', `📊 Remaining: ${remaining.length} products`, remaining.length === 0 ? 'success' : 'warning');
+        
+        await refreshStripeCount();
+        
+      } catch (err) {
+        log('stripeOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    // KV Inspector
+    async function listKVProducts() {
+      clearLog('kvOutput');
+      log('kvOutput', 'Listing KV products...', 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/products`);
+        const products = await res.json();
+        log('kvOutput', `✅ Found ${products.length} products:`, 'success');
+        products.forEach(p => {
+          log('kvOutput', `  • ${p.name} - ${p.morph || 'No morph'}`, 'info');
+        });
+      } catch (err) {
+        log('kvOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function listKVCustomers() {
+      clearLog('kvOutput');
+      log('kvOutput', '👥 Customer listing coming soon', 'warning');
+    }
+
+    async function listAllKVKeys() {
+      clearLog('kvOutput');
+      log('kvOutput', '📋 Listing all KV keys via API...', 'info');
+      try {
+        const res = await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys`,
+          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
+        );
+        const data = await res.json();
+        log('kvOutput', `✅ Found ${data.result.length} keys:`, 'success');
+        data.result.forEach(k => {
+          log('kvOutput', `  • ${k.name}`, 'info');
+        });
+      } catch (err) {
+        log('kvOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    function clearKVOutput() { clearLog('kvOutput'); }
+
+    async function clearAllKV() {
+      if (!confirm('⚠️ Delete ALL KV data? This will clear the entire KV namespace!')) return;
+      
+      clearLog('kvOutput');
+      log('kvOutput', '🗑️ Clearing all KV storage...', 'warning');
+      log('kvOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
+      log('kvOutput', '', 'info');
+      log('kvOutput', '⚠️ Browser CORS prevents direct KV API access', 'warning');
+      log('kvOutput', '', 'info');
+      log('kvOutput', '📋 Run this command in your terminal:', 'info');
+      log('kvOutput', '', 'info');
+      log('kvOutput', '   bash scripts/clear-kv-data.sh', 'info');
+      log('kvOutput', '', 'info');
+      log('kvOutput', 'Or use the Worker endpoint (if deployed):', 'info');
+      log('kvOutput', '', 'info');
+      log('kvOutput', '   curl -X DELETE https://catalog.navickaszilvinas.workers.dev/admin/clear-kv', 'info');
+      log('kvOutput', '', 'info');
+      log('kvOutput', '💡 Future: Deploy Worker endpoint to enable browser clearing', 'info');
+    }
+
+    // Worker API Inspector
+    async function testWorkerProducts() {
+      clearLog('workerOutput');
+      log('workerOutput', `GET ${WORKER_URL}/products`, 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/products`);
+        const data = await res.json();
+        log('workerOutput', `✅ Response: ${data.length} products`, 'success');
+        log('workerOutput', JSON.stringify(data.slice(0, 2), null, 2), 'info');
+      } catch (err) {
+        log('workerOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function testWorkerHealth() {
+      clearLog('workerOutput');
+      log('workerOutput', `GET ${WORKER_URL}/version`, 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/version`);
+        const data = await res.json();
+        log('workerOutput', `✅ Worker version: ${data.version}`, 'success');
+        log('workerOutput', JSON.stringify(data, null, 2), 'info');
+      } catch (err) {
+        log('workerOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function testWorkerCustomer() {
+      clearLog('workerOutput');
+      log('workerOutput', `GET ${WORKER_URL}/user-products?user=test`, 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/user-products?user=test`);
+        const data = await res.json();
+        log('workerOutput', `✅ Response received`, 'success');
+        log('workerOutput', JSON.stringify(data, null, 2), 'info');
+      } catch (err) {
+        log('workerOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    function clearWorkerOutput() { clearLog('workerOutput'); }
+
+    // Data Sync Verification
+    async function runFullVerification() {
+      clearLog('syncOutput');
+      log('syncOutput', '🔄 Running full sync verification...', 'info');
+      log('syncOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+      
+      // Check Stripe
+      log('syncOutput', '1️⃣ Checking Stripe...', 'info');
+      try {
+        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const data = await res.json();
+        log('syncOutput', `   ✅ Stripe: ${data.data.length} products`, 'success');
+      } catch (err) {
+        log('syncOutput', `   ❌ Stripe error: ${err.message}`, 'error');
+      }
+      
+      // Check KV
+      log('syncOutput', '2️⃣ Checking KV Storage...', 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/products`);
+        const products = await res.json();
+        log('syncOutput', `   ✅ KV: ${products.length} products`, 'success');
+      } catch (err) {
+        log('syncOutput', `   ❌ KV error: ${err.message}`, 'error');
+      }
+      
+      // Check Worker
+      log('syncOutput', '3️⃣ Checking Worker API...', 'info');
+      try {
+        const res = await fetch(`${WORKER_URL}/version`);
+        const data = await res.json();
+        log('syncOutput', `   ✅ Worker: v${data.version}`, 'success');
+      } catch (err) {
+        log('syncOutput', `   ❌ Worker error: ${err.message}`, 'error');
+      }
+      
+      log('syncOutput', '', 'info');
+      log('syncOutput', '✅ Verification complete!', 'success');
+    }
+
+    async function clearAllData() {
+      if (!confirm('⚠️ Delete ALL data from Stripe & KV?')) return;
+      if (!confirm('⚠️⚠️⚠️ THIS CANNOT BE UNDONE! Type DELETE to confirm')) return;
+      
+      clearLog('syncOutput');
+      log('syncOutput', '🗑️ Clearing all data...', 'warning');
+      log('syncOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
+      
+      try {
+        // Clear Stripe
+        log('syncOutput', '1️⃣ Clearing Stripe products...', 'info');
+        const stripeRes = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const { data: products } = await stripeRes.json();
+        
+        let deleted = 0;
+        for (const product of products) {
+          await fetch(`https://api.stripe.com/v1/products/${product.id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+          });
+          log('syncOutput', `  ✅ Deleted ${product.name}`, 'success');
+          deleted++;
+        }
+        log('syncOutput', `✅ Stripe: Deleted ${deleted} products`, 'success');
+        
+        // Clear KV
+        log('syncOutput', '2️⃣ Clearing KV storage...', 'info');
+        const kvKeysRes = await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys`,
+          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
+        );
+        const { result: keys } = await kvKeysRes.json();
+        
+        let kvDeleted = 0;
+        for (const key of keys) {
+          await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/values/${key.name}`,
+            { 
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${CF_TOKEN}` }
+            }
+          );
+          log('syncOutput', `  ✅ Deleted ${key.name}`, 'success');
+          kvDeleted++;
+        }
+        log('syncOutput', `✅ KV: Deleted ${kvDeleted} keys`, 'success');
+        
+        log('syncOutput', '', 'info');
+        log('syncOutput', '✅ All data cleared!', 'success');
+        log('syncOutput', '🎯 Stripe: 0 products | KV: 0 keys', 'info');
+        
+        await refreshStats();
+        
+      } catch (err) {
+        log('syncOutput', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    // CSV Functions
+    function togglePasteArea() {
+      const area = document.getElementById('pasteArea');
+      area.style.display = area.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleCSVUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      document.getElementById('csvFileName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        parseCSV(text);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSVFromText() {
+      const text = document.getElementById('csvTextInput').value.trim();
+      if (!text) {
+        alert('Please paste CSV data');
+        return;
+      }
+      document.getElementById('csvFileName').textContent = '(from pasted text)';
+      parseCSV(text);
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n').filter(l => l.trim());
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      csvData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        const row = {};
+        headers.forEach((h, idx) => row[h] = values[idx] || '');
+        csvData.push(row);
+      }
+      
+      document.getElementById('uploadStripeBtn').style.display = 'inline-block';
+      document.getElementById('syncKVBtn').style.display = 'inline-block';
+      document.getElementById('previewBtn').style.display = 'inline-block';
+      
+      clearLog('csvOutput');
+      log('csvOutput', `✅ Parsed ${csvData.length} rows from CSV`, 'success');
+      previewCSV();
+    }
+
+    function previewCSV() {
+      if (!csvData) return;
+      
+      const preview = document.getElementById('csvPreview');
+      const thead = document.getElementById('csvTableHead');
+      const tbody = document.getElementById('csvTableBody');
+      
+      document.getElementById('rowCount').textContent = csvData.length;
+      
+      const headers = Object.keys(csvData[0]);
+      thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+      tbody.innerHTML = csvData.map(row => 
+        '<tr>' + headers.map(h => `<td>${row[h] || '-'}</td>`).join('') + '</tr>'
+      ).join('');
+      
+      preview.style.display = 'block';
+    }
+
+    async function uploadToStripe() {
+      if (!csvData) return;
+      
+      clearLog('csvOutput');
+      log('csvOutput', `⬆️ Uploading ${csvData.length} products to Stripe...`, 'info');
+      log('csvOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+      
+      let success = 0, failed = 0;
+      
+      for (const row of csvData) {
+        try {
+          log('csvOutput', `Uploading ${row.Name}...`, 'info');
+          
+          const productData = new URLSearchParams({
+            name: row.Name,
+            description: `${row.Morph} | ${row.Gender} | Born ${row.YOB}`
+          });
+          
+          const productRes = await fetch('https://api.stripe.com/v1/products', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${STRIPE_KEY}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: productData
+          });
+          
+          if (!productRes.ok) throw new Error('Product creation failed');
+          const product = await productRes.json();
+          
+          const priceData = new URLSearchParams({
+            product: product.id,
+            unit_amount: '15000',
+            currency: 'eur'
+          });
+          
+          const priceRes = await fetch('https://api.stripe.com/v1/prices', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${STRIPE_KEY}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: priceData
+          });
+          
+          if (!priceRes.ok) throw new Error('Price creation failed');
+          
+          log('csvOutput', `  ✅ ${row.Name}`, 'success');
+          success++;
+          
+        } catch (err) {
+          log('csvOutput', `  ❌ ${row.Name}: ${err.message}`, 'error');
+          failed++;
+        }
+      }
+      
+      log('csvOutput', '', 'info');
+      log('csvOutput', `✅ Upload complete! ${success} succeeded, ${failed} failed`, 'success');
+      log('csvOutput', '💡 Now click "Sync to KV"', 'info');
+      await refreshStripeCount();
+    }
+
+    async function syncToKV() {
+      clearLog('csvOutput');
+      log('csvOutput', '🔄 Syncing Stripe → KV...', 'info');
+      log('csvOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+      log('csvOutput', '💡 Using batch upload with delays to avoid rate limits', 'info');
+      
+      try {
+        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        });
+        const { data: products } = await res.json();
+        
+        log('csvOutput', `Found ${products.length} products in Stripe`, 'info');
+        log('csvOutput', '', 'info');
+        
+        let synced = 0;
+        const productIds = [];
+        const BATCH_SIZE = 5;
+        const DELAY_MS = 1000; // 1 second between batches
+        
+        // Process in batches
+        for (let i = 0; i < products.length; i += BATCH_SIZE) {
+          const batch = products.slice(i, i + BATCH_SIZE);
+          const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+          const totalBatches = Math.ceil(products.length / BATCH_SIZE);
+          
+          log('csvOutput', `📦 Batch ${batchNum}/${totalBatches} (${batch.length} products)...`, 'info');
+          
+          const promises = batch.map(async product => {
+            try {
+              const key = `product:${product.id}`;
+              productIds.push(product.id);
+              
+              const kvRes = await fetch(
+                `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/values/${key}`,
+                {
+                  method: 'PUT',
+                  headers: { 'Authorization': `Bearer ${CF_TOKEN}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify(product)
+                }
+              );
+              
+              if (kvRes.ok) {
+                return { success: true, name: product.name };
+              } else {
+                return { success: false, name: product.name, error: 'Upload failed' };
+              }
+            } catch (err) {
+              return { success: false, name: product.name, error: err.message };
+            }
+          });
+          
+          const results = await Promise.all(promises);
+          results.forEach(r => {
+            if (r.success) {
+              log('csvOutput', `  ✅ ${r.name}`, 'success');
+              synced++;
+            } else {
+              log('csvOutput', `  ❌ ${r.name}: ${r.error}`, 'error');
+            }
+          });
+          
+          // Delay between batches
+          if (i + BATCH_SIZE < products.length) {
+            await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+          }
+        }
+        
+        // Update index
+        await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/values/_index:products`,
+          {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${CF_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(productIds)
+          }
+        );
+        
+        log('csvOutput', '', 'info');
+        log('csvOutput', `✅ Sync complete! ${synced}/${products.length} synced`, 'success');
+        log('csvOutput', '🎉 Check catalog.html!', 'success');
+        await refreshKVCount();
+        
+      } catch (err) {
+        log('csvOutput', `❌ Sync failed: ${err.message}`, 'error');
+      }
+    }
+
+    function clearPasteArea() {
+      document.getElementById('csvTextInput').value = '';
+      document.getElementById('csvFileName').textContent = '';
+      csvData = null;
+      document.getElementById('uploadStripeBtn').style.display = 'none';
+      document.getElementById('syncKVBtn').style.display = 'none';
+      document.getElementById('previewBtn').style.display = 'none';
+      document.getElementById('csvPreview').style.display = 'none';
+      clearLog('csvOutput');
+    }
+
+    function downloadSampleCSV() {
+      const csv = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,
+Chocolate Chip,Pastel DG,Male,2021,`;
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sample-snakes.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('csvOutput', '✅ Sample CSV downloaded', 'success');
+    }
+
+    // Auto-load stats on page load
+    window.addEventListener('load', () => {
+      refreshStripeCount();
+      refreshKVCount();
+      refreshCustomerCount();
+    });
+  </script>
+</body>
+</html>

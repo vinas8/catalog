@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📤 Import Products - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #333; margin-bottom: 10px; }
+    .subtitle { color: #666; margin-bottom: 30px; }
+    .section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #5568d3; transform: translateY(-2px); }
+    .btn-success { background: #28a745; }
+    .btn-success:hover { background: #218838; }
+    .btn-danger { background: #dc3545; }
+    .btn-danger:hover { background: #c82333; }
+    .btn-secondary { background: #6c757d; }
+    .btn-secondary:hover { background: #5a6268; }
+    .output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    .output .success { color: #4ade80; }
+    .output .error { color: #f87171; }
+    .output .warning { color: #fbbf24; }
+    .output .info { color: #60a5fa; }
+    #csvPreview {
+      margin-top: 20px;
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+    }
+    tr:hover { background: #f9fafb; }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📤 Import Products to Serpent Town</h1>
+    <p class="subtitle">Upload snake collection CSV and sync to Stripe + KV storage</p>
+
+    <!-- CSV Input -->
+    <div class="section">
+      <h2 style="margin-bottom: 20px;">📋 Step 1: Provide CSV Data</h2>
+      
+      <input type="file" id="csvFile" accept=".csv" style="display: none;" onchange="handleFile(event)">
+      <button class="btn" onclick="document.getElementById('csvFile').click()">📁 Choose CSV File</button>
+      <button class="btn btn-secondary" onclick="togglePaste()">📋 Paste CSV Text</button>
+      <button class="btn btn-secondary" onclick="downloadSample()">📥 Download Sample</button>
+      <span id="fileName" style="margin-left: 15px; color: #666;"></span>
+
+      <div id="pasteArea" style="display: none; margin-top: 20px;">
+        <textarea id="csvText" placeholder="Paste CSV here (include headers):
+Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,"></textarea>
+        <button class="btn" onclick="parseText()" style="margin-top: 10px;">Parse CSV</button>
+      </div>
+
+      <div id="csvPreview">
+        <h3 style="margin: 20px 0 10px 0;">Preview (<span id="rowCount">0</span> snakes)</h3>
+        <div style="max-height: 300px; overflow-y: auto; border-radius: 8px;">
+          <table id="previewTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="section">
+      <h2 style="margin-bottom: 20px;">🚀 Step 2: Execute Import</h2>
+      
+      <button class="btn btn-success" onclick="uploadToStripe()" id="uploadBtn" disabled>⬆️ Upload to Stripe</button>
+      <button class="btn btn-success" onclick="syncToKV()" id="syncBtn" disabled>🔄 Sync to KV</button>
+      <button class="btn btn-danger" onclick="clearStripe()">🗑️ Clear Stripe</button>
+      
+      <div id="output" class="output"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="section">
+      <h2 style="margin-bottom: 20px;">📊 Current Status</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-number" id="stripeCount">-</div>
+          <div class="stat-label">Stripe Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="kvCount">-</div>
+          <div class="stat-label">KV Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="csvCount">0</div>
+          <div class="stat-label">CSV Loaded</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="refreshStats()">🔄 Refresh Stats</button>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    let csvData = null;
+
+    function log(msg, type = 'info') {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      const time = new Date().toLocaleTimeString();
+      output.innerHTML += `<div class="${type}">[${time}] ${msg}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('output').innerHTML = '';
+    }
+
+    function togglePaste() {
+      const area = document.getElementById('pasteArea');
+      area.style.display = area.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById('fileName').textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => parseCSV(e.target.result);
+      reader.readAsText(file);
+    }
+
+    function parseText() {
+      const text = document.getElementById('csvText').value;
+      if (!text.trim()) {
+        alert('Please paste CSV data');
+        return;
+      }
+      document.getElementById('fileName').textContent = '(from pasted text)';
+      parseCSV(text);
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n').filter(l => l.trim());
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      csvData = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        const row = {};
+        headers.forEach((h, idx) => row[h] = values[idx] || '');
+        csvData.push(row);
+      }
+      
+      document.getElementById('csvCount').textContent = csvData.length;
+      document.getElementById('uploadBtn').disabled = false;
+      document.getElementById('syncBtn').disabled = false;
+      showPreview();
+      clearLog();
+      log(`✅ Loaded ${csvData.length} snakes from CSV`, 'success');
+    }
+
+    function showPreview() {
+      const preview = document.getElementById('csvPreview');
+      const thead = document.getElementById('tableHead');
+      const tbody = document.getElementById('tableBody');
+      
+      document.getElementById('rowCount').textContent = csvData.length;
+      
+      const headers = Object.keys(csvData[0]);
+      thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+      tbody.innerHTML = csvData.map(row => 
+        '<tr>' + headers.map(h => `<td>${row[h] || '-'}</td>`).join('') + '</tr>'
+      ).join('');
+      
+      preview.style.display = 'block';
+    }
+
+    async function uploadToStripe() {
+      if (!csvData) return;
+      
+      clearLog();
+      log('⬆️ Uploading products to Stripe...', 'info');
+      
+      const products = csvData.map(row => ({
+        name: row.Name,
+        morph: row.Morph,
+        gender: row.Gender,
+        yob: row.YOB,
+        weight: row.Weight || 'TBD',
+        species: (row.Morph.includes('Corn') || row.Morph.includes('Salmon') || row.Morph.includes('Opal')) ? 'corn_snake' : 'ball_python',
+        price: 150.00
+      }));
+      
+      try {
+        const res = await fetch(`${WORKER_URL}/upload-products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+        
+        const result = await res.json();
+        
+        if (res.ok) {
+          log(`✅ Upload complete! ${result.uploaded}/${result.total} succeeded`, 'success');
+          result.results.forEach(r => {
+            if (r.success) log(`  ✅ ${r.name}`, 'success');
+            else log(`  ❌ ${r.name}: ${r.error}`, 'error');
+          });
+          refreshStats();
+        } else {
+          log(`❌ Upload failed: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        log(`❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function syncToKV() {
+      clearLog();
+      log('🔄 Syncing Stripe → KV...', 'info');
+      
+      try {
+        const res = await fetch(`${WORKER_URL}/sync-stripe-to-kv`, { method: 'POST' });
+        const result = await res.json();
+        
+        if (res.ok) {
+          log(`✅ Sync complete! ${result.synced}/${result.total} synced`, 'success');
+          refreshStats();
+        } else {
+          log(`❌ Sync failed: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        log(`❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function clearStripe() {
+      if (!confirm('⚠️ Delete ALL Stripe products?')) return;
+      
+      clearLog();
+      log('🗑️ Clearing Stripe...', 'warning');
+      
+      try {
+        const res = await fetch(`${WORKER_URL}/clear-stripe-products`, { method: 'POST' });
+        const result = await res.json();
+        
+        if (res.ok) {
+          log(`✅ Cleared! ${result.deleted}/${result.total} deleted`, 'success');
+          refreshStats();
+        } else {
+          log(`❌ Clear failed: ${result.error}`, 'error');
+        }
+      } catch (err) {
+        log(`❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function refreshStats() {
+      try {
+        const res = await fetch(`${WORKER_URL}/products`);
+        const products = await res.json();
+        document.getElementById('kvCount').textContent = products.length;
+      } catch {
+        document.getElementById('kvCount').textContent = '?';
+      }
+    }
+
+    function downloadSample() {
+      const csv = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,
+Chocolate Chip,Pastel DG,Male,2021,`;
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sample-snakes.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Load stats on page load
+    refreshStats();
+  </script>
+</body>
+</html>
