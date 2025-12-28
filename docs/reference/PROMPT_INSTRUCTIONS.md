@@ -198,14 +198,19 @@ npm test
 
 > **Note:** These are project-specific commands, not standard GitHub Copilot CLI features. They appear in search/grep results for discoverability.
 
-### `.smri` - System Health & E2E Status  
-**Keywords:** .smri, smri, health check, e2e, scenarios, project briefing
+### 📋 SMRI Command System
 
-**When user types ".smri":** Run complete system briefing + health check:
+**Keywords:** .smri, smri, help, update, recent, commit, health check, project briefing, documentation
+
+---
+
+#### **`.smri`** - Complete Project Briefing
+
+Run complete system onboarding + health check:
 
 1. **Display Directory Tree**
    ```bash
-   find /root/catalog -type f -o -type d | grep -v node_modules | grep -v '\.git' | sort
+   find /root/catalog -type f -o -type d | grep -v node_modules | grep -v '\.git' | grep -v venv | grep -v __pycache__ | sort
    ```
 
 2. **Version Check**
@@ -213,53 +218,155 @@ npm test
    - Display `/root/catalog/README.md`
    - Auto-update README if version mismatch
 
-3. **SMRI Health Check (S6.0.03)**
-   ```bash
-   # Check server
-   ps aux | grep "python.*8000"
-   
-   # Test Worker (if accessible)
-   curl -s {WORKER_URL}/products | jq 'length'
+3. **Load Complete API Documentation**
+   - Display `/root/catalog/docs/v{version}.md` (API reference)
+   - If version doc doesn't exist, show latest available
+
+4. **Display SMRI Index**
+   - Show `/root/catalog/src/SMRI.md` (quick reference)
+
+5. **Display Command List**
    ```
-   
-   Report:
-   ```
-   🏥 SYSTEM HEALTH (S6.0.03)
-   ✅ Server: Running on :8000
-   ✅ Worker: ONLINE (###ms)  
-   ✅ Products: ## from KV
-   ✅ UI: 8 modules verified
-   ✅ Tests: 86/86 passing
+   📋 SMRI COMMANDS:
+   .smri          - Complete project briefing (you are here)
+   .smri help     - Show command list
+   .smri update   - Update SMRI from latest docs
+   .smri update recent - Document recent commit changes
    ```
 
-4. **E2E Scenario Status**
-   Parse `docs/test/E2E_TEST_SCENARIOS.md`:
-   ```
-   📊 SMRI E2E SCENARIOS
-   Total: 42 scenarios
-   - P0 (Must-Work): 13 - 100% ✅
-   - P1 (Gameplay): 9 - 100% ✅  
-   - P2 (Identity): 5 - 100% ✅
-   - P3+: 14 - ~50% ⚠️
-   
-   NEW: S6.0.03 (Health Check) ✅
-   Implementation: 88% (36/41)
-   ```
+6. **Ask: "📍 Where did we leave off?"**
 
-5. **Quick Access**
-   ```
-   🔗 http://localhost:8000/debug.html
-   🔗 http://localhost:8000/catalog.html
-   🔗 http://localhost:8000/game.html
-   ```
+**Purpose:** Complete project onboarding in one command.
 
-6. **Load Documentation**
-   - Display `docs/v{version}.md` (API reference)
-   - Display `src/SMRI.md` (quick index)
+---
 
-7. **Ask: "📍 Where did we leave off?"**
+#### **`.smri help`** - Quick Command List
 
-**Purpose:** Holistic view = structure + health + E2E status + business value
+Display concise help:
+
+```
+📋 SMRI COMMANDS:
+
+.smri                    Complete project briefing
+.smri help               Show this command list
+.smri progress           Show progress (tests, E2E, debug, features)
+.smri update             Update SMRI from latest docs
+.smri update recent      Document recent commit
+
+📖 Full docs: docs/reference/PROMPT_INSTRUCTIONS.md
+```
+
+---
+
+#### **`.smri progress`** - Progress Dashboard
+
+Show comprehensive progress across all areas:
+
+**Display Format:**
+
+```
+📊 SERPENT TOWN PROGRESS DASHBOARD
+Version: 0.7.0 | Date: {current_date}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 TESTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Unit Tests:        86/86   100% ✅
+E2E Scenarios:     26/42    62% 🚧
+Test Files:        26 files
+Test Cases:        389 total
+Coverage:          Unit tests passing
+
+🎯 E2E SCENARIOS (from .smri manifest)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+P0 (Critical):     13 scenarios - 85% ✅
+P1 (Gameplay):     9 scenarios  - 55% 🚧
+P2 (Identity):     5 scenarios  - 60% 🚧
+P3+ (Features):    15 scenarios - 30% 📋
+
+Top P0 Scenarios:
+✅ S1.1.01 - Product Status Check
+✅ S5.5.01 - Webhook Signature Validation
+✅ S6.0.03 - Health Check System
+🚧 S1.1,2,3,4,5.01 - Happy Path Purchase
+🚧 S1.1,2,3,4.01 - Returning User Flow
+
+🛠️ DEBUG TOOLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Debug Pages:       14 tools
+- healthcheck.html          ✅
+- customer-debug.html       ✅
+- data-inspector.html       ✅
+- purchase-flow-demo.html   ✅
+- test-scenarios.html       ✅
++ 9 more tools
+
+🚀 FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Modules:           6 core modules
+Exported APIs:     25+ functions
+Code:              ~4,200 lines
+
+Core Features:
+✅ Stripe Checkout Integration
+✅ Cloudflare Worker Backend
+✅ KV Storage Sync
+✅ Email Notifications (v0.7.0)
+✅ Tamagotchi Game Mechanics
+✅ Snake Breeding System
+✅ Equipment Shop (15+ items)
+🚧 Snake Genetics System (planned)
+
+📈 OVERALL PROGRESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Development:       85% 🚀
+Production Ready:  Core features ✅
+Next Milestone:    Complete P0 E2E scenarios
+
+Type .smri to see full project briefing
+```
+
+**Data Sources:**
+1. `npm test` output - Unit test status
+2. `.smri` manifest - E2E scenario list (617 lines)
+3. `tests/` directory - Test file count
+4. `debug/` directory - Debug tool count
+5. `src/modules/` - Module and feature count
+6. `package.json` - Current version
+7. Git history - Recent progress
+
+**Purpose:** Quick snapshot of project health and progress.
+
+---
+
+#### **`.smri update`** - Update SMRI from Docs
+
+Synchronize `src/SMRI.md` with latest documentation:
+
+1. Check version from `package.json`
+2. Scan `docs/v{version}.md`, `docs/STRIPE-KV-SYNC.md`, `docs/EMAIL_IMPLEMENTATION_SUMMARY.md`
+3. Update SMRI.md: version, test status, new features, doc links
+4. Report changes made
+
+---
+
+#### **`.smri update recent`** - Document Recent Commit
+
+Document changes from latest (or specified) commit:
+
+**Usage:**
+- `.smri update recent` - Document latest commit
+- `.smri update recent commit abc123` - Document specific commit
+
+**Process:**
+1. Get commit info: `git log --oneline -1` (or specified)
+2. Extract changes: `git show --stat {commit}`, `git diff {commit}^..{commit}`
+3. Update SMRI.md "Recent Updates" section with:
+   - Commit hash, message, date, author
+   - Files changed with line counts
+   - Key changes description
+   - Impact summary
+4. Report update completion
 
 ### `lol` - Code Humor
 **Keywords:** lol, joke, fun, programming humor, snake jokes

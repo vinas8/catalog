@@ -636,6 +636,33 @@
         external: ['KV'],
         description: 'Verify KV data consistency. Tests validation and repair.',
         implemented: false
+      },
+      {
+        id: 'S5.5.04',
+        title: 'Clear Stripe Products',
+        priority: 'P2',
+        modules: ['Worker', 'Shop'],
+        external: ['Stripe'],
+        description: 'Delete all Stripe test products. Tests scripts/1-clear-stripe-products.sh',
+        implemented: true
+      },
+      {
+        id: 'S5.5.05',
+        title: 'Clear KV Storage',
+        priority: 'P2',
+        modules: ['Worker'],
+        external: ['KV'],
+        description: 'Clear all KV data. Tests scripts/clear-kv-data.sh and scripts/clear-all-kv.sh',
+        implemented: true
+      },
+      {
+        id: 'S5.5.06',
+        title: 'Clear All Test Data',
+        priority: 'P2',
+        modules: ['Worker', 'Shop'],
+        external: ['Stripe', 'KV'],
+        description: 'Clear all Stripe products and KV data. Tests scripts/clear-all-data.sh',
+        implemented: true
       }
     ];
 

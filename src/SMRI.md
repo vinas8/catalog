@@ -1,18 +1,20 @@
 # 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.5.0  
-**Status:** In Development 🚧 (97% test coverage)  
-**Tests:** 69/71 passing (97%) - 2 minor failures
+**Version:** 0.7.0  
+**Status:** Production Ready 🚀  
+**Tests:** 86/86 passing (100%) ✅
 
 ---
 
-## ⚠️ Known Issues
+## 📋 SMRI Commands
 
-**2 Minor Test Failures:**
-1. Missing title tag in HTML (non-critical)
-2. HTML structure test (cosmetic)
+Type these commands for quick access:
 
-**Status:** Does not affect core functionality - shop, game, and payments work correctly.
+- **`.smri`** - Complete project briefing (tree, docs, API, status)
+- **`.smri help`** - Show this command list
+- **`.smri progress`** - Show progress (tests, E2E, debug tools, features)
+- **`.smri update`** - Update SMRI from latest docs
+- **`.smri update recent`** - Document recent commit changes
 
 ---
 
@@ -179,10 +181,11 @@ npm test
 ## 📚 Documentation
 
 - **README.md** - Project overview & quick start
-- **docs/v0.1.0.md** - Complete technical reference (PRIMARY)
+- **docs/v0.5.0.md** - Complete technical reference (PRIMARY)
+- **docs/STRIPE-KV-SYNC.md** - Stripe→KV workflow (v0.7.0)
+- **docs/EMAIL_IMPLEMENTATION_SUMMARY.md** - Email notifications (v0.7.0)
+- **docs/DEPLOYMENT_v0.7.0.md** - Latest deployment guide
 - **SETUP.md** - Setup & deployment guide
-- **CLOUDFLARE-SETUP-COMPLETE.md** - Cloudflare configuration
-- **CHANGES_SUMMARY.md** - Change log
 
 ---
 
@@ -199,6 +202,22 @@ npm test
 ---
 
 **Repository:** https://github.com/vinas8/catalog  
-**Lines of Code:** ~3,600  
-**Dependencies:** 0  
+**Lines of Code:** ~4,200  
+**Dependencies:** 1 (playwright for E2E tests)  
+**Latest:** v0.7.0 - Email notifications & Stripe→KV sync  
 **Ready to help!** 🚀
+
+---
+
+## 🆕 Recent Updates (v0.7.0)
+
+**Latest Commit:** `600a74e` - Complete Stripe→KV sync with correct name structure
+
+**New Features:**
+- ✅ Email notifications via Resend API
+- ✅ Stripe→KV automatic sync
+- ✅ Snake collection farm system
+- ✅ Separate nickname from morph field
+- ✅ Enhanced debug hub
+
+**Type `.smri update recent` to see full commit details**
