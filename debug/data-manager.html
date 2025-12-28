@@ -463,17 +463,22 @@
       log('kvOutput', '🗑️ Clearing all KV storage...', 'warning');
       log('kvOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
       log('kvOutput', '', 'info');
-      log('kvOutput', '⚠️ Browser CORS prevents direct KV API access', 'warning');
+      log('kvOutput', '⚠️ KV bulk delete doesn\'t support CORS from browser', 'warning');
       log('kvOutput', '', 'info');
-      log('kvOutput', '📋 Run this command in your terminal:', 'info');
+      log('kvOutput', '📋 Choose one of these options:', 'info');
       log('kvOutput', '', 'info');
-      log('kvOutput', '   bash scripts/clear-kv-data.sh', 'info');
+      log('kvOutput', '1️⃣ Run bash script:', 'info');
+      log('kvOutput', '   cd /root/catalog && bash scripts/clear-kv-data.sh', 'info');
       log('kvOutput', '', 'info');
-      log('kvOutput', 'Or use the Worker endpoint (if deployed):', 'info');
+      log('kvOutput', '2️⃣ Use wrangler CLI:', 'info');
+      log('kvOutput', '   npx wrangler kv:key list --namespace-id=ecbcb79f3df64379863872965f993991 | \\', 'info');
+      log('kvOutput', '   jq -r \'.[].name\' | xargs -I {} npx wrangler kv:key delete {} --namespace-id=...', 'info');
       log('kvOutput', '', 'info');
-      log('kvOutput', '   curl -X DELETE https://catalog.navickaszilvinas.workers.dev/admin/clear-kv', 'info');
+      log('kvOutput', '3️⃣ Or clear directly in Cloudflare Dashboard:', 'info');
+      log('kvOutput', '   https://dash.cloudflare.com → Workers & Pages → KV → PRODUCTS', 'info');
       log('kvOutput', '', 'info');
-      log('kvOutput', '💡 Future: Deploy Worker endpoint to enable browser clearing', 'info');
+      log('kvOutput', '💡 Reason: Browser CORS policy blocks DELETE to /bulk endpoint', 'warning');
+      log('kvOutput', '   (GET works, but DELETE/POST to bulk requires backend)', 'info');
     }
 
     // Worker API Inspector
@@ -751,89 +756,45 @@
 
     async function syncToKV() {
       clearLog('csvOutput');
-      log('csvOutput', '🔄 Syncing Stripe → KV...', 'info');
+      log('csvOutput', '🔄 Syncing Stripe → KV via Worker...', 'info');
       log('csvOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
-      log('csvOutput', '💡 Using batch upload with delays to avoid rate limits', 'info');
       
       try {
-        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
-          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` }
+        log('csvOutput', '📡 Sending request to Worker...', 'info');
+        const res = await fetch(`${WORKER_URL}/sync-stripe-to-kv`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
         });
-        const { data: products } = await res.json();
         
-        log('csvOutput', `Found ${products.length} products in Stripe`, 'info');
-        log('csvOutput', '', 'info');
-        
-        let synced = 0;
-        const productIds = [];
-        const BATCH_SIZE = 5;
-        const DELAY_MS = 1000; // 1 second between batches
-        
-        // Process in batches
-        for (let i = 0; i < products.length; i += BATCH_SIZE) {
-          const batch = products.slice(i, i + BATCH_SIZE);
-          const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-          const totalBatches = Math.ceil(products.length / BATCH_SIZE);
-          
-          log('csvOutput', `📦 Batch ${batchNum}/${totalBatches} (${batch.length} products)...`, 'info');
-          
-          const promises = batch.map(async product => {
-            try {
-              const key = `product:${product.id}`;
-              productIds.push(product.id);
-              
-              const kvRes = await fetch(
-                `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/values/${key}`,
-                {
-                  method: 'PUT',
-                  headers: { 'Authorization': `Bearer ${CF_TOKEN}`, 'Content-Type': 'application/json' },
-                  body: JSON.stringify(product)
-                }
-              );
-              
-              if (kvRes.ok) {
-                return { success: true, name: product.name };
-              } else {
-                return { success: false, name: product.name, error: 'Upload failed' };
-              }
-            } catch (err) {
-              return { success: false, name: product.name, error: err.message };
-            }
-          });
-          
-          const results = await Promise.all(promises);
-          results.forEach(r => {
-            if (r.success) {
-              log('csvOutput', `  ✅ ${r.name}`, 'success');
-              synced++;
-            } else {
-              log('csvOutput', `  ❌ ${r.name}: ${r.error}`, 'error');
-            }
-          });
-          
-          // Delay between batches
-          if (i + BATCH_SIZE < products.length) {
-            await new Promise(resolve => setTimeout(resolve, DELAY_MS));
-          }
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
         }
         
-        // Update index
-        await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/values/_index:products`,
-          {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${CF_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(productIds)
-          }
-        );
+        const result = await res.json();
         
         log('csvOutput', '', 'info');
-        log('csvOutput', `✅ Sync complete! ${synced}/${products.length} synced`, 'success');
-        log('csvOutput', '🎉 Check catalog.html!', 'success');
+        log('csvOutput', `✅ Sync complete!`, 'success');
+        log('csvOutput', `   📦 Total: ${result.total} products`, 'info');
+        log('csvOutput', `   ✅ Synced: ${result.synced}`, 'success');
+        log('csvOutput', `   ❌ Failed: ${result.failed}`, result.failed > 0 ? 'error' : 'info');
+        
+        if (result.results && result.failed > 0) {
+          log('csvOutput', '', 'info');
+          log('csvOutput', 'Failed products:', 'warning');
+          result.results.filter(r => !r.success).forEach(r => {
+            log('csvOutput', `  ❌ ${r.name}: ${r.error}`, 'error');
+          });
+        }
+        
+        log('csvOutput', '', 'info');
+        log('csvOutput', '🎉 KV storage updated! Check catalog.html', 'success');
         await refreshKVCount();
         
       } catch (err) {
+        log('csvOutput', '', 'info');
         log('csvOutput', `❌ Sync failed: ${err.message}`, 'error');
+        log('csvOutput', '', 'info');
+        log('csvOutput', '💡 Make sure Worker is deployed with latest code', 'warning');
       }
     }
 
