@@ -132,7 +132,7 @@
 
 ### Scenario 1: Happy Path (Daily Check-in)
 
-**ID:** `VCT-1.0-HAPPY-DAILY`  
+**ID:** `S1.0-HAPPY-DAILY`  
 **Priority:** P0 (Critical)  
 **Duration:** <60 seconds
 
@@ -174,7 +174,7 @@
 
 ### Scenario 2: Missed Care (2-3 days absence)
 
-**ID:** `VCT-2.0-MISSED-CARE`  
+**ID:** `S2.0-MISSED-CARE`  
 **Priority:** P0 (Critical)  
 **Duration:** <60 seconds
 
@@ -209,7 +209,7 @@
 
 ### Scenario 3: Education-First Commerce
 
-**ID:** `VCT-3.0-COMMERCE-CONTEXT`  
+**ID:** `S3.0-COMMERCE-CONTEXT`  
 **Priority:** P0 (Critical)  
 **Duration:** <60 seconds
 
@@ -251,7 +251,7 @@
 
 ### Scenario 4: Trust Protection (No Purchase Blocking)
 
-**ID:** `VCT-4.0-TRUST-PROTECT`  
+**ID:** `S4.0-TRUST-PROTECT`  
 **Priority:** P0 (Critical)  
 **Duration:** <60 seconds
 
@@ -288,7 +288,7 @@
 
 ### Scenario 5: Email-Driven Re-Entry
 
-**ID:** `VCT-5.0-EMAIL-ENTRY`  
+**ID:** `S5.0-EMAIL-ENTRY`  
 **Priority:** P1 (High)  
 **Duration:** <60 seconds
 
@@ -321,7 +321,7 @@
 
 ### Scenario 6: Failure Case (Educational, Not Punitive)
 
-**ID:** `VCT-6.0-FAILURE-EDUCATIONAL`  
+**ID:** `S6.0-FAILURE-EDUCATIONAL`  
 **Priority:** P1 (High)  
 **Duration:** <60 seconds
 
