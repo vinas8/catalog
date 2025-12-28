@@ -5,12 +5,13 @@
     "level_1": 10,
     "level_2": 20
   },
-  "notes": "24 breeding snakes (NOT for sale - farm inventory only)",
-  "last_updated": "2025-12-28",
+  "notes": "24 breeding snakes + 1 baby for sale. Breeding snakes are NOT for sale - they are farm inventory.",
+  "last_updated": "2025-12-27",
   "snakes": [
     {
       "id": 1,
       "name": "Pudding",
+      "full_name": "Pudding Banana H. Clown",
       "species": "ball_python",
       "morph": "Banana H. Clown",
       "gender": "Male",
@@ -19,11 +20,16 @@
       "weight_grams": 450,
       "length_cm": 85,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "docile",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 2,
       "name": "Taohu",
+      "full_name": "Taohu Super Mojave",
       "species": "ball_python",
       "morph": "Super Mojave",
       "gender": "Male",
@@ -32,11 +38,16 @@
       "weight_grams": 420,
       "length_cm": 80,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 3,
       "name": "Chocolate Chip",
+      "full_name": "Chocolate Chip Pastel DG",
       "species": "ball_python",
       "morph": "Pastel DG",
       "gender": "Male",
@@ -45,11 +56,16 @@
       "weight_grams": 1800,
       "length_cm": 140,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 4,
       "name": "Gangsta",
+      "full_name": "Gangsta Spotnose Clown",
       "species": "ball_python",
       "morph": "Spotnose Clown",
       "gender": "Male",
@@ -58,11 +74,16 @@
       "weight_grams": 470,
       "length_cm": 88,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "active",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 5,
       "name": "Marshmellow",
+      "full_name": "Marshmellow Ivory (Super yellow belly)",
       "species": "ball_python",
       "morph": "Ivory (Super yellow belly)",
       "gender": "Male",
@@ -71,11 +92,16 @@
       "weight_grams": 440,
       "length_cm": 82,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "gentle",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 6,
       "name": "Brownie",
+      "full_name": "Brownie Black head",
       "species": "ball_python",
       "morph": "Black head",
       "gender": "Male",
@@ -84,11 +110,16 @@
       "weight_grams": 460,
       "length_cm": 86,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "shy",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 7,
       "name": "Almond",
+      "full_name": "Almond Hurricane Butter Fire Yellow belly H.clown",
       "species": "ball_python",
       "morph": "Hurricane Butter Fire Yellow belly H.clown",
       "gender": "Female",
@@ -97,11 +128,16 @@
       "weight_grams": 520,
       "length_cm": 90,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 8,
       "name": "Caramel",
+      "full_name": "Caramel Hurricane butter Spider pos H.Ghost Clown Pied",
       "species": "ball_python",
       "morph": "Hurricane butter Spider pos H.Ghost Clown Pied",
       "gender": "Female",
@@ -110,11 +146,16 @@
       "weight_grams": 510,
       "length_cm": 89,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "active",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 9,
       "name": "Cookie",
+      "full_name": "Cookie HRA Pastel Fire Paradox 50% pos het clown",
       "species": "ball_python",
       "morph": "HRA Pastel Fire Paradox 50% pos het clown",
       "gender": "Female",
@@ -123,11 +164,16 @@
       "weight_grams": 500,
       "length_cm": 87,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "docile",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 10,
       "name": "Hershy",
+      "full_name": "Hershy Super Mystic",
       "species": "ball_python",
       "morph": "Super Mystic",
       "gender": "Female",
@@ -136,11 +182,16 @@
       "weight_grams": 530,
       "length_cm": 91,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "gentle",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 11,
       "name": "Halibo",
+      "full_name": "Halibo Spotnose Super Enchi H.Clown",
       "species": "ball_python",
       "morph": "Spotnose Super Enchi H.Clown",
       "gender": "Female",
@@ -149,11 +200,16 @@
       "weight_grams": 1200,
       "length_cm": 115,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 12,
       "name": "Biscuit",
+      "full_name": "Biscuit Leopard Lesser Pastel H. Clown",
       "species": "ball_python",
       "morph": "Leopard Lesser Pastel H. Clown",
       "gender": "Female",
@@ -162,11 +218,16 @@
       "weight_grams": 540,
       "length_cm": 92,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "weekly"
     },
     {
       "id": 13,
       "name": "Salabao",
+      "full_name": "Salabao OD Highway",
       "species": "ball_python",
       "morph": "OD Highway",
       "gender": "Female",
@@ -175,11 +236,16 @@
       "weight_grams": 1150,
       "length_cm": 112,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 14,
       "name": "Waffel",
+      "full_name": "Waffel HGW Enchi Fire",
       "species": "ball_python",
       "morph": "HGW Enchi Fire",
       "gender": "Female",
@@ -188,11 +254,16 @@
       "weight_grams": 1180,
       "length_cm": 114,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 15,
       "name": "Toffee",
+      "full_name": "Toffee Spotnose Pastel H.DG",
       "species": "ball_python",
       "morph": "Spotnose Pastel H.DG",
       "gender": "Female",
@@ -201,11 +272,16 @@
       "weight_grams": 1170,
       "length_cm": 113,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 16,
       "name": "Coco",
+      "full_name": "Coco Pastel het. DG",
       "species": "ball_python",
       "morph": "Pastel het. DG",
       "gender": "Female",
@@ -214,11 +290,16 @@
       "weight_grams": 1140,
       "length_cm": 111,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 17,
       "name": "Latte",
+      "full_name": "Latte Lesser Spotnose 66% pos h.clown 50% pos h.DG hypo",
       "species": "ball_python",
       "morph": "Lesser Spotnose 66% pos h.clown 50% pos h.DG hypo",
       "gender": "Female",
@@ -227,11 +308,16 @@
       "weight_grams": 1160,
       "length_cm": 112,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "experienced",
+      "feeding_schedule": "every_10_days"
     },
     {
       "id": 18,
       "name": "Mochi",
+      "full_name": "Mochi Salmon Hypo Bloodred",
       "species": "corn_snake",
       "morph": "Salmon Hypo Bloodred",
       "gender": "Male",
@@ -240,11 +326,16 @@
       "weight_grams": 180,
       "length_cm": 95,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "proven_breeder",
+      "health_status": "excellent",
+      "temperament": "active",
+      "feeding_schedule": "every_7_days"
     },
     {
       "id": 19,
       "name": "Milkshake",
+      "full_name": "Milkshake Salmon Tessera H.Bloodred",
       "species": "corn_snake",
       "morph": "Salmon Tessera H.Bloodred",
       "gender": "Female",
@@ -253,11 +344,16 @@
       "weight_grams": 85,
       "length_cm": 60,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "gentle",
+      "feeding_schedule": "every_5_days"
     },
     {
       "id": 20,
       "name": "Berry",
+      "full_name": "Berry Snow poss Hypo Strawberry",
       "species": "corn_snake",
       "morph": "Snow poss Hypo Strawberry",
       "gender": "Female",
@@ -266,11 +362,16 @@
       "weight_grams": 82,
       "length_cm": 58,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "every_5_days"
     },
     {
       "id": 21,
       "name": "Honey",
+      "full_name": "Honey Opal",
       "species": "corn_snake",
       "morph": "Opal",
       "gender": "Female",
@@ -279,11 +380,16 @@
       "weight_grams": 88,
       "length_cm": 62,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "docile",
+      "feeding_schedule": "every_5_days"
     },
     {
       "id": 22,
       "name": "Peachy",
+      "full_name": "Peachy Opal Tessera",
       "species": "corn_snake",
       "morph": "Opal Tessera",
       "gender": "Male",
@@ -292,11 +398,16 @@
       "weight_grams": 90,
       "length_cm": 63,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "active",
+      "feeding_schedule": "every_5_days"
     },
     {
       "id": 23,
       "name": "Lavender",
+      "full_name": "Lavender Lavender tessera",
       "species": "corn_snake",
       "morph": "Lavender tessera",
       "gender": "Female",
@@ -305,11 +416,16 @@
       "weight_grams": 84,
       "length_cm": 59,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "gentle",
+      "feeding_schedule": "every_5_days"
     },
     {
       "id": 24,
       "name": "Lolipop",
+      "full_name": "Lolipop Salmon H. Bloodred",
       "species": "corn_snake",
       "morph": "Salmon H. Bloodred",
       "gender": "Female",
@@ -318,7 +434,32 @@
       "weight_grams": 86,
       "length_cm": 61,
       "status": "farm_breeding",
-      "for_sale": false
+      "for_sale": false,
+      "breeding_potential": "high",
+      "health_status": "excellent",
+      "temperament": "calm",
+      "feeding_schedule": "every_5_days"
+    },
+    {
+      "id": 25,
+      "name": "Baby",
+      "full_name": "Baby Pastel Ball Python",
+      "species": "ball_python",
+      "morph": "Pastel",
+      "gender": "Male",
+      "yob": 2025,
+      "age_months": 2,
+      "weight_grams": 65,
+      "length_cm": 35,
+      "status": "available_for_sale",
+      "for_sale": true,
+      "price_eur": 150,
+      "stripe_product_id": null,
+      "breeding_potential": "future",
+      "health_status": "excellent",
+      "temperament": "baby_curious",
+      "feeding_schedule": "every_5_days",
+      "notes": "Captive bred, feeding on frozen/thawed mice, perfect starter snake"
     }
   ]
 }
