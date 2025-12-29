@@ -51,7 +51,7 @@ export class TestRunner {
         </div>
         ${group.tests.map(test => `
           <div class="test-card">
-            <div class="test-header" onclick="document.getElementById('body-${test.id}').classList.toggle('show')">
+            <div class="test-header" data-test-id="${test.id}">
               <span class="test-number">${test.number}</span>
               <span class="test-method">${test.method}</span>
               <span class="test-title">${test.name}</span>
@@ -83,6 +83,17 @@ export class TestRunner {
         `).join('')}
       </div>
     `).join('');
+
+    // Add click handlers after render
+    document.querySelectorAll('.test-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const testId = header.dataset.testId;
+        const body = document.getElementById(`body-${testId}`);
+        if (body) {
+          body.classList.toggle('show');
+        }
+      });
+    });
   }
 
   /**
