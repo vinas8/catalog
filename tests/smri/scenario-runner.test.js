@@ -70,7 +70,7 @@ class SMRITestRunner {
   }
 
   async runAll() {
-    console.log(`🐍 SMRI Scenario Test Runner v2.0 (Expected: ${TEST_COUNTS.SMRI_SCENARIOS} scenarios)`\n');
+    console.log(`🐍 SMRI Scenario Test Runner v2.0 (Expected: ${TEST_COUNTS.SMRI_SCENARIOS} scenarios)\n`);
 
     if (!fs.existsSync(this.scenariosPath)) {
       console.error('❌ Scenarios directory not found');
