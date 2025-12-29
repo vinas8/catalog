@@ -952,8 +952,9 @@ body {
   margin-top: auto;
 }
 
-/* Unified Navigation */
-.unified-nav {
+/* Unified Navigation (Desktop Top + Mobile Bottom) */
+.unified-nav,
+.top-nav {
   background: var(--bg);
   border-bottom: 3px solid var(--pastel-yellow);
   box-shadow: 0 2px 4px var(--shadow);
@@ -969,12 +970,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
   gap: 2rem;
+  flex: 1;
 }
 
 .nav-logo {
@@ -985,6 +988,11 @@ body {
   font-weight: bold;
   text-decoration: none;
   color: var(--text);
+  transition: transform 0.2s;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
 }
 
 .nav-logo span {
@@ -992,29 +1000,51 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-weight: 800;
 }
 
-.nav-links {
+.nav-links,
+.desktop-nav-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.nav-links a {
+.nav-links a,
+.nav-link {
   text-decoration: none;
   color: var(--text);
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   transition: all 0.2s;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-link:hover {
   background: var(--pastel-yellow-light);
+  transform: translateY(-1px);
 }
 
-.nav-links a.active {
+.nav-links a.active,
+.nav-link.active {
   background: var(--pastel-yellow);
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-link.debug-link {
+  color: #ff6b6b !important;
+  border: 1px solid #ff6b6b;
+  font-weight: 600;
+}
+
+.nav-link.debug-link:hover {
+  background: rgba(255, 107, 107, 0.1) !important;
 }
 
 .nav-right {
@@ -1030,31 +1060,36 @@ body {
 }
 
 .btn-register, .btn-login {
-  padding: 0.5rem 1.25rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
 .btn-register {
   background: var(--purple);
   color: white;
+  border: 2px solid var(--purple);
 }
 
 .btn-register:hover {
   background: #7C3AED;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .btn-login {
   background: transparent;
-  color: var(--purple);
-  border: 2px solid var(--purple);
+  color: var(--text);
+  border: 2px solid var(--pastel-yellow-dark);
 }
 
 .btn-login:hover {
-  background: var(--purple);
-  color: white;
+  background: var(--pastel-yellow-light);
+  border-color: var(--pastel-yellow);
+  transform: translateY(-1px);
 }
 
 /* Profile Dropdown */

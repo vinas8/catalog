@@ -1,6 +1,7 @@
 /**
- * Navigation Component - Unified responsive navigation for all pages
- * Provides: Main nav links + Profile dropdown + Debug mode support
+ * Navigation Component - iOS/Android style bottom nav + desktop top nav
+ * Mobile: Fixed bottom navigation (4 items max)
+ * Desktop: Traditional top navigation
  * @module components/Navigation
  */
 
@@ -18,7 +19,7 @@ export class Navigation {
       this.config = module.APP_CONFIG;
     } catch (e) {
       console.warn('Failed to load app-config, using defaults');
-      this.config = { DEBUG: false, NAVIGATION: { mainLinks: [], secondaryLinks: [] } };
+      this.config = { DEBUG: false, NAVIGATION: { primary: [] } };
     }
     
     this.render();
@@ -36,18 +37,17 @@ export class Navigation {
   }
 
   render() {
-    const nav = document.createElement('nav');
-    nav.className = 'unified-nav';
-    nav.innerHTML = `
+    // Desktop top nav
+    const topNav = document.createElement('nav');
+    topNav.className = 'top-nav';
+    topNav.innerHTML = `
       <div class="nav-container">
         <div class="nav-left">
           <a href="index.html" class="nav-logo">
             🐍 <span>Serpent Town</span>
           </a>
-          <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
-          <div class="nav-links" id="navLinks">
-            ${this.renderMainLinks()}
-            ${this.renderSecondaryLinks()}
+          <div class="desktop-nav-links">
+            ${this.renderPrimaryLinks('desktop')}
             ${this.config?.DEBUG ? this.renderDebugLink() : ''}
           </div>
         </div>
@@ -57,69 +57,59 @@ export class Navigation {
       </div>
     `;
 
-    // Insert at top of body
-    document.body.insertBefore(nav, document.body.firstChild);
+    // Mobile bottom nav
+    const bottomNav = document.createElement('nav');
+    bottomNav.className = 'bottom-nav';
+    bottomNav.innerHTML = `
+      <div class="bottom-nav-container">
+        ${this.renderPrimaryLinks('mobile')}
+        ${this.config?.DEBUG ? `
+          <a href="${this.config.NAVIGATION.debugLink.href}" class="bottom-nav-item debug-item">
+            <span class="nav-icon">${this.config.NAVIGATION.debugLink.icon}</span>
+            <span class="nav-label">Debug</span>
+          </a>
+        ` : ''}
+      </div>
+    `;
+
+    // Insert navs
+    document.body.insertBefore(topNav, document.body.firstChild);
+    document.body.appendChild(bottomNav);
+    
+    // Add padding to body for fixed navs
+    document.body.style.paddingTop = '70px';
+    document.body.style.paddingBottom = '70px';
     
     // Highlight active page
     this.highlightActivePage();
     this.addResponsiveStyles();
   }
 
-  renderMainLinks() {
-    if (!this.config?.NAVIGATION?.mainLinks) return '';
-    return this.config.NAVIGATION.mainLinks
-      .map(link => `<a href="${link.href}" class="nav-link" data-page="${link.label.toLowerCase()}">${link.icon} ${link.label}</a>`)
-      .join('');
-  }
-
-  renderSecondaryLinks() {
-    if (!this.config?.NAVIGATION?.secondaryLinks) return '';
-    return this.config.NAVIGATION.secondaryLinks
-      .map(link => `<a href="${link.href}" class="nav-link secondary" data-page="${link.label.toLowerCase()}">${link.icon} ${link.label}</a>`)
-      .join('');
+  renderPrimaryLinks(context = 'desktop') {
+    if (!this.config?.NAVIGATION?.primary) return '';
+    
+    if (context === 'mobile') {
+      return this.config.NAVIGATION.primary
+        .map(link => `
+          <a href="${link.href}" class="bottom-nav-item" data-page="${link.label.toLowerCase()}">
+            <span class="nav-icon">${link.icon}</span>
+            <span class="nav-label">${link.label}</span>
+          </a>
+        `).join('');
+    }
+    
+    return this.config.NAVIGATION.primary
+      .map(link => `
+        <a href="${link.href}" class="nav-link" data-page="${link.label.toLowerCase()}" title="${link.description}">
+          ${link.icon} <span>${link.label}</span>
+        </a>
+      `).join('');
   }
 
   renderDebugLink() {
     if (!this.config?.NAVIGATION?.debugLink) return '';
     const link = this.config.NAVIGATION.debugLink;
-    return `<a href="${link.href}" class="nav-link debug-link" style="color: #ff6b6b;">${link.icon} ${link.label}</a>`;
-  }
-
-  addResponsiveStyles() {
-    // Inject responsive styles if not already present
-    if (document.getElementById('nav-responsive-styles')) return;
-    
-    const style = document.createElement('style');
-    style.id = 'nav-responsive-styles';
-    style.textContent = `
-      .unified-nav { background: #2d3748; border-bottom: 2px solid #4a5568; padding: 0.75rem 1rem; }
-      .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
-      .nav-left { display: flex; align-items: center; gap: 2rem; flex: 1; }
-      .nav-logo { color: #fff; text-decoration: none; font-weight: bold; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
-      .nav-logo:hover { color: #667eea; }
-      .nav-links { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-      .nav-link { color: #cbd5e0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; white-space: nowrap; }
-      .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
-      .nav-link.active { background: #667eea; color: #fff; }
-      .nav-link.secondary { font-size: 0.9rem; opacity: 0.8; }
-      .nav-link.debug-link { border: 1px solid #ff6b6b; }
-      .mobile-menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
-      .nav-right { display: flex; gap: 1rem; align-items: center; }
-      .auth-buttons { display: flex; gap: 0.5rem; }
-      .btn-register, .btn-login { padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; transition: all 0.2s; }
-      .btn-register { background: #667eea; color: #fff; }
-      .btn-register:hover { background: #5568d3; }
-      .btn-login { border: 1px solid #667eea; color: #667eea; }
-      .btn-login:hover { background: rgba(102,126,234,0.1); }
-      
-      @media (max-width: 768px) {
-        .mobile-menu-toggle { display: block; }
-        .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: #2d3748; padding: 1rem; border-top: 1px solid #4a5568; z-index: 1000; }
-        .nav-links.active { display: flex; }
-        .nav-link { width: 100%; text-align: left; }
-      }
-    `;
-    document.head.appendChild(style);
+    return `<a href="${link.href}" class="nav-link debug-link">${link.icon} <span>${link.label}</span></a>`;
   }
 
   renderAuthSection() {
@@ -127,15 +117,12 @@ export class Navigation {
       return `
         <div class="profile-dropdown">
           <button class="profile-button" id="profileButton">
-            <img src="${this.currentUser.profile_picture || 'img/default-avatar.png'}" 
-                 alt="Profile" 
-                 class="profile-pic">
             <span>${this.currentUser.name}</span>
             <span class="dropdown-arrow">▼</span>
           </button>
           <div class="profile-menu" id="profileMenu" style="display: none;">
-            <a href="#profile">Edit Profile</a>
-            <a href="#purchases">My Purchases</a>
+            <a href="#profile">Profile</a>
+            <a href="#purchases">Purchases</a>
             <a href="#settings">Settings</a>
             <hr>
             <a href="#logout" id="logoutButton">Logout</a>
@@ -145,8 +132,8 @@ export class Navigation {
     } else {
       return `
         <div class="auth-buttons">
+          <a href="register.html" class="btn-login">Login</a>
           <a href="register.html" class="btn-register">Register</a>
-          <a href="register.html#login" class="btn-login">Login</a>
         </div>
       `;
     }
@@ -154,7 +141,7 @@ export class Navigation {
 
   highlightActivePage() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    const links = document.querySelectorAll('.nav-links a');
+    const links = document.querySelectorAll('.nav-link, .bottom-nav-item');
     
     links.forEach(link => {
       const href = link.getAttribute('href');
@@ -166,16 +153,6 @@ export class Navigation {
   }
 
   attachEventListeners() {
-    // Mobile menu toggle
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const navLinks = document.getElementById('navLinks');
-    
-    if (mobileMenuToggle) {
-      mobileMenuToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-      });
-    }
-    
     // Profile dropdown
     const profileButton = document.getElementById('profileButton');
     const profileMenu = document.getElementById('profileMenu');
@@ -215,6 +192,137 @@ export class Navigation {
     localStorage.setItem('userHash', userData.hash);
     localStorage.setItem(`user:${userData.hash}`, JSON.stringify(userData));
     window.location.reload();
+  }
+
+  addResponsiveStyles() {
+    if (document.getElementById('nav-responsive-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'nav-responsive-styles';
+    style.textContent = `
+      /* Desktop Top Nav */
+      .top-nav {
+        background: var(--bg);
+        border-bottom: 3px solid var(--pastel-yellow);
+        box-shadow: 0 2px 4px var(--shadow);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+      }
+      
+      .desktop-nav-links {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      
+      /* Mobile Bottom Nav - iOS/Android style */
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg);
+        border-top: 2px solid var(--pastel-yellow);
+        box-shadow: 0 -2px 8px var(--shadow);
+        z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom); /* iOS notch support */
+      }
+      
+      .bottom-nav-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0.5rem 0;
+      }
+      
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        text-decoration: none;
+        color: var(--muted);
+        border-radius: 12px;
+        transition: all 0.2s;
+        min-width: 60px;
+        text-align: center;
+      }
+      
+      .bottom-nav-item .nav-icon {
+        font-size: 1.5rem;
+        transition: transform 0.2s;
+      }
+      
+      .bottom-nav-item .nav-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      
+      .bottom-nav-item:active {
+        transform: scale(0.95);
+      }
+      
+      .bottom-nav-item.active {
+        color: var(--purple);
+      }
+      
+      .bottom-nav-item.active .nav-icon {
+        transform: scale(1.1);
+      }
+      
+      .bottom-nav-item.debug-item {
+        color: #ff6b6b;
+        border: 1px solid #ff6b6b;
+      }
+      
+      /* Responsive breakpoint */
+      @media (max-width: 768px) {
+        /* Hide desktop nav links */
+        .desktop-nav-links {
+          display: none !important;
+        }
+        
+        /* Show bottom nav */
+        .bottom-nav {
+          display: block;
+        }
+        
+        /* Adjust top nav for mobile */
+        .nav-left {
+          flex: 1;
+        }
+        
+        .nav-right .auth-buttons {
+          gap: 0.25rem;
+        }
+        
+        .btn-register, .btn-login {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.85rem;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .nav-logo span {
+          display: none; /* Hide "Serpent Town" text on small screens */
+        }
+        
+        .btn-register, .btn-login {
+          padding: 0.4rem 0.6rem;
+          font-size: 0.8rem;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }
 }
 

@@ -66,21 +66,20 @@ export const APP_CONFIG = {
   },
   
   // Navigation Configuration
+  // UX Psychology: 5 items max for mobile bottom nav (Miller's Law: 5±2 chunks)
+  // E-commerce focused: Shop → Browse → Care → Learn → Account
   NAVIGATION: {
-    mainLinks: [
+    // Primary navigation (shows everywhere - optimized for mobile bottom nav)
+    primary: [
+      { label: 'Shop', href: 'catalog.html', icon: '🛒', description: 'Buy snakes' },
+      { label: 'Collection', href: 'game.html', icon: '🐍', description: 'My snakes' },
+      { label: 'Dex', href: 'game/dex.html', icon: '📚', description: 'Encyclopedia' },
+      { label: 'Account', href: 'register.html', icon: '👤', description: 'Profile' }
+    ],
+    // Secondary links (desktop only - dropdown or overflow menu)
+    secondary: [
       { label: 'Home', href: 'index.html', icon: '🏠' },
-      { label: 'Catalog', href: 'catalog.html', icon: '🛒' },
-      { label: 'MySnakes', href: 'game.html', icon: '🐍' }
-    ],
-    secondaryLinks: [
-      { label: 'Shop', href: 'catalog.html', icon: '🛒' },
-      { label: 'Snake Dex', href: 'game/dex.html', icon: '📚' },
-      { label: 'Encyclopedia', href: 'collection.html', icon: '📖' },
       { label: 'Genetics', href: '#genetics', icon: '🧬' }
-    ],
-    authLinks: [
-      { label: 'Register', href: 'register.html' },
-      { label: 'Login', href: 'register.html#login' }
     ],
     // Debug link only shows when DEBUG is true
     debugLink: { label: 'Debug', href: 'debug/index.html', icon: '🔍' }
