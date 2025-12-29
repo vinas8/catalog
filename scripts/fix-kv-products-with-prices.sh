@@ -4,7 +4,7 @@
 ACCOUNT_ID="e24c9f59eed424bd6d04e0f10fe0886f"
 API_TOKEN="2BKglg-h8Vbs-n7NsjRZzHqDj_cTlwYkx2IoBVWY"
 NAMESPACE_ID="ecbcb79f3df64379863872965f993991"
-STRIPE_KEY="sk_test_51Sg3s0BjL72pe9Xs4RFYFTBPDDUhUzNTgAUbNUxhRk4pZQGZtpEXQvIFI6o2NZIujJcyGKKGn6Ml2rnoy16yVsf700BDVZxVYI"
+STRIPE_KEY="${STRIPE_SECRET_KEY:-}"  # Read from env vars
 
 echo "🔧 Fixing KV products with prices and payment links..."
 echo ""

@@ -265,7 +265,8 @@
 
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
-    const STRIPE_KEY = 'sk_test_51Sg3s0BjL72pe9Xs4RFYFTBPDDUhUzNTgAUbNUxhRk4pZQGZtpEXQvIFI6o2NZIujJcyGKKGn6Ml2rnoy16yVsf700BDVZxVYI';
+    // Stripe key is read from worker env vars - no hardcoded keys in frontend
+    const STRIPE_KEY = null;
     const CF_ACCOUNT = 'e24c9f59eed424bd6d04e0f10fe0886f';
     const CF_TOKEN = '2BKglg-h8Vbs-n7NsjRZzHqDj_cTlwYkx2IoBVWY';
     const KV_NAMESPACE = 'ecbcb79f3df64379863872965f993991';
