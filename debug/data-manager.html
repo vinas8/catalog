@@ -322,9 +322,14 @@
     async function refreshKVCount() {
       try {
         log('kvOutput', 'Fetching KV product count...', 'info');
-        const res = await fetch(`${WORKER_URL}/products?_t=${Date.now()}`, { cache: 'no-cache' });
-        const products = await res.json();
-        const count = Array.isArray(products) ? products.length : 0;
+        const res = await fetch(`${WORKER_URL}/kv/list-products`, { 
+          cache: 'no-store'
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const count = data.count || 0;
         document.getElementById('kvCount').textContent = count;
         log('kvOutput', `✅ KV has ${count} products`, 'success');
       } catch (err) {
@@ -334,8 +339,22 @@
     }
 
     async function refreshCustomerCount() {
-      document.getElementById('customerCount').textContent = '-';
-      log('kvOutput', '👥 Customer count feature coming soon', 'warning');
+      try {
+        const res = await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys?prefix=customer:`,
+          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const count = data.result ? data.result.length : 0;
+        document.getElementById('customerCount').textContent = count;
+        log('kvOutput', `👥 Customer count feature complete: ${count} customers`, 'success');
+      } catch (err) {
+        document.getElementById('customerCount').textContent = '?';
+        log('kvOutput', `❌ Customer count error: ${err.message}`, 'error');
+      }
     }
 
     // Stripe Inspector
