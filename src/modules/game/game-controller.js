@@ -169,16 +169,42 @@ class SnakeMuffin {
     debug(`🔄 Converting ${userProducts.length} products...`);
     
     try {
-      // Try to load products catalog for details
-      const productsResponse = await fetch('/data/products.json');
+      // Import worker config
+      const { WORKER_CONFIG } = await import('../../config/worker-config.js');
+      
+      // Load products catalog from worker API (not local file)
+      const productsUrl = WORKER_CONFIG.getEndpoint('PRODUCTS');
+      debug(`🔄 Fetching catalog from worker...`);
+      
+      const productsResponse = await fetch(productsUrl);
       if (!productsResponse.ok) {
-        debug('⚠️ products.json not found, using minimal data');
-        // Convert without catalog data
-        return userProducts.map(up => this.createSnakeFromProduct(up, null));
+        debug('⚠️ Worker catalog not available, using product data from purchase');
+        // Convert using only the data from user products
+        return userProducts.map(up => ({
+          id: up.product_id,
+          product_id: up.product_id,
+          nickname: up.name || 'Unnamed Snake',
+          species: up.species || 'ball_python',
+          morph: up.morph || 'normal',
+          type: 'real',
+          sex: up.gender || 'unknown',
+          birth_date: up.yob || 2024,
+          acquired_date: up.purchased_at,
+          stats: {
+            hunger: 80,
+            water: 100,
+            temperature: 80,
+            humidity: 50,
+            health: 100,
+            stress: 10,
+            cleanliness: 100,
+            happiness: 80
+          }
+        }));
       }
       
       const products = await productsResponse.json();
-      debug(`✅ Loaded products catalog`);
+      debug(`✅ Loaded ${products.length} products from worker`);
       
       return userProducts.map(up => {
       const product = products.find(p => p.id === up.product_id);
