@@ -60,7 +60,11 @@ export class TestRunner {
             <div class="test-body" id="body-${test.id}">
               <div class="test-section">
                 <h4>Endpoint</h4>
-                <div class="code-block">${test.endpoint || 'N/A'}</div>
+                <div class="code-block">
+                  <a href="${test.endpoint}" target="_blank" style="color: #58a6ff; text-decoration: none;">
+                    ${test.endpoint} ↗
+                  </a>
+                </div>
               </div>
               ${test.description ? `
                 <div class="test-section">
