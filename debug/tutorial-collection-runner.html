@@ -271,7 +271,35 @@
   
   <div id="scenario-list"></div>
 
-  <script>
+  <script type="module">
+    import { createGameStorage } from '../src/modules/game/storage-client.js';
+
+    // Initialize storage client for tutorial tracking
+    const storage = createGameStorage({
+      backend: 'localStorage',
+      namespace: 'tutorial_runner',
+      autoSave: true,
+      saveInterval: 10000 // Save every 10s during tutorials
+    });
+
+    // Listen to storage events
+    storage.on('set', ({ key, value }) => {
+      console.log('📝 Storage updated:', key);
+      if (key.startsWith('snake:')) {
+        console.log('🐍 Snake state changed:', value);
+      }
+    });
+
+    storage.on('autosave', () => {
+      console.log('💾 Auto-save triggered');
+    });
+
+    // Initialize tutorial progress on load
+    (async () => {
+      const progress = await storage.getTutorialProgress();
+      console.log('📊 Tutorial progress loaded:', progress);
+    })();
+
     const scenarios = [
       {
         id: 'S2-7.x.01',
@@ -396,9 +424,15 @@
       body.classList.add('show');
       iframeContainer.style.display = 'block';
 
-      // Update status
+      // Update status and storage
       card.className = 'test-card running';
       status.textContent = '🔄';
+
+      // Update tutorial progress
+      await storage.setTutorialProgress({
+        current: scenario.id,
+        started_at: Date.now()
+      });
 
       try {
         // Load scenario in iframe
@@ -424,6 +458,10 @@
         results.pending--;
         updateSummary();
 
+        // Mark tutorial as complete
+        await storage.markTutorialComplete(scenario.id);
+        console.log(`✅ Tutorial ${scenario.id} completed`);
+
       } catch (error) {
         card.className = 'test-card failed';
         status.textContent = '❌';
@@ -431,6 +469,12 @@
         results.pending--;
         updateSummary();
         console.error(`Scenario ${scenario.id} failed:`, error);
+
+        // Log failure but don't mark as complete
+        await storage.set(`tutorial:${scenario.id}:failed`, {
+          error: error.message,
+          timestamp: Date.now()
+        });
       }
     }
 
@@ -484,7 +528,7 @@
       document.getElementById('pending-count').textContent = results.pending;
     }
 
-    function resetAll() {
+    async function resetAll() {
       // Reset all cards
       scenarios.forEach((_, index) => {
         const card = document.getElementById(`scenario-${index}`);
@@ -508,6 +552,15 @@
       // Reset results
       results = { passed: 0, failed: 0, pending: 6 };
       updateSummary();
+
+      // Clear tutorial progress from storage
+      await storage.setTutorialProgress({
+        completed: [],
+        current: null,
+        started_at: null
+      });
+
+      console.log('🔄 Tutorial progress reset');
     }
 
     // Initialize
