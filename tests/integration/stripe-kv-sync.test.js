@@ -6,6 +6,7 @@
  */
 
 import assert from 'assert';
+import { STRIPE_TEST, TEST_TIMEOUTS } from '../test-constants.js';
 
 // Test group name
 const GROUP = '🔄 Catalog KV Stripe Sync';
@@ -100,7 +101,7 @@ tests.push({
     await env.PRODUCTS.put('product:prod_test123', JSON.stringify({
       id: 'prod_test123',
       name: 'Old Name',
-      price: 100
+      price: STRIPE_TEST.PRODUCT_PRICE
     }));
     
     // Now update it via webhook
@@ -197,7 +198,7 @@ tests.push({
         morph: 'banana',
         sex: 'male',
         birth_year: '2024',
-        weight_grams: '150'
+        weight_grams: String(STRIPE_TEST.WEIGHT_GRAMS)
       }
     };
     
@@ -242,7 +243,7 @@ tests.push({
     await env.PRODUCTS.put('product:prod_test123', JSON.stringify({
       id: 'prod_test123',
       name: 'Test Snake',
-      price: 100,
+      price: STRIPE_TEST.PRODUCT_PRICE,
       currency: 'usd'
     }));
     
@@ -253,7 +254,7 @@ tests.push({
         object: {
           id: 'price_123',
           product: 'prod_test123',
-          unit_amount: 15000, // $150.00 in cents
+          unit_amount: STRIPE_TEST.PRICE_CENTS * 1.5, // $150.00 in cents
           currency: 'usd'
         }
       }
@@ -265,7 +266,7 @@ tests.push({
     // Verify price was updated
     const stored = await env.PRODUCTS.get('product:prod_test123');
     const product = JSON.parse(stored);
-    assert.strictEqual(product.price, 150, 'Price should be updated (in dollars)');
+    assert.strictEqual(product.price, STRIPE_TEST.PRODUCT_PRICE * 1.5, 'Price should be updated (in dollars)');
   }
 });
 

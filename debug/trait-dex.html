@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Trait Dex - Snake Muffin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 { color: #58a6ff; margin-bottom: 10px; }
+    .subtitle { color: #8b949e; margin-bottom: 30px; font-size: 14px; }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #8b949e;
+      margin-top: 5px;
+    }
+    
+    .trait-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .trait-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+    
+    .trait-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+    }
+    
+    .trait-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .trait-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #58a6ff;
+    }
+    
+    .trait-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    .rarity-ultra_common { background: #8b949e; color: white; }
+    .rarity-common { background: #58a6ff; color: white; }
+    .rarity-uncommon { background: #a371f7; color: white; }
+    .rarity-rare { background: #f778ba; color: white; }
+    .rarity-exotic { background: #ffa657; color: white; }
+    
+    .trait-meta {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    
+    .trait-species {
+      background: #21262d;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    .trait-genetics {
+      margin: 15px 0;
+      padding: 10px;
+      background: #0d1117;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    
+    .trait-snakes {
+      margin-top: 10px;
+      padding: 10px;
+      background: #0d1117;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    
+    .snake-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    
+    .snake-tag {
+      background: #21262d;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    
+    .warning {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8514933;
+      border: 1px solid #f85149;
+      border-radius: 6px;
+      color: #ff7b72;
+      font-size: 12px;
+    }
+    
+    .filters {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .filter-btn.active {
+      background: #58a6ff;
+      color: white;
+      border-color: #58a6ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧬 Trait Dex</h1>
+  <div class="subtitle">Data-driven trait collection system (24 real snakes, 34 unique traits)</div>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value" id="total-traits">0</div>
+      <div class="stat-label">Total Traits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="known-genetics">0</div>
+      <div class="stat-label">Known Genetics</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="coverage">0%</div>
+      <div class="stat-label">Coverage</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-snakes">24</div>
+      <div class="stat-label">Snakes in Collection</div>
+    </div>
+  </div>
+  
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All Traits</button>
+    <button class="filter-btn" data-filter="ultra_common">Ultra Common</button>
+    <button class="filter-btn" data-filter="common">Common</button>
+    <button class="filter-btn" data-filter="uncommon">Uncommon</button>
+    <button class="filter-btn" data-filter="rare">Rare</button>
+    <button class="filter-btn" data-filter="exotic">Exotic</button>
+    <button class="filter-btn" data-filter="ball_python">Ball Python Only</button>
+    <button class="filter-btn" data-filter="corn_snake">Corn Snake Only</button>
+  </div>
+  
+  <div class="trait-grid" id="trait-grid">
+    Loading traits...
+  </div>
+  
+  <script type="module">
+    import { TRAIT_DATABASE, getAllTraits } from '../src/modules/shop/data/traits.js';
+    
+    // Load trait analysis data
+    const analysisData = await fetch('../data/cache/trait-analysis.json').then(r => r.json());
+    
+    // Update stats
+    document.getElementById('total-traits').textContent = analysisData.stats.total_traits;
+    document.getElementById('known-genetics').textContent = analysisData.stats.known_genetics;
+    document.getElementById('coverage').textContent = analysisData.stats.coverage_percent + '%';
+    
+    // Merge database with analysis
+    const enrichedTraits = Object.values(TRAIT_DATABASE).map(trait => {
+      const analysisEntry = analysisData.traits[trait.id];
+      return {
+        ...trait,
+        snakes_with_trait: analysisEntry?.snakes_with_trait || []
+      };
+    });
+    
+    let currentFilter = 'all';
+    
+    function renderTraits() {
+      const grid = document.getElementById('trait-grid');
+      
+      let filtered = enrichedTraits;
+      
+      if (currentFilter !== 'all') {
+        if (['ultra_common', 'common', 'uncommon', 'rare', 'exotic'].includes(currentFilter)) {
+          filtered = enrichedTraits.filter(t => t.rarity === currentFilter);
+        } else if (['ball_python', 'corn_snake'].includes(currentFilter)) {
+          filtered = enrichedTraits.filter(t => t.species.includes(currentFilter));
+        }
+      }
+      
+      // Sort by frequency (descending)
+      filtered.sort((a, b) => b.frequency - a.frequency);
+      
+      grid.innerHTML = filtered.map(trait => `
+        <div class="trait-card">
+          <div class="trait-header">
+            <div class="trait-name">${trait.name}</div>
+            <div class="trait-badge rarity-${trait.rarity}">${trait.rarity.replace('_', ' ')}</div>
+          </div>
+          
+          <div class="trait-meta">
+            <span>🧬 ${trait.inheritance}</span>
+            <span>💰 ${trait.price_multiplier}x</span>
+            <span>📊 ${trait.frequency} snake${trait.frequency > 1 ? 's' : ''}</span>
+          </div>
+          
+          <div class="trait-species">
+            ${trait.species.map(s => s.replace('_', ' ').toUpperCase()).join(', ')}
+          </div>
+          
+          ${trait.education ? `
+            <div class="trait-genetics">
+              <strong>📚 Basic:</strong><br>
+              ${trait.education.basic}
+              ${trait.education.advanced ? `<br><br><strong>Advanced:</strong><br>${trait.education.advanced}` : ''}
+            </div>
+          ` : ''}
+          
+          ${trait.care_notes ? `
+            <div style="margin-top: 10px; font-size: 13px; color: #8b949e;">
+              💡 ${trait.care_notes}
+            </div>
+          ` : ''}
+          
+          ${trait.snakes_with_trait && trait.snakes_with_trait.length > 0 ? `
+            <div class="trait-snakes">
+              <strong>🐍 Found in:</strong>
+              <div class="snake-list">
+                ${trait.snakes_with_trait.map(snake => `
+                  <span class="snake-tag">${snake}</span>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          ${trait.ethical_warnings ? `
+            <div class="warning">
+              ⚠️ ${trait.ethical_warnings}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+    
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderTraits();
+      });
+    });
+    
+    // Initial render
+    renderTraits();
+  </script>
+</body>
+</html>

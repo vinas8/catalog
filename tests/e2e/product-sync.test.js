@@ -7,6 +7,7 @@
 
 import assert from 'assert';
 import { readFileSync } from 'fs';
+import { KV_CONFIG, STRIPE_TEST } from '../test-constants.js';
 
 const GROUP = '🔄 E2E Product Sync';
 
@@ -22,7 +23,7 @@ const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
 const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
 const CLOUDFLARE_API_TOKEN = env.CLOUDFLARE_API_TOKEN;
 const CLOUDFLARE_ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
-const KV_NAMESPACE_ID = 'ecbcb79f3df64379863872965f993991'; // PRODUCTS
+const KV_NAMESPACE_ID = KV_CONFIG.NAMESPACE_ID; // PRODUCTS namespace
 
 // Helper: Call Stripe API
 async function stripeAPI(endpoint, method = 'GET', data = null) {
@@ -88,7 +89,7 @@ tests.push({
       'metadata[morph]': 'test',
       'metadata[sex]': 'male',
       'metadata[birth_year]': '2024',
-      'metadata[weight_grams]': '100'
+      'metadata[weight_grams]': String(STRIPE_TEST.PRODUCT_PRICE)
     });
     
     testProductId = product.id;

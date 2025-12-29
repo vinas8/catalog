@@ -1,5 +1,8 @@
 // Genetic morphs database for Ball Pythons and Corn Snakes
 // Based on v3.2_FINAL.md genetics specification
+// 
+// NOTE: This file contains the ORIGINAL morph system (single-trait focus)
+// For the NEW trait-based collection system, see: ./traits.js
 
 export const MORPH_TRAITS = {
   // Ball Python morphs

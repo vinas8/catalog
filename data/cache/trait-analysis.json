@@ -1,0 +1,845 @@
+{
+  "snakes": [
+    {
+      "name": "Pudding",
+      "morph_string": "Banana H. Clown",
+      "traits": [
+        "banana",
+        "clown"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Taohu",
+      "morph_string": "Super Mojave",
+      "traits": [
+        "super",
+        "mojave"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Chocolate Chip",
+      "morph_string": "Pastel DG",
+      "traits": [
+        "pastel"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2021
+    },
+    {
+      "name": "Gangsta",
+      "morph_string": "Spotnose Clown",
+      "traits": [
+        "spotnose",
+        "clown"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Mashmellow",
+      "morph_string": "Ivory (Super yellow belly)",
+      "traits": [
+        "ivory",
+        "super",
+        "yellow",
+        "belly"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Brownie",
+      "morph_string": "Black head",
+      "traits": [
+        "black",
+        "head"
+      ],
+      "species": "corn_snake",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Almond",
+      "morph_string": "Hurricane Butter Fire Yellow belly H.clown",
+      "traits": [
+        "hurricane",
+        "butter",
+        "fire",
+        "yellow",
+        "belly",
+        "clown"
+      ],
+      "species": "corn_snake",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Caramel",
+      "morph_string": "Hurricane butter Spider pos H.Ghost Clown Pied",
+      "traits": [
+        "hurricane",
+        "butter",
+        "spider",
+        "ghost",
+        "clown",
+        "pied"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Cookie",
+      "morph_string": "HRA Pastel Fire Paradox 50% pos het clown",
+      "traits": [
+        "hra",
+        "pastel",
+        "fire",
+        "paradox",
+        "clown"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Hershy",
+      "morph_string": "Super Mystic",
+      "traits": [
+        "super",
+        "mystic"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Halibo",
+      "morph_string": "Spotnose Super Enchi H.Clown",
+      "traits": [
+        "spotnose",
+        "super",
+        "enchi",
+        "clown"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Biscuit",
+      "morph_string": "Leopard Lesser Pastel H. Clown",
+      "traits": [
+        "leopard",
+        "lesser",
+        "pastel",
+        "clown"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Salabao",
+      "morph_string": "OD Highway",
+      "traits": [
+        "highway"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Waffel",
+      "morph_string": "HGW Enchi Fire",
+      "traits": [
+        "hgw",
+        "enchi",
+        "fire"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Toffee",
+      "morph_string": "Spotnose Pastel H.DG",
+      "traits": [
+        "spotnose",
+        "pastel"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Coco",
+      "morph_string": "Pastel het. DG",
+      "traits": [
+        "pastel"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Latte",
+      "morph_string": "Lesser Spotnose 66% pos h.clown 50% pos h.DG hypo",
+      "traits": [
+        "lesser",
+        "spotnose",
+        "clown",
+        "hypo"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2023
+    },
+    {
+      "name": "Mochi",
+      "morph_string": "Salmon Hypo Bloodred",
+      "traits": [
+        "salmon",
+        "hypo",
+        "bloodred"
+      ],
+      "species": "ball_python",
+      "sex": "male",
+      "birth_year": 2023
+    },
+    {
+      "name": "Milkshake",
+      "morph_string": "Salmon Tessera H.Bloored",
+      "traits": [
+        "salmon",
+        "tessera",
+        "bloored"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Berry",
+      "morph_string": "Snow poss Hypo Strawberry",
+      "traits": [
+        "snow",
+        "hypo",
+        "strawberry"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Honey",
+      "morph_string": "Opal",
+      "traits": [
+        "opal"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Peachy",
+      "morph_string": "Opal Tessera",
+      "traits": [
+        "opal",
+        "tessera"
+      ],
+      "species": "ball_python",
+      "sex": "male",
+      "birth_year": 2024
+    },
+    {
+      "name": "Lavender",
+      "morph_string": "Lavender tessera",
+      "traits": [
+        "lavender",
+        "tessera"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    },
+    {
+      "name": "Lolipop",
+      "morph_string": "Salmon H. Bloodred",
+      "traits": [
+        "salmon",
+        "bloodred"
+      ],
+      "species": "ball_python",
+      "sex": "female",
+      "birth_year": 2024
+    }
+  ],
+  "traits": {
+    "banana": {
+      "id": "banana",
+      "name": "Banana",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 4.0,
+      "snakes_with_trait": [
+        "Pudding"
+      ],
+      "ethical_warnings": null
+    },
+    "clown": {
+      "id": "clown",
+      "name": "Clown",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "recessive",
+      "rarity": "ultra_common",
+      "frequency": 8,
+      "price_multiplier": 8.0,
+      "snakes_with_trait": [
+        "Pudding",
+        "Gangsta",
+        "Almond",
+        "Caramel",
+        "Cookie",
+        "Halibo",
+        "Biscuit",
+        "Latte"
+      ],
+      "ethical_warnings": null
+    },
+    "super": {
+      "id": "super",
+      "name": "Super",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "uncommon",
+      "frequency": 4,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Taohu",
+        "Mashmellow",
+        "Hershy",
+        "Halibo"
+      ],
+      "ethical_warnings": null
+    },
+    "mojave": {
+      "id": "mojave",
+      "name": "Mojave",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Taohu"
+      ],
+      "ethical_warnings": null
+    },
+    "pastel": {
+      "id": "pastel",
+      "name": "Pastel",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "common",
+      "frequency": 5,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Chocolate Chip",
+        "Cookie",
+        "Biscuit",
+        "Toffee",
+        "Coco"
+      ],
+      "ethical_warnings": null
+    },
+    "spotnose": {
+      "id": "spotnose",
+      "name": "Spotnose",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "dominant",
+      "rarity": "uncommon",
+      "frequency": 4,
+      "price_multiplier": 2.5,
+      "snakes_with_trait": [
+        "Gangsta",
+        "Halibo",
+        "Toffee",
+        "Latte"
+      ],
+      "ethical_warnings": null
+    },
+    "ivory": {
+      "id": "ivory",
+      "name": "Ivory",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Mashmellow"
+      ],
+      "ethical_warnings": null
+    },
+    "yellow": {
+      "id": "yellow",
+      "name": "Yellow",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Mashmellow",
+        "Almond"
+      ],
+      "ethical_warnings": null
+    },
+    "belly": {
+      "id": "belly",
+      "name": "Belly",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Mashmellow",
+        "Almond"
+      ],
+      "ethical_warnings": null
+    },
+    "black": {
+      "id": "black",
+      "name": "Black",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Brownie"
+      ],
+      "ethical_warnings": null
+    },
+    "head": {
+      "id": "head",
+      "name": "Head",
+      "species": [
+        "corn_snake"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Brownie"
+      ],
+      "ethical_warnings": null
+    },
+    "hurricane": {
+      "id": "hurricane",
+      "name": "Hurricane",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "line-bred",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 1.5,
+      "snakes_with_trait": [
+        "Almond",
+        "Caramel"
+      ],
+      "ethical_warnings": null
+    },
+    "butter": {
+      "id": "butter",
+      "name": "Butter",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Almond",
+        "Caramel"
+      ],
+      "ethical_warnings": null
+    },
+    "fire": {
+      "id": "fire",
+      "name": "Fire",
+      "species": [
+        "corn_snake",
+        "ball_python"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "uncommon",
+      "frequency": 3,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Almond",
+        "Cookie",
+        "Waffel"
+      ],
+      "ethical_warnings": null
+    },
+    "spider": {
+      "id": "spider",
+      "name": "Spider",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "dominant",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 3.0,
+      "snakes_with_trait": [
+        "Caramel"
+      ],
+      "ethical_warnings": "May have neurological issues (wobble)"
+    },
+    "ghost": {
+      "id": "ghost",
+      "name": "Ghost",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Caramel"
+      ],
+      "ethical_warnings": null
+    },
+    "pied": {
+      "id": "pied",
+      "name": "Pied",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "recessive",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 10.0,
+      "snakes_with_trait": [
+        "Caramel"
+      ],
+      "ethical_warnings": null
+    },
+    "hra": {
+      "id": "hra",
+      "name": "Hra",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Cookie"
+      ],
+      "ethical_warnings": null
+    },
+    "paradox": {
+      "id": "paradox",
+      "name": "Paradox",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Cookie"
+      ],
+      "ethical_warnings": null
+    },
+    "mystic": {
+      "id": "mystic",
+      "name": "Mystic",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Hershy"
+      ],
+      "ethical_warnings": null
+    },
+    "enchi": {
+      "id": "enchi",
+      "name": "Enchi",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 2.5,
+      "snakes_with_trait": [
+        "Halibo",
+        "Waffel"
+      ],
+      "ethical_warnings": null
+    },
+    "leopard": {
+      "id": "leopard",
+      "name": "Leopard",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Biscuit"
+      ],
+      "ethical_warnings": null
+    },
+    "lesser": {
+      "id": "lesser",
+      "name": "Lesser",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "co-dominant",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Biscuit",
+        "Latte"
+      ],
+      "ethical_warnings": null
+    },
+    "highway": {
+      "id": "highway",
+      "name": "Highway",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Salabao"
+      ],
+      "ethical_warnings": null
+    },
+    "hgw": {
+      "id": "hgw",
+      "name": "Hgw",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Waffel"
+      ],
+      "ethical_warnings": null
+    },
+    "hypo": {
+      "id": "hypo",
+      "name": "Hypo",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "recessive",
+      "rarity": "uncommon",
+      "frequency": 3,
+      "price_multiplier": 2.0,
+      "snakes_with_trait": [
+        "Latte",
+        "Mochi",
+        "Berry"
+      ],
+      "ethical_warnings": null
+    },
+    "salmon": {
+      "id": "salmon",
+      "name": "Salmon",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "uncommon",
+      "frequency": 3,
+      "price_multiplier": 1.5,
+      "snakes_with_trait": [
+        "Mochi",
+        "Milkshake",
+        "Lolipop"
+      ],
+      "ethical_warnings": null
+    },
+    "bloodred": {
+      "id": "bloodred",
+      "name": "Bloodred",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "recessive",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 4.0,
+      "snakes_with_trait": [
+        "Mochi",
+        "Lolipop"
+      ],
+      "ethical_warnings": null
+    },
+    "tessera": {
+      "id": "tessera",
+      "name": "Tessera",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "dominant",
+      "rarity": "uncommon",
+      "frequency": 3,
+      "price_multiplier": 5.0,
+      "snakes_with_trait": [
+        "Milkshake",
+        "Peachy",
+        "Lavender"
+      ],
+      "ethical_warnings": null
+    },
+    "bloored": {
+      "id": "bloored",
+      "name": "Bloored",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Milkshake"
+      ],
+      "ethical_warnings": null
+    },
+    "snow": {
+      "id": "snow",
+      "name": "Snow",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Berry"
+      ],
+      "ethical_warnings": null
+    },
+    "strawberry": {
+      "id": "strawberry",
+      "name": "Strawberry",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Berry"
+      ],
+      "ethical_warnings": null
+    },
+    "opal": {
+      "id": "opal",
+      "name": "Opal",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "recessive",
+      "rarity": "rare",
+      "frequency": 2,
+      "price_multiplier": 3.0,
+      "snakes_with_trait": [
+        "Honey",
+        "Peachy"
+      ],
+      "ethical_warnings": null
+    },
+    "lavender": {
+      "id": "lavender",
+      "name": "Lavender",
+      "species": [
+        "ball_python"
+      ],
+      "inheritance": "unknown",
+      "rarity": "exotic",
+      "frequency": 1,
+      "price_multiplier": 1.0,
+      "snakes_with_trait": [
+        "Lavender"
+      ],
+      "ethical_warnings": null
+    }
+  },
+  "stats": {
+    "total_snakes": 24,
+    "total_traits": 34,
+    "known_genetics": 17,
+    "coverage_percent": 50
+  }
+}

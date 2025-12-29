@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { GAME_DEFAULTS } from '../../test-constants.js';
 import * as Core from '../src/core.js';
 import snakesPlugin from '../src/plugins/snakes.js';
 import tamagotchiPlugin from '../src/plugins/tamagotchi.js';
@@ -13,8 +14,8 @@ export async function run() {
   const pet = Core.createPetInstance(snakeDef, profile);
 
   // Start at full
-  assert.strictEqual(pet.care.hunger, 100);
-  assert.strictEqual(pet.care.clean, 100);
+  assert.strictEqual(pet.care.hunger, GAME_DEFAULTS.STAT_MAX);
+  assert.strictEqual(pet.care.clean, GAME_DEFAULTS.STAT_MAX);
 
   // Apply decay once
   Core.applyDecay(pet, profile);
@@ -24,11 +25,11 @@ export async function run() {
 
   // Apply feed action
   Core.applyAction('feed', pet, profile);
-  assert.strictEqual(pet.care.hunger, 100);
+  assert.strictEqual(pet.care.hunger, GAME_DEFAULTS.STAT_MAX);
 
   // Apply clean action
   Core.applyAction('clean', pet, profile);
-  assert.strictEqual(pet.care.clean, 100);
+  assert.strictEqual(pet.care.clean, GAME_DEFAULTS.STAT_MAX);
 
   // Unknown action does nothing
   pet.care.hunger = 50;

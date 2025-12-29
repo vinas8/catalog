@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { TEST_COUNTS, SMRI_MODULES } from '../test-constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,7 +70,7 @@ class SMRITestRunner {
   }
 
   async runAll() {
-    console.log('🐍 SMRI Scenario Test Runner v2.0\n');
+    console.log(`🐍 SMRI Scenario Test Runner v2.0 (Expected: ${TEST_COUNTS.SMRI_SCENARIOS} scenarios)`\n');
 
     if (!fs.existsSync(this.scenariosPath)) {
       console.error('❌ Scenarios directory not found');

@@ -2,6 +2,7 @@
 // Tests HTML, JS, CSS, and all modules
 
 import { readFileSync } from 'fs';
+import { TEST_COUNTS, ASSERTIONS, GAME_DEFAULTS } from '../test-constants.js';
 
 console.log('📸 Serpent Town v3.2 - Comprehensive Snapshot Tests\n');
 
@@ -378,7 +379,7 @@ console.log('\n' + '='.repeat(50));
 console.log(`✅ Passed: ${passed}`);
 console.log(`❌ Failed: ${failed}`);
 console.log(`📊 Total: ${passed + failed}`);
-console.log(`📈 Success Rate: ${Math.round(passed / (passed + failed) * 100)}%`);
+console.log(`📈 Success Rate: ${Math.round(passed / (passed + failed) * TEST_COUNTS.PASS_RATE)}%`);
 console.log(passed === (passed + failed) ? '🎉 All tests passed!' : '⚠️ Some tests failed');
 console.log('='.repeat(50));
 
@@ -413,7 +414,7 @@ test('Has game title', () => {
 
 test('Has gold display', () => {
   assert(html.includes('gold-amount'), 'Missing gold display');
-  assert(html.includes('1000'), 'Wrong starting gold');
+  assert(html.includes(`${GAME_DEFAULTS.STARTING_GOLD}`), `Wrong starting gold (expected ${GAME_DEFAULTS.STARTING_GOLD})`);
 });
 
 test('Has loyalty tier display', () => {

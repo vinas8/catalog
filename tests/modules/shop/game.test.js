@@ -6,6 +6,13 @@ import { EquipmentShop } from '../../../src/modules/shop/business/equipment.js';
 import { SPECIES_PROFILES } from '../../../src/modules/shop/data/species-profiles.js';
 import { MORPH_TRAITS } from '../../../src/modules/shop/data/morphs.js';
 import { EQUIPMENT_CATALOG } from '../../../src/modules/shop/data/equipment-catalog.js';
+import { 
+  GAME_DEFAULTS, 
+  LOYALTY_TIERS, 
+  VIRTUAL_SNAKE_PRICES, 
+  EQUIPMENT_REQUIREMENTS,
+  STRIPE_TEST
+} from '../../test-constants.js';
 
 // Test counter
 let passed = 0;
@@ -51,7 +58,7 @@ test('Morphs database exists', () => {
 });
 
 test('Equipment catalog has items', () => {
-  assert(EQUIPMENT_CATALOG.length >= 15, `Only ${EQUIPMENT_CATALOG.length} items`);
+  assert(EQUIPMENT_CATALOG.length >= EQUIPMENT_REQUIREMENTS.MIN_ITEMS, `Only ${EQUIPMENT_CATALOG.length} items, expected ${EQUIPMENT_REQUIREMENTS.MIN_ITEMS}`);
 });
 
 test('Equipment has categories', () => {
@@ -64,14 +71,15 @@ console.log('\n💰 Economy Tests');
 
 test('Create initial game state', () => {
   const state = createInitialGameState();
-  assert(state.currency.gold === 1000, 'Starting gold should be 1000');
+  assert(state.currency.gold === GAME_DEFAULTS.STARTING_GOLD, `Starting gold should be ${GAME_DEFAULTS.STARTING_GOLD}`);
   assert(state.loyalty_tier === 'bronze', 'Should start as bronze');
   assert(Array.isArray(state.snakes), 'Snakes should be array');
 });
 
 test('Money to currency conversion', () => {
-  const gold = Economy.moneyToCurrency(100);
-  assert(gold === 100, 'Should convert cents 1:1');
+  const testAmount = STRIPE_TEST.PRODUCT_PRICE;
+  const gold = Economy.moneyToCurrency(testAmount);
+  assert(gold === testAmount, 'Should convert cents 1:1');
 });
 
 test('Buy virtual snake', () => {
@@ -89,7 +97,7 @@ test('Virtual snake prices', () => {
   const bpPrice = Economy.getVirtualSnakePrice('ball_python', []);
   
   assert(cornPrice === 500, 'Corn snake should be 500');
-  assert(bpPrice === 1000, 'Ball python should be 1000');
+  assert(bpPrice === VIRTUAL_SNAKE_PRICES.BALL_PYTHON, `Ball python should be ${VIRTUAL_SNAKE_PRICES.BALL_PYTHON}`);
 });
 
 test('Loyalty tier system', () => {
@@ -99,7 +107,7 @@ test('Loyalty tier system', () => {
   Economy.updateLoyaltyTier(state);
   assert(state.loyalty_tier === 'bronze', 'Should be bronze');
   
-  state.loyalty_points = 100;
+  state.loyalty_points = LOYALTY_TIERS.SILVER.points_required;
   Economy.updateLoyaltyTier(state);
   assert(state.loyalty_tier === 'silver', 'Should be silver');
   
@@ -107,7 +115,7 @@ test('Loyalty tier system', () => {
   Economy.updateLoyaltyTier(state);
   assert(state.loyalty_tier === 'gold', 'Should be gold');
   
-  state.loyalty_points = 1500;
+  state.loyalty_points = LOYALTY_TIERS.PLATINUM.points_required;
   Economy.updateLoyaltyTier(state);
   assert(state.loyalty_tier === 'platinum', 'Should be platinum');
 });
@@ -121,7 +129,7 @@ test('Loyalty discounts', () => {
   assert(bronze === 0, 'Bronze should be 0%');
   assert(silver === 0.05, 'Silver should be 5%');
   assert(gold === 0.10, 'Gold should be 10%');
-  assert(platinum === 0.15, 'Platinum should be 15%');
+  assert(platinum === LOYALTY_TIERS.PLATINUM.discount, `Platinum should be ${LOYALTY_TIERS.PLATINUM.discount * 100}%`);
 });
 
 // === Shop Tests ===
