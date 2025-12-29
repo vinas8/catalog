@@ -82,6 +82,14 @@ export class TestRunner {
                   <div class="code-block">${test.expected}</div>
                 </div>
               ` : ''}
+              <div class="test-section">
+                <button class="btn btn-small" onclick="window.testRunner.runSingleTest('${test.id}')" style="background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-right: 10px;">
+                  ▶ Run Test
+                </button>
+                <a href="${test.endpoint}" target="_blank" class="btn btn-small" style="background: #1f6feb; color: white; border: none; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; display: inline-block;">
+                  ↗ Open Page
+                </a>
+              </div>
             </div>
           </div>
         `).join('')}
@@ -220,6 +228,9 @@ export class TestRunner {
    */
   init() {
     this.renderTests();
+    
+    // Expose to window for onclick handlers
+    window.testRunner = this;
     
     if (this.config.autoRun) {
       window.addEventListener('load', () => {
