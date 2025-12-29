@@ -1,12 +1,26 @@
 /**
- * Navigation Component - Unified navigation for all pages
- * Provides: Main nav links + Profile dropdown
+ * Navigation Component - Unified responsive navigation for all pages
+ * Provides: Main nav links + Profile dropdown + Debug mode support
  * @module components/Navigation
  */
 
 export class Navigation {
   constructor() {
+    this.config = null;
     this.currentUser = this.getCurrentUser();
+    this.init();
+  }
+
+  async init() {
+    // Load config dynamically
+    try {
+      const module = await import('../config/app-config.js');
+      this.config = module.APP_CONFIG;
+    } catch (e) {
+      console.warn('Failed to load app-config, using defaults');
+      this.config = { DEBUG: false, NAVIGATION: { mainLinks: [], secondaryLinks: [] } };
+    }
+    
     this.render();
     this.attachEventListeners();
   }
@@ -30,11 +44,11 @@ export class Navigation {
           <a href="index.html" class="nav-logo">
             🐍 <span>Serpent Town</span>
           </a>
-          <div class="nav-links">
-            <a href="index.html" data-page="home">Home</a>
-            <a href="catalog.html" data-page="catalog">Catalog</a>
-            <a href="collection.html" data-page="encyclopedia">Encyclopedia</a>
-            <a href="game.html" data-page="mysnakes">MySnakes</a>
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+          <div class="nav-links" id="navLinks">
+            ${this.renderMainLinks()}
+            ${this.renderSecondaryLinks()}
+            ${this.config?.DEBUG ? this.renderDebugLink() : ''}
           </div>
         </div>
         <div class="nav-right">
@@ -48,6 +62,64 @@ export class Navigation {
     
     // Highlight active page
     this.highlightActivePage();
+    this.addResponsiveStyles();
+  }
+
+  renderMainLinks() {
+    if (!this.config?.NAVIGATION?.mainLinks) return '';
+    return this.config.NAVIGATION.mainLinks
+      .map(link => `<a href="${link.href}" class="nav-link" data-page="${link.label.toLowerCase()}">${link.icon} ${link.label}</a>`)
+      .join('');
+  }
+
+  renderSecondaryLinks() {
+    if (!this.config?.NAVIGATION?.secondaryLinks) return '';
+    return this.config.NAVIGATION.secondaryLinks
+      .map(link => `<a href="${link.href}" class="nav-link secondary" data-page="${link.label.toLowerCase()}">${link.icon} ${link.label}</a>`)
+      .join('');
+  }
+
+  renderDebugLink() {
+    if (!this.config?.NAVIGATION?.debugLink) return '';
+    const link = this.config.NAVIGATION.debugLink;
+    return `<a href="${link.href}" class="nav-link debug-link" style="color: #ff6b6b;">${link.icon} ${link.label}</a>`;
+  }
+
+  addResponsiveStyles() {
+    // Inject responsive styles if not already present
+    if (document.getElementById('nav-responsive-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'nav-responsive-styles';
+    style.textContent = `
+      .unified-nav { background: #2d3748; border-bottom: 2px solid #4a5568; padding: 0.75rem 1rem; }
+      .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
+      .nav-left { display: flex; align-items: center; gap: 2rem; flex: 1; }
+      .nav-logo { color: #fff; text-decoration: none; font-weight: bold; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+      .nav-logo:hover { color: #667eea; }
+      .nav-links { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+      .nav-link { color: #cbd5e0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; white-space: nowrap; }
+      .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+      .nav-link.active { background: #667eea; color: #fff; }
+      .nav-link.secondary { font-size: 0.9rem; opacity: 0.8; }
+      .nav-link.debug-link { border: 1px solid #ff6b6b; }
+      .mobile-menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+      .nav-right { display: flex; gap: 1rem; align-items: center; }
+      .auth-buttons { display: flex; gap: 0.5rem; }
+      .btn-register, .btn-login { padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; transition: all 0.2s; }
+      .btn-register { background: #667eea; color: #fff; }
+      .btn-register:hover { background: #5568d3; }
+      .btn-login { border: 1px solid #667eea; color: #667eea; }
+      .btn-login:hover { background: rgba(102,126,234,0.1); }
+      
+      @media (max-width: 768px) {
+        .mobile-menu-toggle { display: block; }
+        .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: #2d3748; padding: 1rem; border-top: 1px solid #4a5568; z-index: 1000; }
+        .nav-links.active { display: flex; }
+        .nav-link { width: 100%; text-align: left; }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   renderAuthSection() {
@@ -94,6 +166,17 @@ export class Navigation {
   }
 
   attachEventListeners() {
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+    
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    }
+    
+    // Profile dropdown
     const profileButton = document.getElementById('profileButton');
     const profileMenu = document.getElementById('profileMenu');
     const logoutButton = document.getElementById('logoutButton');

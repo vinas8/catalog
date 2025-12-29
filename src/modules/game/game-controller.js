@@ -40,7 +40,8 @@ class SnakeMuffin {
     // Set up UI event listeners
     this.setupEventListeners();
     
-    // Render initial UI
+    // Render initial UI AFTER snakes are loaded
+    console.log('🎨 Rendering UI with snakes:', this.gameState?.snakes?.length || 0);
     this.render();
     
     // Start game loop

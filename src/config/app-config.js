@@ -63,6 +63,27 @@ export const APP_CONFIG = {
     game: true,
     breeding: false, // Coming soon
     multiplayer: false // Coming soon
+  },
+  
+  // Navigation Configuration
+  NAVIGATION: {
+    mainLinks: [
+      { label: 'Home', href: 'index.html', icon: '🏠' },
+      { label: 'Catalog', href: 'catalog.html', icon: '🛒' },
+      { label: 'MySnakes', href: 'game.html', icon: '🐍' }
+    ],
+    secondaryLinks: [
+      { label: 'Shop', href: 'catalog.html', icon: '🛒' },
+      { label: 'Snake Dex', href: 'game/dex.html', icon: '📚' },
+      { label: 'Encyclopedia', href: 'collection.html', icon: '📖' },
+      { label: 'Genetics', href: '#genetics', icon: '🧬' }
+    ],
+    authLinks: [
+      { label: 'Register', href: 'register.html' },
+      { label: 'Login', href: 'register.html#login' }
+    ],
+    // Debug link only shows when DEBUG is true
+    debugLink: { label: 'Debug', href: 'debug/index.html', icon: '🔍' }
   }
 };
 
