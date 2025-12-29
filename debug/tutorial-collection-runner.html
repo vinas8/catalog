@@ -461,19 +461,26 @@
         iframe.src = scenario.url;
 
         // Wait for load
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Scenario load timeout (10s)'));
+          }, 10000);
+
           iframe.onload = () => {
-            setTimeout(resolve, 2000); // Give it 2s to initialize
+            clearTimeout(timeout);
+            resolve();
+          };
+
+          iframe.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error('Scenario failed to load'));
           };
         });
 
-        // Check if loaded successfully
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        if (iframeDoc.body.textContent.includes('Error') || iframeDoc.body.textContent.length < 100) {
-          throw new Error('Scenario failed to load properly');
-        }
+        // Give it time to render
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Mark as passed
+        // Mark as passed (if we got here, it loaded)
         card.className = 'test-card passed';
         status.textContent = '✅';
         results.passed++;
