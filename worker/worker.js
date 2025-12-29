@@ -645,11 +645,23 @@ async function handleGetProducts(request, env, corsHeaders) {
       const key = `product:${id}`;
       const productData = await env.PRODUCTS.get(key);
       if (productData) {
-        products.push(JSON.parse(productData));
+        const product = JSON.parse(productData);
+        
+        // Check if product is sold (filter out sold products)
+        if (env.PRODUCT_STATUS) {
+          const statusKey = `status:${id}`;
+          const statusValue = await env.PRODUCT_STATUS.get(statusKey);
+          if (statusValue === 'sold') {
+            console.log(`⏭️ Skipping sold product: ${id}`);
+            continue; // Skip sold products
+          }
+        }
+        
+        products.push(product);
       }
     }
 
-    console.log(`✅ Returning ${products.length} products from KV`);
+    console.log(`✅ Returning ${products.length} available products from KV`);
     return new Response(JSON.stringify(products), {
       status: 200,
       headers: corsHeaders
