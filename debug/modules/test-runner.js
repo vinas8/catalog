@@ -118,7 +118,10 @@ export class TestRunner {
     responseEl.innerHTML = '<div style="color: #58a6ff;">Running...</div>';
     
     try {
+      console.log(`🧪 Running test: ${id}`, test);
       const result = await test.run();
+      console.log(`✅ Test ${id} passed:`, result);
+      
       statusEl.textContent = '✅';
       statusEl.className = 'test-status status-ok';
       
@@ -135,12 +138,32 @@ export class TestRunner {
       responseEl.innerHTML = resultHtml;
       this.testResults[id] = { status: 'ok', result };
     } catch (error) {
+      console.error(`❌ Test ${id} failed:`, error);
+      console.error('Error details:', {
+        message: error?.message,
+        stack: error?.stack,
+        name: error?.name,
+        type: typeof error,
+        error: error
+      });
+      
       statusEl.textContent = '❌';
       statusEl.className = 'test-status status-error';
       
-      const errorMessage = error?.message || String(error) || 'Unknown error';
-      responseEl.innerHTML = `<pre style="margin: 0; color: #f85149;">Error: ${errorMessage}</pre>`;
-      this.testResults[id] = { status: 'error', error: errorMessage };
+      const errorMessage = error?.message || error?.toString() || String(error) || 'Unknown error';
+      const stackTrace = error?.stack || 'No stack trace available';
+      
+      responseEl.innerHTML = `
+        <div style="color: #f85149; margin-bottom: 10px;">
+          <strong>Error:</strong> ${errorMessage}
+        </div>
+        <details>
+          <summary style="cursor: pointer; color: #8b949e; font-size: 11px;">Stack Trace</summary>
+          <pre style="margin: 5px 0 0 0; color: #8b949e; font-size: 10px; max-height: 200px; overflow: auto;">${stackTrace}</pre>
+        </details>
+      `;
+      
+      this.testResults[id] = { status: 'error', error: errorMessage, stack: stackTrace };
     }
   }
 
