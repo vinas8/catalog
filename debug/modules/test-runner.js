@@ -121,13 +121,26 @@ export class TestRunner {
       const result = await test.run();
       statusEl.textContent = '✅';
       statusEl.className = 'test-status status-ok';
-      responseEl.innerHTML = `<pre style="margin: 0; color: #3fb950;">${JSON.stringify(result, null, 2)}</pre>`;
+      
+      // Format result based on type
+      let resultHtml;
+      if (typeof result === 'object' && result !== null) {
+        resultHtml = `<pre style="margin: 0; color: #3fb950;">${JSON.stringify(result, null, 2)}</pre>`;
+      } else if (typeof result === 'string') {
+        resultHtml = `<div style="color: #3fb950;">${result}</div>`;
+      } else {
+        resultHtml = `<div style="color: #3fb950;">Test passed</div>`;
+      }
+      
+      responseEl.innerHTML = resultHtml;
       this.testResults[id] = { status: 'ok', result };
     } catch (error) {
       statusEl.textContent = '❌';
       statusEl.className = 'test-status status-error';
-      responseEl.innerHTML = `<pre style="margin: 0; color: #f85149;">Error: ${error.message}</pre>`;
-      this.testResults[id] = { status: 'error', error: error.message };
+      
+      const errorMessage = error?.message || String(error) || 'Unknown error';
+      responseEl.innerHTML = `<pre style="margin: 0; color: #f85149;">Error: ${errorMessage}</pre>`;
+      this.testResults[id] = { status: 'error', error: errorMessage };
     }
   }
 
