@@ -117,7 +117,19 @@ Complete project briefing:
 3. Load API docs (latest version)
 4. Show SMRI index
 5. Summarize project status
-6. Ask: "Where did we leave off?"
+6. **Check for inconsistencies:**
+   - Version mismatches (package.json vs docs)
+   - Duplicate documentation
+   - Outdated files
+   - Redundant code/modules
+7. **Suggest refactors** (requires user approval):
+   - Remove duplicate code
+   - Consolidate similar modules
+   - Archive outdated docs
+   - Update version references
+8. Ask: "Where did we leave off?"
+
+**Note:** All changes require user approval before execution.
 
 ### `.smri log`
 Update today's session log with:
@@ -132,6 +144,30 @@ Consolidate documentation:
 - Check for outdated info (compare with package.json version)
 - Merge into focused topic files in `.smri/docs/`
 - Archive original files (move to `docs/archive/`)
+
+### `.smri add`
+Add new documentation or update existing:
+1. **Analyze request:**
+   - Determine topic category (business, technical, deployment, etc.)
+   - Check if topic already exists in `.smri/docs/`
+2. **Choose action:**
+   - If topic exists: Update existing file (append or edit section)
+   - If new topic: Create new file in `.smri/docs/{topic}.md`
+3. **Format documentation:**
+   - Add version number (from package.json)
+   - Add timestamp
+   - Use consistent markdown structure
+   - Include examples and code snippets
+4. **Update references:**
+   - Add to `.smri/INDEX.md` Quick Links if major topic
+   - Update session log (`.smri/logs/YYYY-MM-DD.md`)
+5. **Confirm:**
+   - Show what will be created/updated
+   - Wait for user approval before writing
+
+**Usage examples:**
+- `.smri add` - Add current conversation to appropriate doc
+- User provides context, AI suggests best location
 
 ---
 
@@ -302,7 +338,20 @@ Original documentation this replaces
 ### When User Types `.smri`:
 1. Run complete briefing (tree, README, docs, status)
 2. Show consolidated documentation
-3. Ask: "Where did we leave off?"
+3. **Analyze for issues:**
+   - Scan for version inconsistencies
+   - Detect duplicate files/documentation
+   - Identify outdated content
+   - Find redundant code patterns
+4. **Report findings:**
+   - List all inconsistencies found
+   - Suggest specific refactors
+   - Estimate impact of each change
+5. **Wait for approval:**
+   - Do NOT make changes automatically
+   - Present suggestions as a list
+   - Ask: "Apply these fixes? (y/n)"
+6. Ask: "Where did we leave off?"
 
 ### When User Types `.smri log`:
 1. Append to today's log file (`.smri/logs/YYYY-MM-DD.md`)
@@ -316,6 +365,25 @@ Original documentation this replaces
 3. Merge into topic docs
 4. Archive originals
 5. Report: Files reviewed, consolidated, archived
+
+### When User Types `.smri add`:
+1. **Analyze the context:**
+   - Read previous prompt and answer
+   - Identify topic (debugging, features, configuration, etc.)
+   - Check existing `.smri/docs/` files for related content
+2. **Suggest destination:**
+   - If exists: "Add to `.smri/docs/troubleshooting.md` section 'Stripe Upload Issues'?"
+   - If new: "Create `.smri/docs/stripe-debugging.md`?"
+3. **Show preview:**
+   - Display markdown that will be added
+   - Include version, timestamp, and formatted content
+4. **Wait for approval:**
+   - Ask: "Add this documentation? (y/n)"
+   - Do NOT write until user confirms
+5. **Write and log:**
+   - Create or update the file
+   - Log action in session log
+   - Report: "✅ Added to .smri/docs/{file}.md"
 
 ### Version Check:
 - Always check `package.json` for current version

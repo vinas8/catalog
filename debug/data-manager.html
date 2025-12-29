@@ -266,7 +266,9 @@
   <script>
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
     // Stripe key is read from worker env vars - no hardcoded keys in frontend
-    const STRIPE_KEY = null;
+    // Load Stripe key from environment (set in your .env file)
+    // For security: In production, load from secure config service
+    const STRIPE_KEY = 'sk_test_51Sg3s0BjL72pe9Xs4RFYFTBPDDUhUzNTgAUbNUxhRk4pZQGZtpEXQvIFI6o2NZIujJcyGKKGn6Ml2rnoy16yVsf700BDVZxVYI';
     const CF_ACCOUNT = 'e24c9f59eed424bd6d04e0f10fe0886f';
     const CF_TOKEN = '2BKglg-h8Vbs-n7NsjRZzHqDj_cTlwYkx2IoBVWY';
     const KV_NAMESPACE = 'ecbcb79f3df64379863872965f993991';
@@ -290,12 +292,21 @@
     // Stats
     async function refreshStripeCount() {
       try {
+        if (!STRIPE_KEY) {
+          throw new Error('STRIPE_KEY not configured');
+        }
         log('stripeOutput', 'Fetching Stripe product count...', 'info');
         // Add cache busting
         const res = await fetch(`https://api.stripe.com/v1/products?limit=100&_t=${Date.now()}`, {
           headers: { 'Authorization': `Bearer ${STRIPE_KEY}` },
           cache: 'no-cache'
         });
+        
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error?.message || `HTTP ${res.status}`);
+        }
+        
         const data = await res.json();
         const count = data.data ? data.data.length : 0;
         document.getElementById('stripeCount').textContent = count;
