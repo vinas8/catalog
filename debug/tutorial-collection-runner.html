@@ -280,10 +280,11 @@
               const response = await fetch('tutorial-happy-path.html', { method: 'HEAD' });
               if (!response.ok) throw new Error(`Status ${response.status}`);
               await storage.markTutorialComplete('S2-7.x.01');
+              const contentLength = response.headers.get('content-length');
               return { 
                 status: 'passed', 
                 url: 'tutorial-happy-path.html',
-                fileSize: response.headers.get('content-length') + ' bytes',
+                fileSize: contentLength ? contentLength + ' bytes' : 'unknown',
                 message: 'Tutorial page accessible'
               };
             }
