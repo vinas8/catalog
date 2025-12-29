@@ -166,13 +166,14 @@
       'S0': { name: 'Health Checks', icon: '🏥', color: '#238636' },
       'S1': { name: 'Shop', icon: '🛒', color: '#1f6feb' },
       'S2': { name: 'Game', icon: '🎮', color: '#8957e5' },
+      'S2-7': { name: 'Tutorial (Game)', icon: '🐍', color: '#f77f00' },
       'S3': { name: 'Auth', icon: '🔐', color: '#d29922' },
       'S4': { name: 'Payment', icon: '💳', color: '#f85149' },
       'S5': { name: 'Worker', icon: '☁️', color: '#58a6ff' }
     };
 
     VERSION_CONFIG.SMRI_SCENARIOS.forEach(scenario => {
-      const match = scenario.code.match(/^S(\d+)/);
+      const match = scenario.code.match(/^S(\d+-?\d*)/);
       if (match) {
         const mainModule = 'S' + match[1];
         if (!moduleGroups[mainModule]) {
@@ -224,6 +225,11 @@
 
       card.querySelector('.module-header').addEventListener('click', () => {
         if (moduleKey === 'S0') window.location.href = '/debug/healthcheck.html';
+        if (moduleKey === 'S2-7') {
+          // Show tutorial scenarios in expandable list
+          const details = card.querySelector('details');
+          if (details) details.open = !details.open;
+        }
       });
 
       grid.appendChild(card);

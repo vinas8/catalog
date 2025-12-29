@@ -37,6 +37,14 @@ export const VERSION_CONFIG = {
     { code: 'S0-12.5-2.01',               desc: 'Stripe webhooks health check',         ver: 's0.5.0', done: 0   },
     { code: 'S0.1,2,3,4,5,5-1,5-2.03',    desc: 'Full system health check',             ver: 's0.5.0', done: 100 },
     
+    // Tutorial (S2-7.x) - P0 Critical (6)
+    { code: 'S2-7.5,11.1.01',             desc: 'Tutorial: Happy path (daily check-in)',         ver: 's0.6.0', done: 100 },
+    { code: 'S2-7.5,11.1.02',             desc: 'Tutorial: Missed care (2-3 days)',              ver: 's0.6.0', done: 100 },
+    { code: 'S2-7.1,5,11.1.03',           desc: 'Tutorial: Education-first commerce',            ver: 's0.6.0', done: 100 },
+    { code: 'S2-7.1,5,11.1.04',           desc: 'Tutorial: Trust protection (no purchase)',      ver: 's0.6.0', done: 100 },
+    { code: 'S2-7.5,11.1.05',             desc: 'Tutorial: Email-driven re-entry',               ver: 's0.6.0', done: 50  },
+    { code: 'S2-7.5,11.1.06',             desc: 'Tutorial: Failure case (educational)',          ver: 's0.6.0', done: 100 },
+    
     // P0 Critical (13)
     { code: 'S1.1,2,3,4,5.01',            desc: 'Happy path purchase flow',             ver: 's0.6.0', done: 0   },
     { code: 'S1.1,2,3,4.01',              desc: 'Returning user purchase flow',         ver: 's0.6.0', done: 0   },
