@@ -1,4 +1,9 @@
-# SMRI Module Relation Index
+# SMRI Module Relation Index (LEGACY)
+
+⚠️ **DEPRECATED**: This document describes the old SMRI format.  
+**See:** `.smri/docs/SMRI-SPECIFICATION.md` for the new simplified format (v2.0)
+
+---
 
 **SMRI** = **S**erpent Town **M**odule **R**elation **I**ndex
 

@@ -118,6 +118,86 @@ export default {
       return handleKVGetProduct(request, env, corsHeaders);
     }
 
+    // Route: GET /health (health check)
+    if (pathname === '/health' && request.method === 'GET') {
+      return new Response(JSON.stringify({
+        status: 'healthy',
+        version: WORKER_VERSION,
+        timestamp: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    // Route: GET /debug (SMRI scenarios index)
+    if (pathname === '/debug' && request.method === 'GET') {
+      const scenarios = [
+        {
+          id: 'S2-tutorial-happy-path',
+          module: 'S2',
+          name: 'Daily Care Tutorial (Happy Path)',
+          priority: 'P0',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-happy-path.html'
+        },
+        {
+          id: 'S2-tutorial-missed-care',
+          module: 'S2',
+          name: 'Missed Care (2-3 days)',
+          priority: 'P0',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-missed-care.html'
+        },
+        {
+          id: 'S2-tutorial-education-commerce',
+          module: 'S2',
+          name: 'Education-First Commerce',
+          priority: 'P0',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-education-commerce.html'
+        },
+        {
+          id: 'S2-tutorial-trust-protection',
+          module: 'S2',
+          name: 'Trust Protection',
+          priority: 'P0',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-trust-protection.html'
+        },
+        {
+          id: 'S2-tutorial-email-reentry',
+          module: 'S2',
+          name: 'Email-Driven Re-entry',
+          priority: 'P1',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-email-reentry.html'
+        },
+        {
+          id: 'S2-tutorial-failure-educational',
+          module: 'S2',
+          name: 'Failure Case (Educational)',
+          priority: 'P1',
+          duration: '<60s',
+          url: 'https://vinas8.github.io/catalog/debug/tutorial-failure-educational.html'
+        }
+      ];
+
+      return new Response(JSON.stringify({
+        version: WORKER_VERSION,
+        smri: {
+          system: 'Structured Module Relation Index',
+          root: '.smri/INDEX.md',
+          scenarios: scenarios
+        },
+        debug_hub: 'https://vinas8.github.io/catalog/debug/',
+        timestamp: new Date().toISOString()
+      }, null, 2), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
     // Route: GET /version (get worker version)
     if (pathname === '/version' && request.method === 'GET') {
       return new Response(JSON.stringify({
@@ -125,6 +205,8 @@ export default {
         updated: WORKER_UPDATED,
         timestamp: new Date().toISOString(),
         endpoints: [
+          'GET /health',
+          'GET /debug',
           'POST /stripe-webhook',
           'GET /user-products?user=<hash>',
           'GET /products',

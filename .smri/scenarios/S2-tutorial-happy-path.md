@@ -1,0 +1,55 @@
+# S2-tutorial-happy-path - Daily Care Tutorial (Happy Path)
+
+**SMRI:** S2-tutorial-happy-path  
+**Module:** S2 (Game)  
+**Priority:** P0 (Critical)  
+**Duration:** <60 seconds  
+**Dependencies:** S2 → S5 (Worker) → Cloudflare-KV
+
+## Description
+
+Tests the happy path scenario where a user completes the daily care tutorial successfully. The user checks in daily, views one event card, and marks it complete.
+
+## Test Steps
+
+1. Fetch daily event from KV storage via Worker API
+2. Display ONE event card in the tutorial UI
+3. User clicks "Mark Complete" button
+4. Event status updates in KV storage
+5. UI shows completion confirmation
+
+## Expected Outcomes
+
+1. Event fetched successfully from KV (status 200)
+2. Event card renders with correct data (title, description, icon)
+3. "Mark Complete" button is clickable and responsive
+4. KV update succeeds (status 200)
+5. Completion message displays to user
+6. Total duration < 60 seconds
+
+## Success Criteria
+
+- ✅ Event loads within 2 seconds
+- ✅ UI renders without errors
+- ✅ Button click triggers KV update
+- ✅ User sees confirmation message
+- ✅ No JavaScript errors in console
+
+## Test Data
+
+```javascript
+{
+  eventId: "daily-checkin-001",
+  type: "care_reminder",
+  title: "Morning Check-in",
+  description: "Feed and water your snake",
+  points: 10,
+  completed: false
+}
+```
+
+## Related Scenarios
+
+- S2-tutorial-missed-care (failure path)
+- S2-tutorial-email-reentry (return user path)
+- S5-worker-events (backend event API)
