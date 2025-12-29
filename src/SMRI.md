@@ -2,7 +2,7 @@
 
 **Version:** 0.7.0  
 **Status:** Production Ready 🚀  
-**Tests:** 86/86 passing (100%) ✅
+**Tests:** 68/71 passing (96%) ⚠️
 
 ---
 

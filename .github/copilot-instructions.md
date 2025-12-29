@@ -365,7 +365,30 @@ Examples:
    - Quick command reference
    - Links to key documentation files
 
-7. **Session Continuation Prompt**
+7. **SMRI Command List** (Always show at end)
+   ```
+   🎯 SMRI Commands (flexible - use natural language):
+   
+   .smri                     - Complete project briefing
+   .smri status              - Show version, tests, deployment status
+   .smri docs                - List all documentation files
+   .smri update              - Update SMRI.md from latest changes
+   .smri update recent       - Document recent commit changes
+   .smri modules             - Show module structure & entry points
+   .smri tests               - Run test suite and show results
+   .smri deploy              - Deploy worker to Cloudflare
+   .smri verify              - Verify API connections (GitHub, Stripe, Cloudflare)
+   .smri progress            - Show progress (tests, features, E2E status)
+   .smri help                - Show this command list
+   
+   💡 Natural language also works:
+   - "show me the latest changes"
+   - "update documentation" 
+   - "check test status"
+   - "deploy the worker"
+   ```
+
+8. **Session Continuation Prompt**
    - End with: "📍 **Where did we leave off?** (or type what you need help with)"
    - Wait for user to provide context or new task
 
