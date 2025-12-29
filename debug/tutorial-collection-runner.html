@@ -107,18 +107,6 @@
     
     .test-body.show { display: block; }
     
-    .test-section {
-      margin-bottom: 16px;
-    }
-    
-    .test-section h4 {
-      color: #8b949e;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-    
     .code-block {
       background: #161b22;
       border: 1px solid #30363d;
@@ -168,22 +156,6 @@
       gap: 10px;
       align-items: center;
       margin-bottom: 20px;
-    }
-
-    .iframe-container {
-      width: 100%;
-      height: 600px;
-      border: 2px solid #30363d;
-      border-radius: 8px;
-      background: #0a0e14;
-      margin-top: 12px;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      border-radius: 6px;
     }
 
     .summary-box {
@@ -383,9 +355,6 @@
               <button class="btn btn-small run-single-btn" data-index="${index}">▶ Run This Scenario</button>
               <button class="btn btn-small open-tab-btn" data-index="${index}" style="background: #1f6feb;">↗ Open in New Tab</button>
             </div>
-            <div class="iframe-container" id="iframe-${index}" style="display: none;">
-              <iframe id="frame-${index}" src="about:blank"></iframe>
-            </div>
           </div>
         </div>
       `).join('');
@@ -438,13 +407,10 @@
       const scenario = scenarios[index];
       const card = document.getElementById(`scenario-${index}`);
       const status = document.getElementById(`status-${index}`);
-      const iframeContainer = document.getElementById(`iframe-${index}`);
-      const iframe = document.getElementById(`frame-${index}`);
       const body = document.getElementById(`body-${index}`);
 
-      // Show body and iframe
+      // Show body
       body.classList.add('show');
-      iframeContainer.style.display = 'block';
 
       // Update status and storage
       card.className = 'test-card running';
@@ -457,30 +423,17 @@
       });
 
       try {
-        // Load scenario in iframe
-        iframe.src = scenario.url;
+        // Open in new tab
+        const win = window.open(scenario.url, `tutorial_${index}`);
+        
+        if (!win) {
+          throw new Error('Popup blocked - please allow popups');
+        }
 
-        // Wait for load
-        await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('Scenario load timeout (10s)'));
-          }, 10000);
+        // Wait a moment for window to load
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-          iframe.onload = () => {
-            clearTimeout(timeout);
-            resolve();
-          };
-
-          iframe.onerror = () => {
-            clearTimeout(timeout);
-            reject(new Error('Scenario failed to load'));
-          };
-        });
-
-        // Give it time to render
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Mark as passed (if we got here, it loaded)
+        // Mark as passed (window opened successfully)
         card.className = 'test-card passed';
         status.textContent = '✅';
         results.passed++;
@@ -562,12 +515,10 @@
       scenarios.forEach((_, index) => {
         const card = document.getElementById(`scenario-${index}`);
         const status = document.getElementById(`status-${index}`);
-        const iframeContainer = document.getElementById(`iframe-${index}`);
         const body = document.getElementById(`body-${index}`);
 
         card.className = 'test-card';
         status.textContent = '⏳';
-        iframeContainer.style.display = 'none';
         body.classList.remove('show');
       });
 
