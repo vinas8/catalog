@@ -220,11 +220,17 @@
 
       const card = document.createElement('div');
       card.className = 'module-card';
+      
+      // Check if module has a collection page
+      const hasCollectionPage = ['S0', 'S1', 'S2-7'].includes(moduleKey);
+      const clickHint = hasCollectionPage ? '<div style="font-size: 11px; color: #58a6ff; margin-top: 5px;">👆 Click header to open collection runner</div>' : '';
+      
       card.innerHTML = `
-        <div class="module-header">
+        <div class="module-header" style="${hasCollectionPage ? 'background: rgba(88, 166, 255, 0.1); padding: 10px; border-radius: 6px; margin: -5px; margin-bottom: 10px;' : ''}">
           <div class="module-title">${meta.icon} ${meta.name}</div>
           <div class="module-badge">${moduleKey}</div>
         </div>
+        ${clickHint}
         <div class="module-stats">
           <div class="stat-item">📊 ${group.scenarios.length} scenarios</div>
           <div class="stat-item">✅ ${completed} done</div>
@@ -262,12 +268,24 @@
       }
       
       card.querySelector('.module-header').addEventListener('click', () => {
-        if (moduleKey === 'S0') {
-          window.location.href = 'healthcheck.html';
-        } else if (moduleKey === 'S2-7') {
-          window.location.href = 'tutorial-collection-runner.html';
+        // Module-specific pages
+        const modulePages = {
+          'S0': 'healthcheck.html',
+          'S1': 'catalog-demo.html',  // Shop demos
+          'S2': null,  // No collection page yet
+          'S2-7': 'tutorial-collection-runner.html',
+          'S3': null,  // Auth - no collection page
+          'S4': null,  // Payment - no collection page  
+          'S5': null   // Worker - no collection page
+        };
+        
+        const page = modulePages[moduleKey];
+        if (page) {
+          window.location.href = page;
+        } else {
+          // Show message if no collection page exists
+          alert(`📋 ${meta.name} scenarios\n\nNo collection runner page yet. Scenarios are listed below.`);
         }
-        // Future: Add other module collection runners here
       });
 
       grid.appendChild(card);
