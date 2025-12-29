@@ -296,10 +296,11 @@
           throw new Error('STRIPE_KEY not configured');
         }
         log('stripeOutput', 'Fetching Stripe product count...', 'info');
-        // Add cache busting
-        const res = await fetch(`https://api.stripe.com/v1/products?limit=100&_t=${Date.now()}`, {
-          headers: { 'Authorization': `Bearer ${STRIPE_KEY}` },
-          cache: 'no-cache'
+        const res = await fetch('https://api.stripe.com/v1/products?limit=100', {
+          headers: { 
+            'Authorization': `Bearer ${STRIPE_KEY}`
+          },
+          cache: 'no-store'
         });
         
         if (!res.ok) {

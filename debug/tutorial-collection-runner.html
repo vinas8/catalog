@@ -258,10 +258,10 @@
   </div>
 
   <div class="run-btn-container">
-    <button onclick="runAllScenarios()" class="btn" id="run-all-btn">▶ Run All Scenarios</button>
-    <button onclick="collapseAll()" class="btn btn-small">Collapse All</button>
-    <button onclick="expandAll()" class="btn btn-small">Expand All</button>
-    <button onclick="resetAll()" class="btn btn-small" style="background: #d29922;">↻ Reset</button>
+    <button id="run-all-btn" class="btn">▶ Run All Scenarios</button>
+    <button id="collapse-btn" class="btn btn-small">Collapse All</button>
+    <button id="expand-btn" class="btn btn-small">Expand All</button>
+    <button id="reset-btn" class="btn btn-small" style="background: #d29922;">↻ Reset</button>
   </div>
   
   <div class="progress-bar" id="progress-container">
@@ -358,7 +358,7 @@
       const list = document.getElementById('scenario-list');
       list.innerHTML = scenarios.map((scenario, index) => `
         <div class="test-card" id="scenario-${index}">
-          <div class="test-header" onclick="toggleScenario(${index})">
+          <div class="test-header" data-index="${index}">
             <div class="test-number">${scenario.id}</div>
             <div class="test-title">${scenario.name}</div>
             <div class="test-duration">${scenario.duration}</div>
@@ -380,8 +380,8 @@
               <div class="code-block">${scenario.url}</div>
             </div>
             <div class="test-section">
-              <button onclick="runSingleScenario(${index})" class="btn btn-small">▶ Run This Scenario</button>
-              <button onclick="openInNewTab(${index})" class="btn btn-small" style="background: #1f6feb;">↗ Open in New Tab</button>
+              <button class="btn btn-small run-single-btn" data-index="${index}">▶ Run This Scenario</button>
+              <button class="btn btn-small open-tab-btn" data-index="${index}" style="background: #1f6feb;">↗ Open in New Tab</button>
             </div>
             <div class="iframe-container" id="iframe-${index}" style="display: none;">
               <iframe id="frame-${index}" src="about:blank"></iframe>
@@ -389,6 +389,28 @@
           </div>
         </div>
       `).join('');
+
+      // Add event listeners
+      document.querySelectorAll('.test-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const index = parseInt(header.dataset.index);
+          toggleScenario(index);
+        });
+      });
+
+      document.querySelectorAll('.run-single-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.dataset.index);
+          runSingleScenario(index);
+        });
+      });
+
+      document.querySelectorAll('.open-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.dataset.index);
+          openInNewTab(index);
+        });
+      });
     }
 
     function toggleScenario(index) {
@@ -563,8 +585,14 @@
       console.log('🔄 Tutorial progress reset');
     }
 
-    // Initialize
+    // Initialize - render scenarios and attach event listeners
     renderScenarios();
+    
+    // Attach button event listeners
+    document.getElementById('run-all-btn').addEventListener('click', runAllScenarios);
+    document.getElementById('collapse-btn').addEventListener('click', collapseAll);
+    document.getElementById('expand-btn').addEventListener('click', expandAll);
+    document.getElementById('reset-btn').addEventListener('click', resetAll);
   </script>
 </body>
 </html>
