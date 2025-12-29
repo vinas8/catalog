@@ -296,8 +296,10 @@ export class GameStorageClient extends LocalStorageClient {
 
   async markTutorialComplete(tutorialId) {
     const progress = await this.getTutorialProgress();
-    if (!progress.completed.includes(tutorialId)) {
-      progress.completed.push(tutorialId);
+    const completed = progress.completed || [];
+    if (!completed.includes(tutorialId)) {
+      completed.push(tutorialId);
+      progress.completed = completed;
       progress.current = null;
     }
     return await this.setTutorialProgress(progress);
