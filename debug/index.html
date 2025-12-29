@@ -262,12 +262,12 @@
       }
       
       card.querySelector('.module-header').addEventListener('click', () => {
-        if (moduleKey === 'S0') window.location.href = 'healthcheck.html';
-        if (moduleKey === 'S2-7') {
-          // Toggle tutorial links visibility
-          const links = card.querySelector('.module-links');
-          if (links) links.style.display = links.style.display === 'none' ? 'flex' : 'none';
+        if (moduleKey === 'S0') {
+          window.location.href = 'healthcheck.html';
+        } else if (moduleKey === 'S2-7') {
+          window.location.href = 'tutorial-collection-runner.html';
         }
+        // Future: Add other module collection runners here
       });
 
       grid.appendChild(card);
