@@ -67,22 +67,23 @@ export const APP_CONFIG = {
   
   // Navigation Configuration
   // UX Psychology: 5 items max for mobile bottom nav (Miller's Law: 5±2 chunks)
-  // E-commerce focused: Shop → Browse → Care → Learn → Account
+  // E-commerce + Breeding Game: Shop → Care → Learn → Breed → Account
   NAVIGATION: {
     // Primary navigation (shows everywhere - optimized for mobile bottom nav)
+    // Standard iOS/Android: Icon on top, label below, 5 items max
     primary: [
-      { label: 'Shop', href: 'catalog.html', icon: '🛒', description: 'Buy snakes' },
-      { label: 'Collection', href: 'game.html', icon: '🐍', description: 'My snakes' },
-      { label: 'Dex', href: 'game/dex.html', icon: '📚', description: 'Encyclopedia' },
-      { label: 'Account', href: 'register.html', icon: '👤', description: 'Profile' }
+      { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
+      { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
+      { label: 'Dex', href: 'game/dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia' },
+      { label: 'Genetics', href: 'game.html#calculator', icon: '🧬', iconSmall: '🧬', description: 'Calculator' },
+      { label: 'Account', href: 'register.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
     ],
-    // Secondary links (desktop only - dropdown or overflow menu)
+    // Secondary links (desktop only - top nav overflow)
     secondary: [
-      { label: 'Home', href: 'index.html', icon: '🏠' },
-      { label: 'Genetics', href: '#genetics', icon: '🧬' }
+      { label: 'Home', href: 'index.html', icon: '🏠' }
     ],
     // Debug link only shows when DEBUG is true
-    debugLink: { label: 'Debug', href: 'debug/index.html', icon: '🔍' }
+    debugLink: { label: 'Debug', href: 'debug/index.html', icon: '🔍', iconSmall: '🔍' }
   }
 };
 

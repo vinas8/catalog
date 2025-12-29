@@ -90,12 +90,15 @@ export class Navigation {
     
     if (context === 'mobile') {
       return this.config.NAVIGATION.primary
-        .map(link => `
-          <a href="${link.href}" class="bottom-nav-item" data-page="${link.label.toLowerCase()}">
-            <span class="nav-icon">${link.icon}</span>
-            <span class="nav-label">${link.label}</span>
-          </a>
-        `).join('');
+        .map(link => {
+          const icon = link.iconSmall || link.icon;
+          return `
+            <a href="${link.href}" class="bottom-nav-item" data-page="${link.label.toLowerCase()}" title="${link.description}">
+              <span class="nav-icon">${icon}</span>
+              <span class="nav-label">${link.label}</span>
+            </a>
+          `;
+        }).join('');
     }
     
     return this.config.NAVIGATION.primary
@@ -225,9 +228,11 @@ export class Navigation {
         bottom: 0;
         left: 0;
         right: 0;
-        background: var(--bg);
-        border-top: 2px solid var(--pastel-yellow);
-        box-shadow: 0 -2px 8px var(--shadow);
+        background: rgba(255, 255, 255, 0.92); /* iOS translucent */
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         z-index: 1000;
         padding-bottom: env(safe-area-inset-bottom); /* iOS notch support */
       }
@@ -235,10 +240,10 @@ export class Navigation {
       .bottom-nav-container {
         display: flex;
         justify-content: space-around;
-        align-items: center;
+        align-items: flex-start;
         max-width: 600px;
         margin: 0 auto;
-        padding: 0.5rem 0;
+        padding: 0.4rem 0.5rem calc(0.2rem + env(safe-area-inset-bottom)) 0.5rem;
       }
       
       .bottom-nav-item {
@@ -247,28 +252,32 @@ export class Navigation {
         align-items: center;
         justify-content: center;
         gap: 0.25rem;
-        padding: 0.5rem 0.75rem;
+        padding: 0.4rem 0.5rem;
         text-decoration: none;
-        color: var(--muted);
-        border-radius: 12px;
-        transition: all 0.2s;
-        min-width: 60px;
+        color: #8e8e93; /* iOS gray */
+        border-radius: 8px;
+        transition: all 0.15s ease-out;
+        flex: 1;
+        max-width: 75px;
         text-align: center;
+        -webkit-tap-highlight-color: transparent;
       }
       
       .bottom-nav-item .nav-icon {
-        font-size: 1.5rem;
-        transition: transform 0.2s;
+        font-size: 1.4rem;
+        line-height: 1;
+        transition: transform 0.15s ease-out;
       }
       
       .bottom-nav-item .nav-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.3px;
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: -0.2px;
+        line-height: 1.2;
       }
       
       .bottom-nav-item:active {
-        transform: scale(0.95);
+        transform: scale(0.92);
       }
       
       .bottom-nav-item.active {
@@ -276,12 +285,12 @@ export class Navigation {
       }
       
       .bottom-nav-item.active .nav-icon {
-        transform: scale(1.1);
+        transform: translateY(-2px);
       }
       
       .bottom-nav-item.debug-item {
-        color: #ff6b6b;
-        border: 1px solid #ff6b6b;
+        color: #ff3b30; /* iOS red */
+        flex: 0.7;
       }
       
       /* Responsive breakpoint */
