@@ -244,6 +244,7 @@
   <div id="scenario-list"></div>
 
   <script type="module">
+    import { TestRunner } from './modules/test-runner.js';
     import { createGameStorage } from '../src/modules/game/storage-client.js';
 
     // Initialize storage client for tutorial tracking
@@ -251,306 +252,217 @@
       backend: 'localStorage',
       namespace: 'tutorial_runner',
       autoSave: true,
-      saveInterval: 10000 // Save every 10s during tutorials
+      saveInterval: 10000
     });
 
     // Listen to storage events
     storage.on('set', ({ key, value }) => {
       console.log('📝 Storage updated:', key);
-      if (key.startsWith('snake:')) {
-        console.log('🐍 Snake state changed:', value);
-      }
     });
 
-    storage.on('autosave', () => {
-      console.log('💾 Auto-save triggered');
-    });
-
-    // Initialize tutorial progress on load
-    (async () => {
-      const progress = await storage.getTutorialProgress();
-      console.log('📊 Tutorial progress loaded:', progress);
-    })();
-
-    const scenarios = [
+    // Tutorial scenarios as test groups
+    const testGroups = [
       {
-        id: 'S2-7.x.01',
-        name: 'Happy Path (Daily Check-in)',
-        url: 'tutorial-happy-path.html',
-        duration: '<60s',
-        description: 'Tests daily care routine, positive reinforcement, and basic mechanics',
-        tests: ['Feed action', 'Water action', 'Stat display', 'Event timers']
-      },
-      {
-        id: 'S2-7.x.02',
-        name: 'Missed Care (2-3 days)',
-        url: 'tutorial-missed-care.html',
-        duration: '<60s',
-        description: 'Tests stat decay over time, recovery mechanics, re-engagement flow',
-        tests: ['Decay rates', 'Critical warnings', 'Recovery actions', 'Stat persistence']
-      },
-      {
-        id: 'S2-7.x.03',
-        name: 'Education-First Commerce',
-        url: 'tutorial-education-commerce.html',
-        duration: '<60s',
-        description: 'Browse catalog without purchase pressure, learn before buying',
-        tests: ['Catalog access', 'No forced purchase', 'Educational content', 'Trust building']
-      },
-      {
-        id: 'S2-7.x.04',
-        name: 'Trust Protection',
-        url: 'tutorial-trust-protection.html',
-        duration: '<60s',
-        description: 'Transparent care requirements, no dark patterns, honest expectations',
-        tests: ['Clear requirements', 'No manipulation', 'Transparent costs', 'Exit options']
-      },
-      {
-        id: 'S2-7.x.05',
-        name: 'Email-Driven Re-entry',
-        url: 'tutorial-email-reentry.html',
-        duration: '<60s',
-        description: 'Email notification triggers, multi-day gap handling, return flow',
-        tests: ['Email triggers', 'State recovery', 'Gap handling', 'Re-engagement']
-      },
-      {
-        id: 'S2-7.x.06',
-        name: 'Failure Case (Educational)',
-        url: 'tutorial-failure-educational.html',
-        duration: '<60s',
-        description: 'Death scenario, educational failure messages, learning opportunity',
-        tests: ['Death trigger', 'Educational message', 'Restart option', 'Lesson learned']
+        name: 'Tutorial System (S2-7.x)',
+        icon: '🐍',
+        module: 'S2-7',
+        tests: [
+          {
+            id: 'S2-7-01',
+            number: 'S2-7.x.01',
+            method: 'DEMO',
+            name: 'Happy Path (Daily Check-in)',
+            endpoint: 'tutorial-happy-path.html',
+            description: 'Tests daily care routine, positive reinforcement, and basic mechanics',
+            expected: 'Feed action, Water action, Stat display, Event timers',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.01', started_at: Date.now() });
+              const response = await fetch('tutorial-happy-path.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.01');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-happy-path.html',
+                fileSize: response.headers.get('content-length') + ' bytes',
+                message: 'Tutorial page accessible'
+              };
+            }
+          },
+          {
+            id: 'S2-7-02',
+            number: 'S2-7.x.02',
+            method: 'DEMO',
+            name: 'Missed Care (2-3 days)',
+            endpoint: 'tutorial-missed-care.html',
+            description: 'Tests stat decay over time, recovery mechanics, re-engagement flow',
+            expected: 'Decay rates, Critical warnings, Recovery actions, Stat persistence',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.02', started_at: Date.now() });
+              const response = await fetch('tutorial-missed-care.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.02');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-missed-care.html',
+                message: 'Tutorial page accessible'
+              };
+            }
+          },
+          {
+            id: 'S2-7-03',
+            number: 'S2-7.x.03',
+            method: 'DEMO',
+            name: 'Education-First Commerce',
+            endpoint: 'tutorial-education-commerce.html',
+            description: 'Browse catalog without purchase pressure, learn before buying',
+            expected: 'Catalog access, No forced purchase, Educational content, Trust building',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.03', started_at: Date.now() });
+              const response = await fetch('tutorial-education-commerce.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.03');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-education-commerce.html',
+                message: 'Tutorial page accessible'
+              };
+            }
+          },
+          {
+            id: 'S2-7-04',
+            number: 'S2-7.x.04',
+            method: 'DEMO',
+            name: 'Trust Protection',
+            endpoint: 'tutorial-trust-protection.html',
+            description: 'Transparent care requirements, no dark patterns, honest expectations',
+            expected: 'Clear requirements, No manipulation, Transparent costs, Exit options',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.04', started_at: Date.now() });
+              const response = await fetch('tutorial-trust-protection.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.04');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-trust-protection.html',
+                message: 'Tutorial page accessible'
+              };
+            }
+          },
+          {
+            id: 'S2-7-05',
+            number: 'S2-7.x.05',
+            method: 'DEMO',
+            name: 'Email-Driven Re-entry',
+            endpoint: 'tutorial-email-reentry.html',
+            description: 'Email notification triggers, multi-day gap handling, return flow',
+            expected: 'Email triggers, State recovery, Gap handling, Re-engagement',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.05', started_at: Date.now() });
+              const response = await fetch('tutorial-email-reentry.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.05');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-email-reentry.html',
+                message: 'Tutorial page accessible'
+              };
+            }
+          },
+          {
+            id: 'S2-7-06',
+            number: 'S2-7.x.06',
+            method: 'DEMO',
+            name: 'Failure Case (Educational)',
+            endpoint: 'tutorial-failure-educational.html',
+            description: 'Death scenario, educational failure messages, learning opportunity',
+            expected: 'Death trigger, Educational message, Restart option, Lesson learned',
+            run: async () => {
+              await storage.setTutorialProgress({ current: 'S2-7.x.06', started_at: Date.now() });
+              const response = await fetch('tutorial-failure-educational.html', { method: 'HEAD' });
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              await storage.markTutorialComplete('S2-7.x.06');
+              return { 
+                status: 'passed', 
+                url: 'tutorial-failure-educational.html',
+                message: 'Tutorial page accessible'
+              };
+            }
+          }
+        ]
       }
     ];
 
-    let currentScenarioIndex = -1;
-    let results = { passed: 0, failed: 0, pending: 6 };
+    // Initialize TestRunner
+    const runner = new TestRunner({
+      containerId: 'scenario-list',
+      progressBarId: 'progress-bar',
+      progressTextId: 'progress-text',
+      progressContainerId: 'progress-container',
+      autoRun: false,
+      testDelay: 500,
+      testGroups: testGroups
+    });
 
-    function renderScenarios() {
-      const list = document.getElementById('scenario-list');
-      list.innerHTML = scenarios.map((scenario, index) => `
-        <div class="test-card" id="scenario-${index}">
-          <div class="test-header" data-index="${index}">
-            <div class="test-number">${scenario.id}</div>
-            <div class="test-title">${scenario.name}</div>
-            <div class="test-duration">${scenario.duration}</div>
-            <div class="test-status" id="status-${index}">⏳</div>
-          </div>
-          <div class="test-body" id="body-${index}">
-            <div class="test-section">
-              <h4>Description</h4>
-              <p style="color: #8b949e; font-size: 13px; line-height: 1.6;">${scenario.description}</p>
-            </div>
-            <div class="test-section">
-              <h4>Tests Performed</h4>
-              <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; padding-left: 20px;">
-                ${scenario.tests.map(test => `<li>${test}</li>`).join('')}
-              </ul>
-            </div>
-            <div class="test-section">
-              <h4>URL</h4>
-              <div class="code-block">${scenario.url}</div>
-            </div>
-            <div class="test-section">
-              <button class="btn btn-small run-single-btn" data-index="${index}">▶ Run This Scenario</button>
-              <button class="btn btn-small open-tab-btn" data-index="${index}" style="background: #1f6feb;">↗ Open in New Tab</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
+    // Render tests
+    runner.renderTests();
 
-      // Add event listeners
-      document.querySelectorAll('.test-header').forEach(header => {
-        header.addEventListener('click', () => {
-          const index = parseInt(header.dataset.index);
-          toggleScenario(index);
-        });
-      });
-
-      document.querySelectorAll('.run-single-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const index = parseInt(btn.dataset.index);
-          runSingleScenario(index);
-        });
-      });
-
-      document.querySelectorAll('.open-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const index = parseInt(btn.dataset.index);
-          openInNewTab(index);
-        });
-      });
-    }
-
-    function toggleScenario(index) {
-      const body = document.getElementById(`body-${index}`);
-      body.classList.toggle('show');
-    }
-
-    function collapseAll() {
-      scenarios.forEach((_, index) => {
-        document.getElementById(`body-${index}`).classList.remove('show');
-      });
-    }
-
-    function expandAll() {
-      scenarios.forEach((_, index) => {
-        document.getElementById(`body-${index}`).classList.add('show');
-      });
-    }
-
-    function openInNewTab(index) {
-      window.open(scenarios[index].url, '_blank');
-    }
-
-    async function runSingleScenario(index) {
-      const scenario = scenarios[index];
-      const card = document.getElementById(`scenario-${index}`);
-      const status = document.getElementById(`status-${index}`);
-      const body = document.getElementById(`body-${index}`);
-
-      // Expand card to show details
-      body.classList.add('show');
-
-      // Update status
-      card.className = 'test-card running';
-      status.textContent = '🔄';
-
-      // Update tutorial progress
-      await storage.setTutorialProgress({
-        current: scenario.id,
-        started_at: Date.now()
-      });
-
-      try {
-        // Simulate running the scenario (just validate URL is accessible)
-        const response = await fetch(scenario.url, { method: 'HEAD' });
-        
-        if (!response.ok) {
-          throw new Error(`Scenario returned ${response.status}`);
-        }
-
-        // Wait a moment to simulate test execution
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Mark as passed
-        card.className = 'test-card passed';
-        status.textContent = '✅';
-        results.passed++;
-        results.pending--;
-        updateSummary();
-
-        // Mark tutorial as complete
-        await storage.markTutorialComplete(scenario.id);
-        console.log(`✅ Tutorial ${scenario.id} completed`);
-
-      } catch (error) {
-        card.className = 'test-card failed';
-        status.textContent = '❌';
-        results.failed++;
-        results.pending--;
-        updateSummary();
-        console.error(`Scenario ${scenario.id} failed:`, error);
-
-        // Log failure
-        await storage.set(`tutorial:${scenario.id}:failed`, {
-          error: error.message,
-          timestamp: Date.now()
-        });
-      }
-    }
-
-    async function runAllScenarios() {
-      const runBtn = document.getElementById('run-all-btn');
-      const progressContainer = document.getElementById('progress-container');
-      const progressBar = document.getElementById('progress-bar');
-      const progressText = document.getElementById('progress-text');
-
-      // Disable button and show progress
-      runBtn.disabled = true;
-      progressContainer.style.display = 'block';
-      progressText.style.display = 'block';
-
-      // Reset results
-      results = { passed: 0, failed: 0, pending: 6 };
-      updateSummary();
-
-      for (let i = 0; i < scenarios.length; i++) {
-        currentScenarioIndex = i;
-        const progress = Math.round(((i + 1) / scenarios.length) * 100);
-        progressBar.style.width = `${progress}%`;
-        progressBar.textContent = `${progress}% (${i + 1}/${scenarios.length})`;
-        progressText.textContent = `Running: ${scenarios[i].name}`;
-
-        await runSingleScenario(i);
-        
-        // Wait 1s between scenarios
-        if (i < scenarios.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
-
-      // Complete
-      progressText.textContent = `✅ Complete! ${results.passed} passed, ${results.failed} failed`;
-      runBtn.disabled = false;
-
-      // Show summary alert
-      const allPassed = results.failed === 0;
-      setTimeout(() => {
-        alert(allPassed 
-          ? `✅ All ${scenarios.length} scenarios passed!` 
-          : `⚠️ ${results.passed}/${scenarios.length} passed, ${results.failed} failed`
-        );
-      }, 500);
-    }
-
-    function updateSummary() {
+    // Attach button handlers
+    document.getElementById('run-all-btn').addEventListener('click', async () => {
+      const results = await runner.runAllTests();
+      
+      // Update summary
+      document.getElementById('total-count').textContent = results.total;
       document.getElementById('passed-count').textContent = results.passed;
       document.getElementById('failed-count').textContent = results.failed;
-      document.getElementById('pending-count').textContent = results.pending;
-    }
+      document.getElementById('pending-count').textContent = results.total - results.passed - results.failed;
+    });
 
-    async function resetAll() {
-      // Reset all cards
-      scenarios.forEach((_, index) => {
-        const card = document.getElementById(`scenario-${index}`);
-        const status = document.getElementById(`status-${index}`);
-        const body = document.getElementById(`body-${index}`);
+    document.getElementById('collapse-btn').addEventListener('click', () => {
+      document.querySelectorAll('.test-body').forEach(body => body.classList.remove('show'));
+    });
 
-        card.className = 'test-card';
-        status.textContent = '⏳';
-        body.classList.remove('show');
+    document.getElementById('expand-btn').addEventListener('click', () => {
+      document.querySelectorAll('.test-body').forEach(body => body.classList.add('show'));
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', async () => {
+      // Reset UI
+      document.querySelectorAll('.test-status').forEach(el => {
+        el.textContent = '⏳';
+        el.className = 'test-status';
       });
-
+      document.querySelectorAll('[id^="response-"]').forEach(el => {
+        el.textContent = 'Not run yet';
+      });
+      
       // Reset progress
       document.getElementById('progress-bar').style.width = '0%';
       document.getElementById('progress-bar').textContent = '0%';
       document.getElementById('progress-text').textContent = 'Ready to run';
       document.getElementById('progress-container').style.display = 'none';
       document.getElementById('progress-text').style.display = 'none';
-
-      // Reset results
-      results = { passed: 0, failed: 0, pending: 6 };
-      updateSummary();
-
-      // Clear tutorial progress from storage
+      
+      // Reset summary
+      document.getElementById('passed-count').textContent = '0';
+      document.getElementById('failed-count').textContent = '0';
+      document.getElementById('pending-count').textContent = '6';
+      
+      // Clear tutorial progress
       await storage.setTutorialProgress({
         completed: [],
         current: null,
         started_at: null
       });
-
+      
       console.log('🔄 Tutorial progress reset');
-    }
+    });
 
-    // Initialize - render scenarios and attach event listeners
-    renderScenarios();
-    
-    // Attach button event listeners
-    document.getElementById('run-all-btn').addEventListener('click', runAllScenarios);
-    document.getElementById('collapse-btn').addEventListener('click', collapseAll);
-    document.getElementById('expand-btn').addEventListener('click', expandAll);
-    document.getElementById('reset-btn').addEventListener('click', resetAll);
+    // Load initial progress
+    (async () => {
+      const progress = await storage.getTutorialProgress();
+      console.log('📊 Tutorial progress loaded:', progress);
+      document.getElementById('pending-count').textContent = 6 - (progress.completed?.length || 0);
+    })();
   </script>
 </body>
 </html>
