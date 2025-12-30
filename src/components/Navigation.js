@@ -59,17 +59,25 @@ export class Navigation {
     const inDebug = path.includes('/debug/');
     
     if (this.config?.NAVIGATION?.debugLink) {
-      const debugHref = this.config.NAVIGATION.debugLink.href;
-      // If we're in debug, link to current directory
-      // If we're not in debug, use the configured path
-      const fixedHref = inDebug ? './' : (inSubdir ? '../' + debugHref : debugHref);
+      let debugHref;
+      
+      if (inDebug) {
+        // Already in debug, just refresh to index
+        debugHref = './';
+      } else if (inSubdir) {
+        // In another subdirectory, go up then to debug
+        debugHref = '../debug/';
+      } else {
+        // At root, just go to debug
+        debugHref = 'debug/';
+      }
       
       this.config.NAVIGATION.debugLink = {
         ...this.config.NAVIGATION.debugLink,
-        href: fixedHref
+        href: debugHref
       };
       
-      console.log('Debug link:', this.config.NAVIGATION.debugLink.href);
+      console.log('Debug link:', debugHref, '(inDebug:', inDebug, 'inSubdir:', inSubdir + ')');
     }
     
     // Store prefix for other uses
