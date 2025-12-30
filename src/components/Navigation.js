@@ -124,18 +124,18 @@ export class Navigation {
             <span class="dropdown-arrow">▼</span>
           </button>
           <div class="profile-menu" id="profileMenu" style="display: none;">
-            <a href="#profile">Profile</a>
-            <a href="#purchases">Purchases</a>
-            <a href="#settings">Settings</a>
+            <a href="game.html">🏡 My Farm</a>
+            <a href="collection.html">📦 Collection</a>
+            <a href="#settings">⚙️ Settings</a>
             <hr>
-            <a href="#logout" id="logoutButton">Logout</a>
+            <a href="#logout" id="logoutButton">🚪 Logout</a>
           </div>
         </div>
       `;
     } else {
       return `
         <div class="auth-buttons">
-          <a href="register.html" class="btn-login">Login</a>
+          <a href="register.html#login" class="btn-login">Login</a>
           <a href="register.html" class="btn-register">Register</a>
         </div>
       `;

@@ -115,18 +115,48 @@
   </style>
 </head>
 <body>
-  <header class="game-header">
-    <div class="header-left">
-      <h1>🐍 SnakeMuffin</h1>
-    </div>
-    <nav class="main-nav">
-      <a href="/">Home</a>
-      <a href="/catalog.html">Shop</a>
-      <a href="/game.html">Game</a>
-    </nav>
-  </header>
+  <div class="register-container" id="register-container">
+    <!-- Content will be rendered by script based on user status -->
+  </div>
 
-  <div class="register-container">
+  <script type="module">
+    // Check if user is already registered
+    const userHash = localStorage.getItem('serpent_user_hash') || localStorage.getItem('userHash');
+    const container = document.getElementById('register-container');
+    
+    if (userHash) {
+      // User already registered - show login/access page
+      container.innerHTML = `
+        <div class="welcome-banner">
+          <div class="snake-emoji">🐍</div>
+          <h1>Welcome Back!</h1>
+          <p style="font-size: 1.2rem; color: #666;">You're already registered</p>
+        </div>
+        
+        <div class="info-box">
+          <p>✅ <strong>Account Found!</strong></p>
+          <p>🎮 Access your snake farm below</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+          <a href="game.html#${userHash}" class="submit-btn" style="text-decoration: none; text-align: center; display: block;">
+            🏡 Go to My Farm
+          </a>
+          <a href="catalog.html" class="submit-btn" style="text-decoration: none; text-align: center; display: block; background: var(--color-accent);">
+            🛒 Shop More Snakes
+          </a>
+          <button onclick="localStorage.clear(); location.reload();" style="padding: 0.75rem; background: #f0f0f0; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;">
+            🔄 Clear Account & Register New
+          </button>
+        </div>
+        
+        <p style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.9rem;">
+          Your Player ID: <code style="background: #f0f0f0; padding: 0.25rem 0.5rem; border-radius: 4px;">${userHash}</code>
+        </p>
+      `;
+    } else {
+      // New user - show registration form
+      container.innerHTML = `
     <div class="welcome-banner">
       <div class="snake-emoji">🐍</div>
       <h1>Welcome to SnakeMuffin!</h1>
@@ -313,6 +343,7 @@
         alert('Something went wrong. Please try again.');
       }
     });
+    }  // End if-else for user registration check
   </script>
 </body>
 </html>
