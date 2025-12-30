@@ -84,7 +84,7 @@ export const APP_CONFIG = {
       { label: 'Home', href: 'index.html', icon: '🏠' }
     ],
     // Debug link only shows when DEBUG is true
-    debugLink: { label: 'Debug', href: 'debug/index.html', icon: '🔍', iconSmall: '🔍' }
+    debugLink: { label: 'Debug', href: 'debug/', icon: '🔍', iconSmall: '🔍' }
   }
 };
 
