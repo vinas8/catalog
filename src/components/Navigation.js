@@ -35,31 +35,34 @@ export class Navigation {
     const depth = (path.match(/\//g) || []).length - 1; // -1 for root /
     const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
     
-    console.log('Navigation depth:', depth, 'prefix:', prefix || '(none)', 'path:', path);
+    // Check if we're in a subdirectory (like /debug/)
+    const inSubdir = depth > 1;
     
-    // Check if we're already in debug directory
-    const inDebug = path.includes('/debug/');
+    console.log('Navigation - path:', path, 'depth:', depth, 'prefix:', prefix || '(none)', 'inSubdir:', inSubdir);
     
     // Apply prefix to all navigation links
     if (this.config?.NAVIGATION?.primary) {
       this.config.NAVIGATION.primary = this.config.NAVIGATION.primary.map(link => ({
         ...link,
-        href: this.fixPath(link.href, prefix)
+        href: inSubdir ? '../' + link.href : link.href
       }));
     }
     
     if (this.config?.NAVIGATION?.secondary) {
       this.config.NAVIGATION.secondary = this.config.NAVIGATION.secondary.map(link => ({
         ...link,
-        href: this.fixPath(link.href, prefix)
+        href: inSubdir ? '../' + link.href : link.href
       }));
     }
     
+    // Check if we're already in debug directory
+    const inDebug = path.includes('/debug/');
+    
     if (this.config?.NAVIGATION?.debugLink) {
       const debugHref = this.config.NAVIGATION.debugLink.href;
-      // If we're in debug, link to current directory (index.html)
+      // If we're in debug, link to current directory
       // If we're not in debug, use the configured path
-      const fixedHref = inDebug ? 'index.html' : this.fixPath(debugHref, prefix);
+      const fixedHref = inDebug ? './' : (inSubdir ? '../' + debugHref : debugHref);
       
       this.config.NAVIGATION.debugLink = {
         ...this.config.NAVIGATION.debugLink,
@@ -70,7 +73,7 @@ export class Navigation {
     }
     
     // Store prefix for other uses
-    this.pathPrefix = prefix;
+    this.pathPrefix = inSubdir ? '../' : '';
   }
 
   fixPath(href, prefix) {
