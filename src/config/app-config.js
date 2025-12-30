@@ -80,7 +80,7 @@ export const APP_CONFIG = {
           { label: 'Morphs', href: 'game.html#calculator', icon: '🎨' }
         ]
       },
-      { label: 'Account', href: 'register.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
+      { label: 'Account', href: 'account.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
     ],
     // Secondary links (desktop only - top nav overflow)
     secondary: [
