@@ -66,17 +66,20 @@ export const APP_CONFIG = {
   },
   
   // Navigation Configuration
-  // UX Psychology: 5 items max for mobile bottom nav (Miller's Law: 5±2 chunks)
-  // E-commerce + Breeding Game: Shop → Care → Learn → Breed → Account
+  // UX Psychology: 4 items optimal for mobile bottom nav (Miller's Law: 5±2 chunks)
+  // E-commerce + Breeding Game: Shop → Farm → Learn → Account
   NAVIGATION: {
     // Primary navigation (shows everywhere - optimized for mobile bottom nav)
-    // Standard iOS/Android: Icon on top, label below, 5 items max
-    // NOTE: Use relative paths that work from any page depth
+    // Standard iOS/Android: Icon on top, label below, 4 items is optimal
     primary: [
       { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
       { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
-      { label: 'Dex', href: 'dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia' },
-      { label: 'Morphs', href: 'game.html#calculator', icon: '🎨', iconSmall: '🎨', description: 'Breeding calculator' },
+      { label: 'Learn', href: 'dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia & genetics', 
+        submenu: [
+          { label: 'Snake Dex', href: 'dex.html', icon: '📚' },
+          { label: 'Morphs', href: 'game.html#calculator', icon: '🎨' }
+        ]
+      },
       { label: 'Account', href: 'register.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
     ],
     // Secondary links (desktop only - top nav overflow)
