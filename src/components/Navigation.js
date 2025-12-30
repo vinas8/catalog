@@ -35,18 +35,40 @@ export class Navigation {
     const depth = (path.match(/\//g) || []).length - 1; // -1 for root /
     const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
     
+    console.log('Navigation depth:', depth, 'prefix:', prefix || '(none)');
+    
     // Apply prefix to all navigation links
     if (this.config?.NAVIGATION?.primary) {
       this.config.NAVIGATION.primary = this.config.NAVIGATION.primary.map(link => ({
         ...link,
-        href: link.href.startsWith('#') || link.href.startsWith('http') ? link.href : prefix + link.href
+        href: this.fixPath(link.href, prefix)
+      }));
+    }
+    
+    if (this.config?.NAVIGATION?.secondary) {
+      this.config.NAVIGATION.secondary = this.config.NAVIGATION.secondary.map(link => ({
+        ...link,
+        href: this.fixPath(link.href, prefix)
       }));
     }
     
     if (this.config?.NAVIGATION?.debugLink) {
-      const href = this.config.NAVIGATION.debugLink.href;
-      this.config.NAVIGATION.debugLink.href = href.startsWith('http') ? href : prefix + href;
+      this.config.NAVIGATION.debugLink = {
+        ...this.config.NAVIGATION.debugLink,
+        href: this.fixPath(this.config.NAVIGATION.debugLink.href, prefix)
+      };
     }
+    
+    // Store prefix for other uses
+    this.pathPrefix = prefix;
+  }
+
+  fixPath(href, prefix) {
+    // Don't modify anchors, http links, or already absolute paths
+    if (href.startsWith('#') || href.startsWith('http') || href.startsWith('/')) {
+      return href;
+    }
+    return prefix + href;
   }
 
   getCurrentUser() {
@@ -66,7 +88,7 @@ export class Navigation {
     topNav.innerHTML = `
       <div class="nav-container">
         <div class="nav-left">
-          <a href="index.html" class="nav-logo">
+          <a href="${this.fixPath('index.html', this.pathPrefix || '')}" class="nav-logo">
             🐍 <span>Serpent Town</span>
           </a>
           <div class="desktop-nav-links">
@@ -143,6 +165,7 @@ export class Navigation {
   }
 
   renderAuthSection() {
+    const prefix = this.pathPrefix || '';
     if (this.currentUser) {
       return `
         <div class="profile-dropdown">
@@ -151,8 +174,8 @@ export class Navigation {
             <span class="dropdown-arrow">▼</span>
           </button>
           <div class="profile-menu" id="profileMenu" style="display: none;">
-            <a href="game.html">🏡 My Farm</a>
-            <a href="collection.html">📦 Collection</a>
+            <a href="${prefix}game.html">🏡 My Farm</a>
+            <a href="${prefix}collection.html">📦 Collection</a>
             <a href="#settings">⚙️ Settings</a>
             <hr>
             <a href="#logout" id="logoutButton">🚪 Logout</a>
@@ -162,8 +185,8 @@ export class Navigation {
     } else {
       return `
         <div class="auth-buttons">
-          <a href="register.html#login" class="btn-login">Login</a>
-          <a href="register.html" class="btn-register">Register</a>
+          <a href="${prefix}register.html#login" class="btn-login">Login</a>
+          <a href="${prefix}register.html" class="btn-register">Register</a>
         </div>
       `;
     }
