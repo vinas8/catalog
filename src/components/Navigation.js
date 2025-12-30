@@ -59,9 +59,14 @@ export class Navigation {
     }
     
     if (this.config?.NAVIGATION?.debugLink) {
+      // Debug link needs special handling - it's a directory
+      const debugHref = this.config.NAVIGATION.debugLink.href;
+      // Remove trailing slash if present
+      const cleanDebug = debugHref.replace(/\/$/, '');
+      
       this.config.NAVIGATION.debugLink = {
         ...this.config.NAVIGATION.debugLink,
-        href: this.makeAbsolute(this.config.NAVIGATION.debugLink.href, rootPath)
+        href: this.makeAbsolute(cleanDebug + '/index.html', rootPath)
       };
     }
     
