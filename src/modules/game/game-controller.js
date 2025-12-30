@@ -809,12 +809,27 @@ class SnakeMuffin {
 }
 
 // Initialize game when DOM is ready
+console.log('🎮 game-controller.js loaded!');
+
 if (document.readyState === 'loading') {
+  console.log('⏳ Waiting for DOMContentLoaded...');
   document.addEventListener('DOMContentLoaded', () => {
-    window.game = new SnakeMuffin();
+    console.log('✅ DOM Ready - Creating SnakeMuffin...');
+    try {
+      window.game = new SnakeMuffin();
+      console.log('✅ SnakeMuffin created!');
+    } catch (error) {
+      console.error('❌ Failed to create SnakeMuffin:', error);
+    }
   });
 } else {
-  window.game = new SnakeMuffin();
+  console.log('✅ DOM Already Ready - Creating SnakeMuffin...');
+  try {
+    window.game = new SnakeMuffin();
+    console.log('✅ SnakeMuffin created!');
+  } catch (error) {
+    console.error('❌ Failed to create SnakeMuffin:', error);
+  }
 }
 
 export default SnakeMuffin;
