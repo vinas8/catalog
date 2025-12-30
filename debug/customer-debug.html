@@ -340,7 +340,7 @@
       log('getOutput', `Fetching customer: ${hash}...`);
 
       try {
-        const response = await fetch(`${WORKER_URL}/customer?hash=${hash}`);
+        const response = await fetch(`${WORKER_URL}/user-data?user=${hash}`);
         if (response.ok) {
           const data = await response.json();
           log('getOutput', JSON.stringify(data, null, 2), 'success');
