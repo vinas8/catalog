@@ -75,7 +75,7 @@ export const APP_CONFIG = {
     primary: [
       { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
       { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
-      { label: 'Dex', href: 'game/dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia' },
+      { label: 'Dex', href: 'dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia' },
       { label: 'Morphs', href: 'game.html#calculator', icon: '🎨', iconSmall: '🎨', description: 'Breeding calculator' },
       { label: 'Account', href: 'register.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
     ],
