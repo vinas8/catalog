@@ -196,3 +196,84 @@ Start with common morphs:
 - [ ] Test breeding combinations
 
 **Ready to start building!** 🐍
+
+---
+
+## MorphMarket Analysis (Design Inspiration Only)
+
+### What to Learn From Their UX:
+
+**Genetics Calculator UI:**
+- https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/genetic-calculator
+- Parent selection dropdowns
+- Visual morph previews
+- Results showing offspring %
+- Clean, simple interface
+
+**What We'll Build (Inspired But Original):**
+- 2 parent selection boxes
+- Dropdown of available morphs
+- Calculate button
+- Results grid showing probabilities
+- Visual trait badges
+- Save breeding combinations
+
+**NOT copying:**
+- Their data
+- Their images  
+- Their exact layout
+- Any proprietary content
+
+**Creating our own:**
+- Morph database (curated)
+- Calculator algorithm
+- UI design (Material Design 3)
+- Snake illustrations (emoji/CSS art or CC0 images)
+
+---
+
+## 🎯 Found! Genetics Projects on GitHub
+
+### Best Examples:
+
+1. **Punnett Square Calculators** (103 repos found!)
+   - `catherinemoresco/PunnetSquareMaker` ⭐ 9 stars - Python
+   - `armatronic/punnett-squares-js` ⭐ 7 stars - JavaScript ✅
+   - `luetkemj/punnett-square` ⭐ 3 stars - JavaScript ✅
+
+2. **Breeding Game Engines**
+   - `joeriks/snake-game` - Has Genetics.js! 🐍✅
+   - `ilyakudas/Cc-test/breeding-game.js` - Breeding mechanics
+   - `TechevolveAI/Mythical-Void/BreedingEngine.js` - Creature breeding
+   
+3. **Genetics Systems**
+   - `SpeedCraftTV/Pixel-Harvest/genetics-system.js` - Farm game genetics
+   - `YePeX420/Hedge-Ledger-NPC-dfk/genetics-engine.js` - DeFi game genetics
+
+### 🎮 Game-Based Genetics (Perfect for us!)
+- Nordanner Tools (horse breeding) - `eth0net/nord/breeding.js`
+- GeniBlocks - Educational genetics game
+- Dog genetics game - trait breeding
+
+---
+
+## ✅ Action Plan
+
+### Phase 1: Study Examples (Today)
+- [ ] Review punnett-squares-js implementation
+- [ ] Check snake-game/Genetics.js
+- [ ] Study breeding-game patterns
+
+### Phase 2: Build Our System (Tomorrow)
+- [ ] Create ball-python-morphs.json (10-20 morphs)
+- [ ] Implement Punnett square calculator
+- [ ] Build UI inspired by MorphMarket (but original!)
+
+### Phase 3: Data Sources
+- Wikipedia for morph descriptions
+- iNaturalist API for species data
+- Our own curated morph traits
+
+---
+
+**Ready to build! We have great examples to learn from** 🎯🐍
