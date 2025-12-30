@@ -30,11 +30,18 @@ export class Navigation {
   }
 
   makePathsAbsolute() {
-    // Get the base path (e.g., /catalog/ for GitHub Pages)
-    const basePath = window.location.pathname.split('/').slice(0, -1).join('/').replace(/\/[^/]*$/, '');
-    const rootPath = basePath || '';
+    // Get the base path - for GitHub Pages it's /catalog, for localhost it's empty
+    const pathname = window.location.pathname;
+    // Remove the current file from path to get directory
+    const pathParts = pathname.split('/').filter(p => p);
+    // Remove last part if it's a file (has .html)
+    if (pathParts.length > 0 && pathParts[pathParts.length - 1].includes('.')) {
+      pathParts.pop();
+    }
+    // For GitHub Pages, keep first part (catalog), for localhost keep empty
+    const rootPath = pathParts.length > 0 && pathParts[0] !== 'catalog' ? '/' + pathParts[0] : '';
     
-    console.log('Base path:', rootPath || '(root)');
+    console.log('Root path:', rootPath || '(root)', 'from pathname:', pathname);
     
     // Convert all navigation links to absolute
     if (this.config?.NAVIGATION?.primary) {
@@ -67,7 +74,7 @@ export class Navigation {
       return href;
     }
     // Make absolute from root
-    return rootPath + '/' + href;
+    return rootPath + (rootPath ? '/' : '') + href;
   }
 
   getCurrentUser() {
@@ -165,10 +172,11 @@ export class Navigation {
   }
 
   renderAuthSection() {
-    // Use pathPrefix for auth links too
-    const prefix = this.pathPrefix || '';
-    
+    // Auth links are already absolute
     if (this.currentUser) {
+      const farmHref = this.makeAbsolute('game.html', this.rootPath);
+      const collectionHref = this.makeAbsolute('collection.html', this.rootPath);
+      
       return `
         <div class="profile-dropdown">
           <button class="profile-button" id="profileButton">
@@ -176,8 +184,8 @@ export class Navigation {
             <span class="dropdown-arrow">▼</span>
           </button>
           <div class="profile-menu" id="profileMenu" style="display: none;">
-            <a href="${prefix}game.html">🏡 My Farm</a>
-            <a href="${prefix}collection.html">📦 Collection</a>
+            <a href="${farmHref}">🏡 My Farm</a>
+            <a href="${collectionHref}">📦 Collection</a>
             <a href="#settings">⚙️ Settings</a>
             <hr>
             <a href="#logout" id="logoutButton">🚪 Logout</a>
@@ -185,10 +193,12 @@ export class Navigation {
         </div>
       `;
     } else {
+      const registerHref = this.makeAbsolute('register.html', this.rootPath);
+      
       return `
         <div class="auth-buttons">
-          <a href="${prefix}register.html#login" class="btn-login">Login</a>
-          <a href="${prefix}register.html" class="btn-register">Register</a>
+          <a href="${registerHref}#login" class="btn-login">Login</a>
+          <a href="${registerHref}" class="btn-register">Register</a>
         </div>
       `;
     }
@@ -255,22 +265,176 @@ export class Navigation {
     const style = document.createElement('style');
     style.id = 'nav-responsive-styles';
     style.textContent = `
-      /* Desktop Top Nav */
+      /* Desktop Top Nav - Clean iOS/Android Style */
       .top-nav {
-        background: var(--bg);
-        border-bottom: 3px solid var(--pastel-yellow);
-        box-shadow: 0 2px 4px var(--shadow);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 1000;
+        padding: 0.5rem 1rem;
+      }
+      
+      .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1;
+      }
+      
+      .nav-logo {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--color-text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: opacity 0.2s;
+      }
+      
+      .nav-logo:hover {
+        opacity: 0.7;
       }
       
       .desktop-nav-links {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.25rem;
         align-items: center;
+      }
+      
+      .nav-link {
+        text-decoration: none;
+        color: var(--color-text);
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .nav-link:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      
+      .nav-link.active {
+        background: var(--color-primary-lighter);
+        font-weight: 600;
+      }
+      
+      .nav-link.debug-link {
+        color: #ff3b30;
+        border: 1px solid rgba(255, 59, 48, 0.3);
+      }
+      
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .auth-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .btn-login, .btn-register {
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.15s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .btn-login {
+        color: var(--color-text);
+        background: transparent;
+      }
+      
+      .btn-login:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      
+      .btn-register {
+        background: var(--color-accent);
+        color: white;
+      }
+      
+      .btn-register:hover {
+        background: var(--color-accent-dark);
+      }
+      
+      /* Profile Dropdown */
+      .profile-dropdown {
+        position: relative;
+      }
+      
+      .profile-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.05);
+        border: none;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      
+      .profile-button:hover {
+        background: rgba(0, 0, 0, 0.08);
+      }
+      
+      .profile-menu {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        overflow: hidden;
+      }
+      
+      .profile-menu a {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--color-text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background 0.15s;
+      }
+      
+      .profile-menu a:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      
+      .profile-menu hr {
+        border: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        margin: 0.25rem 0;
       }
       
       /* Mobile Bottom Nav - iOS/Android style */
