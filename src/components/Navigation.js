@@ -30,18 +30,12 @@ export class Navigation {
   }
 
   makePathsAbsolute() {
-    // Get the base path - for GitHub Pages it's /catalog, for localhost it's empty
+    // Simple approach: detect if on GitHub Pages or localhost
     const pathname = window.location.pathname;
-    // Remove the current file from path to get directory
-    const pathParts = pathname.split('/').filter(p => p);
-    // Remove last part if it's a file (has .html)
-    if (pathParts.length > 0 && pathParts[pathParts.length - 1].includes('.')) {
-      pathParts.pop();
-    }
-    // For GitHub Pages, keep first part (catalog), for localhost keep empty
-    const rootPath = pathParts.length > 0 && pathParts[0] !== 'catalog' ? '/' + pathParts[0] : '';
+    const isGitHubPages = pathname.includes('/catalog/');
+    const rootPath = isGitHubPages ? '/catalog' : '';
     
-    console.log('Root path:', rootPath || '(root)', 'from pathname:', pathname);
+    console.log('Navigation - pathname:', pathname, 'rootPath:', rootPath || '(root)');
     
     // Convert all navigation links to absolute
     if (this.config?.NAVIGATION?.primary) {
@@ -79,7 +73,10 @@ export class Navigation {
       return href;
     }
     // Make absolute from root
-    return rootPath + (rootPath ? '/' : '') + href;
+    if (rootPath) {
+      return rootPath + '/' + href;
+    }
+    return '/' + href;
   }
 
   getCurrentUser() {
