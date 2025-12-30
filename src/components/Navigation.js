@@ -22,8 +22,31 @@ export class Navigation {
       this.config = { DEBUG: false, NAVIGATION: { primary: [] } };
     }
     
+    // Fix relative paths based on current page depth
+    this.fixNavigationPaths();
+    
     this.render();
     this.attachEventListeners();
+  }
+
+  fixNavigationPaths() {
+    // Determine path depth (how many ../ we need)
+    const path = window.location.pathname;
+    const depth = (path.match(/\//g) || []).length - 1; // -1 for root /
+    const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
+    
+    // Apply prefix to all navigation links
+    if (this.config?.NAVIGATION?.primary) {
+      this.config.NAVIGATION.primary = this.config.NAVIGATION.primary.map(link => ({
+        ...link,
+        href: link.href.startsWith('#') || link.href.startsWith('http') ? link.href : prefix + link.href
+      }));
+    }
+    
+    if (this.config?.NAVIGATION?.debugLink) {
+      const href = this.config.NAVIGATION.debugLink.href;
+      this.config.NAVIGATION.debugLink.href = href.startsWith('http') ? href : prefix + href;
+    }
   }
 
   getCurrentUser() {
@@ -76,9 +99,13 @@ export class Navigation {
     document.body.insertBefore(topNav, document.body.firstChild);
     document.body.appendChild(bottomNav);
     
-    // Add padding to body for fixed navs
-    document.body.style.paddingTop = '70px';
-    document.body.style.paddingBottom = '70px';
+    // Add padding to body for fixed navs (only if not already set)
+    if (!document.body.style.paddingTop) {
+      document.body.style.paddingTop = '70px';
+    }
+    if (!document.body.style.paddingBottom) {
+      document.body.style.paddingBottom = '70px';
+    }
     
     // Highlight active page
     this.highlightActivePage();

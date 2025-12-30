@@ -71,6 +71,7 @@ export const APP_CONFIG = {
   NAVIGATION: {
     // Primary navigation (shows everywhere - optimized for mobile bottom nav)
     // Standard iOS/Android: Icon on top, label below, 5 items max
+    // NOTE: Use relative paths that work from any page depth
     primary: [
       { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
       { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
