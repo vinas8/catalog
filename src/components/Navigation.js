@@ -35,7 +35,10 @@ export class Navigation {
     const depth = (path.match(/\//g) || []).length - 1; // -1 for root /
     const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
     
-    console.log('Navigation depth:', depth, 'prefix:', prefix || '(none)');
+    console.log('Navigation depth:', depth, 'prefix:', prefix || '(none)', 'path:', path);
+    
+    // Check if we're already in debug directory
+    const inDebug = path.includes('/debug/');
     
     // Apply prefix to all navigation links
     if (this.config?.NAVIGATION?.primary) {
@@ -53,10 +56,17 @@ export class Navigation {
     }
     
     if (this.config?.NAVIGATION?.debugLink) {
+      const debugHref = this.config.NAVIGATION.debugLink.href;
+      // If we're in debug, link to current directory (index.html)
+      // If we're not in debug, use the configured path
+      const fixedHref = inDebug ? 'index.html' : this.fixPath(debugHref, prefix);
+      
       this.config.NAVIGATION.debugLink = {
         ...this.config.NAVIGATION.debugLink,
-        href: this.fixPath(this.config.NAVIGATION.debugLink.href, prefix)
+        href: fixedHref
       };
+      
+      console.log('Debug link:', this.config.NAVIGATION.debugLink.href);
     }
     
     // Store prefix for other uses
