@@ -22,74 +22,52 @@ export class Navigation {
       this.config = { DEBUG: false, NAVIGATION: { primary: [] } };
     }
     
-    // Fix relative paths based on current page depth
-    this.fixNavigationPaths();
+    // Convert all relative paths to absolute paths from root
+    this.makePathsAbsolute();
     
     this.render();
     this.attachEventListeners();
   }
 
-  fixNavigationPaths() {
-    // Determine path depth (how many ../ we need)
-    const path = window.location.pathname;
-    const depth = (path.match(/\//g) || []).length - 1; // -1 for root /
-    const prefix = depth > 1 ? '../'.repeat(depth - 1) : '';
+  makePathsAbsolute() {
+    // Get the base path (e.g., /catalog/ for GitHub Pages)
+    const basePath = window.location.pathname.split('/').slice(0, -1).join('/').replace(/\/[^/]*$/, '');
+    const rootPath = basePath || '';
     
-    // Check if we're in a subdirectory (like /debug/)
-    const inSubdir = depth > 1;
+    console.log('Base path:', rootPath || '(root)');
     
-    console.log('Navigation - path:', path, 'depth:', depth, 'prefix:', prefix || '(none)', 'inSubdir:', inSubdir);
-    
-    // Apply prefix to all navigation links
+    // Convert all navigation links to absolute
     if (this.config?.NAVIGATION?.primary) {
       this.config.NAVIGATION.primary = this.config.NAVIGATION.primary.map(link => ({
         ...link,
-        href: inSubdir ? '../' + link.href : link.href
+        href: this.makeAbsolute(link.href, rootPath)
       }));
     }
     
     if (this.config?.NAVIGATION?.secondary) {
       this.config.NAVIGATION.secondary = this.config.NAVIGATION.secondary.map(link => ({
         ...link,
-        href: inSubdir ? '../' + link.href : link.href
+        href: this.makeAbsolute(link.href, rootPath)
       }));
     }
     
-    // Check if we're already in debug directory
-    const inDebug = path.includes('/debug/');
-    
     if (this.config?.NAVIGATION?.debugLink) {
-      let debugHref;
-      
-      if (inDebug) {
-        // Already in debug, just refresh to index
-        debugHref = './';
-      } else if (inSubdir) {
-        // In another subdirectory, go up then to debug
-        debugHref = '../debug/';
-      } else {
-        // At root, just go to debug
-        debugHref = 'debug/';
-      }
-      
       this.config.NAVIGATION.debugLink = {
         ...this.config.NAVIGATION.debugLink,
-        href: debugHref
+        href: this.makeAbsolute(this.config.NAVIGATION.debugLink.href, rootPath)
       };
-      
-      console.log('Debug link:', debugHref, '(inDebug:', inDebug, 'inSubdir:', inSubdir + ')');
     }
     
-    // Store prefix for other uses
-    this.pathPrefix = inSubdir ? '../' : '';
+    this.rootPath = rootPath;
   }
 
-  fixPath(href, prefix) {
-    // Don't modify anchors, http links, or already absolute paths
+  makeAbsolute(href, rootPath) {
+    // Skip anchors and already absolute URLs
     if (href.startsWith('#') || href.startsWith('http') || href.startsWith('/')) {
       return href;
     }
-    return prefix + href;
+    // Make absolute from root
+    return rootPath + '/' + href;
   }
 
   getCurrentUser() {
@@ -106,10 +84,11 @@ export class Navigation {
     // Desktop top nav
     const topNav = document.createElement('nav');
     topNav.className = 'top-nav';
+    const logoHref = this.makeAbsolute('index.html', this.rootPath);
     topNav.innerHTML = `
       <div class="nav-container">
         <div class="nav-left">
-          <a href="${this.fixPath('index.html', this.pathPrefix || '')}" class="nav-logo">
+          <a href="${logoHref}" class="nav-logo">
             🐍 <span>Serpent Town</span>
           </a>
           <div class="desktop-nav-links">
