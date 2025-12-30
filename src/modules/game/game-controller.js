@@ -181,17 +181,19 @@ class SnakeMuffin {
       if (!productsResponse.ok) {
         debug('⚠️ Worker catalog not available, using product data from purchase');
         // Convert using only the data from user products
-        return userProducts.map(up => ({
-          id: up.product_id,
+        return userProducts.map((up, index) => ({
+          id: up.assignment_id || up.product_id,
           product_id: up.product_id,
-          nickname: up.name || 'Unnamed Snake',
+          nickname: up.nickname || up.name || `Snake ${index + 1}`,
           species: up.species || 'ball_python',
           morph: up.morph || 'normal',
-          type: 'real',
-          sex: up.gender || 'unknown',
-          birth_date: up.yob || 2024,
-          acquired_date: up.purchased_at,
-          stats: {
+          type: up.product_type || 'real',
+          sex: up.sex || up.gender || 'unknown',
+          birth_date: up.birth_date || up.yob || 2024,
+          weight_grams: 100,
+          length_cm: 30,
+          acquired_date: up.acquired_at || up.purchased_at,
+          stats: up.stats || {
             hunger: 80,
             water: 100,
             temperature: 80,
@@ -200,7 +202,20 @@ class SnakeMuffin {
             stress: 10,
             cleanliness: 100,
             happiness: 80
-          }
+          },
+          equipment: {
+            heater: null,
+            mister: null,
+            thermometer: false,
+            hygrometer: false
+          },
+          shed_cycle: {
+            stage: 'normal',
+            last_shed: new Date().toISOString(),
+            days_since_last: 0
+          },
+          created_at: up.acquired_at || new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }));
       }
       
