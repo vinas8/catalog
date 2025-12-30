@@ -186,7 +186,9 @@ export class Navigation {
   }
 
   renderAuthSection() {
+    // Use pathPrefix for auth links too
     const prefix = this.pathPrefix || '';
+    
     if (this.currentUser) {
       return `
         <div class="profile-dropdown">
