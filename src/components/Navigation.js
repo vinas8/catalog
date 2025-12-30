@@ -267,50 +267,60 @@ export class Navigation {
     const style = document.createElement('style');
     style.id = 'nav-responsive-styles';
     style.textContent = `
-      /* Desktop Top Nav - Clean iOS/Android Style */
+      /* Desktop Top Nav - Material Design 3 / iOS Inspired */
       .top-nav {
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 1000;
-        padding: 0.5rem 1rem;
+        height: 56px;
+        display: flex;
+        align-items: center;
       }
       
       .nav-container {
         max-width: 1400px;
+        width: 100%;
         margin: 0 auto;
+        padding: 0 1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 1.5rem;
+        height: 100%;
       }
       
       .nav-left {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
+        gap: 2rem;
         flex: 1;
+        min-width: 0;
       }
       
       .nav-logo {
         text-decoration: none;
         font-weight: 600;
-        font-size: 1.1rem;
-        color: var(--color-text);
+        font-size: 1.125rem;
+        color: #1d1d1f;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        transition: opacity 0.2s;
+        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
       }
       
       .nav-logo:hover {
         opacity: 0.7;
+      }
+      
+      .nav-logo span {
+        font-weight: 700;
       }
       
       .desktop-nav-links {
@@ -321,30 +331,48 @@ export class Navigation {
       
       .nav-link {
         text-decoration: none;
-        color: var(--color-text);
-        font-size: 0.9rem;
+        color: #1d1d1f;
+        font-size: 0.875rem;
         font-weight: 500;
         padding: 0.5rem 1rem;
-        border-radius: 8px;
-        transition: background 0.15s;
+        border-radius: 10px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        -webkit-tap-highlight-color: transparent;
+        gap: 0.5rem;
+        white-space: nowrap;
+        position: relative;
       }
       
       .nav-link:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(0, 0, 0, 0.04);
+        transform: translateY(-1px);
       }
       
       .nav-link.active {
-        background: var(--color-primary-lighter);
+        color: var(--color-accent);
         font-weight: 600;
+      }
+      
+      .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 1rem;
+        right: 1rem;
+        height: 2px;
+        background: var(--color-accent);
+        border-radius: 2px;
       }
       
       .nav-link.debug-link {
         color: #ff3b30;
-        border: 1px solid rgba(255, 59, 48, 0.3);
+        background: rgba(255, 59, 48, 0.08);
+        border: 1px solid rgba(255, 59, 48, 0.2);
+      }
+      
+      .nav-link.debug-link:hover {
+        background: rgba(255, 59, 48, 0.12);
       }
       
       .nav-right {
@@ -356,37 +384,48 @@ export class Navigation {
       .auth-buttons {
         display: flex;
         gap: 0.5rem;
+        align-items: center;
       }
       
       .btn-login, .btn-register {
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 600;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        transition: all 0.15s;
-        -webkit-tap-highlight-color: transparent;
+        padding: 0.5rem 1.25rem;
+        border-radius: 10px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
       }
       
       .btn-login {
-        color: var(--color-text);
+        color: #1d1d1f;
         background: transparent;
       }
       
       .btn-login:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(0, 0, 0, 0.04);
       }
       
       .btn-register {
         background: var(--color-accent);
         color: white;
+        box-shadow: 0 1px 3px rgba(139, 92, 246, 0.2);
       }
       
       .btn-register:hover {
         background: var(--color-accent-dark);
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        transform: translateY(-1px);
       }
       
-      /* Profile Dropdown */
+      .btn-register:active {
+        transform: translateY(0);
+      }
+      
+      /* Profile Dropdown - Material Design */
       .profile-dropdown {
         position: relative;
       }
@@ -395,18 +434,29 @@ export class Navigation {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: rgba(0, 0, 0, 0.05);
-        border: none;
+        padding: 0.375rem 0.75rem 0.375rem 0.5rem;
+        background: rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.08);
         border-radius: 20px;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 500;
+        color: #1d1d1f;
         cursor: pointer;
-        transition: background 0.15s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
       .profile-button:hover {
         background: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .dropdown-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.2s;
+      }
+      
+      .profile-button:hover .dropdown-arrow {
+        transform: translateY(1px);
       }
       
       .profile-menu {
@@ -415,28 +465,51 @@ export class Navigation {
         right: 0;
         background: white;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.08);
+        min-width: 220px;
         overflow: hidden;
+        animation: dropdownSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      @keyframes dropdownSlide {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       
       .profile-menu a {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         padding: 0.75rem 1rem;
-        color: var(--color-text);
+        color: #1d1d1f;
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
+        font-weight: 500;
         transition: background 0.15s;
       }
       
       .profile-menu a:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(0, 0, 0, 0.04);
       }
       
       .profile-menu hr {
         border: none;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
         margin: 0.25rem 0;
+      }
+      
+      .profile-menu a:last-child {
+        color: #ff3b30;
+      }
+      
+      .profile-menu a:last-child:hover {
+        background: rgba(255, 59, 48, 0.08);
       }
       
       /* Mobile Bottom Nav - iOS/Android style */

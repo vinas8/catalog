@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html><head><title>Test</title></head>
+<body>
+<script type="module">
+const pathname = '/catalog/debug/index.html';
+const isGitHubPages = pathname.includes('/catalog/');
+const rootPath = isGitHubPages ? '/catalog' : '';
+
+function makeAbsolute(href, rootPath) {
+  if (href.startsWith('#') || href.startsWith('http') || href.startsWith('/')) {
+    return href;
+  }
+  if (rootPath) {
+    return rootPath + '/' + href;
+  }
+  return '/' + href;
+}
+
+console.log('pathname:', pathname);
+console.log('rootPath:', rootPath);
+console.log('register.html →', makeAbsolute('register.html', rootPath));
+console.log('catalog.html →', makeAbsolute('catalog.html', rootPath));
+console.log('debug/index.html →', makeAbsolute('debug/index.html', rootPath));
+
+document.body.innerHTML = '<pre>' + 
+  'pathname: ' + pathname + '\n' +
+  'rootPath: ' + rootPath + '\n' +
+  'register.html → ' + makeAbsolute('register.html', rootPath) + '\n' +
+  'catalog.html → ' + makeAbsolute('catalog.html', rootPath) + '\n' +
+  'debug/index.html → ' + makeAbsolute('debug/index.html', rootPath) +
+  '</pre>';
+</script>
+</body></html>
