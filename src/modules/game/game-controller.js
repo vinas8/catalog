@@ -8,7 +8,7 @@ import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from '../shop/data
 import { getMorphsForSpecies } from '../shop/data/morphs.js';
 import { getProductsBySpecies, loadCatalog } from '../shop/data/catalog.js';
 import { renderGameCatalog } from '../shop/ui/catalog-renderer.js';
-import { UserAuth, initializeUser } from '../../auth/user-auth.js';
+import { UserAuth, initializeUser } from '../auth/user-auth.js';
 
 class SnakeMuffin {
   constructor() {
