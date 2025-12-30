@@ -1,22 +1,26 @@
 /* Serpent Town v3.2 Styles */
 /* Based on v3.2_FINAL.md specification */
 
+/* Import Color System */
+@import url('src/styles/colors.css');
+
+/* Legacy color variables (deprecated - use color system above) */
 :root {
-  --primary: #F0E68C;
-  --primary-hover: #E6D77A;
-  --success: #28a745;
-  --warning: #ffc107;
-  --danger: #dc3545;
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-darker);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-error);
   --gold: #FFD700;
-  --purple: #8B5CF6;
-  --pastel-yellow: #FFFACD;
-  --pastel-yellow-light: #FFF8DC;
-  --pastel-yellow-dark: #FFE4B5;
-  --bg: #ffffff;
-  --text: #111111;
-  --muted: #666666;
-  --border: #e6e6e6;
-  --shadow: rgba(0, 0, 0, 0.1);
+  --purple: var(--color-accent);
+  --pastel-yellow: var(--color-primary-light);
+  --pastel-yellow-light: var(--color-primary-lighter);
+  --pastel-yellow-dark: var(--color-primary-dark);
+  --bg: var(--color-bg);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --border: var(--color-border);
+  --shadow: var(--shadow);
 }
 
 * {

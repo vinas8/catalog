@@ -1,0 +1,39 @@
+/**
+ * Serpent Town Color System v1.0
+ * Pastel Yellow Theme - E-commerce Design
+ */
+
+:root {
+  /* PRIMARY COLORS */
+  --color-primary: #F0E68C;
+  --color-primary-light: #FFFACD;
+  --color-primary-lighter: #FFF8DC;
+  --color-primary-dark: #FFE4B5;
+  --color-primary-darker: #E6D77A;
+  
+  /* ACCENT */
+  --color-accent: #8B5CF6;
+  --color-accent-light: #A78BFA;
+  --color-accent-dark: #7C3AED;
+  
+  /* NEUTRALS */
+  --color-bg: #FFFFFF;
+  --color-text: #111111;
+  --color-muted: #666666;
+  --color-border: #E6E6E6;
+  
+  /* SEMANTIC */
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-error: #DC3545;
+  
+  /* STATS */
+  --color-stat-hunger: #FF6B6B;
+  --color-stat-water: #4ECDC4;
+  --color-stat-temperature: #FF9F43;
+  --color-stat-health: #28A745;
+  
+  /* SHADOWS */
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
