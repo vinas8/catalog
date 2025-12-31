@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Debug Console Test</title>
+  <script src="src/utils/debug-loader.js"></script>
+  <style>
+    body { 
+      font-family: Arial; 
+      padding: 40px; 
+      background: #f0f0f0;
+    }
+    .test-btn {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    .test-btn:hover { background: #5568d3; }
+    h1 { color: #333; }
+    .info { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐛 Debug Console Test Page</h1>
+  
+  <div class="info">
+    <p><strong>Debug console is active on localhost!</strong></p>
+    <p>Look for the green 📋 button in the bottom-right corner.</p>
+    <p>Click it to open the debug console and see logs.</p>
+  </div>
+  
+  <h2>Test Buttons:</h2>
+  
+  <button class="test-btn" onclick="console.log('✅ Test log message')">
+    Test console.log
+  </button>
+  
+  <button class="test-btn" onclick="console.warn('⚠️ Test warning message')">
+    Test console.warn
+  </button>
+  
+  <button class="test-btn" onclick="console.error('❌ Test error message')">
+    Test console.error
+  </button>
+  
+  <button class="test-btn" onclick="console.info('ℹ️ Test info message')">
+    Test console.info
+  </button>
+  
+  <button class="test-btn" onclick="window.debugLog('🎉 Custom debug message', 'success')">
+    Test debugLog helper
+  </button>
+  
+  <button class="test-btn" onclick="throwError()">
+    Test error catching
+  </button>
+  
+  <div class="info" style="margin-top: 40px;">
+    <h3>Expected behavior:</h3>
+    <ul>
+      <li>Green 📋 button appears bottom-right</li>
+      <li>Click 📋 to open console panel</li>
+      <li>All button clicks create log entries</li>
+      <li>Error button auto-opens console with red text</li>
+      <li>Yellow 🗑️ button appears when console is open</li>
+      <li>🗑️ button clears all logs</li>
+    </ul>
+  </div>
+  
+  <script>
+    function throwError() {
+      throw new Error('This is a test error!');
+    }
+    
+    console.log('📋 Test page loaded!');
+    console.log('🔍 Debug mode should be ENABLED on localhost');
+    console.log('👀 Look for the green 📋 button in bottom-right corner');
+  </script>
+</body>
+</html>
