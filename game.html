@@ -162,6 +162,16 @@
   </div>
 
   <!-- Game Logic -->
-  <script type="module" src="src/modules/game/game-controller.js"></script>
+  <script type="module">
+    try {
+      console.log('🔄 Attempting to load game-controller.js...');
+      await import('./src/modules/game/game-controller.js');
+      console.log('✅ game-controller.js loaded successfully!');
+    } catch (error) {
+      console.error('❌ FAILED to load game-controller.js:', error);
+      console.error('Error details:', error.message);
+      console.error('Stack:', error.stack);
+    }
+  </script>
 </body>
 </html>
