@@ -3,13 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snake Muffin - My Farm</title>
+  <title>Serpent Town - My Farm</title>
   <link rel="stylesheet" href="styles.css">
   <script src="/debug/mobile-console.js"></script>
 </head>
 <body>
   <script type="module" src="src/components/Navigation.js"></script>
   <div id="app">
+    <!-- Game Header -->
+    <header class="game-header">
+      <div class="header-left">
+        <h1>Serpent Town</h1>
+      </div>
+      <div class="header-center">
+        <div class="currency-display">
+          <span class="icon">💰</span>
+          <span id="gold-amount">0</span>
+        </div>
+        <div class="loyalty-display">
+          <span class="icon">⭐</span>
+          <span id="loyalty-tier">Bronze</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="shop-btn" class="icon-btn" title="Shop">🛒</button>
+        <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+      <button class="nav-btn active" data-view="farm">🏡 Farm</button>
+      <button class="nav-btn" data-view="catalog">📋 Catalog</button>
+      <button class="nav-btn" data-view="encyclopedia">📖 Encyclopedia</button>
+      <button class="nav-btn" data-view="calculator">🧬 Calculator</button>
+    </nav>
+
     <!-- Main Content -->
     <main id="main-content">
       

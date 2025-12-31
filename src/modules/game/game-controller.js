@@ -1,13 +1,34 @@
-// Main Game Logic - Snake Muffin v3.4
+// Main Game Logic - Serpent Town v3.4
 // User authentication via URL hash + user-specific data loading
 
 console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
+
+// Module imports (dynamic loading below)
+// import { Economy, createInitialGameState } from '../shop/business/economy.js';
+// import { EquipmentShop } from '../shop/business/equipment.js';
+// import { openShop } from '../shop/ui/shop-view.js';
+// import { SPECIES_PROFILES } from '../shop/data/species-profiles.js';
+// import { getMorphsForSpecies } from '../shop/data/morphs.js';
+// import { getProductsBySpecies } from '../shop/data/catalog.js';
 
 // Use dynamic imports to catch errors
 let Economy, createInitialGameState, EquipmentShop, openShop;
 let SPECIES_PROFILES, getLifeStage, getFeedingSchedule;
 let getMorphsForSpecies, getProductsBySpecies, loadCatalog;
 let renderGameCatalog, UserAuth, initializeUser;
+
+// Main game class
+class SerpentTown {
+  constructor() {
+    this.gameState = null;
+    this.economy = null;
+    this.shop = null;
+  }
+  
+  async init() {
+    // Initialization happens in initGame() below
+  }
+}
 
 async function loadAllModules() {
   try {
