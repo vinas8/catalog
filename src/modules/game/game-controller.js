@@ -140,9 +140,9 @@ class SnakeMuffin {
     const usernameDisplay = document.getElementById('username-display');
     
     if (userData.username) {
-      welcomeEl.textContent = `Welcome back, ${userData.username}! 🎮`;
-      usernameDisplay.textContent = userData.username;
-      profileDisplay.style.display = 'block';
+      if (welcomeEl) welcomeEl.textContent = `Welcome back, ${userData.username}! 🎮`;
+      if (usernameDisplay) usernameDisplay.textContent = userData.username;
+      if (profileDisplay) profileDisplay.style.display = 'block';
     }
   }
   
