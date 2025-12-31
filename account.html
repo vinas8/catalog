@@ -238,15 +238,30 @@
     });
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('.btn-primary');
+      const originalText = submitBtn.textContent;
+      
       const username = document.getElementById('username').value.trim();
       const email = document.getElementById('email').value.trim();
+      
+      // Validate inputs
+      if (!username) {
+        alert('Please enter a username');
+        return;
+      }
+      
       const playerId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
       
-      console.log('📝 Creating user:', playerId);
+      console.log('📝 Creating user:', { playerId, username, email });
+      submitBtn.textContent = '⏳ Creating account...';
+      submitBtn.disabled = true;
       
       try {
-        // Create user via API (use correct endpoint)
         const workerUrl = 'https://catalog.navickaszilvinas.workers.dev';
+        
+        // Step 1: Create user
+        console.log('📡 Calling /register-user...');
         const response = await fetch(`${workerUrl}/register-user`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -257,21 +272,76 @@
           })
         });
         
-        if (response.ok) {
+        const userData = await response.json();
+        console.log('📡 Register response:', userData);
+        
+        if (response.ok && userData.success) {
           console.log('✅ User created in API');
+          
+          // Step 2: Assign starter snake
+          submitBtn.textContent = '🐍 Assigning starter snake...';
+          console.log('📡 Calling /assign-product...');
+          
+          const assignResponse = await fetch(`${workerUrl}/assign-product`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: playerId,
+              product_id: 'starter_banana_python',
+              assignment_id: `assign_${Date.now()}`,
+              name: 'Banana Ball Python',
+              species: 'ball_python',
+              morph: 'banana',
+              product_type: 'real',
+              price: 10000,
+              currency: 'eur',
+              acquired_at: new Date().toISOString()
+            })
+          });
+          
+          const assignData = await assignResponse.json();
+          console.log('📡 Assign response:', assignData);
+          
+          if (assignResponse.ok && assignData.success) {
+            console.log('✅ Starter snake assigned!');
+          } else {
+            console.warn('⚠️ Failed to assign starter snake:', assignData);
+          }
+          
+          // Step 3: Save to localStorage and redirect
           localStorage.setItem('serpent_user_hash', playerId);
           localStorage.setItem('userHash', playerId);
-          window.location.href = `game.html?user=${playerId}`;
+          localStorage.setItem(`user:${playerId}`, JSON.stringify({
+            user_id: playerId,
+            username: username,
+            email: email || `${playerId}@temp.serpenttown.com`
+          }));
+          
+          submitBtn.textContent = '✅ Success! Redirecting...';
+          console.log('✅ Redirecting to game...');
+          
+          setTimeout(() => {
+            window.location.href = `game.html?user=${playerId}`;
+          }, 500);
         } else {
-          const error = await response.text();
-          console.error('❌ Failed to create user:', error);
-          alert('Failed to create account. Please try again.');
+          console.error('❌ Failed to create user:', userData);
+          alert(`Failed to create account: ${userData.error || 'Unknown error'}`);
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
         }
       } catch (error) {
         console.error('❌ Network error:', error);
-        // Fallback to local storage
+        alert('Network error. Using offline mode.');
+        
+        // Fallback to local storage only
         localStorage.setItem('serpent_user_hash', playerId);
         localStorage.setItem('userHash', playerId);
+        localStorage.setItem(`user:${playerId}`, JSON.stringify({
+          user_id: playerId,
+          username: username,
+          email: email || `${playerId}@temp.serpenttown.com`
+        }));
+        
         window.location.href = `game.html?user=${playerId}`;
       }
     });
