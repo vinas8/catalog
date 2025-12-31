@@ -165,7 +165,11 @@
   <script type="module">
     try {
       console.log('🔄 Attempting to load game-controller.js...');
-      await import('./src/modules/game/game-controller.js');
+      // Detect if we're on GitHub Pages or localhost
+      const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+      const modulePath = `${basePath}/src/modules/game/game-controller.js`;
+      console.log('📍 Loading from:', modulePath);
+      await import(modulePath);
       console.log('✅ game-controller.js loaded successfully!');
     } catch (error) {
       console.error('❌ FAILED to load game-controller.js:', error);
