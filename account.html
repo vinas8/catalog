@@ -245,17 +245,15 @@
       console.log('📝 Creating user:', playerId);
       
       try {
-        // Create user via API
-        const response = await fetch('https://serpent-town-api.vinas8.workers.dev/api/customer', {
+        // Create user via API (use correct endpoint)
+        const workerUrl = 'https://catalog.navickaszilvinas.workers.dev';
+        const response = await fetch(`${workerUrl}/register-user`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             user_id: playerId,
             username: username,
-            email: email || null,
-            created_at: new Date().toISOString(),
-            coins: 1000,
-            snakes: []
+            email: email || `${playerId}@temp.serpenttown.com`
           })
         });
         

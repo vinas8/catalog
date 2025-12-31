@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test User Flow - Serpent Town</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #0f0;
+    }
+    .console {
+      background: #000;
+      padding: 20px;
+      border: 2px solid #0f0;
+      border-radius: 8px;
+      height: 80vh;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .log { margin: 4px 0; }
+    .log.info { color: #0ff; }
+    .log.success { color: #0f0; }
+    .log.error { color: #f00; }
+    .log.warn { color: #ff0; }
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #0c0; }
+    .controls { margin-bottom: 10px; }
+    input {
+      padding: 8px;
+      background: #222;
+      border: 1px solid #0f0;
+      color: #0f0;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 Serpent Town - User Flow Test Console</h1>
+  
+  <div class="controls">
+    <input type="text" id="username" placeholder="Username" value="TestUser">
+    <input type="email" id="email" placeholder="Email (optional)" value="">
+    <button onclick="testCreateUser()">1. Create User</button>
+    <button onclick="testGetUserData()">2. Get User Data</button>
+    <button onclick="testGetUserSnakes()">3. Get User Snakes</button>
+    <button onclick="testAssignSnake()">4. Assign Test Snake</button>
+    <button onclick="clearConsole()">Clear</button>
+  </div>
+
+  <div class="console" id="console"></div>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    let currentUserId = null;
+
+    function log(message, type = 'info') {
+      const console = document.getElementById('console');
+      const div = document.createElement('div');
+      div.className = `log ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      console.appendChild(div);
+      console.scrollTop = console.scrollHeight;
+      console.log(message);
+    }
+
+    function clearConsole() {
+      document.getElementById('console').innerHTML = '';
+      log('Console cleared', 'info');
+    }
+
+    async function testCreateUser() {
+      const username = document.getElementById('username').value || 'TestUser';
+      const email = document.getElementById('email').value;
+      
+      log('🔄 Creating user...', 'info');
+      log(`Username: ${username}`, 'info');
+      log(`Email: ${email || 'none'}`, 'info');
+
+      // Generate user ID
+      currentUserId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+      log(`Generated User ID: ${currentUserId}`, 'info');
+
+      try {
+        const response = await fetch(`${WORKER_URL}/register-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: currentUserId,
+            username: username,
+            email: email || `${currentUserId}@temp.serpenttown.com`
+          })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          log('✅ User created successfully!', 'success');
+          log(`Response: ${JSON.stringify(data, null, 2)}`, 'success');
+          localStorage.setItem('test_user_id', currentUserId);
+        } else {
+          log(`❌ Failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Network Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testGetUserData() {
+      const userId = currentUserId || localStorage.getItem('test_user_id');
+      if (!userId) {
+        log('❌ No user ID! Create user first.', 'error');
+        return;
+      }
+
+      log(`🔄 Getting user data for: ${userId}`, 'info');
+
+      try {
+        const response = await fetch(`${WORKER_URL}/user-data?user=${userId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          log('✅ User data retrieved!', 'success');
+          log(`Data: ${JSON.stringify(data, null, 2)}`, 'success');
+        } else {
+          log(`❌ Failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Network Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testGetUserSnakes() {
+      const userId = currentUserId || localStorage.getItem('test_user_id');
+      if (!userId) {
+        log('❌ No user ID! Create user first.', 'error');
+        return;
+      }
+
+      log(`🔄 Getting snakes for user: ${userId}`, 'info');
+
+      try {
+        const response = await fetch(`${WORKER_URL}/user-products?user=${userId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          log(`✅ Got ${Array.isArray(data) ? data.length : 0} snakes!`, 'success');
+          log(`Snakes: ${JSON.stringify(data, null, 2)}`, 'success');
+        } else {
+          log(`❌ Failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Network Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testAssignSnake() {
+      const userId = currentUserId || localStorage.getItem('test_user_id');
+      if (!userId) {
+        log('❌ No user ID! Create user first.', 'error');
+        return;
+      }
+
+      log(`🔄 Assigning test snake to user: ${userId}`, 'info');
+
+      const testSnake = {
+        user_id: userId,
+        product_id: 'test_snake_001',
+        assignment_id: `assign_${Date.now()}`,
+        name: 'Test Python',
+        species: 'ball_python',
+        morph: 'banana',
+        product_type: 'real',
+        price: 10000,
+        currency: 'eur',
+        acquired_at: new Date().toISOString()
+      };
+
+      try {
+        const response = await fetch(`${WORKER_URL}/assign-product`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testSnake)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          log('✅ Snake assigned successfully!', 'success');
+          log(`Response: ${JSON.stringify(data, null, 2)}`, 'success');
+        } else {
+          log(`❌ Failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`❌ Network Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-load user ID if exists
+    window.onload = () => {
+      const savedId = localStorage.getItem('test_user_id');
+      if (savedId) {
+        currentUserId = savedId;
+        log(`📌 Loaded saved user ID: ${savedId}`, 'warn');
+      }
+      log('🚀 Console ready. Click buttons to test user flow.', 'success');
+    };
+  </script>
+</body>
+</html>

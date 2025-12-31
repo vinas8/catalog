@@ -186,6 +186,11 @@ export default {
       return handleRegisterUser(request, env, corsHeaders);
     }
 
+    // Route: POST /api/customer (alias for /register-user, backward compatibility)
+    if (pathname === '/api/customer' && request.method === 'POST') {
+      return handleRegisterUser(request, env, corsHeaders);
+    }
+
     // Route: GET /user-data?user=HASH (get user profile)
     if (pathname === '/user-data' && request.method === 'GET') {
       return handleGetUserData(request, env, corsHeaders);
@@ -770,9 +775,9 @@ async function handleRegisterUser(request, env, corsHeaders) {
 
   const { user_id, username, email, stripe_session_id } = body;
 
-  if (!user_id || !username || !email) {
+  if (!user_id || !username) {
     return new Response(JSON.stringify({ 
-      error: 'Missing required fields: user_id, username, email' 
+      error: 'Missing required fields: user_id, username' 
     }), {
       status: 400,
       headers: corsHeaders
@@ -783,7 +788,7 @@ async function handleRegisterUser(request, env, corsHeaders) {
   const userProfile = {
     user_id,
     username,
-    email,
+    email: email || null,
     created_at: new Date().toISOString(),
     loyalty_points: 0,
     loyalty_tier: 'bronze',
