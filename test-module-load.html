@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Module Load</title>
+</head>
+<body>
+  <h1>Module Load Test</h1>
+  <div id="output"></div>
+  
+  <script>
+    console.log('1. ✅ Regular script runs');
+  </script>
+  
+  <script type="module">
+    console.log('2. ✅ Inline module runs');
+  </script>
+  
+  <script type="module" src="src/modules/game/game-controller.js"></script>
+  
+  <script type="module">
+    console.log('3. ✅ Module after controller import runs');
+  </script>
+</body>
+</html>

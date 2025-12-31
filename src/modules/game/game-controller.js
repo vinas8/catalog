@@ -1,14 +1,62 @@
 // Main Game Logic - Snake Muffin v3.4
 // User authentication via URL hash + user-specific data loading
 
-import { Economy, createInitialGameState } from '../shop/business/economy.js';
-import { EquipmentShop } from '../shop/business/equipment.js';
-import { openShop } from '../shop/ui/shop-view.js';
-import { SPECIES_PROFILES, getLifeStage, getFeedingSchedule } from '../shop/data/species-profiles.js';
-import { getMorphsForSpecies } from '../shop/data/morphs.js';
-import { getProductsBySpecies, loadCatalog } from '../shop/data/catalog.js';
-import { renderGameCatalog } from '../shop/ui/catalog-renderer.js';
-import { UserAuth, initializeUser } from '../auth/user-auth.js';
+console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
+
+// Use dynamic imports to catch errors
+let Economy, createInitialGameState, EquipmentShop, openShop;
+let SPECIES_PROFILES, getLifeStage, getFeedingSchedule;
+let getMorphsForSpecies, getProductsBySpecies, loadCatalog;
+let renderGameCatalog, UserAuth, initializeUser;
+
+async function loadAllModules() {
+  try {
+    console.log('📦 Loading economy module...');
+    const economyModule = await import('../shop/business/economy.js');
+    Economy = economyModule.Economy;
+    createInitialGameState = economyModule.createInitialGameState;
+    
+    console.log('📦 Loading equipment module...');
+    const equipmentModule = await import('../shop/business/equipment.js');
+    EquipmentShop = equipmentModule.EquipmentShop;
+    
+    console.log('📦 Loading shop-view module...');
+    const shopViewModule = await import('../shop/ui/shop-view.js');
+    openShop = shopViewModule.openShop;
+    
+    console.log('📦 Loading species-profiles module...');
+    const speciesModule = await import('../shop/data/species-profiles.js');
+    SPECIES_PROFILES = speciesModule.SPECIES_PROFILES;
+    getLifeStage = speciesModule.getLifeStage;
+    getFeedingSchedule = speciesModule.getFeedingSchedule;
+    
+    console.log('📦 Loading morphs module...');
+    const morphsModule = await import('../shop/data/morphs.js');
+    getMorphsForSpecies = morphsModule.getMorphsForSpecies;
+    
+    console.log('📦 Loading catalog module...');
+    const catalogModule = await import('../shop/data/catalog.js');
+    getProductsBySpecies = catalogModule.getProductsBySpecies;
+    loadCatalog = catalogModule.loadCatalog;
+    
+    console.log('📦 Loading catalog-renderer module...');
+    const rendererModule = await import('../shop/ui/catalog-renderer.js');
+    renderGameCatalog = rendererModule.renderGameCatalog;
+    
+    console.log('📦 Loading user-auth module...');
+    const authModule = await import('../auth/user-auth.js');
+    UserAuth = authModule.UserAuth;
+    initializeUser = authModule.initializeUser;
+    
+    console.log('✅ All modules loaded successfully!');
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to load modules:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    return false;
+  }
+}
 
 class SnakeMuffin {
   constructor() {
@@ -813,23 +861,35 @@ console.log('🎮 game-controller.js loaded!');
 
 if (document.readyState === 'loading') {
   console.log('⏳ Waiting for DOMContentLoaded...');
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('✅ DOM Ready - Creating SnakeMuffin...');
-    try {
-      window.game = new SnakeMuffin();
-      console.log('✅ SnakeMuffin created!');
-    } catch (error) {
-      console.error('❌ Failed to create SnakeMuffin:', error);
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('✅ DOM Ready - Loading modules...');
+    const modulesLoaded = await loadAllModules();
+    if (modulesLoaded) {
+      try {
+        window.game = new SnakeMuffin();
+        console.log('✅ SnakeMuffin created!');
+      } catch (error) {
+        console.error('❌ Failed to create SnakeMuffin:', error);
+      }
+    } else {
+      console.error('❌ Cannot create SnakeMuffin - modules failed to load');
     }
   });
 } else {
-  console.log('✅ DOM Already Ready - Creating SnakeMuffin...');
-  try {
-    window.game = new SnakeMuffin();
-    console.log('✅ SnakeMuffin created!');
-  } catch (error) {
-    console.error('❌ Failed to create SnakeMuffin:', error);
-  }
+  console.log('✅ DOM Already Ready - Loading modules...');
+  (async () => {
+    const modulesLoaded = await loadAllModules();
+    if (modulesLoaded) {
+      try {
+        window.game = new SnakeMuffin();
+        console.log('✅ SnakeMuffin created!');
+      } catch (error) {
+        console.error('❌ Failed to create SnakeMuffin:', error);
+      }
+    } else {
+      console.error('❌ Cannot create SnakeMuffin - modules failed to load');
+    }
+  })();
 }
 
 export default SnakeMuffin;
