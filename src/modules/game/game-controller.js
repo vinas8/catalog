@@ -364,22 +364,29 @@ class SnakeMuffin {
   
   setupEventListeners() {
     // Shop button
-    document.getElementById('shop-btn').addEventListener('click', () => {
-      try {
-        openShop(this.gameState, (result) => {
-          this.saveGame();
-          this.render();
-        });
-      } catch (error) {
-        console.error('Failed to open shop:', error);
-        this.showNotification('❌ Failed to open shop', 'error');
-      }
-    });
+    const shopBtn = document.getElementById('shop-btn');
+    if (shopBtn) {
+      shopBtn.addEventListener('click', () => {
+        try {
+          openShop(this.gameState, (result) => {
+            this.saveGame();
+            this.render();
+          });
+        } catch (error) {
+          console.error('Failed to open shop:', error);
+          this.showNotification('❌ Failed to open shop', 'error');
+        }
+      });
+    }
 
     // Settings button
-    document.getElementById('settings-btn').addEventListener('click', () => {
-      document.getElementById('settings-modal').style.display = 'flex';
-    });
+    const settingsBtn = document.getElementById('settings-btn');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        const modal = document.getElementById('settings-modal');
+        if (modal) modal.style.display = 'flex';
+      });
+    }
     
     // Navigation buttons
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -389,10 +396,12 @@ class SnakeMuffin {
     });
     
     // Buy virtual snake button
-    document.getElementById('buy-virtual-snake-btn').addEventListener('click', () => {
-      this.showBuyVirtualSnakeModal();
-    });
-    
+    const buyVirtualBtn = document.getElementById('buy-virtual-snake-btn');
+    if (buyVirtualBtn) {
+      buyVirtualBtn.addEventListener('click', () => {
+        this.showBuyVirtualSnakeModal();
+      });
+    }
     // Species filter for catalog
     const speciesFilter = document.getElementById('species-filter');
     if (speciesFilter) {
@@ -405,11 +414,14 @@ class SnakeMuffin {
     const speedSlider = document.getElementById('speed-slider');
     const speedDisplay = document.getElementById('speed-display');
     
-    speedSlider.addEventListener('input', (e) => {
-      const speed = parseInt(e.target.value);
-      this.gameState.game_speed = speed;
-      speedDisplay.textContent = `${speed}x`;
-    });
+    if (speedSlider) {
+      speedSlider.addEventListener('input', (e) => {
+        const speed = parseInt(e.target.value);
+        this.gameState.game_speed = speed;
+        if (speedDisplay) speedDisplay.textContent = `${speed}x`;
+        this.saveGame();
+      });
+    }
     
     // Debug buttons (hidden by default)
     const debugBtn = document.getElementById('add-gold-btn');
