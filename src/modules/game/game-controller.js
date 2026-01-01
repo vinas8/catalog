@@ -101,6 +101,7 @@ class SnakeMuffin {
       await this.loadUserProfile();
       // Load user-specific snakes
       await this.loadUserSnakes();
+      await this.initEventSystem();
     } else {
       console.log('👤 No user - using demo/guest mode');
       this.gameState = this.loadGame() || createInitialGameState();
