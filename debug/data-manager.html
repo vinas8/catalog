@@ -478,19 +478,19 @@
       clearLog('kvOutput');
       log('kvOutput', '👥 Listing customer keys...', 'info');
       try {
-        const res = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys?prefix=customer:`,
-          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
-        );
+        const res = await fetch(`${WORKER_URL}/kv/list-customers`);
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
         }
         const data = await res.json();
         const keys = data.result || [];
         log('kvOutput', `✅ Found ${keys.length} customer keys:`, 'success');
-        keys.forEach(k => {
+        keys.slice(0, 20).forEach(k => {
           log('kvOutput', `  • ${k.name}`, 'info');
         });
+        if (keys.length > 20) {
+          log('kvOutput', `  ... and ${keys.length - 20} more`, 'info');
+        }
       } catch (err) {
         log('kvOutput', `❌ Error: ${err.message}`, 'error');
       }
@@ -500,19 +500,19 @@
       clearLog('kvOutput');
       log('kvOutput', '🐍 Listing user product assignments...', 'info');
       try {
-        const res = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys?prefix=user:`,
-          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
-        );
+        const res = await fetch(`${WORKER_URL}/kv/list-user-products`);
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
         }
         const data = await res.json();
         const keys = data.result || [];
         log('kvOutput', `✅ Found ${keys.length} user product keys:`, 'success');
-        keys.forEach(k => {
+        keys.slice(0, 20).forEach(k => {
           log('kvOutput', `  • ${k.name}`, 'info');
         });
+        if (keys.length > 20) {
+          log('kvOutput', `  ... and ${keys.length - 20} more`, 'info');
+        }
       } catch (err) {
         log('kvOutput', `❌ Error: ${err.message}`, 'error');
       }
@@ -522,48 +522,25 @@
       clearLog('kvOutput');
       log('kvOutput', '📋 Listing all KV keys...', 'info');
       try {
-        const res = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys`,
-          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
-        );
+        const res = await fetch(`${WORKER_URL}/kv/list-all`);
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
         }
         const data = await res.json();
         const keys = data.result || [];
+        const breakdown = data.breakdown || {};
+        
         log('kvOutput', `✅ Found ${keys.length} total keys:`, 'success');
-        
-        // Group by prefix
-        const grouped = {
-          'product:': [],
-          'customer:': [],
-          'user:': [],
-          'other': []
-        };
-        
-        keys.forEach(k => {
-          if (k.name.startsWith('product:')) grouped['product:'].push(k.name);
-          else if (k.name.startsWith('customer:')) grouped['customer:'].push(k.name);
-          else if (k.name.startsWith('user:')) grouped['user:'].push(k.name);
-          else grouped['other'].push(k.name);
+        log('kvOutput', `  📦 Products: ${breakdown.products || 0}`, 'info');
+        log('kvOutput', `  👥 Users: ${breakdown.user_products || 0}`, 'info');
+        log('kvOutput', `  ⚡ Status: ${breakdown.product_status || 0}`, 'info');
+        log('kvOutput', '', 'info');
+        log('kvOutput', 'First 20 keys:', 'info');
+        keys.slice(0, 20).forEach(k => {
+          log('kvOutput', `  • [${k.namespace}] ${k.name}`, 'info');
         });
-        
-        log('kvOutput', '', 'info');
-        log('kvOutput', `📦 Products: ${grouped['product:'].length}`, 'info');
-        grouped['product:'].forEach(k => log('kvOutput', `  • ${k}`, 'info'));
-        
-        log('kvOutput', '', 'info');
-        log('kvOutput', `👥 Customers: ${grouped['customer:'].length}`, 'info');
-        grouped['customer:'].forEach(k => log('kvOutput', `  • ${k}`, 'info'));
-        
-        log('kvOutput', '', 'info');
-        log('kvOutput', `🐍 User Products: ${grouped['user:'].length}`, 'info');
-        grouped['user:'].forEach(k => log('kvOutput', `  • ${k}`, 'info'));
-        
-        if (grouped['other'].length > 0) {
-          log('kvOutput', '', 'info');
-          log('kvOutput', `❓ Other: ${grouped['other'].length}`, 'info');
-          grouped['other'].forEach(k => log('kvOutput', `  • ${k}`, 'info'));
+        if (keys.length > 20) {
+          log('kvOutput', `  ... and ${keys.length - 20} more`, 'info');
         }
       } catch (err) {
         log('kvOutput', `❌ Error: ${err.message}`, 'error');

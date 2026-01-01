@@ -221,6 +221,21 @@ export default {
       return handleKVCustomerCount(env, corsHeaders);
     }
 
+    // Route: GET /kv/list-customers (list customer keys)
+    if (pathname === '/kv/list-customers' && request.method === 'GET') {
+      return handleKVListCustomers(env, corsHeaders);
+    }
+
+    // Route: GET /kv/list-user-products (list user product assignments)
+    if (pathname === '/kv/list-user-products' && request.method === 'GET') {
+      return handleKVListUserProducts(env, corsHeaders);
+    }
+
+    // Route: GET /kv/list-all (list all KV keys)
+    if (pathname === '/kv/list-all' && request.method === 'GET') {
+      return handleKVListAll(env, corsHeaders);
+    }
+
     // Route: GET /health (health check)
     if (pathname === '/health' && request.method === 'GET') {
       return new Response(JSON.stringify({
@@ -1175,6 +1190,100 @@ async function handleKVCustomerCount(env, corsHeaders) {
     console.error('❌ Customer count error:', error);
     return new Response(JSON.stringify({ 
       error: 'Failed to count customers',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/list-customers - List all customer keys
+ */
+async function handleKVListCustomers(env, corsHeaders) {
+  try {
+    const keys = await env.USER_PRODUCTS.list({ prefix: 'userdata:' });
+    
+    return new Response(JSON.stringify({
+      success: true,
+      result: keys.keys,
+      count: keys.keys.length
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ List customers error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to list customers',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/list-user-products - List user product assignments
+ */
+async function handleKVListUserProducts(env, corsHeaders) {
+  try {
+    const keys = await env.USER_PRODUCTS.list({ prefix: 'user:' });
+    
+    return new Response(JSON.stringify({
+      success: true,
+      result: keys.keys,
+      count: keys.keys.length
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ List user products error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to list user products',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/list-all - List all KV keys
+ */
+async function handleKVListAll(env, corsHeaders) {
+  try {
+    const productsKeys = await env.PRODUCTS.list();
+    const userKeys = await env.USER_PRODUCTS.list();
+    const statusKeys = await env.PRODUCT_STATUS.list();
+    
+    const allKeys = [
+      ...productsKeys.keys.map(k => ({ ...k, namespace: 'PRODUCTS' })),
+      ...userKeys.keys.map(k => ({ ...k, namespace: 'USER_PRODUCTS' })),
+      ...statusKeys.keys.map(k => ({ ...k, namespace: 'PRODUCT_STATUS' }))
+    ];
+    
+    return new Response(JSON.stringify({
+      success: true,
+      result: allKeys,
+      count: allKeys.length,
+      breakdown: {
+        products: productsKeys.keys.length,
+        user_products: userKeys.keys.length,
+        product_status: statusKeys.keys.length
+      }
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ List all keys error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to list all keys',
       message: error.message 
     }), {
       status: 500,
