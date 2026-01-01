@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Signup</title></head>
+<body>
+<h1>Testing Account Registration</h1>
+<div id="status"></div>
+<button onclick="testSignup()">Test Signup Flow</button>
+
+<script>
+async function testSignup() {
+  const status = document.getElementById('status');
+  const playerId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  const username = 'TestUser' + Math.random().toString(36).substr(2, 5);
+  
+  status.innerHTML = '<p>🧪 Testing with user: ' + playerId + '</p>';
+  
+  try {
+    const workerUrl = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    // Step 1: Create user
+    status.innerHTML += '<p>📡 Creating user...</p>';
+    const response = await fetch(`${workerUrl}/register-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: playerId,
+        username: username,
+        email: `${playerId}@test.com`
+      })
+    });
+    
+    const userData = await response.json();
+    status.innerHTML += '<pre>' + JSON.stringify(userData, null, 2) + '</pre>';
+    
+    if (response.ok && userData.success) {
+      // Step 2: Assign snake
+      status.innerHTML += '<p>🐍 Assigning starter snake...</p>';
+      const assignResponse = await fetch(`${workerUrl}/assign-product`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: playerId,
+          product_id: 'starter_banana_python'
+        })
+      });
+      
+      const assignData = await assignResponse.json();
+      status.innerHTML += '<pre>' + JSON.stringify(assignData, null, 2) + '</pre>';
+      
+      // Step 3: Verify user products
+      status.innerHTML += '<p>📦 Fetching user products...</p>';
+      const productsResponse = await fetch(`${workerUrl}/user-products?user=${playerId}`);
+      const productsData = await productsResponse.json();
+      status.innerHTML += '<pre>' + JSON.stringify(productsData, null, 2) + '</pre>';
+      
+      if (productsData.products && productsData.products.length > 0) {
+        status.innerHTML += '<h2>✅ SUCCESS! User has ' + productsData.products.length + ' snake(s)</h2>';
+        status.innerHTML += '<a href="game.html?user=' + playerId + '">🎮 Open Game</a>';
+      } else {
+        status.innerHTML += '<h2>⚠️ User created but no snakes found</h2>';
+      }
+    } else {
+      status.innerHTML += '<h2>❌ Failed to create user</h2>';
+    }
+  } catch (error) {
+    status.innerHTML += '<h2>❌ Error: ' + error.message + '</h2>';
+  }
+}
+</script>
+</body>
+</html>

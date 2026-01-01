@@ -409,12 +409,15 @@ class SnakeMuffin {
       });
     }
     
-    // Navigation buttons
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        this.switchView(e.target.dataset.view);
+    // Navigation buttons (optional, may not exist after redesign)
+    const navButtons = document.querySelectorAll('.nav-btn');
+    if (navButtons.length > 0) {
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          this.switchView(e.target.dataset.view);
+        });
       });
-    });
+    }
     
     // Buy virtual snake button
     const buyVirtualBtn = document.getElementById('buy-virtual-snake-btn');

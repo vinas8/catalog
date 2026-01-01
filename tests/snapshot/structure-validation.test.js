@@ -63,52 +63,18 @@ test('Has viewport meta tag', () => {
 
 console.log('\n🎨 Header Components');
 
-test('Has game header', () => {
-  assert(html.includes('game-header'), 'Missing game header');
-});
-
 test('Has game title', () => {
   assert(html.includes('Serpent Town'), 'Missing game title');
 });
 
-test('Has gold display element', () => {
-  assert(html.includes('id="gold-amount"'), 'Missing gold display');
-});
-
-test('Has loyalty tier display', () => {
-  assert(html.includes('id="loyalty-tier"'), 'Missing loyalty tier');
-});
-
-test('Has shop button', () => {
-  assert(html.includes('id="shop-btn"'), 'Missing shop button');
-  assert(html.includes('🛒'), 'Missing shop icon');
-});
-
-test('Has settings button', () => {
-  assert(html.includes('id="settings-btn"'), 'Missing settings button');
-  assert(html.includes('⚙️'), 'Missing settings icon');
+test('Has Navigation component import', () => {
+  assert(html.includes('Navigation.js'), 'Missing Navigation component');
 });
 
 console.log('\n🧭 Navigation System');
 
-test('Has main navigation', () => {
-  assert(html.includes('main-nav'), 'Missing main navigation');
-});
-
-test('Has farm view button', () => {
-  assert(html.includes('data-view="farm"'), 'Missing farm view button');
-});
-
-test('Has catalog view button', () => {
-  assert(html.includes('href="catalog.html"') || html.includes('data-view="catalog"'), 'Missing catalog navigation');
-});
-
-test('Has encyclopedia view button', () => {
-  assert(html.includes('data-view="encyclopedia"'), 'Missing encyclopedia view button');
-});
-
-test('Has calculator view button', () => {
-  assert(html.includes('data-view="calculator"'), 'Missing calculator view button');
+test('Has catalog link', () => {
+  assert(html.includes('href="catalog.html"'), 'Missing catalog link');
 });
 
 console.log('\n🏡 Farm View Components');
@@ -129,19 +95,9 @@ test('Has empty collection state', () => {
   assert(html.includes('id="empty-collection"'), 'Missing empty state');
 });
 
-console.log('\n📖 Catalog View Components');
+console.log('\n📖 Farm View Components (Catalog removed - separate page)');
 
-test('Has catalog view container', () => {
-  assert(html.includes('id="catalog-view"'), 'Missing catalog view');
-});
-
-test('Has catalog items container', () => {
-  assert(html.includes('id="catalog-items"'), 'Missing catalog items container');
-});
-
-test('Has species filter', () => {
-  assert(html.includes('id="species-filter"'), 'Missing species filter');
-});
+// Catalog, encyclopedia, calculator views removed
 
 console.log('\n⚙️ Settings Modal');
 
