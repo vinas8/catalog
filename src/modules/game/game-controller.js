@@ -541,11 +541,28 @@ class SnakeMuffin {
   }
   
   renderFarmView() {
+    console.log('🎨 renderFarmView CALLED');
     const container = document.getElementById('snake-collection');
     const emptyState = document.getElementById('empty-collection');
     
+    console.log('📦 Elements found:', {
+      container: !!container,
+      emptyState: !!emptyState,
+      snakes: this.gameState?.snakes?.length
+    });
+    
+    // Check if elements exist
+    if (!container || !emptyState) {
+      console.error('❌ Farm view elements not found!', {
+        container: !!container,
+        emptyState: !!emptyState
+      });
+      return;
+    }
+    
     // Debug
     const debug = (msg) => {
+      console.log('🐛 DEBUG:', msg);
       const debugDiv = document.createElement('div');
       debugDiv.style.cssText = 'position:fixed;bottom:10px;left:10px;background:#ff0;color:#000;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
       debugDiv.textContent = msg;
@@ -557,25 +574,32 @@ class SnakeMuffin {
     
     if (!this.gameState || !this.gameState.snakes) {
       debug('❌ No gameState or snakes array!');
+      console.error('❌ No gameState or snakes!');
       return;
     }
     
     if (this.gameState.snakes.length === 0) {
       debug('⚠️ Snakes array is empty');
+      console.log('⚠️ Zero snakes - showing empty state');
       container.style.display = 'none';
       emptyState.style.display = 'block';
       return;
     }
     
     debug(`✅ Rendering ${this.gameState.snakes.length} snakes to DOM`);
+    console.log(`✅ Rendering ${this.gameState.snakes.length} snakes!`);
     
     container.style.display = 'grid';
     emptyState.style.display = 'none';
     
-    container.innerHTML = this.gameState.snakes.map(snake => this.renderSnakeCard(snake)).join('');
+    const html = this.gameState.snakes.map(snake => this.renderSnakeCard(snake)).join('');
+    console.log(`📝 Generated HTML length: ${html.length} characters`);
+    container.innerHTML = html;
+    console.log('✅ HTML inserted into container');
     
     // Attach event listeners to action buttons
     this.attachSnakeActionListeners();
+    console.log('✅ Event listeners attached');
   }
   
   renderSnakeCard(snake) {
