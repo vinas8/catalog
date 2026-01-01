@@ -527,9 +527,17 @@ class SnakeMuffin {
   }
   
   renderHeader() {
-    document.getElementById('gold-amount').textContent = this.gameState.currency.gold;
-    document.getElementById('loyalty-tier').textContent = this.gameState.loyalty_tier.toUpperCase();
-    document.getElementById('loyalty-tier').className = `tier-badge tier-${this.gameState.loyalty_tier}`;
+    // Update currency displays (optional - may not exist after header removal)
+    const goldAmount = document.getElementById('gold-amount');
+    const loyaltyTier = document.getElementById('loyalty-tier');
+    
+    if (goldAmount) {
+      goldAmount.textContent = this.gameState.currency.gold;
+    }
+    if (loyaltyTier) {
+      loyaltyTier.textContent = this.gameState.loyalty_tier.toUpperCase();
+      loyaltyTier.className = `tier-badge tier-${this.gameState.loyalty_tier}`;
+    }
   }
   
   renderFarmView() {
