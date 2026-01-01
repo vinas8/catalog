@@ -209,7 +209,7 @@
       if (userHash) {
         authView.classList.add('hidden');
         dashboardView.classList.remove('hidden');
-        const userData = JSON.parse(localStorage.getItem(\`user:\${userHash}\`) || '{}');
+        const userData = JSON.parse(localStorage.getItem(`user:${userHash}`) || '{}');
         document.getElementById('user-name').textContent = userData.username || 'User';
         document.getElementById('user-id').textContent = userHash;
       }
