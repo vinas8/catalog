@@ -236,6 +236,11 @@ export default {
       return handleKVListAll(env, corsHeaders);
     }
 
+    // Route: GET /kv/user-stats (get user product statistics)
+    if (pathname === '/kv/user-stats' && request.method === 'GET') {
+      return handleKVUserStats(env, corsHeaders);
+    }
+
     // Route: GET /health (health check)
     if (pathname === '/health' && request.method === 'GET') {
       return new Response(JSON.stringify({
@@ -1284,6 +1289,57 @@ async function handleKVListAll(env, corsHeaders) {
     console.error('❌ List all keys error:', error);
     return new Response(JSON.stringify({ 
       error: 'Failed to list all keys',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/user-stats - Get user product statistics
+ */
+async function handleKVUserStats(env, corsHeaders) {
+  try {
+    const userKeys = await env.USER_PRODUCTS.list({ prefix: 'user:' });
+    const stats = [];
+    
+    // Fetch each user's products and count them
+    for (const key of userKeys.keys) {
+      const userId = key.name.replace('user:', '');
+      const productsData = await env.USER_PRODUCTS.get(key.name);
+      if (productsData) {
+        try {
+          const products = JSON.parse(productsData);
+          stats.push({
+            user_id: userId,
+            product_count: Array.isArray(products) ? products.length : 0,
+            last_updated: key.metadata?.updated || key.expiration
+          });
+        } catch (e) {
+          console.error(`Failed to parse products for ${userId}:`, e);
+        }
+      }
+    }
+    
+    // Sort by product count descending
+    stats.sort((a, b) => b.product_count - a.product_count);
+    
+    return new Response(JSON.stringify({
+      success: true,
+      total_users: stats.length,
+      top_user: stats[0],
+      top_10: stats.slice(0, 10),
+      all_users: stats
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ User stats error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to get user stats',
       message: error.message 
     }), {
       status: 500,
