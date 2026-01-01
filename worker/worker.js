@@ -216,6 +216,11 @@ export default {
       return handleKVGetProduct(request, env, corsHeaders);
     }
 
+    // Route: GET /kv/customer-count (count registered customers)
+    if (pathname === '/kv/customer-count' && request.method === 'GET') {
+      return handleKVCustomerCount(env, corsHeaders);
+    }
+
     // Route: GET /health (health check)
     if (pathname === '/health' && request.method === 'GET') {
       return new Response(JSON.stringify({
@@ -1142,6 +1147,34 @@ async function handleKVListProducts(env, corsHeaders) {
     console.error('❌ KV list error:', error);
     return new Response(JSON.stringify({ 
       error: 'Failed to list products',
+      message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle GET /kv/customer-count - Count registered customers
+ */
+async function handleKVCustomerCount(env, corsHeaders) {
+  try {
+    // List all keys with 'userdata:' prefix
+    const keys = await env.USER_PRODUCTS.list({ prefix: 'userdata:' });
+    
+    return new Response(JSON.stringify({
+      success: true,
+      count: keys.keys.length,
+      customers: keys.keys.map(k => k.name.replace('userdata:', ''))
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ Customer count error:', error);
+    return new Response(JSON.stringify({ 
+      error: 'Failed to count customers',
       message: error.message 
     }), {
       status: 500,

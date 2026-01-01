@@ -340,17 +340,23 @@
 
     async function refreshCustomerCount() {
       try {
-        const res = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/storage/kv/namespaces/${KV_NAMESPACE}/keys?prefix=customer:`,
-          { headers: { 'Authorization': `Bearer ${CF_TOKEN}` } }
-        );
+        // Use worker endpoint instead of direct Cloudflare API
+        const res = await fetch('https://catalog.navickaszilvinas.workers.dev/kv/customer-count');
+        
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
+        
         const data = await res.json();
-        const count = data.result ? data.result.length : 0;
+        const count = data.count || 0;
+        
         document.getElementById('customerCount').textContent = count;
-        log('kvOutput', `👥 Customer count feature complete: ${count} customers`, 'success');
+        log('kvOutput', `✅ Found ${count} registered customers`, 'success');
+        
+        // Show customer list in debug
+        if (data.customers && data.customers.length > 0) {
+          log('kvOutput', `📋 Customers: ${data.customers.slice(0, 5).join(', ')}${data.customers.length > 5 ? '...' : ''}`, 'info');
+        }
       } catch (err) {
         document.getElementById('customerCount').textContent = '?';
         log('kvOutput', `❌ Customer count error: ${err.message}`, 'error');
