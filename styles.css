@@ -1221,3 +1221,114 @@ body {
     display: none;
   }
 }
+
+/* Event/Tutorial Cards */
+.event-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  color: white;
+  animation: slideIn 0.3s ease-out;
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.event-icon {
+  font-size: 1.5rem;
+}
+
+.event-title {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.event-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.event-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.event-content {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.event-content p {
+  margin-bottom: 0.75rem;
+}
+
+.event-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.event-content li {
+  margin-bottom: 0.5rem;
+}
+
+.event-content em {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.event-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.event-footer .btn {
+  background: white;
+  color: #667eea;
+  font-weight: 700;
+}
+
+.event-footer .btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
