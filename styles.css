@@ -1332,3 +1332,206 @@ body {
     transform: translateX(100px);
   }
 }
+
+/* Tutorial Walkthrough Styles */
+.tutorial-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+  color: white;
+  overflow: hidden;
+}
+
+.tutorial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tutorial-skip {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tutorial-skip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+.tutorial-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial-progress-fill {
+  height: 100%;
+  background: white;
+  transition: width 0.3s ease-out;
+}
+
+.tutorial-content {
+  padding: 1.5rem;
+}
+
+.tutorial-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.tutorial-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.tutorial-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tutorial-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.tutorial-goals {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.tutorial-goals h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.tutorial-tip {
+  background: rgba(255, 200, 0, 0.2);
+  border-left: 3px solid #ffc107;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+}
+
+.tutorial-success {
+  background: rgba(76, 175, 80, 0.3);
+  border-left: 3px solid #4caf50;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+}
+
+.tutorial-footer {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tutorial-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.tutorial-action-icon {
+  font-size: 1.25rem;
+}
+
+.btn-tutorial {
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.btn-tutorial:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tutorial-highlight {
+  animation: highlight-pulse 2s infinite;
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.5) !important;
+  position: relative;
+  z-index: 100;
+}
+
+@keyframes highlight-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 193, 7, 0.3);
+  }
+}
+
+.tutorial-complete {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.tutorial-complete-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.tutorial-complete h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tutorial-complete p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+@media (max-width: 768px) {
+  .tutorial-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tutorial-action {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .btn-tutorial {
+    width: 100%;
+  }
+}
