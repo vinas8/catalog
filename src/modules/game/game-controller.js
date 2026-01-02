@@ -603,9 +603,26 @@ class SnakeMuffin {
   renderSnakeCard(snake) {
     const lifeStage = getLifeStage(snake);
     const profile = SPECIES_PROFILES[snake.species];
+    const avatar = this.getSnakeAvatar(snake);
+    const enclosureLevel = snake.equipment?.enclosure_tier || 1;
+    const nextFeedingTime = this.getNextFeedingTime(snake);
+    const needsAttention = this.checkNeedsAttention(snake);
     
     return `
-      <div class="snake-card ${snake.type}" data-snake-id="${snake.id}">
+      <div class="snake-card ${snake.type} ${needsAttention ? 'needs-attention' : ''}" data-snake-id="${snake.id}">
+        <!-- Snake Visual Avatar -->
+        <div class="snake-avatar-section">
+          <div class="enclosure-display tier-${enclosureLevel}">
+            <div class="snake-avatar ${avatar.state}">
+              ${avatar.emoji}
+            </div>
+            <div class="enclosure-bg">
+              ${this.renderEnclosureBg(enclosureLevel)}
+            </div>
+          </div>
+          ${needsAttention ? '<div class="attention-badge">❗ Needs Care</div>' : ''}
+        </div>
+        
         <div class="snake-header">
           <div class="snake-name">${snake.nickname}</div>
           <div class="snake-species">
@@ -614,6 +631,17 @@ class SnakeMuffin {
           <div class="snake-info">
             <span class="badge">${lifeStage}</span>
             <span class="muted">${snake.sex} • ${snake.weight_grams}g • ${snake.length_cm}cm</span>
+          </div>
+        </div>
+        
+        <!-- Feeding Schedule -->
+        <div class="feeding-schedule">
+          <div class="schedule-header">
+            <span>📅 Next Feeding</span>
+            <span class="time-label">${nextFeedingTime}</span>
+          </div>
+          <div class="care-reminders">
+            ${this.renderCareReminders(snake)}
           </div>
         </div>
         
@@ -629,17 +657,78 @@ class SnakeMuffin {
         </div>
         
         <div class="shedding-info">
-          <small>Shed: ${snake.shed_cycle.stage} (${snake.shed_cycle.days_since_last} days since last)</small>
+          <small>🔄 Shed: ${snake.shed_cycle.stage} (${snake.shed_cycle.days_since_last} days since last)</small>
         </div>
         
         <div class="snake-actions">
           <button class="action-btn" data-action="feed" data-snake-id="${snake.id}">🍖 Feed</button>
           <button class="action-btn" data-action="water" data-snake-id="${snake.id}">💧 Water</button>
           <button class="action-btn" data-action="clean" data-snake-id="${snake.id}">🧹 Clean</button>
-          <button class="action-btn" data-action="equipment" data-snake-id="${snake.id}">🛠️ Equipment</button>
+          <button class="action-btn" data-action="upgrade" data-snake-id="${snake.id}">⬆️ Upgrade</button>
         </div>
       </div>
     `;
+  }
+  
+  getSnakeAvatar(snake) {
+    // Return different emoji based on snake state
+    if (snake.stats.health < 30) {
+      return { emoji: '🤢', state: 'sick' };
+    }
+    if (snake.shed_cycle.stage === 'blue' || snake.shed_cycle.stage === 'shedding') {
+      return { emoji: '🔵', state: 'shedding' };
+    }
+    if (snake.stats.hunger < 30) {
+      return { emoji: '😋', state: 'hungry' };
+    }
+    if (snake.stats.happiness > 80) {
+      return { emoji: '😊', state: 'happy' };
+    }
+    if (snake.stats.stress > 70) {
+      return { emoji: '😰', state: 'stressed' };
+    }
+    return { emoji: '🐍', state: 'normal' };
+  }
+  
+  renderEnclosureBg(tier) {
+    const upgrades = {
+      1: '🪵',
+      2: '🪵🌿',
+      3: '🪵🌿💡',
+      4: '🪵🌿💡🌡️',
+      5: '🪵🌿💡🌡️💦'
+    };
+    return upgrades[tier] || upgrades[1];
+  }
+  
+  getNextFeedingTime(snake) {
+    if (!snake.last_fed) return 'Feed now';
+    const lastFed = new Date(snake.last_fed);
+    const nextFeed = new Date(lastFed.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const now = new Date();
+    
+    if (nextFeed < now) return 'Overdue!';
+    
+    const daysUntil = Math.ceil((nextFeed - now) / (24 * 60 * 60 * 1000));
+    return `${daysUntil} day${daysUntil !== 1 ? 's' : ''}`;
+  }
+  
+  checkNeedsAttention(snake) {
+    return snake.stats.hunger < 30 || 
+           snake.stats.water < 30 || 
+           snake.stats.health < 50 || 
+           snake.stats.cleanliness < 30;
+  }
+  
+  renderCareReminders(snake) {
+    const reminders = [];
+    if (snake.stats.hunger < 30) reminders.push('🍖 Hungry');
+    if (snake.stats.water < 30) reminders.push('💧 Thirsty');
+    if (snake.stats.cleanliness < 30) reminders.push('🧹 Dirty cage');
+    if (snake.shed_cycle.stage === 'blue') reminders.push('🔵 Pre-shed');
+    
+    if (reminders.length === 0) return '<span class="all-good">✅ All good!</span>';
+    return reminders.map(r => `<span class="reminder">${r}</span>`).join(' ');
   }
   
   renderStatBar(statName, value) {
@@ -694,6 +783,10 @@ class SnakeMuffin {
         
       case 'equipment':
         this.showEquipmentModal(snake);
+        return;
+        
+      case 'upgrade':
+        this.showUpgradeModal(snake);
         return;
     }
     
@@ -765,6 +858,80 @@ class SnakeMuffin {
     openShop(this.gameState, (result) => {
       this.saveGame();
       this.render();
+    });
+  }
+  
+  showUpgradeModal(snake) {
+    const currentTier = snake.equipment?.enclosure_tier || 1;
+    const upgrades = [
+      { tier: 1, name: 'Basic Tub', cost: 0, features: '🪵 Hide spot' },
+      { tier: 2, name: 'Standard Enclosure', cost: 500, features: '🪵🌿 Hide + Plants' },
+      { tier: 3, name: 'Deluxe Habitat', cost: 1500, features: '🪵🌿💡 + LED Lighting' },
+      { tier: 4, name: 'Premium Setup', cost: 3000, features: '🪵🌿💡🌡️ + Auto Climate' },
+      { tier: 5, name: 'Luxury Bioactive', cost: 5000, features: '🪵🌿💡🌡️💦 Full Auto' }
+    ];
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal upgrade-modal';
+    modal.style.display = 'flex';
+    
+    const upgradeOptions = upgrades.map(u => `
+      <div class="upgrade-option ${u.tier === currentTier ? 'current' : ''} ${u.tier <= currentTier ? 'unlocked' : ''}">
+        <div class="upgrade-tier">Tier ${u.tier}</div>
+        <div class="upgrade-name">${u.name}</div>
+        <div class="upgrade-features">${u.features}</div>
+        <div class="upgrade-cost">${u.cost === 0 ? 'Free' : `${u.cost} 🪙`}</div>
+        ${u.tier === currentTier ? '<span class="current-badge">✅ Current</span>' : ''}
+        ${u.tier > currentTier ? `<button class="upgrade-btn" data-tier="${u.tier}" data-cost="${u.cost}">Upgrade</button>` : ''}
+      </div>
+    `).join('');
+    
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>🏠 Upgrade Enclosure - ${snake.nickname}</h2>
+          <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="current-balance">
+            <span>💰 Gold:</span>
+            <span class="balance-amount">${this.gameState.currency?.gold || 0}</span>
+          </div>
+          <div class="upgrade-grid">
+            ${upgradeOptions}
+          </div>
+          <div class="upgrade-benefits">
+            <h3>Benefits:</h3>
+            <ul>
+              <li>Higher tiers reduce stat decay</li>
+              <li>Better enclosures = happier snakes</li>
+              <li>Unlock automation features</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add event listeners
+    modal.querySelectorAll('.upgrade-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tier = parseInt(btn.dataset.tier);
+        const cost = parseInt(btn.dataset.cost);
+        
+        if ((this.gameState.currency?.gold || 0) >= cost) {
+          snake.equipment = snake.equipment || {};
+          snake.equipment.enclosure_tier = tier;
+          this.gameState.currency.gold -= cost;
+          this.showNotification(`Upgraded ${snake.nickname}'s enclosure to Tier ${tier}!`, 'success');
+          this.saveGame();
+          this.render();
+          modal.remove();
+        } else {
+          this.showNotification('Not enough gold!', 'error');
+        }
+      });
     });
   }
   
