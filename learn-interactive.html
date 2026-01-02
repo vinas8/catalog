@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Care Tutorial - Interactive</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/components/Navigation.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .tutorial-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .tutorial-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .tutorial-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .tutorial-progress {
+      background: rgba(255,255,255,0.2);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .tutorial-progress-bar {
+      background: white;
+      height: 100%;
+      transition: width 0.3s;
+    }
+
+    .tutorial-step-info {
+      color: white;
+      text-align: center;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    /* Main Layout */
+    .tutorial-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Snake Display */
+    .snake-display {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .snake-visual {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .snake-emoji {
+      font-size: 8rem;
+      animation: float 3s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .snake-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #1a1a1a;
+    }
+
+    .snake-species {
+      color: #6c757d;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Stats */
+    .snake-stats {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .stat-icon {
+      font-size: 1.5rem;
+      width: 32px;
+      text-align: center;
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-bar {
+      height: 20px;
+      background: #e9ecef;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stat-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .stat-fill.hunger { background: linear-gradient(90deg, #ff6b6b, #ee5a6f); }
+    .stat-fill.water { background: linear-gradient(90deg, #4dabf7, #339af0); }
+    .stat-fill.health { background: linear-gradient(90deg, #51cf66, #37b24d); }
+    .stat-fill.happiness { background: linear-gradient(90deg, #ffd43b, #fab005); }
+
+    .stat-value {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* Instruction Panel */
+    .instruction-panel {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      align-self: flex-start;
+    }
+
+    .step-title {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+    }
+
+    .step-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #495057;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+
+    .step-tip {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    .action-btn {
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .action-btn.primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .action-btn.success {
+      background: #51cf66;
+      color: white;
+    }
+
+    /* Navigation */
+    .tutorial-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 0.85rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.prev {
+      background: white;
+      color: #495057;
+    }
+
+    .nav-btn.next {
+      background: white;
+      color: #667eea;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Completion Screen */
+    .completion-screen {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .completion-screen h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+    }
+
+    .completion-screen .snake-emoji {
+      font-size: 6rem;
+      margin: 2rem 0;
+    }
+
+    .completion-reward {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .completion-reward h3 {
+      color: #155724;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .tutorial-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .tutorial-header h1 {
+        font-size: 2rem;
+      }
+
+      .snake-emoji {
+        font-size: 6rem;
+      }
+
+      .step-title {
+        font-size: 1.5rem;
+      }
+
+      .snake-display,
+      .instruction-panel {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="tutorial-container">
+    <div class="tutorial-header">
+      <h1>🎓 Learn Snake Care</h1>
+      <p>Practice caring for your virtual snake!</p>
+      <div class="tutorial-progress">
+        <div class="tutorial-progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="tutorial-step-info" id="step-info">Step 1 of 5</div>
+    </div>
+
+    <div id="tutorial-main"></div>
+
+    <div class="tutorial-nav">
+      <button class="nav-btn prev" id="prev-btn" onclick="previousStep()">← Back</button>
+      <button class="nav-btn next" id="next-btn" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 0;
+    let snakeStats = {
+      hunger: 50,
+      water: 50,
+      health: 100,
+      happiness: 70
+    };
+
+    const steps = [
+      {
+        title: "Meet Your Virtual Snake!",
+        description: `
+          <p>This is <strong>Buddy</strong>, your practice snake! You'll learn how to care for them step by step.</p>
+          <p>Look at the stats on the left. Each bar shows how Buddy is doing:</p>
+          <ul>
+            <li>🍖 <strong>Hunger</strong> - How hungry Buddy is</li>
+            <li>💧 <strong>Water</strong> - Hydration level</li>
+            <li>❤️ <strong>Health</strong> - Overall health</li>
+            <li>😊 <strong>Happiness</strong> - How happy Buddy feels</li>
+          </ul>
+          <p>Let's learn how to keep all these stats high!</p>
+        `,
+        action: null,
+        autoNext: false
+      },
+      {
+        title: "Feed Your Snake",
+        description: `
+          <p>Buddy is hungry! The hunger bar is at ${snakeStats.hunger}%.</p>
+          <p><strong>Click the "Feed Snake" button</strong> to give Buddy food.</p>
+          <p>Snakes should be fed regularly:</p>
+          <ul>
+            <li>Young snakes: Every 5-7 days</li>
+            <li>Adult snakes: Every 10-14 days</li>
+          </ul>
+          <div class="step-tip">💡 Tip: Keep hunger above 70% for a healthy snake!</div>
+        `,
+        action: {
+          label: "🍖 Feed Snake",
+          stat: "hunger",
+          value: 100,
+          message: "Fed! Hunger is now 100%"
+        },
+        autoNext: true
+      },
+      {
+        title: "Provide Fresh Water",
+        description: `
+          <p>Now let's give Buddy fresh water. The water bar is at ${snakeStats.water}%.</p>
+          <p><strong>Click "Provide Water"</strong> to refill the water bowl.</p>
+          <p>Water is essential for:</p>
+          <ul>
+            <li>Hydration and health</li>
+            <li>Helping with shedding</li>
+            <li>Preventing dehydration</li>
+          </ul>
+          <div class="step-tip">💡 Tip: Always keep fresh water available!</div>
+        `,
+        action: {
+          label: "💧 Provide Water",
+          stat: "water",
+          value: 100,
+          message: "Great! Water is now 100%"
+        },
+        autoNext: true
+      },
+      {
+        title: "Monitor Health",
+        description: `
+          <p>Excellent! Look at how happy Buddy is now!</p>
+          <p>When hunger and water are good, happiness goes up naturally.</p>
+          <p><strong>Daily Check-ins:</strong></p>
+          <ul>
+            <li>Check all stats every day</li>
+            <li>Feed when hunger drops below 70%</li>
+            <li>Refill water daily</li>
+            <li>Watch for signs of illness</li>
+          </ul>
+          <div class="step-tip">💡 Tip: Happy snakes are healthy snakes! Keep stats high.</div>
+        `,
+        action: null,
+        autoNext: false
+      },
+      {
+        title: "You're Ready!",
+        description: `
+          <p><strong>Congratulations!</strong> You've learned the basics of snake care!</p>
+          <p>You now know how to:</p>
+          <ul>
+            <li>✅ Feed your snakes properly</li>
+            <li>✅ Provide fresh water</li>
+            <li>✅ Monitor their health stats</li>
+            <li>✅ Keep them happy</li>
+          </ul>
+          <p>Click "Complete Tutorial" to get your first virtual snake and start playing!</p>
+        `,
+        action: {
+          label: "🎉 Complete Tutorial",
+          isCompletion: true
+        },
+        autoNext: false
+      }
+    ];
+
+    function renderStep() {
+      const step = steps[currentStep];
+      const main = document.getElementById('tutorial-main');
+      
+      if (currentStep === steps.length) {
+        showCompletion();
+        return;
+      }
+
+      main.innerHTML = `
+        <div class="tutorial-content">
+          <div class="snake-display">
+            <div class="snake-visual">
+              <div class="snake-emoji">🐍</div>
+            </div>
+            <div class="snake-name">Buddy</div>
+            <div class="snake-species">Ball Python (Practice Snake)</div>
+            <div class="snake-stats">
+              ${renderStat('hunger', '🍖', 'Hunger')}
+              ${renderStat('water', '💧', 'Water')}
+              ${renderStat('health', '❤️', 'Health')}
+              ${renderStat('happiness', '😊', 'Happiness')}
+            </div>
+          </div>
+
+          <div class="instruction-panel">
+            <span class="step-badge">Step ${currentStep + 1} of ${steps.length}</span>
+            <h2 class="step-title">${step.title}</h2>
+            <div class="step-description">${step.description}</div>
+            ${step.action ? renderAction(step.action) : ''}
+          </div>
+        </div>
+      `;
+
+      updateProgress();
+      updateNavButtons();
+    }
+
+    function renderStat(key, icon, label) {
+      const value = snakeStats[key];
+      return `
+        <div class="stat-row">
+          <div class="stat-icon">${icon}</div>
+          <div class="stat-info">
+            <div class="stat-label">${label}</div>
+            <div class="stat-bar">
+              <div class="stat-fill ${key}" style="width: ${value}%">
+                <span class="stat-value">${value}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAction(action) {
+      if (action.isCompletion) {
+        return `
+          <div class="action-buttons">
+            <button class="action-btn primary" onclick="completeAction()">
+              ${action.label}
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="action-buttons">
+          <button class="action-btn primary" id="action-btn" onclick="performAction()">
+            ${action.label}
+          </button>
+        </div>
+      `;
+    }
+
+    function performAction() {
+      const step = steps[currentStep];
+      const action = step.action;
+      
+      // Update stat
+      snakeStats[action.stat] = action.value;
+      
+      // Update happiness based on other stats
+      const avgCare = (snakeStats.hunger + snakeStats.water) / 2;
+      snakeStats.happiness = Math.min(100, Math.floor(avgCare * 0.9));
+      
+      // Disable button
+      const btn = document.getElementById('action-btn');
+      btn.disabled = true;
+      btn.classList.add('success');
+      btn.innerHTML = `✓ ${action.message}`;
+      
+      // Re-render to show updated stats
+      setTimeout(() => {
+        renderStep();
+        if (step.autoNext) {
+          setTimeout(() => nextStep(), 1500);
+        }
+      }, 500);
+    }
+
+    function completeAction() {
+      currentStep = steps.length;
+      renderStep();
+    }
+
+    function showCompletion() {
+      const main = document.getElementById('tutorial-main');
+      main.innerHTML = `
+        <div class="completion-screen">
+          <h2>🎉 Tutorial Complete!</h2>
+          <div class="snake-emoji">🐍</div>
+          <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+            You're now ready to care for real snakes!
+          </p>
+          <div class="completion-reward">
+            <h3>🎁 Reward Unlocked!</h3>
+            <p><strong>You've earned your first virtual snake!</strong></p>
+            <p>A Banana Ball Python has been added to your collection.</p>
+          </div>
+          <button class="action-btn primary" onclick="goToFarm()" style="font-size: 1.1rem; padding: 1.2rem 2rem;">
+            🏡 Go to My Farm
+          </button>
+        </div>
+      `;
+      document.getElementById('prev-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function nextStep() {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        renderStep();
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderStep();
+      }
+    }
+
+    function updateProgress() {
+      const percent = ((currentStep + 1) / steps.length) * 100;
+      document.getElementById('progress-bar').style.width = percent + '%';
+      document.getElementById('step-info').textContent = 
+        `Step ${currentStep + 1} of ${steps.length}`;
+    }
+
+    function updateNavButtons() {
+      document.getElementById('prev-btn').disabled = currentStep === 0;
+      const step = steps[currentStep];
+      document.getElementById('next-btn').disabled = step.action && !step.autoNext;
+    }
+
+    function goToFarm() {
+      // Get or create user
+      const userHash = new URLSearchParams(window.location.search).get('user') || 
+                      localStorage.getItem('serpent_user_hash') ||
+                      'tutorial_' + Date.now();
+      
+      // Mark tutorial as complete
+      localStorage.setItem('tutorial_complete', 'true');
+      localStorage.setItem('serpent_user_hash', userHash);
+      
+      // Redirect to farm
+      window.location.href = `game.html?user=${userHash}`;
+    }
+
+    // Initialize
+    renderStep();
+  </script>
+</body>
+</html>
