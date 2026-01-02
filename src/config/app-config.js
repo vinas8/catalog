@@ -74,9 +74,9 @@ export const APP_CONFIG = {
     primary: [
       { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
       { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
-      { label: 'Learn', href: 'dex.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia & genetics', 
+      { label: 'Learn', href: 'learn.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia & genetics', 
         submenu: [
-          { label: 'Snake Dex', href: 'dex.html', icon: '📚' },
+          { label: 'Snake Dex', href: 'learn.html', icon: '📚' },
           { label: 'Morphs', href: 'game.html#calculator', icon: '🎨' }
         ]
       },

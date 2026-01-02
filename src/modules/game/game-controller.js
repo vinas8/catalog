@@ -101,7 +101,6 @@ class SnakeMuffin {
       await this.loadUserProfile();
       // Load user-specific snakes
       await this.loadUserSnakes();
-      await this.initEventSystem();
     } else {
       console.log('👤 No user - using demo/guest mode');
       this.gameState = this.loadGame() || createInitialGameState();
@@ -120,28 +119,6 @@ class SnakeMuffin {
     // Auto-save every 30 seconds
   }
   
-  async initEventSystem() {
-    try {
-      const eventModule = await import("../tutorial/tutorial-walkthrough.js");
-      const EventSystem = eventModule.EventSystem || eventModule.default;
-      this.tutorial = new TutorialWalkthrough(this.currentUser.user_id);
-      window.tutorial = this.tutorial;
-      
-      // Tutorial is loaded from localStorage automatically
-      if (!this.tutorial.isComplete()) {
-        const container = document.getElementById("tutorial-container");
-        if (container) {
-          container.innerHTML = this.eventSystem.renderEventCard(nextEvent);
-          console.log("✅ Tutorial displayed");
-        }
-      }
-    } catch (error) {
-      console.error("❌ Event system error:", error);
-    }
-    setInterval(() => this.saveGame(), 30000);
-    
-    console.log('✅ Game initialized!');
-  }
   
   async loadUserProfile() {
     try {
