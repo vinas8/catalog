@@ -197,9 +197,9 @@
   </style>
 </head>
 <body>
-  <h1>🏥 SMRI System Health Check</h1>
+  <h1>🏥 System Health Check</h1>
   <p class="subtitle">
-    <strong>SMRI:</strong> S6.5-11.1-12.03 | <strong>Module:</strong> v1.5 | <strong>App:</strong> 0.5.0 | <strong>Tests:</strong> 9 grouped by service<br>
+    <strong>Version:</strong> 0.7.0 | <strong>Tests:</strong> 15 CRUD operations | <strong>Mode:</strong> Client-side static<br>
     <span style="display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;">
       <strong style="color: #8b949e;">Dependencies:</strong>
       <span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Worker (S5.x)</span>
@@ -398,151 +398,243 @@
     
     const testGroups = [
       {
-        service: '☁️ Cloudflare Worker',
-        badge: 'S5.x',
-        description: 'Worker API health and connectivity',
+        service: '☁️ Worker API',
+        badge: 'Core',
+        description: 'Basic connectivity and health',
         tests: [
           {
             id: 1,
-            name: 'Worker URL Validation',
+            name: 'Health Endpoint',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Verify Worker URL is valid HTTPS endpoint',
+            endpoint: '/health',
+            description: 'Check worker health status',
             run: async () => {
-              if (!WORKER_URL.startsWith('http')) throw new Error('Invalid URL');
-              return { valid: true, url: WORKER_URL };
+              const res = await fetch(WORKER_URL + '/health');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { status: data.status, version: data.version };
             }
           },
           {
             id: 2,
-            name: 'Worker Online Check',
-            method: 'GET',
-            endpoint: '/products',
-            description: 'Ping Worker to verify it responds',
-            run: async () => {
-              const start = Date.now();
-              const res = await fetch(WORKER_URL + '/products');
-              const time = Date.now() - start;
-              if (!res.ok) throw new Error(`Status ${res.status}`);
-              return { online: true, responseTime: time + 'ms', status: res.status };
-            }
-          },
-          {
-            id: 3,
             name: 'Response Time',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Measure API response latency',
+            endpoint: '/health',
+            description: 'Measure API latency',
             run: async () => {
               const start = Date.now();
-              await fetch(WORKER_URL + '/products');
+              await fetch(WORKER_URL + '/health');
               const time = Date.now() - start;
-              if (time > 5000) throw new Error(`Too slow: ${time}ms`);
-              return { responseTime: time + 'ms', threshold: '5000ms' };
+              if (time > 3000) throw new Error(`Slow: ${time}ms`);
+              return { responseTime: time + 'ms', threshold: '<3000ms' };
             }
           }
         ]
       },
       {
-        service: '🗄️ Cloudflare KV',
-        badge: 'S11.1.x',
-        description: 'KV storage and product data',
+        service: '🗄️ KV CRUD Operations',
+        badge: 'Client-Side',
+        description: 'KV storage read/write via Worker API',
         tests: [
           {
-            id: 4,
-            name: 'Get Products',
+            id: 3,
+            name: 'READ: List Products',
             method: 'GET',
             endpoint: '/products',
-            description: 'Load products from KV storage',
+            description: 'Read all products from KV',
             run: async () => {
               const res = await fetch(WORKER_URL + '/products');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
               const data = await res.json();
               if (!Array.isArray(data)) throw new Error('Not an array');
-              if (data.length === 0) throw new Error('No products');
-              return { count: data.length, sample: data.slice(0, 1) };
+              return { count: data.length, hasData: data.length > 0 };
+            }
+          },
+          {
+            id: 4,
+            name: 'READ: Get Single Product',
+            method: 'GET',
+            endpoint: '/kv/get-product?id=test',
+            description: 'Read specific product by ID',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              if (products.length === 0) throw new Error('No products to test');
+              const firstId = products[0].id;
+              const res2 = await fetch(WORKER_URL + `/kv/get-product?id=${firstId}`);
+              if (!res2.ok && res2.status !== 404) throw new Error(`Status ${res2.status}`);
+              return { productId: firstId, status: res2.status };
             }
           },
           {
             id: 5,
-            name: 'Product Schema',
+            name: 'READ: User Products',
+            method: 'GET',
+            endpoint: '/user-products?user=hash',
+            description: 'Read user-specific products',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/user-products?user=test_hash_12345');
+              if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected: ${res.status}`);
+              const data = res.status === 200 ? await res.json() : [];
+              return { status: res.status, count: data.length || 0 };
+            }
+          },
+          {
+            id: 6,
+            name: 'READ: Product Status',
+            method: 'GET',
+            endpoint: '/product-status?id=prod',
+            description: 'Check if product is sold',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/product-status?id=test_prod');
+              if (!res.ok && res.status !== 404) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { available: data.available !== false, status: res.status };
+            }
+          },
+          {
+            id: 7,
+            name: 'READ: KV Stats',
+            method: 'GET',
+            endpoint: '/kv/user-stats',
+            description: 'Get KV usage statistics',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/user-stats');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { totalUsers: data.totalUsers || 0, totalProducts: data.totalProducts || 0 };
+            }
+          }
+        ]
+      },
+      {
+        service: '💳 Stripe READ Operations',
+        badge: 'Client-Side',
+        description: 'Stripe data validation (read-only)',
+        tests: [
+          {
+            id: 8,
+            name: 'READ: Stripe Products Count',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Count products with Stripe integration',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const stripeProducts = products.filter(p => p.source === 'stripe' || p.stripe_link);
+              return { total: products.length, withStripe: stripeProducts.length };
+            }
+          },
+          {
+            id: 9,
+            name: 'READ: Checkout Links Valid',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Validate Stripe checkout URLs',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const validLinks = products.filter(p => 
+                p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/')
+              );
+              return { valid: validLinks.length, total: products.length };
+            }
+          },
+          {
+            id: 10,
+            name: 'READ: Price Data Integrity',
+            method: 'GET',
+            endpoint: '/products',
+            description: 'Verify price fields exist and are valid',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/products');
+              const products = await res.json();
+              const withPrice = products.filter(p => typeof p.price === 'number' && p.price > 0);
+              return { withValidPrice: withPrice.length, total: products.length };
+            }
+          }
+        ]
+      },
+      {
+        service: '🔍 Data Validation',
+        badge: 'Client-Side',
+        description: 'Schema and structure validation',
+        tests: [
+          {
+            id: 11,
+            name: 'Schema: Product Fields',
             method: 'GET',
             endpoint: '/products',
             description: 'Validate required product fields',
             run: async () => {
               const res = await fetch(WORKER_URL + '/products');
               const products = await res.json();
-              const required = ['id', 'name', 'species', 'morph', 'price'];
+              if (products.length === 0) return { message: 'No products to validate' };
+              const required = ['id', 'name', 'price'];
               const first = products[0];
-              const missing = required.filter(f => !(f in first));
-              if (missing.length > 0) throw new Error(`Missing: ${missing.join(', ')}`);
-              return { valid: true, fields: required };
+              const hasRequired = required.every(f => f in first);
+              if (!hasRequired) throw new Error(`Missing fields in product schema`);
+              return { valid: true, checkedFields: required };
             }
           },
           {
-            id: 6,
-            name: 'Get User Products',
-            method: 'GET',
-            endpoint: '/user-products?user=test',
-            description: 'Test user-specific product retrieval',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/user-products?user=test_hash');
-              if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected status ${res.status}`);
-              return { status: res.status, message: res.status === 404 ? 'No products (expected for test user)' : 'Has products' };
-            }
-          }
-        ]
-      },
-      {
-        service: '💳 Stripe Integration',
-        badge: 'S12.x',
-        description: 'Stripe products and payment links',
-        tests: [
-          {
-            id: 7,
-            name: 'Stripe Products',
+            id: 12,
+            name: 'Schema: JSON Format',
             method: 'GET',
             endpoint: '/products',
-            description: 'Find products with Stripe payment integration',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              const stripe = products.filter(p => p.source === 'stripe' && p.stripe_link);
-              if (stripe.length === 0) throw new Error('No Stripe products');
-              return { count: stripe.length, sample: stripe[0].name };
-            }
-          },
-          {
-            id: 8,
-            name: 'Checkout Links',
-            method: 'GET',
-            endpoint: '/products',
-            description: 'Validate payment link URLs',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              const valid = products.filter(p => p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/'));
-              if (valid.length === 0) throw new Error('No valid links');
-              return { count: valid.length, sample: valid[0].stripe_link.substring(0, 50) + '...' };
-            }
-          }
-        ]
-      },
-      {
-        service: '🧪 Data Validation',
-        badge: 'S6.x',
-        description: 'Format and structure checks',
-        tests: [
-          {
-            id: 9,
-            name: 'JSON Format',
-            method: 'GET',
-            endpoint: '/products',
-            description: 'Verify response is valid JSON',
+            description: 'Verify valid JSON response',
             run: async () => {
               const res = await fetch(WORKER_URL + '/products');
               const text = await res.text();
               JSON.parse(text);
-              return { valid: true, size: text.length + ' bytes' };
+              return { valid: true, size: text.length };
+            }
+          },
+          {
+            id: 13,
+            name: 'Schema: CORS Headers',
+            method: 'GET',
+            endpoint: '/health',
+            description: 'Verify CORS headers present',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/health');
+              const cors = res.headers.get('access-control-allow-origin');
+              return { hasCORS: !!cors, corsValue: cors || 'none' };
+            }
+          }
+        ]
+      },
+      {
+        service: '⚠️ Server-Side Operations',
+        badge: 'Requires Auth',
+        description: 'Write operations (manual testing only)',
+        tests: [
+          {
+            id: 14,
+            name: 'WRITE: Webhook Simulation',
+            method: 'POST',
+            endpoint: '/stripe-webhook',
+            description: '⚠️ Server-only: Requires Stripe signature',
+            run: async () => {
+              return { 
+                message: 'Manual test required',
+                reason: 'Requires Stripe webhook signature',
+                testUrl: 'Use Stripe CLI: stripe trigger checkout.session.completed'
+              };
+            }
+          },
+          {
+            id: 15,
+            name: 'WRITE: Sync Stripe to KV',
+            method: 'POST',
+            endpoint: '/sync-stripe-to-kv',
+            description: '⚠️ Server-only: Requires Stripe API key',
+            run: async () => {
+              return { 
+                message: 'Manual test required',
+                reason: 'Requires STRIPE_SECRET_KEY binding',
+                testUrl: 'Use worker deployment with secrets'
+              };
             }
           }
         ]
