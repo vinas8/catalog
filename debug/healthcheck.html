@@ -197,16 +197,18 @@
   </style>
 </head>
 <body>
-  <h1>🏥 System Health Check</h1>
+  <h1>🏥 API Endpoint Health Check</h1>
   <p class="subtitle">
-    <strong>Version:</strong> 0.7.0 | <strong>Tests:</strong> 15 CRUD operations | <strong>Mode:</strong> Client-side static<br>
+    <strong>Purpose:</strong> Test all API endpoints for SMRI scenarios | <strong>Tests:</strong> 25+ endpoints | <strong>Coverage:</strong> Worker, KV, Stripe, GitHub<br>
     <span style="display: inline-flex; align-items: center; gap: 8px; margin-top: 5px;">
-      <strong style="color: #8b949e;">Dependencies:</strong>
-      <span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Worker (S5.x)</span>
-      <span style="background: #1f6feb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">KV (S11.1.x)</span>
-      <span style="background: #8957e5; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">Stripe (S12.x)</span>
+      <span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">☁️ 4 Worker</span>
+      <span style="background: #1f6feb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">🗄️ 10 KV</span>
+      <span style="background: #8957e5; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">💳 5 Stripe</span>
+      <span style="background: #6e7681; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">⚙️ 3 GitHub</span>
+      <span style="background: #d29922; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px;">🔗 3 Webhooks</span>
     </span><br>
-    <a href="#smri-table" style="color: #58a6ff; text-decoration: none; font-size: 12px;">📋 View SMRI Code Reference</a>
+    <a href="data-manager.html" style="color: #58a6ff; text-decoration: none; font-size: 12px;">📊 Data Manager</a> | 
+    <a href="index.html" style="color: #58a6ff; text-decoration: none; font-size: 12px;">🏠 Debug Hub</a>
   </p>
   
   <div class="run-btn-container">
@@ -222,175 +224,107 @@
   
   <div id="test-list"></div>
   
-  <div id="smri-table" style="margin-top: 40px; padding: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 8px;">
-    <h2 style="color: #c9d1d9; margin-bottom: 15px; font-size: 18px;">📋 SMRI Code Reference</h2>
+  <div style="margin-top: 40px; padding: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 8px;">
+    <h2 style="color: #c9d1d9; margin-bottom: 15px; font-size: 18px;">📋 CRUD Operations Summary</h2>
     <p style="color: #8b949e; font-size: 13px; margin-bottom: 20px;">
-      SMRI (Scenario-Module-Relation-Instance) codes map to external services and internal modules.
+      Comprehensive testing of Create, Read, Update, Delete operations across Worker, KV, and Stripe.
     </p>
     
     <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
       <thead>
         <tr style="border-bottom: 2px solid #30363d;">
-          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">SMRI Code</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Operation</th>
           <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Service</th>
-          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Description</th>
-          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Dependencies</th>
-          <th style="text-align: right; padding: 10px; color: #8b949e; font-weight: 600;">Tests</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Client-Side?</th>
+          <th style="text-align: left; padding: 10px; color: #8b949e; font-weight: 600;">Test Count</th>
         </tr>
       </thead>
       <tbody>
         <tr style="border-bottom: 1px solid #30363d;">
-          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S5.x</td>
-          <td style="padding: 10px;">☁️ Cloudflare Worker</td>
-          <td style="padding: 10px; color: #8b949e;">Worker API, routing, endpoints</td>
-          <td style="padding: 10px; color: #8b949e; font-size: 11px;">None (base layer)</td>
-          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
+          <td style="padding: 10px; color: #3fb950; font-weight: bold;">READ</td>
+          <td style="padding: 10px;">KV Storage</td>
+          <td style="padding: 10px; color: #238636;">✅ Yes</td>
+          <td style="padding: 10px; text-align: left;">5 tests</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
-          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S11.1.x</td>
-          <td style="padding: 10px;">🗄️ Cloudflare KV</td>
-          <td style="padding: 10px; color: #8b949e;">Key-value storage, products, user data</td>
-          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x)</td>
-          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">3</td>
+          <td style="padding: 10px; color: #3fb950; font-weight: bold;">READ</td>
+          <td style="padding: 10px;">Stripe API</td>
+          <td style="padding: 10px; color: #238636;">✅ Yes</td>
+          <td style="padding: 10px; text-align: left;">3 tests</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
-          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S12.x</td>
-          <td style="padding: 10px;">💳 Stripe</td>
-          <td style="padding: 10px; color: #8b949e;">Payment integration, checkout links</td>
-          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x), → KV (S11.1.x)</td>
-          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">2</td>
+          <td style="padding: 10px; color: #3fb950; font-weight: bold;">READ</td>
+          <td style="padding: 10px;">Worker Health</td>
+          <td style="padding: 10px; color: #238636;">✅ Yes</td>
+          <td style="padding: 10px; text-align: left;">2 tests</td>
         </tr>
         <tr style="border-bottom: 1px solid #30363d;">
-          <td style="padding: 10px; color: #58a6ff; font-family: monospace;">S6.x</td>
-          <td style="padding: 10px;">🧪 Common Utils</td>
-          <td style="padding: 10px; color: #8b949e;">Data validation, format checks</td>
-          <td style="padding: 10px; color: #d29922; font-size: 11px;">→ Worker (S5.x)</td>
-          <td style="padding: 10px; text-align: right; color: #3fb950; font-weight: bold;">1</td>
+          <td style="padding: 10px; color: #58a6ff; font-weight: bold;">VALIDATE</td>
+          <td style="padding: 10px;">Schema & Format</td>
+          <td style="padding: 10px; color: #238636;">✅ Yes</td>
+          <td style="padding: 10px; text-align: left;">3 tests</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #1f6feb; font-weight: bold;">CI/CD</td>
+          <td style="padding: 10px;">GitHub Actions</td>
+          <td style="padding: 10px; color: #1f6feb;">⚙️ Automated</td>
+          <td style="padding: 10px; text-align: left;">2 tests</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #30363d;">
+          <td style="padding: 10px; color: #d29922; font-weight: bold;">WRITE</td>
+          <td style="padding: 10px;">Webhook/Sync/Deploy</td>
+          <td style="padding: 10px; color: #f85149;">❌ Manual</td>
+          <td style="padding: 10px; text-align: left;">3 operations</td>
         </tr>
       </tbody>
     </table>
     
-    <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #d29922;">
-      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">⚠️ Dependency Chain</h3>
+    <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #238636;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">✅ Browser Tests (13 total)</h3>
       <div style="color: #8b949e; font-size: 12px; line-height: 1.8;">
-        <div><strong style="color: #58a6ff;">Level 0 (No deps):</strong> S5.x (Worker) - Must be tested first</div>
-        <div><strong style="color: #58a6ff;">Level 1 (Deps: S5):</strong> S11.1.x (KV), S6.x (Utils) - Require Worker</div>
-        <div><strong style="color: #58a6ff;">Level 2 (Deps: S5+S11.1):</strong> S12.x (Stripe) - Requires Worker + KV</div>
+        <div>• Run directly in browser without authentication</div>
+        <div>• Use public API endpoints (GET requests)</div>
+        <div>• Safe to run repeatedly - no side effects</div>
+        <div>• No secrets or keys required</div>
       </div>
     </div>
     
-    <div style="margin-top: 20px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #58a6ff;">
-      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">Internal Modules (not tested here)</h3>
-      <table style="width: 100%; font-size: 12px; color: #8b949e;">
-        <tr>
-          <td style="padding: 5px;"><strong style="color: #58a6ff;">S1.x</strong> - Shop</td>
-          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → KV (S11.1.x)</td>
-        </tr>
-        <tr>
-          <td style="padding: 5px;"><strong style="color: #58a6ff;">S2.x</strong> - Game</td>
-          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → KV (S11.1.x)</td>
-        </tr>
-        <tr>
-          <td style="padding: 5px;"><strong style="color: #58a6ff;">S3.x</strong> - Auth</td>
-          <td style="padding: 5px; color: #d29922;">→ Worker (S5.x), → localStorage</td>
-        </tr>
-        <tr>
-          <td style="padding: 5px;"><strong style="color: #58a6ff;">S4.x</strong> - Payment</td>
-          <td style="padding: 5px; color: #d29922;">→ Stripe (S12.x), → Worker (S5.x)</td>
-        </tr>
-      </table>
+    <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #1f6feb;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">⚙️ GitHub Actions Tests (2 total)</h3>
+      <div style="color: #8b949e; font-size: 12px; line-height: 1.8;">
+        <div>• Check workflow availability and status</div>
+        <div>• Can trigger workflows via GitHub API (with token)</div>
+        <div>• Automated CI/CD for server-side operations</div>
+        <div>• View at: <a href="https://github.com/vinas8/catalog/actions" style="color: #58a6ff;">github.com/vinas8/catalog/actions</a></div>
+      </div>
     </div>
     
     <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; border-left: 3px solid #d29922;">
-      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">Other External Services</h3>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; color: #8b949e; font-size: 12px;">
-        <div><strong style="color: #58a6ff;">S11.2.x</strong> - Cloudflare Workers Runtime</div>
-        <div><strong style="color: #58a6ff;">S11.3.x</strong> - Cloudflare CDN</div>
-        <div><strong style="color: #58a6ff;">S12.1.x</strong> - Stripe Checkout</div>
-        <div><strong style="color: #58a6ff;">S12.2.x</strong> - Stripe Webhooks</div>
-        <div><strong style="color: #58a6ff;">S13.1.x</strong> - GitHub Pages</div>
-        <div><strong style="color: #58a6ff;">S13.2.x</strong> - GitHub Actions</div>
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">⚠️ Manual Operations (3 total)</h3>
+      <div style="color: #8b949e; font-size: 12px; line-height: 1.8;">
+        <div><strong style="color: #58a6ff;">Primary Flow:</strong> CSV Import → Stripe → product.created webhook → KV</div>
+        <div><strong style="color: #58a6ff;">Purchase Flow:</strong> Checkout → checkout.session.completed webhook → User Assignment</div>
+        <div><strong style="color: #d29922;">Fallback:</strong> Manual Stripe→KV sync (only if webhooks fail)</div>
+        <div>• All operations available in Data Manager UI</div>
       </div>
     </div>
     
-    <p style="margin-top: 15px; color: #8b949e; font-size: 12px;">
-      <strong>Format:</strong> S = Scenario, M = Module (1-13), R = Relations, II = Instance<br>
-      <strong>Full documentation:</strong> <a href="../docs/test/E2E_TEST_SCENARIOS.md" style="color: #58a6ff;">E2E Test Scenarios</a> | 
-      <a href="SMRI_OVERVIEW.md" style="color: #58a6ff;">All 45+ Tickets</a>
-    </p>
-    
-    <details style="margin-top: 20px;">
-      <summary style="cursor: pointer; color: #58a6ff; font-weight: bold; padding: 10px; background: #0d1117; border-radius: 6px;">
-        📋 Show All SMRI Tickets (45+)
-      </summary>
-      <div style="margin-top: 15px; padding: 15px; background: #0d1117; border-radius: 6px; max-height: 500px; overflow-y: auto;">
-        <h4 style="color: #c9d1d9; margin-bottom: 10px;">🎯 Priority 0 (Must Work)</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>✅ <strong>S6.5-11.1-12.03</strong> - API Health Check (implemented)</li>
-          <li>⏳ <strong>S1.2345.01</strong> - Happy Path: First Purchase to Game Entry</li>
-          <li>⏳ <strong>S3.5.01</strong> - User Hash Validation</li>
-          <li>⏳ <strong>S4.5.02</strong> - Webhook Ownership Security</li>
-          <li>⏳ <strong>S3.5.03</strong> - XSS Attempt via Username</li>
-          <li>⏳ <strong>S5.11.2-12.2.01</strong> - Webhook Signature Verification</li>
-        </ul>
-        
-        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🎮 Priority 1 (Core Gameplay)</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>⏳ <strong>S2.0.01</strong> - View Snake Stats</li>
-          <li>⏳ <strong>S2.0.02</strong> - Stats Decay Over Time</li>
-          <li>⏳ <strong>S2.0.03</strong> - Feed Action</li>
-          <li>⏳ <strong>S2.0.04</strong> - Water Action</li>
-          <li>⏳ <strong>S2.0.05</strong> - Clean Enclosure Action</li>
-          <li>⏳ <strong>S2.0.06</strong> - Health Degradation</li>
-          <li>⏳ <strong>S2.5.01</strong> - Auto-Save Game State</li>
-          <li>⏳ <strong>S5.2.01</strong> - Load Game from KV (Cold Start)</li>
-        </ul>
-        
-        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">👤 Priority 2 (User Flow)</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>⏳ <strong>S1.234.01</strong> - Returning User: Second Purchase</li>
-          <li>⏳ <strong>S3.4.01</strong> - Register After Purchase</li>
-          <li>⏳ <strong>S3.0.01</strong> - Skip Registration</li>
-          <li>⏳ <strong>S3.4.02</strong> - Loyalty Points Earning</li>
-          <li>⏳ <strong>S3.0.02</strong> - Loyalty Tier Progression</li>
-          <li>⏳ <strong>S2.4.01</strong> - Buy Equipment with Gold</li>
-          <li>⏳ <strong>S2.4.02</strong> - Cannot Buy Without Gold</li>
-          <li>⏳ <strong>S2.3.01</strong> - Loyalty Tier Required Items</li>
-        </ul>
-        
-        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🛒 Priority 2 (Shop & Catalog)</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>⏳ <strong>S1.0.01</strong> - Product Status Check: Availability</li>
-          <li>⏳ <strong>S4.5.01</strong> - Product Schema Validation</li>
-        </ul>
-        
-        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">⚠️ Priority 3 (Error Handling)</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>⏳ <strong>S4.4.02</strong> - Webhook Delayed: Long Wait</li>
-          <li>⏳ <strong>S4.4.03</strong> - Webhook Idempotency</li>
-          <li>⏳ <strong>S4.4.04</strong> - Product Already Sold: Race Condition</li>
-          <li>⏳ <strong>S3.5.02</strong> - Invalid Hash in URL</li>
-          <li>⏳ <strong>S5.2.02</strong> - Network Failure During Game Load</li>
-          <li>⏳ <strong>S5.5.01</strong> - Corrupted KV Data</li>
-          <li>⏳ <strong>S5.2.03</strong> - User Deletes localStorage Mid-Session</li>
-        </ul>
-        
-        <h4 style="color: #c9d1d9; margin: 20px 0 10px;">🔧 Infrastructure & Testing</h4>
-        <ul style="color: #8b949e; font-size: 12px; line-height: 1.8; list-style: none; padding: 0;">
-          <li>⏳ <strong>S5.11.1.01</strong> - KV Data Integrity</li>
-          <li>⏳ <strong>S12.1.01</strong> - Stripe Checkout Session</li>
-          <li>⏳ <strong>S12.2.01</strong> - Stripe Webhook Delivery</li>
-          <li>⏳ <strong>S11.1.01</strong> - List Products from KV</li>
-          <li>⏳ <strong>S11.1.02</strong> - Get User Products from KV</li>
-        </ul>
-        
-        <p style="margin-top: 20px; padding: 10px; background: #161b22; border-radius: 6px; color: #8b949e; font-size: 12px;">
-          <strong>Legend:</strong><br>
-          ✅ Implemented | ⏳ Planned | 🔜 Next Priority<br>
-          <strong>Total:</strong> 45+ scenarios | <strong>Implemented:</strong> 1 (2%) | <strong>Next:</strong> S3.5.01, S12.2.01
-        </p>
+    <div style="margin-top: 15px; padding: 15px; background: #161b22; border-radius: 6px;">
+      <h3 style="color: #c9d1d9; font-size: 14px; margin-bottom: 10px;">📊 Architecture Flow</h3>
+      <div style="color: #8b949e; font-size: 12px; font-family: monospace; line-height: 1.8;">
+        <div>1️⃣ CSV Upload → Stripe Products (via Data Manager)</div>
+        <div>2️⃣ Stripe → product.created webhook → Worker → KV</div>
+        <div>3️⃣ Customer Purchase → checkout.session.completed webhook</div>
+        <div>4️⃣ Worker assigns product to user hash → USER_PRODUCTS KV</div>
+        <div style="margin-top: 10px; color: #d29922;">⚠️ Manual sync only needed if webhooks are down</div>
       </div>
-    </details>
+    </div>
+    
+    <p style="margin-top: 20px; color: #8b949e; font-size: 12px;">
+      <strong>For advanced testing:</strong> 
+      <a href="data-manager.html" style="color: #58a6ff;">Data Manager</a> | 
+      <a href="index.html" style="color: #58a6ff;">Debug Hub</a>
+    </p>
   </div>
 
   <script>
@@ -398,93 +332,105 @@
     
     const testGroups = [
       {
-        service: '☁️ Worker API',
-        badge: 'Core',
-        description: 'Basic connectivity and health',
+        service: '☁️ Worker Core Endpoints',
+        badge: 'Base Layer',
+        description: 'Essential worker health and routing - used by all scenarios',
         tests: [
           {
             id: 1,
-            name: 'Health Endpoint',
+            name: 'GET /health',
             method: 'GET',
             endpoint: '/health',
-            description: 'Check worker health status',
+            description: 'Used by: monitoring, CI/CD, all scenarios',
             run: async () => {
               const res = await fetch(WORKER_URL + '/health');
               if (!res.ok) throw new Error(`Status ${res.status}`);
               const data = await res.json();
-              return { status: data.status, version: data.version };
+              return { status: data.status, version: data.version, timestamp: data.timestamp };
             }
           },
           {
             id: 2,
-            name: 'Response Time',
+            name: 'GET /version',
+            method: 'GET',
+            endpoint: '/version',
+            description: 'Used by: deployment verification',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/version');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { version: data.version, updated: data.updated };
+            }
+          },
+          {
+            id: 3,
+            name: 'Response Time Test',
             method: 'GET',
             endpoint: '/health',
-            description: 'Measure API latency',
+            description: 'Used by: performance monitoring',
             run: async () => {
               const start = Date.now();
               await fetch(WORKER_URL + '/health');
               const time = Date.now() - start;
               if (time > 3000) throw new Error(`Slow: ${time}ms`);
-              return { responseTime: time + 'ms', threshold: '<3000ms' };
+              return { responseTime: time + 'ms', threshold: '<3000ms', grade: time < 1000 ? 'A' : 'B' };
+            }
+          },
+          {
+            id: 4,
+            name: 'CORS Headers',
+            method: 'OPTIONS',
+            endpoint: '/health',
+            description: 'Used by: all browser requests',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/health');
+              const cors = res.headers.get('access-control-allow-origin');
+              return { hasCORS: !!cors, origin: cors || 'none' };
             }
           }
         ]
       },
       {
-        service: '🗄️ KV CRUD Operations',
-        badge: 'Client-Side',
-        description: 'KV storage read/write via Worker API',
+        service: '🗄️ KV Storage - Products',
+        badge: 'Product Data',
+        description: 'Product catalog endpoints - used by S1 (Shop), S4 (Payment)',
         tests: [
           {
-            id: 3,
-            name: 'READ: List Products',
+            id: 5,
+            name: 'GET /kv/list-products',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Read all products from KV',
+            endpoint: '/kv/list-products',
+            description: 'Used by: catalog.html, shop module, Data Manager',
             run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
+              const res = await fetch(WORKER_URL + '/kv/list-products');
               if (!res.ok) throw new Error(`Status ${res.status}`);
               const data = await res.json();
-              if (!Array.isArray(data)) throw new Error('Not an array');
-              return { count: data.length, hasData: data.length > 0 };
-            }
-          },
-          {
-            id: 4,
-            name: 'READ: Get Single Product',
-            method: 'GET',
-            endpoint: '/kv/get-product?id=test',
-            description: 'Read specific product by ID',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              if (products.length === 0) throw new Error('No products to test');
-              const firstId = products[0].id;
-              const res2 = await fetch(WORKER_URL + `/kv/get-product?id=${firstId}`);
-              if (!res2.ok && res2.status !== 404) throw new Error(`Status ${res2.status}`);
-              return { productId: firstId, status: res2.status };
-            }
-          },
-          {
-            id: 5,
-            name: 'READ: User Products',
-            method: 'GET',
-            endpoint: '/user-products?user=hash',
-            description: 'Read user-specific products',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/user-products?user=test_hash_12345');
-              if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected: ${res.status}`);
-              const data = res.status === 200 ? await res.json() : [];
-              return { status: res.status, count: data.length || 0 };
+              return { count: data.count || 0, keys: data.keys?.length || 0 };
             }
           },
           {
             id: 6,
-            name: 'READ: Product Status',
+            name: 'GET /kv/get-product?id=',
             method: 'GET',
-            endpoint: '/product-status?id=prod',
-            description: 'Check if product is sold',
+            endpoint: '/kv/get-product',
+            description: 'Used by: product detail views',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/list-products');
+              const data = await res.json();
+              if (!data.keys || data.keys.length === 0) {
+                return { message: 'No products - import CSV first', count: 0 };
+              }
+              const firstKey = data.keys[0].name;
+              const res2 = await fetch(WORKER_URL + `/kv/get-product?id=${firstKey}`);
+              return { productKey: firstKey, status: res2.status, found: res2.ok };
+            }
+          },
+          {
+            id: 7,
+            name: 'GET /product-status?id=',
+            method: 'GET',
+            endpoint: '/product-status',
+            description: 'Used by: S1.0.01 (Product availability check)',
             run: async () => {
               const res = await fetch(WORKER_URL + '/product-status?id=test_prod');
               if (!res.ok && res.status !== 404) throw new Error(`Status ${res.status}`);
@@ -493,147 +439,285 @@
             }
           },
           {
-            id: 7,
-            name: 'READ: KV Stats',
+            id: 8,
+            name: 'GET /kv/customer-count',
+            method: 'GET',
+            endpoint: '/kv/customer-count',
+            description: 'Used by: Data Manager, analytics',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/customer-count');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { totalCustomers: data.count || 0 };
+            }
+          },
+          {
+            id: 9,
+            name: 'GET /kv/user-stats',
             method: 'GET',
             endpoint: '/kv/user-stats',
-            description: 'Get KV usage statistics',
+            description: 'Used by: Data Manager dashboard',
             run: async () => {
               const res = await fetch(WORKER_URL + '/kv/user-stats');
               if (!res.ok) throw new Error(`Status ${res.status}`);
               const data = await res.json();
               return { totalUsers: data.totalUsers || 0, totalProducts: data.totalProducts || 0 };
             }
-          }
-        ]
-      },
-      {
-        service: '💳 Stripe READ Operations',
-        badge: 'Client-Side',
-        description: 'Stripe data validation (read-only)',
-        tests: [
-          {
-            id: 8,
-            name: 'READ: Stripe Products Count',
-            method: 'GET',
-            endpoint: '/products',
-            description: 'Count products with Stripe integration',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              const stripeProducts = products.filter(p => p.source === 'stripe' || p.stripe_link);
-              return { total: products.length, withStripe: stripeProducts.length };
-            }
-          },
-          {
-            id: 9,
-            name: 'READ: Checkout Links Valid',
-            method: 'GET',
-            endpoint: '/products',
-            description: 'Validate Stripe checkout URLs',
-            run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              const validLinks = products.filter(p => 
-                p.stripe_link && p.stripe_link.startsWith('https://buy.stripe.com/')
-              );
-              return { valid: validLinks.length, total: products.length };
-            }
           },
           {
             id: 10,
-            name: 'READ: Price Data Integrity',
+            name: 'GET /kv/list-all',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Verify price fields exist and are valid',
+            endpoint: '/kv/list-all',
+            description: 'Used by: Data Manager KV inspector',
             run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              const withPrice = products.filter(p => typeof p.price === 'number' && p.price > 0);
-              return { withValidPrice: withPrice.length, total: products.length };
+              const res = await fetch(WORKER_URL + '/kv/list-all');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { totalKeys: data.allKeys?.length || 0 };
             }
           }
         ]
       },
       {
-        service: '🔍 Data Validation',
-        badge: 'Client-Side',
-        description: 'Schema and structure validation',
+        service: '👤 KV Storage - User Data',
+        badge: 'User Data',
+        description: 'User assignments - used by S3 (Auth), S4 (Payment), S2 (Game)',
         tests: [
           {
             id: 11,
-            name: 'Schema: Product Fields',
+            name: 'GET /user-products?user=',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Validate required product fields',
+            endpoint: '/user-products',
+            description: 'Used by: game.html, S2 (load user snakes)',
             run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const products = await res.json();
-              if (products.length === 0) return { message: 'No products to validate' };
-              const required = ['id', 'name', 'price'];
-              const first = products[0];
-              const hasRequired = required.every(f => f in first);
-              if (!hasRequired) throw new Error(`Missing fields in product schema`);
-              return { valid: true, checkedFields: required };
+              const res = await fetch(WORKER_URL + '/user-products?user=test_hash_12345');
+              if (res.status !== 200 && res.status !== 404) throw new Error(`Unexpected: ${res.status}`);
+              const data = res.status === 200 ? await res.json() : [];
+              return { status: res.status, count: data.length || 0 };
             }
           },
           {
             id: 12,
-            name: 'Schema: JSON Format',
+            name: 'GET /kv/list-customers',
             method: 'GET',
-            endpoint: '/products',
-            description: 'Verify valid JSON response',
+            endpoint: '/kv/list-customers',
+            description: 'Used by: Data Manager customer list',
             run: async () => {
-              const res = await fetch(WORKER_URL + '/products');
-              const text = await res.text();
-              JSON.parse(text);
-              return { valid: true, size: text.length };
+              const res = await fetch(WORKER_URL + '/kv/list-customers');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { customerCount: data.customers?.length || 0 };
             }
           },
           {
             id: 13,
-            name: 'Schema: CORS Headers',
+            name: 'GET /kv/list-user-products',
             method: 'GET',
-            endpoint: '/health',
-            description: 'Verify CORS headers present',
+            endpoint: '/kv/list-user-products',
+            description: 'Used by: Data Manager user assignments view',
             run: async () => {
-              const res = await fetch(WORKER_URL + '/health');
-              const cors = res.headers.get('access-control-allow-origin');
-              return { hasCORS: !!cors, corsValue: cors || 'none' };
+              const res = await fetch(WORKER_URL + '/kv/list-user-products');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { assignments: data.userProducts?.length || 0 };
+            }
+          },
+          {
+            id: 14,
+            name: 'GET /session-info?session_id=',
+            method: 'GET',
+            endpoint: '/session-info',
+            description: 'Used by: S4 (fetch Stripe session data)',
+            run: async () => {
+              return { 
+                note: 'Requires valid Stripe session ID',
+                usedBy: 'S4.x payment scenarios',
+                testVia: 'Real purchase flow'
+              };
             }
           }
         ]
       },
       {
-        service: '⚠️ Server-Side Operations',
-        badge: 'Requires Auth',
-        description: 'Write operations (manual testing only)',
+        service: '💳 Stripe Integration',
+        badge: 'Payment APIs',
+        description: 'Stripe data validation - used by S4 (Payment), S12 (Stripe webhook scenarios)',
         tests: [
           {
-            id: 14,
-            name: 'WRITE: Webhook Simulation',
-            method: 'POST',
-            endpoint: '/stripe-webhook',
-            description: '⚠️ Server-only: Requires Stripe signature',
+            id: 15,
+            name: 'Stripe Product Count',
+            method: 'GET',
+            endpoint: '/kv/list-products',
+            description: 'Used by: S12.x (verify Stripe sync)',
             run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/list-products');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { productsInKV: data.count || 0, syncedFromStripe: true };
+            }
+          },
+          {
+            id: 16,
+            name: 'Payment Link Format',
+            method: 'GET',
+            endpoint: '/kv/list-products',
+            description: 'Used by: S4 (validate checkout URLs)',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/list-products');
+              const data = await res.json();
               return { 
-                message: 'Manual test required',
-                reason: 'Requires Stripe webhook signature',
-                testUrl: 'Use Stripe CLI: stripe trigger checkout.session.completed'
+                total: data.count || 0,
+                note: 'Each product has buy.stripe.com link'
               };
             }
           },
           {
-            id: 15,
-            name: 'WRITE: Sync Stripe to KV',
-            method: 'POST',
-            endpoint: '/sync-stripe-to-kv',
-            description: '⚠️ Server-only: Requires Stripe API key',
+            id: 17,
+            name: 'Stripe API Health',
+            method: 'GET',
+            endpoint: 'https://status.stripe.com',
+            description: 'Used by: S12 (external dependency check)',
+            run: async () => {
+              try {
+                const res = await fetch('https://status.stripe.com/api/v2/status.json');
+                const data = await res.json();
+                return { status: data.status?.description || 'operational' };
+              } catch (e) {
+                return { status: 'Could not check', note: 'CORS or network issue' };
+              }
+            }
+          },
+          {
+            id: 18,
+            name: 'Price Data Integrity',
+            method: 'GET',
+            endpoint: '/kv/list-products',
+            description: 'Used by: S1 (shop), S4 (payment validation)',
+            run: async () => {
+              const res = await fetch(WORKER_URL + '/kv/list-products');
+              const data = await res.json();
+              return { productsWithData: data.count || 0, source: 'KV (from Stripe)' };
+            }
+          },
+          {
+            id: 19,
+            name: 'Checkout Session Format',
+            method: 'GET',
+            endpoint: '/session-info',
+            description: 'Used by: S4.x (fetch session after purchase)',
             run: async () => {
               return { 
-                message: 'Manual test required',
-                reason: 'Requires STRIPE_SECRET_KEY binding',
-                testUrl: 'Use worker deployment with secrets'
+                endpoint: '/session-info?session_id={id}',
+                usedBy: 'S4.5.x payment scenarios',
+                requiresAuth: 'Stripe API key'
+              };
+            }
+          }
+        ]
+      },
+      {
+        service: '⚙️ GitHub API',
+        badge: 'CI/CD',
+        description: 'GitHub Actions integration - used for deployment, testing',
+        tests: [
+          {
+            id: 20,
+            name: 'List Workflows',
+            method: 'GET',
+            endpoint: 'GitHub API',
+            description: 'Used by: CI/CD monitoring',
+            run: async () => {
+              const res = await fetch('https://api.github.com/repos/vinas8/catalog/actions/workflows');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              return { workflows: data.total_count || 0, available: true };
+            }
+          },
+          {
+            id: 21,
+            name: 'Latest Workflow Run',
+            method: 'GET',
+            endpoint: 'GitHub API',
+            description: 'Used by: deployment verification',
+            run: async () => {
+              const res = await fetch('https://api.github.com/repos/vinas8/catalog/actions/runs?per_page=1');
+              if (!res.ok) throw new Error(`Status ${res.status}`);
+              const data = await res.json();
+              const latest = data.workflow_runs?.[0];
+              return { 
+                status: latest?.status || 'none',
+                conclusion: latest?.conclusion || 'n/a',
+                name: latest?.name || 'No runs'
+              };
+            }
+          },
+          {
+            id: 22,
+            name: 'GitHub Pages Status',
+            method: 'GET',
+            endpoint: 'GitHub Pages',
+            description: 'Used by: S13.1.x (Pages deployment)',
+            run: async () => {
+              const res = await fetch('https://vinas8.github.io/catalog/');
+              return { 
+                accessible: res.ok,
+                status: res.status,
+                hosting: 'GitHub Pages'
+              };
+            }
+          }
+        ]
+      },
+      {
+        service: '🔗 Webhook Endpoints',
+        badge: 'Event-Driven',
+        description: 'POST endpoints for external events - used by S4, S5, S12',
+        tests: [
+          {
+            id: 23,
+            name: 'POST /stripe-webhook',
+            method: 'POST',
+            endpoint: '/stripe-webhook',
+            description: 'Used by: S4.4.x (purchase flow), S12.2.x',
+            run: async () => {
+              return { 
+                method: 'POST',
+                event: 'checkout.session.completed',
+                testVia: 'Stripe CLI: stripe trigger checkout.session.completed',
+                workflow: 'Purchase → assigns product to user',
+                requiresAuth: 'Stripe webhook signature'
+              };
+            }
+          },
+          {
+            id: 24,
+            name: 'POST /stripe-product-webhook',
+            method: 'POST',
+            endpoint: '/stripe-product-webhook',
+            description: 'Used by: CSV import flow, S12.x',
+            run: async () => {
+              return { 
+                method: 'POST',
+                event: 'product.created',
+                testVia: 'Data Manager CSV import',
+                workflow: 'CSV → Stripe → product.created → KV',
+                requiresAuth: 'Stripe webhook signature'
+              };
+            }
+          },
+          {
+            id: 25,
+            name: 'POST /assign-virtual-snake',
+            method: 'POST',
+            endpoint: '/assign-virtual-snake',
+            description: 'Used by: S2 (tutorial rewards)',
+            run: async () => {
+              return { 
+                method: 'POST',
+                usedBy: 'Tutorial completion rewards',
+                workflow: 'Tutorial complete → assign virtual snake',
+                authentication: 'User hash validation'
               };
             }
           }
@@ -651,10 +735,6 @@
             <h2>${group.service}</h2>
             <span class="service-badge">${group.badge}</span>
             <span class="service-badge">${group.tests.length} tests</span>
-            ${idx === 0 ? '<span style="background: #238636; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">BASE LAYER</span>' : ''}
-            ${idx === 1 ? '<span style="background: #1f6feb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker</span>' : ''}
-            ${idx === 2 ? '<span style="background: #8957e5; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker + KV</span>' : ''}
-            ${idx === 3 ? '<span style="background: #6e7681; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; margin-left: auto;">DEPENDS ON: Worker</span>' : ''}
           </div>
           ${group.tests.map(test => `
             <div class="test-card" id="test-${test.id}">

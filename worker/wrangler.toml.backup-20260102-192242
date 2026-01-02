@@ -21,17 +21,17 @@ id = "ecbcb79f3df64379863872965f993991"
 # KV Namespace for real snake products
 [[kv_namespaces]]
 binding = "PRODUCTS_REAL"
-id = "a618c6b71cc249e1accadd95d7ce4545"
+id = "TODO_CREATE_IN_CLOUDFLARE"
 
 # KV Namespace for virtual practice snakes
 [[kv_namespaces]]
 binding = "PRODUCTS_VIRTUAL"
-id = "6f7cf9f61f694021be0ecf65a35bbd31"
+id = "TODO_CREATE_IN_CLOUDFLARE"
 
 # KV Namespace for customer profiles and tags
 [[kv_namespaces]]
 binding = "USERS"
-id = "e2c1dcb3559246cfb670b76658a27d43"
+id = "TODO_CREATE_IN_CLOUDFLARE"
 
 # Environment variables
 [vars]

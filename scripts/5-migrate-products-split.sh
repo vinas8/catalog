@@ -55,7 +55,8 @@ KEYS_RESPONSE=$(curl -s "https://api.cloudflare.com/client/v4/accounts/${CLOUDFL
   -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
 
 # Check response
-if ! echo "$KEYS_RESPONSE" | grep -q '"success":true'; then
+SUCCESS=$(echo "$KEYS_RESPONSE" | jq -r '.success')
+if [ "$SUCCESS" != "true" ]; then
     echo "❌ Failed to fetch keys"
     echo "$KEYS_RESPONSE" | jq '.'
     exit 1
