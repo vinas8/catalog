@@ -612,7 +612,7 @@
       document.getElementById('next-btn').disabled = step.action && !step.autoNext;
     }
 
-    function goToFarm() {
+    async function goToFarm() {
       // Get or create user
       const userHash = new URLSearchParams(window.location.search).get('user') || 
                       localStorage.getItem('serpent_user_hash') ||
@@ -621,6 +621,20 @@
       // Mark tutorial as complete
       localStorage.setItem('tutorial_complete', 'true');
       localStorage.setItem('serpent_user_hash', userHash);
+      
+      // Assign tutorial reward snake
+      try {
+        const response = await fetch('https://catalog.navickaszilvinas.workers.dev/assign-virtual-snake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userHash })
+        });
+        
+        const result = await response.json();
+        console.log('✅ Virtual snake assigned:', result);
+      } catch (error) {
+        console.error('❌ Failed to assign snake:', error);
+      }
       
       // Redirect to farm
       window.location.href = `game.html?user=${userHash}`;

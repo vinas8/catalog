@@ -241,6 +241,11 @@ export default {
       return handleKVUserStats(env, corsHeaders);
     }
 
+    // Route: POST /assign-virtual-snake (assign tutorial reward snake)
+    if (pathname === '/assign-virtual-snake' && request.method === 'POST') {
+      return handleAssignVirtualSnake(request, env, corsHeaders);
+    }
+
     // Route: GET /health (health check)
     if (pathname === '/health' && request.method === 'GET') {
       return new Response(JSON.stringify({
@@ -1341,6 +1346,88 @@ async function handleKVUserStats(env, corsHeaders) {
     return new Response(JSON.stringify({ 
       error: 'Failed to get user stats',
       message: error.message 
+    }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle POST /assign-virtual-snake - Assign tutorial reward snake
+ */
+async function handleAssignVirtualSnake(request, env, corsHeaders) {
+  try {
+    const body = await request.json();
+    const userId = body.user_id;
+    
+    if (!userId) {
+      return new Response(JSON.stringify({ error: 'Missing user_id' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    // Create virtual snake assignment
+    const assignment = {
+      assignment_id: `assign_tutorial_${Date.now()}`,
+      user_id: userId,
+      product_id: 'virtual_banana_python',
+      product_type: 'virtual',
+      nickname: 'Buddy',
+      species: 'ball_python',
+      morph: 'banana',
+      acquired_at: new Date().toISOString(),
+      acquisition_type: 'tutorial_reward',
+      stats: {
+        hunger: 100,
+        water: 100,
+        temperature: 80,
+        humidity: 60,
+        health: 100,
+        stress: 10,
+        cleanliness: 100,
+        happiness: 100
+      }
+    };
+
+    // Get existing snakes
+    const userKey = `user:${userId}`;
+    const existingData = await env.USER_PRODUCTS.get(userKey);
+    let snakes = existingData ? JSON.parse(existingData) : [];
+    
+    // Check if already has tutorial snake
+    const hasTutorialSnake = snakes.some(s => s.acquisition_type === 'tutorial_reward');
+    if (hasTutorialSnake) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Tutorial snake already assigned'
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    }
+
+    // Add new snake
+    snakes.push(assignment);
+
+    // Save to KV
+    await env.USER_PRODUCTS.put(userKey, JSON.stringify(snakes));
+
+    console.log(`✅ Assigned tutorial snake to ${userId}`);
+
+    return new Response(JSON.stringify({
+      success: true,
+      snake: assignment
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (error) {
+    console.error('❌ Assign virtual snake error:', error);
+    return new Response(JSON.stringify({
+      error: 'Failed to assign snake',
+      message: error.message
     }), {
       status: 500,
       headers: corsHeaders
