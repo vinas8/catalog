@@ -2,14 +2,20 @@
 // Handles shelf navigation, pagination, and clean all operations
 
 export class ShelfManager {
-  constructor(gameState) {
+  constructor(gameState, type = 'real') {
     this.gameState = gameState;
+    this.type = type; // 'real' or 'virtual'
     this.currentShelfIndex = 0;
     this.snakesPerShelf = 10;
   }
   
   get totalSnakes() {
-    return this.gameState.snakes.length;
+    return this.filteredSnakes.length;
+  }
+  
+  get filteredSnakes() {
+    // Filter snakes by type (real or virtual)
+    return this.gameState.snakes.filter(s => s.type === this.type);
   }
   
   get totalShelves() {
@@ -19,7 +25,7 @@ export class ShelfManager {
   getCurrentShelfSnakes() {
     const start = this.currentShelfIndex * this.snakesPerShelf;
     const end = start + this.snakesPerShelf;
-    return this.gameState.snakes.slice(start, end);
+    return this.filteredSnakes.slice(start, end);
   }
   
   nextShelf() {

@@ -31,6 +31,8 @@ export class SnakeDetailView {
       <div class="snake-detail-content">
         ${this.renderHeader()}
         ${this.renderStatsTable()}
+        ${this.renderGeneticsSection()}
+        ${this.renderBreederSection()}
         ${this.renderCareInfo()}
       </div>
     `;
@@ -114,7 +116,74 @@ export class SnakeDetailView {
     `;
   }
   
-  getSnakeAvatar() {
+  renderGeneticsSection() {
+    // Only show genetics for real snakes
+    if (this.snake.type !== 'real' || !this.snake.genetics) return '';
+    
+    const genetics = this.snake.genetics;
+    const hasGenetics = genetics.visual?.length > 0 || genetics.hets?.length > 0;
+    
+    if (!hasGenetics) return '';
+    
+    return `
+      <div class="genetics-section">
+        <h3>🧬 Genetics</h3>
+        <div class="genetics-content">
+          ${genetics.visual?.length > 0 ? `
+            <div class="genetics-row">
+              <span class="genetics-label">Visual Traits:</span>
+              <span class="genetics-value">${genetics.visual.join(', ')}</span>
+            </div>
+          ` : ''}
+          
+          ${genetics.hets?.length > 0 ? `
+            <div class="genetics-row">
+              <span class="genetics-label">Het for:</span>
+              <span class="genetics-value">${genetics.hets.join(', ')}</span>
+            </div>
+          ` : ''}
+          
+          ${genetics.possible_hets?.length > 0 ? `
+            <div class="genetics-row">
+              <span class="genetics-label">Possible Het:</span>
+              <span class="genetics-value">${genetics.possible_hets.join(', ')}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+  
+  renderBreederSection() {
+    // Only show breeder info for real snakes
+    if (this.snake.type !== 'real' || !this.snake.breeder) return '';
+    
+    const breeder = this.snake.breeder;
+    
+    return `
+      <div class="breeder-section">
+        <h3>👤 Breeder Information</h3>
+        <div class="breeder-content">
+          <div class="breeder-row">
+            <span class="breeder-label">Breeder:</span>
+            <span class="breeder-value">${breeder.name || 'Unknown'}</span>
+          </div>
+          ${breeder.location ? `
+            <div class="breeder-row">
+              <span class="breeder-label">Location:</span>
+              <span class="breeder-value">${breeder.location}</span>
+            </div>
+          ` : ''}
+          ${breeder.reputation ? `
+            <div class="breeder-row">
+              <span class="breeder-label">Reputation:</span>
+              <span class="breeder-value">${'⭐'.repeat(breeder.reputation)}</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
     if (this.snake.stats.health < 30) {
       return { emoji: '🤢', state: 'sick' };
     }

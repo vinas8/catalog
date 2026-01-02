@@ -2251,3 +2251,60 @@ body {
     grid-column: 1 / -1;
   }
 }
+
+/* Genetics Section Styles */
+.genetics-section,
+.breeder-section {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.genetics-section h3,
+.breeder-section h3 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.genetics-content,
+.breeder-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.genetics-row,
+.breeder-row {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.genetics-label,
+.breeder-label {
+  font-weight: 600;
+  color: #6c757d;
+  min-width: 120px;
+}
+
+.genetics-value,
+.breeder-value {
+  color: #212529;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .genetics-row,
+  .breeder-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .genetics-label,
+  .breeder-label {
+    min-width: auto;
+  }
+}

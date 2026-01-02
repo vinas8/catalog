@@ -73,11 +73,18 @@ export const APP_CONFIG = {
     // Standard iOS/Android: Icon on top, label below, 4 items is optimal
     primary: [
       { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
-      { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My collection' },
-      { label: 'Learn', href: 'learn.html', icon: '📚', iconSmall: '📚', description: 'Encyclopedia & genetics', 
+      { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My real snakes' },
+      { label: 'Learn', href: 'learn.html', icon: '📚', iconSmall: '📚', description: 'Tutorials & encyclopedia', 
         submenu: [
-          { label: 'Snake Dex', href: 'learn.html', icon: '📚' },
-          { label: 'Morphs', href: 'game.html#calculator', icon: '🎨' }
+          { label: 'Tutorials', href: 'learn.html', icon: '🎮', description: 'Practice with virtual snakes' },
+          { label: 'Encyclopedia', href: 'learn-static.html', icon: '📖', description: 'Care guides & reference',
+            submenu: [
+              { label: 'Dex', href: 'dex.html', icon: '📚', description: 'Snake species database' },
+              { label: 'Care Guides', href: 'learn-static.html#care', icon: '🩺', description: 'How to care' },
+              { label: 'Genetics', href: 'learn-static.html#genetics', icon: '🧬', description: 'Morph inheritance' }
+            ]
+          },
+          { label: 'Morph Calculator', href: 'game.html#calculator', icon: '🎨', description: 'Breeding calculator' }
         ]
       },
       { label: 'Account', href: 'account.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
