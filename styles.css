@@ -1848,3 +1848,406 @@ body {
   color: #28a745;
   font-weight: bold;
 }
+
+/* ===== AQUARIUM SHELF SYSTEM ===== */
+
+.shelf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.shelf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-clean-all {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-clean-all:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+.btn-clean-all:active {
+  transform: scale(0.98);
+}
+
+.shelf-navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-shelf-nav {
+  background: #6c757d;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-shelf-nav:hover:not(:disabled) {
+  background: #5a6268;
+  transform: scale(1.1);
+}
+
+.btn-shelf-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.shelf-indicator {
+  font-weight: 600;
+  color: #495057;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Aquarium Grid */
+.aquarium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .aquarium-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Individual Aquarium */
+.aquarium {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.aquarium:hover {
+  transform: translateY(-5px);
+}
+
+.aquarium-tank {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+}
+
+.aquarium:hover .aquarium-tank {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Aquarium Tier Backgrounds */
+.aquarium.tier-1 .aquarium-tank {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  border: 3px solid #adb5bd;
+}
+
+.aquarium.tier-2 .aquarium-tank {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 3px solid #28a745;
+}
+
+.aquarium.tier-3 .aquarium-tank {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+  border: 3px solid #ffc107;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.aquarium.tier-4 .aquarium-tank {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  border: 3px solid #17a2b8;
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.aquarium.tier-5 .aquarium-tank {
+  background: linear-gradient(135deg, #d6d8f5 0%, #c8cbf7 100%);
+  border: 3px solid #6f42c1;
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
+}
+
+.aquarium .snake-avatar {
+  font-size: 4rem;
+  animation: float 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.aquarium-label {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-shelf {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.empty-shelf .empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* ===== SNAKE DETAIL MODAL ===== */
+
+.snake-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.snake-detail-modal.active {
+  opacity: 1;
+}
+
+.snake-detail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.snake-detail-content {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s;
+}
+
+.snake-detail-modal.active .snake-detail-content {
+  transform: scale(1);
+}
+
+.detail-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.detail-avatar {
+  font-size: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.detail-subtitle {
+  margin: 0.25rem 0 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.btn-close-detail {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-close-detail:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Stats Table */
+.stats-table {
+  padding: 1.5rem;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: auto 1fr 60px;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+}
+
+.stat-name {
+  font-weight: 600;
+  color: #495057;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #212529;
+  text-align: right;
+}
+
+.stat-bar-container {
+  grid-column: 1 / -1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* Care Info */
+.care-info {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 0 0 20px 20px;
+}
+
+.care-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.care-item:last-child {
+  border-bottom: none;
+}
+
+.care-icon {
+  font-size: 1.5rem;
+}
+
+.care-label {
+  font-weight: 600;
+  color: #6c757d;
+  flex: 1;
+}
+
+.care-value {
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .shelf-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-clean-all {
+    width: 100%;
+  }
+  
+  .shelf-navigation {
+    justify-content: center;
+  }
+  
+  .detail-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .detail-title {
+    width: 100%;
+  }
+  
+  .stat-row {
+    grid-template-columns: auto 1fr;
+  }
+  
+  .stat-value {
+    grid-column: 2;
+    justify-self: end;
+  }
+  
+  .stat-bar-container {
+    grid-column: 1 / -1;
+  }
+}

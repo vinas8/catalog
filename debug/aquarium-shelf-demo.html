@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aquarium Shelf System Demo</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    
+    .demo-controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .demo-controls h2 {
+      margin-top: 0;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    
+    .demo-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .demo-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .demo-btn.primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .demo-btn.success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .demo-btn.warning {
+      background: #ffc107;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 Aquarium Shelf System - Debug Demo</h1>
+  
+  <div class="demo-controls">
+    <h2>Test Scenarios</h2>
+    
+    <div class="btn-group">
+      <button class="demo-btn primary" onclick="loadScenario(1)">
+        1 Snake (Single Aquarium)
+      </button>
+      <button class="demo-btn primary" onclick="loadScenario(10)">
+        10 Snakes (Full Shelf)
+      </button>
+      <button class="demo-btn primary" onclick="loadScenario(25)">
+        25 Snakes (3 Shelves)
+      </button>
+      <button class="demo-btn warning" onclick="loadMixedStates()">
+        Mixed States (Hungry, Sick, Happy)
+      </button>
+    </div>
+    
+    <div class="btn-group">
+      <button class="demo-btn success" onclick="runTests()">
+        ▶️ Run All Tests
+      </button>
+    </div>
+    
+    <div id="test-results" style="margin-top: 1rem;"></div>
+  </div>
+  
+  <div id="aquarium-shelf-container"></div>
+  
+  <script type="module">
+    import { ShelfManager } from '../src/modules/game/shelf-manager.js';
+    import { SnakeDetailView } from '../src/modules/game/snake-detail-view.js';
+    
+    window.shelfManager = null;
+    window.gameState = {
+      snakes: [],
+      currency: { gold: 5000 }
+    };
+    
+    // Generate test snake
+    function createTestSnake(index, stateOverride = {}) {
+      return {
+        id: `snake-${index}`,
+        nickname: `Snake ${index}`,
+        species: 'ball_python',
+        morph: ['Banana', 'Piebald', 'Pastel', 'Albino'][index % 4],
+        sex: index % 2 === 0 ? 'male' : 'female',
+        weight_grams: 100 + (index * 10),
+        length_cm: 30 + (index * 2),
+        stats: {
+          hunger: 80,
+          water: 100,
+          temperature: 80,
+          humidity: 60,
+          health: 100,
+          stress: 10,
+          cleanliness: 100,
+          happiness: 85,
+          ...stateOverride.stats
+        },
+        equipment: {
+          enclosure_tier: Math.min(5, Math.floor(index / 5) + 1)
+        },
+        shed_cycle: {
+          stage: 'normal',
+          days_since_last: 5
+        },
+        last_fed: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        last_cleaned: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+      };
+    }
+    
+    // Load scenario
+    window.loadScenario = function(count) {
+      window.gameState.snakes = [];
+      for (let i = 1; i <= count; i++) {
+        window.gameState.snakes.push(createTestSnake(i));
+      }
+      renderShelf();
+      logTest(`✅ Loaded ${count} snake(s)`);
+    };
+    
+    // Load mixed states
+    window.loadMixedStates = function() {
+      window.gameState.snakes = [
+        createTestSnake(1, { stats: { hunger: 25 } }), // Hungry
+        createTestSnake(2, { stats: { health: 20 } }), // Sick
+        createTestSnake(3, { stats: { happiness: 95 } }), // Happy
+        createTestSnake(4, { stats: { stress: 85 } }), // Stressed
+        createTestSnake(5, { shed_cycle: { stage: 'blue' } }), // Shedding
+        createTestSnake(6) // Normal
+      ];
+      renderShelf();
+      logTest('✅ Loaded mixed states');
+    };
+    
+    // Render shelf
+    function renderShelf() {
+      const container = document.getElementById('aquarium-shelf-container');
+      window.shelfManager = new ShelfManager(window.gameState);
+      
+      // Set callbacks
+      window.shelfManager.onCleanAll = (count) => {
+        logTest(`✅ Cleaned ${count} aquarium(s)!`);
+      };
+      
+      window.shelfManager.onAquariumClick = (snakeId) => {
+        const snake = window.gameState.snakes.find(s => s.id === snakeId);
+        if (snake) {
+          const detailView = new SnakeDetailView(snake, window.gameState);
+          detailView.open();
+        }
+      };
+      
+      window.shelfManager.render(container);
+    }
+    
+    // Test runner
+    window.runTests = function() {
+      clearTests();
+      
+      // Test 1: Single snake
+      logTest('Test 1: Single snake...');
+      loadScenario(1);
+      checkCondition(window.gameState.snakes.length === 1, 'Has 1 snake');
+      checkCondition(window.shelfManager.totalShelves === 1, 'Has 1 shelf');
+      
+      // Test 2: Full shelf
+      logTest('Test 2: Full shelf (10 snakes)...');
+      loadScenario(10);
+      checkCondition(window.gameState.snakes.length === 10, 'Has 10 snakes');
+      checkCondition(window.shelfManager.totalShelves === 1, 'Still 1 shelf');
+      
+      // Test 3: Multiple shelves
+      logTest('Test 3: Multiple shelves (25 snakes)...');
+      loadScenario(25);
+      checkCondition(window.gameState.snakes.length === 25, 'Has 25 snakes');
+      checkCondition(window.shelfManager.totalShelves === 3, 'Has 3 shelves');
+      
+      // Test 4: Navigation
+      logTest('Test 4: Shelf navigation...');
+      checkCondition(window.shelfManager.currentShelfIndex === 0, 'Starts at shelf 0');
+      window.shelfManager.nextShelf();
+      checkCondition(window.shelfManager.currentShelfIndex === 1, 'Moved to shelf 1');
+      window.shelfManager.previousShelf();
+      checkCondition(window.shelfManager.currentShelfIndex === 0, 'Back to shelf 0');
+      
+      // Test 5: Clean all
+      logTest('Test 5: Clean all...');
+      const cleaned = window.shelfManager.cleanAllOnCurrentShelf();
+      checkCondition(cleaned === 10, 'Cleaned 10 aquariums');
+      const allClean = window.shelfManager.getCurrentShelfSnakes().every(s => s.stats.cleanliness === 100);
+      checkCondition(allClean, 'All snakes have 100% cleanliness');
+      
+      logTest('🎉 All tests completed!');
+    };
+    
+    function checkCondition(condition, message) {
+      if (condition) {
+        logTest(`  ✅ ${message}`);
+      } else {
+        logTest(`  ❌ ${message}`);
+      }
+    }
+    
+    function logTest(message) {
+      const results = document.getElementById('test-results');
+      const line = document.createElement('div');
+      line.textContent = message;
+      line.style.padding = '0.25rem 0';
+      line.style.fontFamily = 'monospace';
+      results.appendChild(line);
+    }
+    
+    function clearTests() {
+      document.getElementById('test-results').innerHTML = '';
+    }
+    
+    // Load initial scenario
+    loadScenario(10);
+  </script>
+</body>
+</html>
