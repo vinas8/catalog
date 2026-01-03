@@ -5,6 +5,7 @@ console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
 
 // Module imports (dynamic loading below)
 import { getSnakeAvatar } from '../common/snake-avatar.js';
+import { SnakeDetailView } from './snake-detail-view.js';
 
 // Dynamic imports
 let Economy, createInitialGameState, EquipmentShop, openShop;
@@ -724,11 +725,27 @@ class SnakeMuffin {
   }
   
   attachSnakeActionListeners() {
+    // Action buttons (feed, water, clean, upgrade)
     document.querySelectorAll('.action-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const action = e.target.dataset.action;
         const snakeId = e.target.dataset.snakeId;
         this.handleSnakeAction(action, snakeId);
+      });
+    });
+    
+    // Make enclosure/aquarium clickable to view snake details
+    document.querySelectorAll('.enclosure-display').forEach(enclosure => {
+      enclosure.style.cursor = 'pointer';
+      enclosure.addEventListener('click', (e) => {
+        // Don't trigger if clicking action buttons
+        if (e.target.closest('.action-btn')) return;
+        
+        const card = e.target.closest('.snake-card');
+        if (card) {
+          const snakeId = card.dataset.snakeId;
+          this.showSnakeDetailModal(snakeId);
+        }
       });
     });
   }
@@ -907,6 +924,37 @@ class SnakeMuffin {
           this.showNotification('Not enough gold!', 'error');
         }
       });
+    });
+  }
+  
+  showSnakeDetailModal(snakeId) {
+    const snake = this.gameState.snakes.find(s => s.id === snakeId);
+    if (!snake) return;
+    
+    const detailView = new SnakeDetailView(snake);
+    const modal = document.createElement('div');
+    modal.className = 'modal snake-detail-modal';
+    modal.style.display = 'flex';
+    
+    modal.innerHTML = `
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h2>🐍 ${snake.nickname}</h2>
+          <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+        </div>
+        <div class="modal-body">
+          ${detailView.render()}
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
     });
   }
   

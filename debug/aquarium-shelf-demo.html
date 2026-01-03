@@ -109,7 +109,7 @@
       transform: scale(1.05);
     }
     
-    /* Aquarium Grid - 10 per shelf (2 rows x 5 cols) */
+    /* Aquarium Grid - 10 tanks per shelf */
     .aquarium-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -118,7 +118,7 @@
     }
     
     .aquarium {
-      background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+      background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
       border: 3px solid #1976d2;
       border-radius: 15px;
       padding: 15px;
@@ -127,19 +127,18 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       position: relative;
       overflow: hidden;
-      aspect-ratio: 1;
+      min-height: 180px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
     
     .aquarium:hover {
-      transform: translateY(-5px) scale(1.05);
+      transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(0,0,0,0.3);
       border-color: #0d47a1;
     }
     
+    /* Water effect */
     .aquarium::before {
       content: '';
       position: absolute;
@@ -148,8 +147,9 @@
       right: 0;
       bottom: 0;
       background: linear-gradient(180deg, 
-        rgba(255,255,255,0.3) 0%, 
-        rgba(255,255,255,0) 50%, 
+        rgba(255,255,255,0.4) 0%, 
+        rgba(255,255,255,0.2) 30%, 
+        rgba(255,255,255,0) 60%, 
         rgba(0,0,0,0.1) 100%);
       pointer-events: none;
     }
@@ -158,44 +158,78 @@
       position: absolute;
       top: 8px;
       left: 8px;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
       color: #1976d2;
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: bold;
+      z-index: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .aquarium-count {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.95);
+      color: #1976d2;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      z-index: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .snakes-container {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 30px 10px 10px;
       z-index: 1;
     }
     
-    .snake-emoji {
-      font-size: 48px;
-      margin-bottom: 8px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-      z-index: 1;
+    .snake-in-tank {
+      font-size: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      animation: swim 3s ease-in-out infinite;
+      transition: transform 0.2s;
     }
     
-    .snake-name {
-      font-size: 14px;
-      font-weight: bold;
-      color: #0d47a1;
-      text-align: center;
-      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
-      z-index: 1;
+    .snake-in-tank:hover {
+      transform: scale(1.2);
+    }
+    
+    @keyframes swim {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-5px) rotate(5deg); }
     }
     
     .aquarium-empty {
-      opacity: 0.5;
+      opacity: 0.6;
       background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
       border-color: #bdbdbd;
+      justify-content: center;
+      align-items: center;
     }
     
-    .aquarium-empty .snake-emoji {
-      font-size: 36px;
-      opacity: 0.3;
+    .aquarium-empty .snakes-container {
+      padding: 10px;
+    }
+    
+    .empty-text {
+      color: #9e9e9e;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1;
     }
     
     /* Shelf Navigation */
@@ -253,12 +287,8 @@
         grid-template-columns: repeat(2, 1fr);
       }
       
-      .aquarium {
-        padding: 10px;
-      }
-      
-      .snake-emoji {
-        font-size: 32px;
+      .snake-in-tank {
+        font-size: 24px;
       }
     }
   </style>
@@ -271,9 +301,10 @@
   
   <div class="controls">
     <button class="btn" onclick="loadScenario(5)">5 Snakes</button>
-    <button class="btn" onclick="loadScenario(10)">10 Snakes (1 Shelf)</button>
-    <button class="btn" onclick="loadScenario(25)">25 Snakes (3 Shelves)</button>
+    <button class="btn" onclick="loadScenario(15)">15 Snakes</button>
+    <button class="btn" onclick="loadScenario(30)">30 Snakes (3 Shelves)</button>
     <button class="btn" onclick="loadMixedStates()">Mixed States</button>
+    <button class="btn" onclick="distributeEvenly()">Distribute Evenly</button>
   </div>
   
   <div class="shelf-container">
@@ -297,62 +328,82 @@
   </div>
   
   <script type="module">
-    import { ShelfManager } from '../src/modules/game/shelf-manager.js?v=4';
-    import { SnakeDetailView } from '../src/modules/game/snake-detail-view.js?v=4';
+    import { SnakeDetailView } from '../src/modules/game/snake-detail-view.js?v=5';
     
-    console.log('🚀 Initializing Aquarium Shelves...');
+    console.log('🚀 Initializing Aquarium Shelves with multi-snake tanks...');
     
-    window.gameState = { snakes: [], currency: { gold: 5000 } };
-    window.shelfManager = null;
+    window.gameState = { 
+      snakes: [],
+      aquariums: [], // Each shelf has 10 aquariums, each can hold multiple snakes
+      currency: { gold: 5000 }
+    };
+    
+    window.currentShelfIndex = 0;
+    const AQUARIUMS_PER_SHELF = 10;
+    
+    function getTotalShelves() {
+      return Math.max(1, Math.ceil(window.gameState.aquariums.length / AQUARIUMS_PER_SHELF));
+    }
+    
+    function getCurrentShelfAquariums() {
+      const start = window.currentShelfIndex * AQUARIUMS_PER_SHELF;
+      const end = start + AQUARIUMS_PER_SHELF;
+      return window.gameState.aquariums.slice(start, end);
+    }
     
     function renderShelves() {
-      if (!window.shelfManager) {
-        console.log('⚠️ No shelf manager');
-        return;
-      }
-      
-      const currentSnakes = window.shelfManager.getCurrentShelfSnakes();
+      const currentAquariums = getCurrentShelfAquariums();
       const grid = document.getElementById('aquarium-grid');
       
-      // Always show 10 aquarium slots per shelf
-      const slots = Array(10).fill(null).map((_, i) => currentSnakes[i] || null);
+      // Ensure we always show 10 aquarium slots per shelf
+      const slots = Array(10).fill(null).map((_, i) => currentAquariums[i] || { snakes: [] });
       
-      grid.innerHTML = slots.map((snake, index) => {
-        if (!snake) {
+      grid.innerHTML = slots.map((aquarium, index) => {
+        const globalIndex = (window.currentShelfIndex * AQUARIUMS_PER_SHELF) + index;
+        const snakes = aquarium.snakes || [];
+        
+        if (snakes.length === 0) {
           return `
-            <div class="aquarium aquarium-empty">
+            <div class="aquarium aquarium-empty" onclick="showAquariumDetails(${globalIndex})">
               <div class="aquarium-number">${index + 1}</div>
-              <div class="snake-emoji">🏠</div>
-              <div class="snake-name">Empty</div>
+              <div class="snakes-container">
+                <div style="font-size: 48px; opacity: 0.3;">🏠</div>
+              </div>
+              <div class="empty-text">Empty Tank</div>
             </div>
           `;
         }
         
-        const state = getSnakeState(snake);
         return `
-          <div class="aquarium" onclick="openSnakeDetail('${snake.id}')">
+          <div class="aquarium" onclick="showAquariumDetails(${globalIndex})">
             <div class="aquarium-number">${index + 1}</div>
-            <div class="snake-emoji">${state.emoji}</div>
-            <div class="snake-name">${snake.nickname}</div>
+            <div class="aquarium-count">${snakes.length} 🐍</div>
+            <div class="snakes-container">
+              ${snakes.map(snake => {
+                const state = getSnakeState(snake);
+                return `<div class="snake-in-tank" title="${snake.nickname}">${state.emoji}</div>`;
+              }).join('')}
+            </div>
           </div>
         `;
       }).join('');
       
       // Update shelf info
-      const currentShelf = window.shelfManager.currentShelfIndex + 1;
-      const totalShelves = window.shelfManager.totalShelves;
-      const totalSnakes = window.shelfManager.totalSnakes;
+      const currentShelf = window.currentShelfIndex + 1;
+      const totalShelves = getTotalShelves();
+      const totalSnakes = window.gameState.snakes.length;
+      const totalAquariums = window.gameState.aquariums.length;
       
       document.getElementById('shelf-title').textContent = `Shelf ${currentShelf}`;
       document.getElementById('shelf-indicator').textContent = `Shelf ${currentShelf} of ${totalShelves}`;
       document.getElementById('shelf-info').textContent = 
-        `${totalSnakes} snakes across ${totalShelves} shelf${totalShelves !== 1 ? 'es' : ''}`;
+        `${totalSnakes} snakes in ${totalAquariums} aquariums across ${totalShelves} shelf${totalShelves !== 1 ? 'es' : ''}`;
       
       // Update nav buttons
       document.getElementById('prev-btn').disabled = currentShelf === 1;
       document.getElementById('next-btn').disabled = currentShelf === totalShelves;
       
-      console.log(`✅ Rendered shelf ${currentShelf}/${totalShelves} with ${currentSnakes.length} snakes`);
+      console.log(`✅ Rendered shelf ${currentShelf}/${totalShelves} with ${totalAquariums} aquariums`);
     }
     
     function getSnakeState(snake) {
@@ -364,43 +415,62 @@
       return { emoji: '🐍', state: 'normal' };
     }
     
-    window.openSnakeDetail = function(snakeId) {
-      const snake = window.gameState.snakes.find(s => s.id === snakeId);
-      if (snake) {
-        console.log(`👁️ Opening details for: ${snake.nickname}`);
-        new SnakeDetailView(snake, window.gameState).open();
+    window.showAquariumDetails = function(aquariumIndex) {
+      const aquarium = window.gameState.aquariums[aquariumIndex];
+      if (!aquarium || aquarium.snakes.length === 0) {
+        console.log(`Empty aquarium #${aquariumIndex + 1}`);
+        return;
       }
+      
+      console.log(`🏠 Aquarium #${aquariumIndex + 1} has ${aquarium.snakes.length} snakes`);
+      
+      // Show first snake details (could expand to show all later)
+      const snake = aquarium.snakes[0];
+      new SnakeDetailView(snake, window.gameState).open();
     };
     
     window.nextShelf = function() {
-      if (window.shelfManager) {
-        window.shelfManager.nextShelf();
+      const maxShelf = getTotalShelves() - 1;
+      if (window.currentShelfIndex < maxShelf) {
+        window.currentShelfIndex++;
         renderShelves();
         console.log('➡️ Next shelf');
       }
     };
     
     window.prevShelf = function() {
-      if (window.shelfManager) {
-        window.shelfManager.previousShelf();
+      if (window.currentShelfIndex > 0) {
+        window.currentShelfIndex--;
         renderShelves();
         console.log('⬅️ Previous shelf');
       }
     };
     
     window.cleanAll = function() {
-      if (window.shelfManager) {
-        const count = window.shelfManager.cleanAllOnCurrentShelf();
-        renderShelves();
-        console.log(`✅ Cleaned ${count} aquariums!`);
-      }
+      const aquariums = getCurrentShelfAquariums();
+      let count = 0;
+      aquariums.forEach(aq => {
+        aq.snakes.forEach(snake => {
+          snake.stats.cleanliness = 100;
+          snake.last_cleaned = new Date().toISOString();
+          count++;
+        });
+      });
+      renderShelves();
+      console.log(`✅ Cleaned ${count} snakes!`);
     };
     
     window.feedAll = function() {
-      const snakes = window.shelfManager.getCurrentShelfSnakes();
-      snakes.forEach(s => s.stats.hunger = 100);
+      const aquariums = getCurrentShelfAquariums();
+      let count = 0;
+      aquariums.forEach(aq => {
+        aq.snakes.forEach(snake => {
+          snake.stats.hunger = 100;
+          count++;
+        });
+      });
       renderShelves();
-      console.log(`✅ Fed ${snakes.length} snakes!`);
+      console.log(`✅ Fed ${count} snakes!`);
     };
     
     function createTestSnake(index, overrides = {}) {
@@ -433,15 +503,54 @@
     
     window.loadScenario = function(count) {
       console.log(`🔄 Loading ${count} snakes...`);
+      
+      // Create snakes
       window.gameState.snakes = [];
       for (let i = 1; i <= count; i++) {
         window.gameState.snakes.push(createTestSnake(i));
       }
       
-      window.shelfManager = new ShelfManager(window.gameState);
-      window.shelfManager.currentShelfIndex = 0;
+      // Distribute randomly into aquariums (1-4 snakes per tank)
+      window.gameState.aquariums = [];
+      let snakeIndex = 0;
+      
+      while (snakeIndex < count) {
+        const snakesInThisTank = Math.min(
+          Math.floor(Math.random() * 3) + 1, // 1-3 snakes per tank
+          count - snakeIndex
+        );
+        
+        const tankSnakes = [];
+        for (let i = 0; i < snakesInThisTank; i++) {
+          tankSnakes.push(window.gameState.snakes[snakeIndex++]);
+        }
+        
+        window.gameState.aquariums.push({ snakes: tankSnakes });
+      }
+      
+      window.currentShelfIndex = 0;
       renderShelves();
-      console.log(`✅ Loaded ${count} snakes across ${window.shelfManager.totalShelves} shelves`);
+      console.log(`✅ Loaded ${count} snakes into ${window.gameState.aquariums.length} aquariums`);
+    };
+    
+    window.distributeEvenly = function() {
+      if (window.gameState.snakes.length === 0) {
+        console.log('⚠️ No snakes to distribute');
+        return;
+      }
+      
+      // Put 3 snakes per aquarium
+      window.gameState.aquariums = [];
+      const snakesPerTank = 3;
+      
+      for (let i = 0; i < window.gameState.snakes.length; i += snakesPerTank) {
+        const tankSnakes = window.gameState.snakes.slice(i, i + snakesPerTank);
+        window.gameState.aquariums.push({ snakes: tankSnakes });
+      }
+      
+      window.currentShelfIndex = 0;
+      renderShelves();
+      console.log(`✅ Distributed into ${window.gameState.aquariums.length} aquariums (3 per tank)`);
     };
     
     window.loadMixedStates = function() {
@@ -452,18 +561,27 @@
         createTestSnake(3, { stats: { happiness: 95 } }),
         createTestSnake(4, { stats: { stress: 85 } }),
         createTestSnake(5, { shed_cycle: { stage: 'blue' } }),
-        createTestSnake(6)
+        createTestSnake(6),
+        createTestSnake(7),
+        createTestSnake(8),
       ];
       
-      window.shelfManager = new ShelfManager(window.gameState);
-      window.shelfManager.currentShelfIndex = 0;
+      // Put multiple snakes in some tanks
+      window.gameState.aquariums = [
+        { snakes: [window.gameState.snakes[0], window.gameState.snakes[1]] }, // 2 snakes
+        { snakes: [window.gameState.snakes[2]] }, // 1 snake
+        { snakes: [window.gameState.snakes[3], window.gameState.snakes[4], window.gameState.snakes[5]] }, // 3 snakes
+        { snakes: [window.gameState.snakes[6], window.gameState.snakes[7]] }, // 2 snakes
+      ];
+      
+      window.currentShelfIndex = 0;
       renderShelves();
-      console.log('✅ Mixed states loaded');
+      console.log('✅ Mixed states loaded with varied tank populations');
     };
     
     // Initialize
-    console.log('✅ Aquarium Shelves initialized');
-    loadScenario(10);
+    console.log('✅ Multi-snake aquarium system initialized');
+    loadScenario(15);
   </script>
 </body>
 </html>
