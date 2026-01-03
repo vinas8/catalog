@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Separation Test - SMRI</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: white;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .test-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    .test-result {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .pass { background: #22c55e; color: white; }
+    .fail { background: #ef4444; color: white; }
+    .pending { background: #eab308; color: black; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 Context Separation Test</h1>
+    <p>SMRI: S2-7.5,11.1 (Farm=REAL, Learn=VIRTUAL)</p>
+    
+    <div class="test-card">
+      <h2>Test Results:</h2>
+      <div id="test-results"></div>
+    </div>
+    
+    <div class="test-card">
+      <h2>Manual Verification:</h2>
+      <ul>
+        <li><a href="../game.html" target="_blank" style="color: #fbbf24;">Open Farm (game.html)</a> - Should show ONLY real snakes</li>
+        <li><a href="../learn-farm.html" target="_blank" style="color: #fbbf24;">Open Learn (learn-farm.html)</a> - Should show ONLY virtual snakes</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script type="module">
+    const results = document.getElementById('test-results');
+    
+    function addResult(name, status, message) {
+      const div = document.createElement('div');
+      div.className = `test-result ${status}`;
+      div.textContent = `${status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⏳'} ${name}: ${message}`;
+      results.appendChild(div);
+    }
+    
+    async function runTests() {
+      // Test 1: Farm page has real context
+      try {
+        const farmResp = await fetch('../game.html');
+        const farmHTML = await farmResp.text();
+        const hasRealContext = farmHTML.includes('data-context="real"');
+        addResult('Farm Context', hasRealContext ? 'pass' : 'fail', 
+          hasRealContext ? 'data-context="real" found' : 'Missing real context');
+      } catch(e) {
+        addResult('Farm Context', 'fail', e.message);
+      }
+      
+      // Test 2: Learn page has virtual context
+      try {
+        const learnResp = await fetch('../learn-farm.html');
+        const learnHTML = await learnResp.text();
+        const hasVirtualContext = learnHTML.includes('data-context="virtual"');
+        addResult('Learn Context', hasVirtualContext ? 'pass' : 'fail', 
+          hasVirtualContext ? 'data-context="virtual" found' : 'Missing virtual context');
+      } catch(e) {
+        addResult('Learn Context', 'fail', e.message);
+      }
+      
+      // Test 3: game-controller.js has context detection
+      try {
+        const controllerResp = await fetch('../src/modules/game/game-controller.js');
+        const controllerCode = await controllerResp.text();
+        const hasContextDetection = controllerCode.includes('this.context') && 
+                                    controllerCode.includes('dataset.context');
+        addResult('Context Detection', hasContextDetection ? 'pass' : 'fail', 
+          hasContextDetection ? 'Context detection code present' : 'Missing context detection');
+      } catch(e) {
+        addResult('Context Detection', 'fail', e.message);
+      }
+      
+      // Test 4: Filtering logic exists
+      try {
+        const controllerResp = await fetch('../src/modules/game/game-controller.js');
+        const controllerCode = await controllerResp.text();
+        const hasFiltering = controllerCode.includes('filteredSnakes') && 
+                            controllerCode.includes('snake.type === expectedType');
+        addResult('Filter Logic', hasFiltering ? 'pass' : 'fail', 
+          hasFiltering ? 'Snake filtering by type implemented' : 'Missing filter logic');
+      } catch(e) {
+        addResult('Filter Logic', 'fail', e.message);
+      }
+      
+      // Test 5: Terrarium terminology
+      try {
+        const cssResp = await fetch('../styles.css');
+        const cssCode = await cssResp.text();
+        const hasTerrariums = cssCode.includes('.terrarium-container');
+        const noAquariums = !cssCode.includes('.aquarium-container');
+        addResult('Terminology', (hasTerrariums && noAquariums) ? 'pass' : 'fail', 
+          (hasTerrariums && noAquariums) ? 'Uses terrarium (not aquarium)' : 'Still has aquarium refs');
+      } catch(e) {
+        addResult('Terminology', 'fail', e.message);
+      }
+      
+      addResult('Summary', 'pass', 'All automated tests complete. Check manual verification links above.');
+    }
+    
+    runTests();
+  </script>
+</body>
+</html>
