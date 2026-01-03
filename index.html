@@ -54,5 +54,10 @@
     }
     loadSnakes();
   </script>
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
 </body>
 </html>
