@@ -2125,7 +2125,7 @@ body {
   font-weight: bold;
 }
 
-/* ===== AQUARIUM SHELF SYSTEM ===== */
+/* ===== TERRARIUM SHELF SYSTEM (Legacy) ===== */
 
 .shelf-container {
   max-width: 1200px;
@@ -2215,16 +2215,16 @@ body {
 }
 
 /* Individual Terrarium */
-.aquarium {
+.terrarium-legacy {
   cursor: pointer;
   transition: transform 0.2s;
 }
 
-.aquarium:hover {
+.terrarium-legacy:hover {
   transform: translateY(-5px);
 }
 
-.aquarium-tank {
+.terrarium-tank-legacy {
   aspect-ratio: 1;
   border-radius: 16px;
   display: flex;
@@ -2236,47 +2236,47 @@ body {
   transition: all 0.3s;
 }
 
-.aquarium:hover .aquarium-tank {
+.terrarium-legacy:hover .terrarium-tank-legacy {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* Terrarium Tier Backgrounds */
-.aquarium.tier-1 .aquarium-tank {
+.terrarium-legacy.tier-1 .terrarium-tank-legacy {
   background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
   border: 3px solid #adb5bd;
 }
 
-.aquarium.tier-2 .aquarium-tank {
+.terrarium-legacy.tier-2 .terrarium-tank-legacy {
   background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
   border: 3px solid #28a745;
 }
 
-.aquarium.tier-3 .aquarium-tank {
+.terrarium-legacy.tier-3 .terrarium-tank-legacy {
   background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
   border: 3px solid #ffc107;
   box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
-.aquarium.tier-4 .aquarium-tank {
+.terrarium-legacy.tier-4 .terrarium-tank-legacy {
   background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
   border: 3px solid #17a2b8;
   box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
 }
 
-.aquarium.tier-5 .aquarium-tank {
+.terrarium-legacy.tier-5 .terrarium-tank-legacy {
   background: linear-gradient(135deg, #d6d8f5 0%, #c8cbf7 100%);
   border: 3px solid #6f42c1;
   box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
 }
 
-.aquarium .snake-avatar {
+.terrarium-legacy .snake-avatar {
   font-size: 4rem;
   animation: float 3s ease-in-out infinite;
   position: relative;
   z-index: 2;
 }
 
-.aquarium-label {
+.terrarium-label-legacy {
   text-align: center;
   margin-top: 0.5rem;
   font-weight: 600;

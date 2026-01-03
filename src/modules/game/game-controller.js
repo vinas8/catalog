@@ -623,10 +623,10 @@ class SnakeMuffin {
     
     return `
       <div class="snake-card ${snake.type} ${needsAttention ? 'needs-attention' : ''}" data-snake-id="${snake.id}">
-        <!-- Interactive Aquarium Container -->
+        <!-- Interactive Terrarium Container -->
         <div class="snake-avatar-section">
           <div class="terrarium-container tier-${enclosureLevel}">
-            <!-- Aquarium Lid -->
+            <!-- Terrarium Lid -->
             <div class="terrarium-lid">
               <div class="lid-handle">
                 <div class="handle-grip"></div>
@@ -634,7 +634,7 @@ class SnakeMuffin {
               <div class="lid-label">${snake.nickname}</div>
             </div>
             
-            <!-- Aquarium Glass Tank -->
+            <!-- Terrarium Glass Tank -->
             <div class="terrarium-glass">
               <!-- Snake inside tank -->
               <div class="tank-interior">

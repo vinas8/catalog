@@ -66,7 +66,7 @@ export class ShelfManager {
     const html = `
       <div class="shelf-container">
         ${this.renderShelfHeader()}
-        ${this.renderAquariums(snakes)}
+        ${this.renderTerrariums(snakes)}
       </div>
     `;
     
@@ -100,7 +100,7 @@ export class ShelfManager {
     `;
   }
   
-  renderAquariums(snakes) {
+  renderTerrariums(snakes) {
     if (snakes.length === 0) {
       return `
         <div class="empty-shelf">
@@ -112,18 +112,18 @@ export class ShelfManager {
     
     return `
       <div class="terrarium-grid">
-        ${snakes.map(snake => this.renderSingleAquarium(snake)).join('')}
+        ${snakes.map(snake => this.renderSingleTerrarium(snake)).join('')}
       </div>
     `;
   }
   
-  renderSingleAquarium(snake) {
+  renderSingleTerrarium(snake) {
     const avatar = getSnakeAvatar(snake); // Using imported utility
     const tier = snake.equipment?.enclosure_tier || 1;
     
     return `
       <div class="terrarium-container tier-${tier}" data-snake-id="${snake.id}">
-        <!-- Aquarium Lid -->
+        <!-- Terrarium Lid -->
         <div class="terrarium-lid">
           <div class="lid-handle">
             <div class="handle-grip"></div>
@@ -131,7 +131,7 @@ export class ShelfManager {
           <div class="lid-label">${snake.nickname}</div>
         </div>
         
-        <!-- Aquarium Glass Tank -->
+        <!-- Terrarium Glass Tank -->
         <div class="terrarium-glass">
           <!-- Snake inside tank -->
           <div class="tank-interior">
@@ -221,7 +221,7 @@ export class ShelfManager {
       });
     });
     
-    // Aquarium clicks (open detail view)
+    // Terrarium clicks (open detail view)
     container.querySelectorAll('.terrarium-container, .terrarium-glass').forEach(terrarium => {
       terrarium.addEventListener('click', (e) => {
         // Don't trigger if clicking action buttons
@@ -234,11 +234,11 @@ export class ShelfManager {
           if (container) {
             container.classList.add('opening');
             setTimeout(() => {
-              this.onAquariumClick?.(snakeId);
+              this.onTerrariumClick?.(snakeId);
               container.classList.remove('opening');
             }, 300);
           } else {
-            this.onAquariumClick?.(snakeId);
+            this.onTerrariumClick?.(snakeId);
           }
         }
       });
