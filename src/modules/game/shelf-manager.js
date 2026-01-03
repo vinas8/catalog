@@ -1,6 +1,8 @@
 // Shelf Manager - Manages multiple aquarium shelves
 // Handles shelf navigation, pagination, and clean all operations
 
+import { getSnakeAvatar } from '../common/snake-avatar.js';
+
 export class ShelfManager {
   constructor(gameState, type = 'real') {
     this.gameState = gameState;
@@ -116,7 +118,7 @@ export class ShelfManager {
   }
   
   renderSingleAquarium(snake) {
-    const avatar = this.getSnakeAvatar(snake);
+    const avatar = getSnakeAvatar(snake); // Using imported utility
     const tierClass = `tier-${snake.equipment?.enclosure_tier || 1}`;
     
     return `
@@ -131,25 +133,6 @@ export class ShelfManager {
         </div>
       </div>
     `;
-  }
-  
-  getSnakeAvatar(snake) {
-    if (snake.stats.health < 30) {
-      return { emoji: '🤢', state: 'sick' };
-    }
-    if (snake.shed_cycle?.stage === 'blue' || snake.shed_cycle?.stage === 'shedding') {
-      return { emoji: '🔵', state: 'shedding' };
-    }
-    if (snake.stats.hunger < 30) {
-      return { emoji: '😋', state: 'hungry' };
-    }
-    if (snake.stats.happiness > 80) {
-      return { emoji: '😊', state: 'happy' };
-    }
-    if (snake.stats.stress > 70) {
-      return { emoji: '😰', state: 'stressed' };
-    }
-    return { emoji: '🐍', state: 'normal' };
   }
   
   attachEventListeners(container) {

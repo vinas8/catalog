@@ -1,5 +1,7 @@
 // Snake Detail View - Mobile-friendly stats table modal
 
+import { getSnakeAvatar } from '../common/snake-avatar.js';
+
 export class SnakeDetailView {
   constructor(snake, gameState) {
     this.snake = snake;
@@ -39,7 +41,7 @@ export class SnakeDetailView {
   }
   
   renderHeader() {
-    const avatar = this.getSnakeAvatar();
+    const avatar = getSnakeAvatar(this.snake); // Using imported utility
     
     return `
       <div class="detail-header">

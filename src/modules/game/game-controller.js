@@ -4,14 +4,9 @@
 console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
 
 // Module imports (dynamic loading below)
-// import { Economy, createInitialGameState } from '../shop/business/economy.js';
-// import { EquipmentShop } from '../shop/business/equipment.js';
-// import { openShop } from '../shop/ui/shop-view.js';
-// import { SPECIES_PROFILES } from '../shop/data/species-profiles.js';
-// import { getMorphsForSpecies } from '../shop/data/morphs.js';
-// import { getProductsBySpecies } from '../shop/data/catalog.js';
+import { getSnakeAvatar } from '../common/snake-avatar.js';
 
-// Use dynamic imports to catch errors
+// Dynamic imports
 let Economy, createInitialGameState, EquipmentShop, openShop;
 let SPECIES_PROFILES, getLifeStage, getFeedingSchedule;
 let getMorphsForSpecies, getProductsBySpecies, loadCatalog;
@@ -603,7 +598,7 @@ class SnakeMuffin {
   renderSnakeCard(snake) {
     const lifeStage = getLifeStage(snake);
     const profile = SPECIES_PROFILES[snake.species];
-    const avatar = this.getSnakeAvatar(snake);
+    const avatar = getSnakeAvatar(snake); // Using imported utility
     const enclosureLevel = snake.equipment?.enclosure_tier || 1;
     const nextFeedingTime = this.getNextFeedingTime(snake);
     const needsAttention = this.checkNeedsAttention(snake);
@@ -668,26 +663,6 @@ class SnakeMuffin {
         </div>
       </div>
     `;
-  }
-  
-  getSnakeAvatar(snake) {
-    // Return different emoji based on snake state
-    if (snake.stats.health < 30) {
-      return { emoji: '🤢', state: 'sick' };
-    }
-    if (snake.shed_cycle.stage === 'blue' || snake.shed_cycle.stage === 'shedding') {
-      return { emoji: '🔵', state: 'shedding' };
-    }
-    if (snake.stats.hunger < 30) {
-      return { emoji: '😋', state: 'hungry' };
-    }
-    if (snake.stats.happiness > 80) {
-      return { emoji: '😊', state: 'happy' };
-    }
-    if (snake.stats.stress > 70) {
-      return { emoji: '😰', state: 'stressed' };
-    }
-    return { emoji: '🐍', state: 'normal' };
   }
   
   renderEnclosureBg(tier) {
