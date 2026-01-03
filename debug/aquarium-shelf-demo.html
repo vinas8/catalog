@@ -419,14 +419,104 @@
       const aquarium = window.gameState.aquariums[aquariumIndex];
       if (!aquarium || aquarium.snakes.length === 0) {
         console.log(`Empty aquarium #${aquariumIndex + 1}`);
+        alert(`Aquarium #${aquariumIndex + 1} is empty!\n\nYou can add snakes here in the future.`);
         return;
       }
       
-      console.log(`🏠 Aquarium #${aquariumIndex + 1} has ${aquarium.snakes.length} snakes`);
+      console.log(`🏠 Aquarium #${aquariumIndex + 1} has ${aquarium.snakes.length} snake${aquarium.snakes.length !== 1 ? 's' : ''}`);
       
-      // Show first snake details (could expand to show all later)
-      const snake = aquarium.snakes[0];
-      new SnakeDetailView(snake, window.gameState).open();
+      // Create modal to show all snakes in this aquarium
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+      `;
+      
+      const snakesHtml = aquarium.snakes.map((snake, index) => {
+        const detailView = new SnakeDetailView(snake);
+        return `
+          <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+            <h3 style="margin: 0 0 15px 0; color: #667eea;">🐍 Snake ${index + 1} of ${aquarium.snakes.length}</h3>
+            ${detailView.render()}
+          </div>
+        `;
+      }).join('');
+      
+      modal.innerHTML = `
+        <div style="
+          background: white;
+          border-radius: 20px;
+          max-width: 800px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        ">
+          <div style="
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1;
+          ">
+            <h2 style="margin: 0; font-size: 24px;">🏠 Aquarium #${aquariumIndex + 1}</h2>
+            <button id="close-modal" style="
+              background: rgba(255, 255, 255, 0.2);
+              border: 2px solid white;
+              color: white;
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+              font-size: 20px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">✕</button>
+          </div>
+          
+          <div style="padding: 20px;">
+            <div style="
+              background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+              padding: 15px;
+              border-radius: 12px;
+              margin-bottom: 20px;
+              text-align: center;
+            ">
+              <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 5px;">
+                ${aquarium.snakes.length} Snake${aquarium.snakes.length !== 1 ? 's' : ''} Living Together
+              </div>
+              <div style="font-size: 14px; color: #666;">
+                Click actions below to care for each snake individually
+              </div>
+            </div>
+            
+            ${snakesHtml}
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Close modal handlers
+      const closeBtn = modal.querySelector('#close-modal');
+      closeBtn.addEventListener('click', () => modal.remove());
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
     };
     
     window.nextShelf = function() {
