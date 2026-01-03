@@ -184,6 +184,8 @@ export class SnakeDetailView {
       </div>
     `;
   }
+  
+  getSnakeState() {
     if (this.snake.stats.health < 30) {
       return { emoji: '🤢', state: 'sick' };
     }
