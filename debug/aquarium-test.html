@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Aquarium Test - Interactive Containers</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .test-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .test-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+    
+    .test-header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .test-header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .snake-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    
+    .log {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.9);
+      color: #0f0;
+      padding: 15px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      z-index: 9999;
+    }
+    
+    .log-entry {
+      margin: 3px 0;
+    }
+    
+    .log-entry.success { color: #0f0; }
+    .log-entry.error { color: #f00; }
+    .log-entry.info { color: #0ff; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div class="test-header">
+      <h1>🐍 Interactive Aquarium Test</h1>
+      <p>Click lids to open • Use buttons to feed/water/clean/vet</p>
+    </div>
+    
+    <div class="test-grid" id="aquarium-grid"></div>
+  </div>
+  
+  <div class="log" id="log">
+    <div class="log-entry info">🔍 Interactive Aquarium Test Started</div>
+    <div class="log-entry info">✅ Click any aquarium lid to open</div>
+    <div class="log-entry info">✅ Use buttons for quick actions</div>
+  </div>
+  
+  <script type="module">
+    import { getSnakeAvatar } from '../src/modules/common/snake-avatar.js';
+    
+    // Test data - 6 snakes with different tiers
+    const testSnakes = [
+      {
+        id: 'snake1',
+        nickname: 'Slinky',
+        species: 'ball_python',
+        morph: 'Normal',
+        sex: 'Male',
+        weight_grams: 1500,
+        length_cm: 120,
+        equipment: { enclosure_tier: 1 },
+        stats: { hunger: 80, water: 90, temperature: 85, humidity: 70, health: 100, stress: 10, cleanliness: 80, happiness: 90 },
+        type: 'real'
+      },
+      {
+        id: 'snake2',
+        nickname: 'Monty',
+        species: 'corn_snake',
+        morph: 'Okeetee',
+        sex: 'Female',
+        weight_grams: 800,
+        length_cm: 100,
+        equipment: { enclosure_tier: 2 },
+        stats: { hunger: 50, water: 60, temperature: 80, humidity: 65, health: 85, stress: 20, cleanliness: 90, happiness: 75 },
+        type: 'real'
+      },
+      {
+        id: 'snake3',
+        nickname: 'Noodle',
+        species: 'ball_python',
+        morph: 'Pastel',
+        sex: 'Male',
+        weight_grams: 1800,
+        length_cm: 130,
+        equipment: { enclosure_tier: 3 },
+        stats: { hunger: 30, water: 40, temperature: 82, humidity: 75, health: 70, stress: 30, cleanliness: 60, happiness: 65 },
+        type: 'real'
+      },
+      {
+        id: 'snake4',
+        nickname: 'Scales',
+        species: 'boa_constrictor',
+        morph: 'Hypo',
+        sex: 'Female',
+        weight_grams: 2500,
+        length_cm: 150,
+        equipment: { enclosure_tier: 4 },
+        stats: { hunger: 90, water: 85, temperature: 88, humidity: 80, health: 95, stress: 5, cleanliness: 95, happiness: 95 },
+        type: 'real'
+      },
+      {
+        id: 'snake5',
+        nickname: 'Python',
+        species: 'ball_python',
+        morph: 'Banana',
+        sex: 'Male',
+        weight_grams: 2000,
+        length_cm: 140,
+        equipment: { enclosure_tier: 5 },
+        stats: { hunger: 75, water: 80, temperature: 90, humidity: 85, health: 100, stress: 0, cleanliness: 100, happiness: 100 },
+        type: 'real'
+      },
+      {
+        id: 'snake6',
+        nickname: 'Hiss',
+        species: 'corn_snake',
+        morph: 'Snow',
+        sex: 'Female',
+        weight_grams: 700,
+        length_cm: 95,
+        equipment: { enclosure_tier: 2 },
+        stats: { hunger: 20, water: 25, temperature: 78, humidity: 60, health: 50, stress: 40, cleanliness: 40, happiness: 45 },
+        type: 'real'
+      }
+    ];
+    
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      
+      // Keep only last 20 entries
+      while (logDiv.children.length > 20) {
+        logDiv.removeChild(logDiv.firstChild);
+      }
+    }
+    
+    function renderTierDecorations(tier) {
+      const upgrades = {
+        1: '🪵',
+        2: '🪵🌿',
+        3: '🪵🌿💡',
+        4: '🪵🌿💡🌡️',
+        5: '🪵🌿💡🌡️✨'
+      };
+      return upgrades[tier] || '🪵';
+    }
+    
+    function renderAquarium(snake) {
+      const avatar = getSnakeAvatar(snake);
+      const tier = snake.equipment?.enclosure_tier || 1;
+      
+      return `
+        <div class="snake-card">
+          <div class="aquarium-container tier-${tier}" data-snake-id="${snake.id}">
+            <!-- Aquarium Lid -->
+            <div class="aquarium-lid">
+              <div class="lid-handle">
+                <div class="handle-grip"></div>
+              </div>
+              <div class="lid-label">${snake.nickname}</div>
+            </div>
+            
+            <!-- Aquarium Glass Tank -->
+            <div class="aquarium-glass">
+              <!-- Snake inside tank -->
+              <div class="tank-interior">
+                <div class="snake-avatar ${avatar.state}">
+                  ${avatar.emoji}
+                </div>
+                <div class="enclosure-decorations">
+                  ${renderTierDecorations(tier)}
+                </div>
+              </div>
+              
+              <!-- Tank info strip -->
+              <div class="tank-info-strip">
+                <span class="tank-tier">Tier ${tier}</span>
+                <span class="tank-temp">🌡️ ${snake.stats.temperature}%</span>
+                <span class="tank-humidity">💧 ${snake.stats.humidity}%</span>
+              </div>
+            </div>
+            
+            <!-- Quick Action Buttons -->
+            <div class="tank-quick-actions">
+              <button class="tank-action-btn" data-action="feed" data-snake-id="${snake.id}" title="Feed">
+                🍖
+              </button>
+              <button class="tank-action-btn" data-action="water" data-snake-id="${snake.id}" title="Water">
+                💧
+              </button>
+              <button class="tank-action-btn" data-action="clean" data-snake-id="${snake.id}" title="Clean">
+                🧹
+              </button>
+              <button class="tank-action-btn vet-btn" data-action="vet" data-snake-id="${snake.id}" title="Vet Check">
+                🩺
+              </button>
+            </div>
+          </div>
+          
+          <!-- Snake Info -->
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #f0f0f0;">
+            <div style="font-weight: 600; margin-bottom: 5px;">${snake.morph} ${snake.species.replace('_', ' ')}</div>
+            <div style="font-size: 12px; color: #666;">
+              ${snake.sex} • ${snake.weight_grams}g • ${snake.length_cm}cm
+            </div>
+            <div style="margin-top: 8px; font-size: 11px; color: #999;">
+              Health: ${snake.stats.health}% | Hunger: ${snake.stats.hunger}%
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderAll() {
+      const grid = document.getElementById('aquarium-grid');
+      grid.innerHTML = testSnakes.map(renderAquarium).join('');
+      attachListeners();
+    }
+    
+    function handleAction(action, snakeId) {
+      const snake = testSnakes.find(s => s.id === snakeId);
+      if (!snake) return;
+      
+      log(`🎮 Action: ${action} on ${snake.nickname}`, 'info');
+      
+      switch(action) {
+        case 'feed':
+          snake.stats.hunger = Math.min(100, snake.stats.hunger + 50);
+          log(`🍖 Fed ${snake.nickname}! Hunger now ${snake.stats.hunger}%`, 'success');
+          break;
+          
+        case 'water':
+          snake.stats.water = 100;
+          log(`💧 Watered ${snake.nickname}! Water now 100%`, 'success');
+          break;
+          
+        case 'clean':
+          snake.stats.cleanliness = 100;
+          log(`🧹 Cleaned ${snake.nickname}'s tank! Cleanliness now 100%`, 'success');
+          break;
+          
+        case 'vet':
+          snake.stats.health = Math.min(100, snake.stats.health + 20);
+          snake.stats.stress = Math.max(0, snake.stats.stress - 10);
+          log(`🩺 Vet checked ${snake.nickname}! Health +20%, Stress -10%`, 'success');
+          break;
+      }
+      
+      // Re-render to show updated stats
+      renderAll();
+    }
+    
+    function openAquarium(snakeId) {
+      const snake = testSnakes.find(s => s.id === snakeId);
+      if (!snake) return;
+      
+      log(`👁️ Opening ${snake.nickname}'s aquarium details`, 'info');
+      
+      // Find the container and add opening animation
+      const container = document.querySelector(`[data-snake-id="${snakeId}"]`);
+      if (container) {
+        container.classList.add('opening');
+        setTimeout(() => {
+          container.classList.remove('opening');
+          alert(`🐍 ${snake.nickname}'s Details\n\nSpecies: ${snake.species}\nMorph: ${snake.morph}\nTier: ${snake.equipment.enclosure_tier}\nHealth: ${snake.stats.health}%\nHunger: ${snake.stats.hunger}%\nWater: ${snake.stats.water}%\n\n(In real game, this opens a modal with full details)`);
+        }, 300);
+      }
+    }
+    
+    function attachListeners() {
+      // Tank action buttons
+      document.querySelectorAll('.tank-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const snakeId = btn.dataset.snakeId;
+          handleAction(action, snakeId);
+        });
+      });
+      
+      // Click aquarium to open details
+      document.querySelectorAll('.aquarium-container, .aquarium-glass').forEach(container => {
+        container.addEventListener('click', (e) => {
+          // Don't trigger if clicking buttons
+          if (e.target.closest('.tank-action-btn')) return;
+          
+          const snakeId = container.dataset.snakeId || e.target.closest('[data-snake-id]')?.dataset.snakeId;
+          if (snakeId) {
+            openAquarium(snakeId);
+          }
+        });
+      });
+      
+      log('✅ Event listeners attached', 'success');
+    }
+    
+    // Initialize
+    renderAll();
+    log('🎨 Rendered 6 test aquariums (Tier 1-5)', 'success');
+  </script>
+</body>
+</html>
