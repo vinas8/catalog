@@ -119,20 +119,66 @@ export class ShelfManager {
   
   renderSingleAquarium(snake) {
     const avatar = getSnakeAvatar(snake); // Using imported utility
-    const tierClass = `tier-${snake.equipment?.enclosure_tier || 1}`;
+    const tier = snake.equipment?.enclosure_tier || 1;
     
     return `
-      <div class="aquarium ${tierClass}" data-snake-id="${snake.id}">
-        <div class="aquarium-tank">
-          <div class="snake-avatar ${avatar.state}">
-            ${avatar.emoji}
+      <div class="aquarium-container tier-${tier}" data-snake-id="${snake.id}">
+        <!-- Aquarium Lid -->
+        <div class="aquarium-lid">
+          <div class="lid-handle">
+            <div class="handle-grip"></div>
+          </div>
+          <div class="lid-label">${snake.nickname}</div>
+        </div>
+        
+        <!-- Aquarium Glass Tank -->
+        <div class="aquarium-glass">
+          <!-- Snake inside tank -->
+          <div class="tank-interior">
+            <div class="snake-avatar ${avatar.state}">
+              ${avatar.emoji}
+            </div>
+            <div class="enclosure-decorations">
+              ${this.renderTierDecorations(tier)}
+            </div>
+          </div>
+          
+          <!-- Tank label/info strip -->
+          <div class="tank-info-strip">
+            <span class="tank-tier">Tier ${tier}</span>
+            <span class="tank-temp">🌡️ ${snake.stats.temperature}%</span>
+            <span class="tank-humidity">💧 ${snake.stats.humidity}%</span>
           </div>
         </div>
-        <div class="aquarium-label">
-          ${snake.nickname}
+        
+        <!-- Quick Action Buttons -->
+        <div class="tank-quick-actions">
+          <button class="tank-action-btn" data-action="feed" data-snake-id="${snake.id}" title="Feed">
+            🍖
+          </button>
+          <button class="tank-action-btn" data-action="water" data-snake-id="${snake.id}" title="Water">
+            💧
+          </button>
+          <button class="tank-action-btn" data-action="clean" data-snake-id="${snake.id}" title="Clean">
+            🧹
+          </button>
+          <button class="tank-action-btn vet-btn" data-action="vet" data-snake-id="${snake.id}" title="Vet Check">
+            🩺
+          </button>
         </div>
       </div>
     `;
+  }
+  
+  renderTierDecorations(tier) {
+    const upgrades = {
+      1: '🪵',
+      2: '🪵🌿',
+      3: '🪵🌿💡',
+      4: '🪵🌿💡🌡️',
+      5: '🪵🌿💡🌡️✨'
+    };
+    return upgrades[tier] || '🪵';
   }
   
   attachEventListeners(container) {
@@ -165,11 +211,36 @@ export class ShelfManager {
       });
     }
     
-    // Aquarium clicks
-    container.querySelectorAll('.aquarium').forEach(aquarium => {
-      aquarium.addEventListener('click', () => {
-        const snakeId = aquarium.dataset.snakeId;
-        this.onAquariumClick?.(snakeId);
+    // Tank action buttons (feed, water, clean, vet)
+    container.querySelectorAll('.tank-action-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent aquarium click
+        const action = btn.dataset.action;
+        const snakeId = btn.dataset.snakeId;
+        this.onActionClick?.(action, snakeId);
+      });
+    });
+    
+    // Aquarium clicks (open detail view)
+    container.querySelectorAll('.aquarium-container, .aquarium-glass').forEach(aquarium => {
+      aquarium.addEventListener('click', (e) => {
+        // Don't trigger if clicking action buttons
+        if (e.target.closest('.tank-action-btn')) return;
+        
+        const snakeId = aquarium.dataset.snakeId || e.target.closest('[data-snake-id]')?.dataset.snakeId;
+        if (snakeId) {
+          // Add opening animation
+          const container = e.target.closest('.aquarium-container');
+          if (container) {
+            container.classList.add('opening');
+            setTimeout(() => {
+              this.onAquariumClick?.(snakeId);
+              container.classList.remove('opening');
+            }, 300);
+          } else {
+            this.onAquariumClick?.(snakeId);
+          }
+        }
       });
     });
   }
