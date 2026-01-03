@@ -108,26 +108,29 @@ Debug endpoint: /api/debug?run=VCT-1.0
 
 ---
 
-## 🎯 SMRI Commands
+## 🔄 SMRI Commands
 
 ### `.smri`
 Complete project briefing:
-1. Display full directory tree
-2. Show README.md
-3. Load API docs (latest version)
-4. Show SMRI index
-5. Summarize project status
-6. **Check for inconsistencies:**
+1. Check version (`package.json`)
+2. Load `.smri/INDEX.md` (navigation + rules)
+3. Load `README.md` (project overview)
+4. Load `src/SMRI.md` (quick reference)
+5. **Show deep directory tree** (4 levels with file sizes)
+6. **Analyze file sizes** (find files >400 lines)
+7. Check for inconsistencies:
    - Version mismatches (package.json vs docs)
    - Duplicate documentation
    - Outdated files
    - Redundant code/modules
-7. **Suggest refactors** (requires user approval):
+   - **Large files needing split**
+8. **Suggest refactors** (requires user approval):
    - Remove duplicate code
    - Consolidate similar modules
    - Archive outdated docs
    - Update version references
-8. Ask: "Where did we leave off?"
+   - **Split large files**
+9. Ask: "📍 Where did we leave off?"
 
 **Note:** All changes require user approval before execution.
 
