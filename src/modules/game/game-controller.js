@@ -606,14 +606,51 @@ class SnakeMuffin {
     
     return `
       <div class="snake-card ${snake.type} ${needsAttention ? 'needs-attention' : ''}" data-snake-id="${snake.id}">
-        <!-- Snake Visual Avatar -->
+        <!-- Interactive Aquarium Container -->
         <div class="snake-avatar-section">
-          <div class="enclosure-display tier-${enclosureLevel}">
-            <div class="snake-avatar ${avatar.state}">
-              ${avatar.emoji}
+          <div class="aquarium-container tier-${enclosureLevel}">
+            <!-- Aquarium Lid -->
+            <div class="aquarium-lid">
+              <div class="lid-handle">
+                <div class="handle-grip"></div>
+              </div>
+              <div class="lid-label">${snake.nickname}</div>
             </div>
-            <div class="enclosure-bg">
-              ${this.renderEnclosureBg(enclosureLevel)}
+            
+            <!-- Aquarium Glass Tank -->
+            <div class="aquarium-glass">
+              <!-- Snake inside tank -->
+              <div class="tank-interior">
+                <div class="snake-avatar ${avatar.state}">
+                  ${avatar.emoji}
+                </div>
+                <div class="enclosure-decorations">
+                  ${this.renderEnclosureBg(enclosureLevel)}
+                </div>
+              </div>
+              
+              <!-- Tank label/info strip -->
+              <div class="tank-info-strip">
+                <span class="tank-tier">Tier ${enclosureLevel}</span>
+                <span class="tank-temp">🌡️ ${snake.stats.temperature}%</span>
+                <span class="tank-humidity">💧 ${snake.stats.humidity}%</span>
+              </div>
+            </div>
+            
+            <!-- Quick Action Buttons (on tank) -->
+            <div class="tank-quick-actions">
+              <button class="tank-action-btn" data-action="feed" data-snake-id="${snake.id}" title="Feed">
+                🍖
+              </button>
+              <button class="tank-action-btn" data-action="water" data-snake-id="${snake.id}" title="Water">
+                💧
+              </button>
+              <button class="tank-action-btn" data-action="clean" data-snake-id="${snake.id}" title="Clean">
+                🧹
+              </button>
+              <button class="tank-action-btn vet-btn" data-action="vet" data-snake-id="${snake.id}" title="Vet Check">
+                🩺
+              </button>
             </div>
           </div>
           ${needsAttention ? '<div class="attention-badge">❗ Needs Care</div>' : ''}
@@ -725,26 +762,37 @@ class SnakeMuffin {
   }
   
   attachSnakeActionListeners() {
-    // Action buttons (feed, water, clean, upgrade)
-    document.querySelectorAll('.action-btn').forEach(btn => {
+    // Tank action buttons (feed, water, clean, vet)
+    document.querySelectorAll('.tank-action-btn, .action-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent card click
         const action = e.target.dataset.action;
         const snakeId = e.target.dataset.snakeId;
         this.handleSnakeAction(action, snakeId);
       });
     });
     
-    // Make enclosure/aquarium clickable to view snake details
-    document.querySelectorAll('.enclosure-display').forEach(enclosure => {
-      enclosure.style.cursor = 'pointer';
-      enclosure.addEventListener('click', (e) => {
+    // Click aquarium container to open/view details
+    document.querySelectorAll('.aquarium-container, .aquarium-glass, .enclosure-display').forEach(container => {
+      container.style.cursor = 'pointer';
+      container.addEventListener('click', (e) => {
         // Don't trigger if clicking action buttons
-        if (e.target.closest('.action-btn')) return;
+        if (e.target.closest('.tank-action-btn') || e.target.closest('.action-btn')) return;
         
         const card = e.target.closest('.snake-card');
         if (card) {
           const snakeId = card.dataset.snakeId;
-          this.showSnakeDetailModal(snakeId);
+          // Add opening animation
+          const aquarium = card.querySelector('.aquarium-container');
+          if (aquarium) {
+            aquarium.classList.add('opening');
+            setTimeout(() => {
+              this.showSnakeDetailModal(snakeId);
+              aquarium.classList.remove('opening');
+            }, 300);
+          } else {
+            this.showSnakeDetailModal(snakeId);
+          }
         }
       });
     });
@@ -759,6 +807,26 @@ class SnakeMuffin {
         snake.stats.hunger = Math.min(100, snake.stats.hunger + 50);
         snake.last_fed = new Date().toISOString();
         this.showNotification(`Fed ${snake.nickname}!`, 'success');
+        break;
+        
+      case 'water':
+        snake.stats.water = 100;
+        snake.last_watered = new Date().toISOString();
+        this.showNotification(`Watered ${snake.nickname}!`, 'success');
+        break;
+        
+      case 'clean':
+        snake.stats.cleanliness = 100;
+        snake.last_cleaned = new Date().toISOString();
+        this.showNotification(`Cleaned ${snake.nickname}'s enclosure!`, 'success');
+        break;
+        
+      case 'vet':
+        // Vet check - improves health
+        snake.stats.health = Math.min(100, snake.stats.health + 20);
+        snake.stats.stress = Math.max(0, snake.stats.stress - 10);
+        snake.last_vet_check = new Date().toISOString();
+        this.showNotification(`🩺 ${snake.nickname} checked by vet! Health improved.`, 'success');
         break;
         
       case 'water':
