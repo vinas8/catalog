@@ -176,7 +176,7 @@ export class DebugPanel {
         { label: '🏠 Debug Hub', href: '/debug/' },
         { label: '🧪 Tests', href: '/debug/test-suite.html' },
         { label: '🎮 Game Test', href: '/debug/gamified-shop-test.html' },
-        { label: '📦 Aquarium Demo', href: '/debug/aquarium-shelf-demo.html' },
+        { label: '📦 Terrarium Demo', href: '/debug/terrarium-shelf-demo.html' },
         { label: '🔗 API Docs', href: '/prompts/api-documentation-for-copilot.md' }
       ];
       

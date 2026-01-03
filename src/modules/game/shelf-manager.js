@@ -1,4 +1,4 @@
-// Shelf Manager - Manages multiple aquarium shelves
+// Shelf Manager - Manages multiple terrarium shelves
 // Handles shelf navigation, pagination, and clean all operations
 
 import { getSnakeAvatar } from '../common/snake-avatar.js';
@@ -111,7 +111,7 @@ export class ShelfManager {
     }
     
     return `
-      <div class="aquarium-grid">
+      <div class="terrarium-grid">
         ${snakes.map(snake => this.renderSingleAquarium(snake)).join('')}
       </div>
     `;
@@ -122,9 +122,9 @@ export class ShelfManager {
     const tier = snake.equipment?.enclosure_tier || 1;
     
     return `
-      <div class="aquarium-container tier-${tier}" data-snake-id="${snake.id}">
+      <div class="terrarium-container tier-${tier}" data-snake-id="${snake.id}">
         <!-- Aquarium Lid -->
-        <div class="aquarium-lid">
+        <div class="terrarium-lid">
           <div class="lid-handle">
             <div class="handle-grip"></div>
           </div>
@@ -132,7 +132,7 @@ export class ShelfManager {
         </div>
         
         <!-- Aquarium Glass Tank -->
-        <div class="aquarium-glass">
+        <div class="terrarium-glass">
           <!-- Snake inside tank -->
           <div class="tank-interior">
             <div class="snake-avatar ${avatar.state}">
@@ -214,7 +214,7 @@ export class ShelfManager {
     // Tank action buttons (feed, water, clean, vet)
     container.querySelectorAll('.tank-action-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent aquarium click
+        e.stopPropagation(); // Prevent terrarium click
         const action = btn.dataset.action;
         const snakeId = btn.dataset.snakeId;
         this.onActionClick?.(action, snakeId);
@@ -222,15 +222,15 @@ export class ShelfManager {
     });
     
     // Aquarium clicks (open detail view)
-    container.querySelectorAll('.aquarium-container, .aquarium-glass').forEach(aquarium => {
-      aquarium.addEventListener('click', (e) => {
+    container.querySelectorAll('.terrarium-container, .terrarium-glass').forEach(terrarium => {
+      terrarium.addEventListener('click', (e) => {
         // Don't trigger if clicking action buttons
         if (e.target.closest('.tank-action-btn')) return;
         
-        const snakeId = aquarium.dataset.snakeId || e.target.closest('[data-snake-id]')?.dataset.snakeId;
+        const snakeId = terrarium.dataset.snakeId || e.target.closest('[data-snake-id]')?.dataset.snakeId;
         if (snakeId) {
           // Add opening animation
-          const container = e.target.closest('.aquarium-container');
+          const container = e.target.closest('.terrarium-container');
           if (container) {
             container.classList.add('opening');
             setTimeout(() => {

@@ -200,9 +200,9 @@
       
       return `
         <div class="snake-card">
-          <div class="aquarium-container tier-${tier}" data-snake-id="${snake.id}">
+          <div class="terrarium-container tier-${tier}" data-snake-id="${snake.id}">
             <!-- Aquarium Lid -->
-            <div class="aquarium-lid">
+            <div class="terrarium-lid">
               <div class="lid-handle">
                 <div class="handle-grip"></div>
               </div>
@@ -210,7 +210,7 @@
             </div>
             
             <!-- Aquarium Glass Tank -->
-            <div class="aquarium-glass">
+            <div class="terrarium-glass">
               <!-- Snake inside tank -->
               <div class="tank-interior">
                 <div class="snake-avatar ${avatar.state}">
@@ -328,7 +328,7 @@
       });
       
       // Click aquarium to open details
-      document.querySelectorAll('.aquarium-container, .aquarium-glass').forEach(container => {
+      document.querySelectorAll('.terrarium-container, .terrarium-glass').forEach(container => {
         container.addEventListener('click', (e) => {
           // Don't trigger if clicking buttons
           if (e.target.closest('.tank-action-btn')) return;

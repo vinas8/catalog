@@ -608,9 +608,9 @@ class SnakeMuffin {
       <div class="snake-card ${snake.type} ${needsAttention ? 'needs-attention' : ''}" data-snake-id="${snake.id}">
         <!-- Interactive Aquarium Container -->
         <div class="snake-avatar-section">
-          <div class="aquarium-container tier-${enclosureLevel}">
+          <div class="terrarium-container tier-${enclosureLevel}">
             <!-- Aquarium Lid -->
-            <div class="aquarium-lid">
+            <div class="terrarium-lid">
               <div class="lid-handle">
                 <div class="handle-grip"></div>
               </div>
@@ -618,7 +618,7 @@ class SnakeMuffin {
             </div>
             
             <!-- Aquarium Glass Tank -->
-            <div class="aquarium-glass">
+            <div class="terrarium-glass">
               <!-- Snake inside tank -->
               <div class="tank-interior">
                 <div class="snake-avatar ${avatar.state}">
@@ -772,8 +772,8 @@ class SnakeMuffin {
       });
     });
     
-    // Click aquarium container to open/view details
-    document.querySelectorAll('.aquarium-container, .aquarium-glass, .enclosure-display').forEach(container => {
+    // Click terrarium container to open/view details
+    document.querySelectorAll('.terrarium-container, .terrarium-glass, .enclosure-display').forEach(container => {
       container.style.cursor = 'pointer';
       container.addEventListener('click', (e) => {
         // Don't trigger if clicking action buttons
@@ -783,12 +783,12 @@ class SnakeMuffin {
         if (card) {
           const snakeId = card.dataset.snakeId;
           // Add opening animation
-          const aquarium = card.querySelector('.aquarium-container');
-          if (aquarium) {
-            aquarium.classList.add('opening');
+          const terrarium = card.querySelector('.terrarium-container');
+          if (terrarium) {
+            terrarium.classList.add('opening');
             setTimeout(() => {
               this.showSnakeDetailModal(snakeId);
-              aquarium.classList.remove('opening');
+              terrarium.classList.remove('opening');
             }, 300);
           } else {
             this.showSnakeDetailModal(snakeId);

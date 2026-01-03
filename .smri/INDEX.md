@@ -1,7 +1,7 @@
 # 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.0  
-**Last Updated:** 2025-12-28  
+**Version:** 0.7.1  
+**Last Updated:** 2026-01-03  
 **Purpose:** SMRI system index and operating rules
 
 ---
@@ -301,19 +301,18 @@ Original documentation this replaces
 
 ---
 
-## 📊 Current Status (v0.7.0)
+## 📊 Current Status (v0.7.1)
 
-### Consolidated Files:
-- **103 docs** from `/docs` → Topic docs
-- **8 root docs** pending review:
-  - CHANGELOG.md ✅ Keep (version history)
-  - README.md ✅ Keep (project overview)
-  - DEPLOYMENT-STATUS.md ⚠️ Outdated (v0.5.0)
-  - DEPLOYMENT-SUCCESS.md ⚠️ Outdated (v0.5.0)
-  - CUSTOMER-SYSTEM-IMPLEMENTATION.md ⚠️ Status report (archive)
-  - IMPLEMENTATION_COMPLETE.md ⚠️ Status report (archive)
-  - STRIPE-SYNC-COMPLETE.md ✅ Keep (v0.7.0 feature)
-  - WORK_SUMMARY_2025-12-27.md ✅ Keep (recent work)
+### Recent Updates:
+- ✅ Version synced to 0.7.1 across all docs
+- ✅ 6 tutorial scenarios complete (S2-7.x)
+- ✅ Aquarium redesign + debug system
+- ⚠️ 6 snapshot tests failing (88% pass rate)
+
+### Cleanup Status:
+- **Root test files:** 6 files to move to /debug
+- **Old backups:** 2 files to archive
+- **Session markers:** 2 files to remove
 
 ---
 
