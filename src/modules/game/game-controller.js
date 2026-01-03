@@ -82,6 +82,11 @@ class SnakeMuffin {
     this.gameLoop = null;
     this.lastUpdate = Date.now();
     
+    // Detect context from data-context attribute
+    const appElement = document.getElementById('app') || document.querySelector('[data-context]');
+    this.context = appElement?.dataset.context || 'real'; // 'real' or 'virtual'
+    console.log(`🎯 Context detected: ${this.context}`);
+    
     this.init();
   }
   
@@ -542,7 +547,8 @@ class SnakeMuffin {
     console.log('📦 Elements found:', {
       container: !!container,
       emptyState: !!emptyState,
-      snakes: this.gameState?.snakes?.length
+      snakes: this.gameState?.snakes?.length,
+      context: this.context
     });
     
     // Check if elements exist
@@ -564,7 +570,7 @@ class SnakeMuffin {
       setTimeout(() => debugDiv.remove(), 5000);
     };
     
-    debug(`🎨 renderFarm called. Snakes: ${this.gameState?.snakes?.length || 'NONE'}`);
+    debug(`🎯 Context: ${this.context}`);
     
     if (!this.gameState || !this.gameState.snakes) {
       debug('❌ No gameState or snakes array!');
@@ -572,21 +578,32 @@ class SnakeMuffin {
       return;
     }
     
-    if (this.gameState.snakes.length === 0) {
-      debug('⚠️ Snakes array is empty');
-      console.log('⚠️ Zero snakes - showing empty state');
+    // 🔒 CRITICAL: Filter snakes by context
+    // Farm (real) = show only type:'real'
+    // Learn (virtual) = show only type:'virtual'
+    const filteredSnakes = this.gameState.snakes.filter(snake => {
+      const expectedType = this.context === 'real' ? 'real' : 'virtual';
+      return snake.type === expectedType;
+    });
+    
+    debug(`🔍 Filtered: ${filteredSnakes.length} ${this.context} snakes (from ${this.gameState.snakes.length} total)`);
+    console.log(`🔍 Context filter: ${this.context} → ${filteredSnakes.length} snakes`);
+    
+    if (filteredSnakes.length === 0) {
+      debug(`⚠️ No ${this.context} snakes`);
+      console.log(`⚠️ Zero ${this.context} snakes - showing empty state`);
       container.style.display = 'none';
       emptyState.style.display = 'block';
       return;
     }
     
-    debug(`✅ Rendering ${this.gameState.snakes.length} snakes to DOM`);
-    console.log(`✅ Rendering ${this.gameState.snakes.length} snakes!`);
+    debug(`✅ Rendering ${filteredSnakes.length} ${this.context} snakes to DOM`);
+    console.log(`✅ Rendering ${filteredSnakes.length} ${this.context} snakes!`);
     
     container.style.display = 'grid';
     emptyState.style.display = 'none';
     
-    const html = this.gameState.snakes.map(snake => this.renderSnakeCard(snake)).join('');
+    const html = filteredSnakes.map(snake => this.renderSnakeCard(snake)).join('');
     console.log(`📝 Generated HTML length: ${html.length} characters`);
     container.innerHTML = html;
     console.log('✅ HTML inserted into container');
