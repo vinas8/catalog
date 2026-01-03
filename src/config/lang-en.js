@@ -1,6 +1,6 @@
 /**
  * English Language Configuration
- * Snake Muffin v0.5.0
+ * Snake Muffin v0.7.1
  */
 
 export const langEN = {
@@ -29,8 +29,10 @@ export const langEN = {
     game: 'Info Game',
     shop: 'Shop',
     myFarm: 'My Farm',
+    learn: 'Learn',
     encyclopedia: 'Encyclopedia',
     genetics: 'Genetics',
+    account: 'Account',
     debug: 'Debug'
   },
   
@@ -54,7 +56,44 @@ export const langEN = {
     buyNow: 'Buy Now',
     browseCatalog: 'Browse Catalog',
     addToCart: 'Add to Cart',
-    checkout: 'Checkout'
+    checkout: 'Checkout',
+    feed: 'Feed',
+    water: 'Water',
+    clean: 'Clean',
+    vet: 'Vet Check',
+    upgrade: 'Upgrade',
+    close: 'Close'
+  },
+  
+  // Enclosures / Terrariums
+  enclosures: {
+    terrarium: 'Terrarium',
+    terrariums: 'Terrariums',
+    vivarium: 'Vivarium',
+    enclosure: 'Enclosure',
+    shelf: 'Shelf',
+    shelves: 'Shelves',
+    tier: 'Tier',
+    empty: 'Empty',
+    openDetails: 'Click to view details'
+  },
+  
+  // Snake Care
+  care: {
+    feed: 'Feed',
+    water: 'Water',
+    clean: 'Clean',
+    vetCheck: 'Vet Check',
+    upgrade: 'Upgrade Enclosure',
+    nextFeeding: 'Next Feeding',
+    lastCleaned: 'Last Cleaned',
+    health: 'Health',
+    hunger: 'Hunger',
+    temperature: 'Temperature',
+    humidity: 'Humidity',
+    cleanliness: 'Cleanliness',
+    stress: 'Stress',
+    happiness: 'Happiness'
   },
   
   // Features
@@ -77,7 +116,20 @@ export const langEN = {
   messages: {
     loading: 'Loading...',
     noSnakes: 'No Snakes Yet!',
-    purchaseSuccess: 'Purchase Successful!'
+    purchaseSuccess: 'Purchase Successful!',
+    fed: 'Fed {name}!',
+    watered: 'Watered {name}!',
+    cleaned: 'Cleaned {name}\'s terrarium!',
+    vetChecked: 'Vet checked {name}!'
+  },
+  
+  // Context
+  context: {
+    real: 'Real',
+    virtual: 'Virtual',
+    practice: 'Practice',
+    farm: 'Farm',
+    learn: 'Learn'
   }
 };
 

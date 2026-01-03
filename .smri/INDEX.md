@@ -415,3 +415,41 @@ Original documentation this replaces
 **Built with ❤️ and 🐍**  
 **SMRI System v1.0**  
 **Last Updated:** 2025-12-28T20:54:38Z
+
+---
+
+## 🔍 File Size Management
+
+### Large File Policy:
+- **Soft limit:** 500 lines per file
+- **Hard limit:** 1000 lines per file
+- **Exceptions:** Test files, data files, documentation
+
+### When AI Sees Large Files:
+1. **Check if it's a known exception** (test/data/docs)
+2. **If code file >500 lines:** Suggest split with specific file structure
+3. **If >1000 lines:** Recommend immediate refactor
+4. **Always show:** Deep tree to understand module structure
+
+### Refactoring Guidance:
+When user says "update X", AI should:
+1. Check file size of X
+2. If >500 lines, suggest split BEFORE updating
+3. Show proposed file structure
+4. Wait for approval
+5. Split file, THEN apply update
+
+**Example:**
+```
+User: "Update game-controller to add feature X"
+AI: "game-controller.js is 1219 lines. Should I:
+     1. Split into game-init.js + game-actions.js first?
+     2. Add feature to existing file (not recommended)?
+     Choose: "
+```
+
+### Deep Tree Command:
+```bash
+tree -L 4 -I 'node_modules|venv' --filesfirst
+```
+Shows all modules and their split structure clearly.
