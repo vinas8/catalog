@@ -1,0 +1,182 @@
+[
+  {
+    "id": "real-bp-001",
+    "type": "real",
+    "name": "Pudding",
+    "species": "ball_python",
+    "morph": "Banana Het Clown",
+    "genetics": {
+      "visual": ["Banana"],
+      "hets": ["Clown"],
+      "possible_hets": [],
+      "traits": ["Banana", "Het Clown"]
+    },
+    "sex": "male",
+    "age": {
+      "hatch_date": "2024-03-15",
+      "months": 9,
+      "years": 0
+    },
+    "weight_grams": 245,
+    "length_cm": 45,
+    "breeder": {
+      "id": "breeder-001",
+      "name": "Serpent Town Breeders",
+      "location": "Netherlands",
+      "reputation": 5
+    },
+    "images": ["🐍"],
+    "price": 35000,
+    "currency": "EUR",
+    "available": true,
+    "sold": false,
+    "status": "available",
+    "stripe_link": "https://buy.stripe.com/test_placeholder",
+    "created_at": "2024-03-15T10:00:00Z",
+    "updated_at": "2025-01-03T13:00:00Z"
+  },
+  {
+    "id": "real-bp-002",
+    "type": "real",
+    "name": "Taohu",
+    "species": "ball_python",
+    "morph": "Super Mojave",
+    "genetics": {
+      "visual": ["Super Mojave"],
+      "hets": [],
+      "possible_hets": [],
+      "traits": ["Super Mojave"]
+    },
+    "sex": "male",
+    "age": {
+      "hatch_date": "2024-04-20",
+      "months": 8,
+      "years": 0
+    },
+    "weight_grams": 220,
+    "length_cm": 42,
+    "breeder": {
+      "id": "breeder-001",
+      "name": "Serpent Town Breeders",
+      "location": "Netherlands",
+      "reputation": 5
+    },
+    "images": ["🐍"],
+    "price": 45000,
+    "currency": "EUR",
+    "available": true,
+    "sold": false,
+    "status": "available",
+    "stripe_link": "https://buy.stripe.com/test_placeholder",
+    "created_at": "2024-04-20T10:00:00Z",
+    "updated_at": "2025-01-03T13:00:00Z"
+  },
+  {
+    "id": "real-bp-003",
+    "type": "real",
+    "name": "Almond",
+    "species": "ball_python",
+    "morph": "Hurricane Butter Fire Yellow Belly Het Clown",
+    "genetics": {
+      "visual": ["Hurricane", "Butter", "Fire", "Yellow Belly"],
+      "hets": ["Clown"],
+      "possible_hets": [],
+      "traits": ["Hurricane", "Butter", "Fire", "Yellow Belly", "Het Clown"]
+    },
+    "sex": "female",
+    "age": {
+      "hatch_date": "2024-05-10",
+      "months": 7,
+      "years": 0
+    },
+    "weight_grams": 280,
+    "length_cm": 48,
+    "breeder": {
+      "id": "breeder-002",
+      "name": "Elite Python Genetics",
+      "location": "Belgium",
+      "reputation": 5
+    },
+    "images": ["🐍"],
+    "price": 65000,
+    "currency": "EUR",
+    "available": true,
+    "sold": false,
+    "status": "available",
+    "stripe_link": "https://buy.stripe.com/test_placeholder",
+    "created_at": "2024-05-10T10:00:00Z",
+    "updated_at": "2025-01-03T13:00:00Z"
+  },
+  {
+    "id": "real-cs-001",
+    "type": "real",
+    "name": "Mochi",
+    "species": "corn_snake",
+    "morph": "Salmon Hypo Bloodred",
+    "genetics": {
+      "visual": ["Salmon", "Hypo", "Bloodred"],
+      "hets": [],
+      "possible_hets": [],
+      "traits": ["Salmon", "Hypo", "Bloodred"]
+    },
+    "sex": "male",
+    "age": {
+      "hatch_date": "2023-06-15",
+      "months": 18,
+      "years": 1
+    },
+    "weight_grams": 95,
+    "length_cm": 75,
+    "breeder": {
+      "id": "breeder-003",
+      "name": "Cornsnake Collective",
+      "location": "Germany",
+      "reputation": 4
+    },
+    "images": ["🌽🐍"],
+    "price": 18000,
+    "currency": "EUR",
+    "available": true,
+    "sold": false,
+    "status": "available",
+    "stripe_link": "https://buy.stripe.com/test_placeholder",
+    "created_at": "2023-06-15T10:00:00Z",
+    "updated_at": "2025-01-03T13:00:00Z"
+  },
+  {
+    "id": "real-cs-002",
+    "type": "real",
+    "name": "Lavender",
+    "species": "corn_snake",
+    "morph": "Lavender Tessera",
+    "genetics": {
+      "visual": ["Lavender", "Tessera"],
+      "hets": [],
+      "possible_hets": ["Bloodred"],
+      "traits": ["Lavender", "Tessera", "Possible Het Bloodred"]
+    },
+    "sex": "female",
+    "age": {
+      "hatch_date": "2024-07-20",
+      "months": 5,
+      "years": 0
+    },
+    "weight_grams": 65,
+    "length_cm": 60,
+    "breeder": {
+      "id": "breeder-003",
+      "name": "Cornsnake Collective",
+      "location": "Germany",
+      "reputation": 4
+    },
+    "images": ["🌽🐍"],
+    "price": 25000,
+    "currency": "EUR",
+    "available": true,
+    "sold": false,
+    "status": "available",
+    "stripe_link": "https://buy.stripe.com/test_placeholder",
+    "created_at": "2024-07-20T10:00:00Z",
+    "updated_at": "2025-01-03T13:00:00Z"
+  }
+]

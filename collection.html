@@ -109,6 +109,20 @@
     .primary-btn:hover {
       background: #5568d3;
     }
+    .secondary-btn {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .secondary-btn:hover {
+      background: #f8f9fa;
+    }
   </style>
 </head>
 <body>
@@ -251,7 +265,7 @@
       
       debug('Rendering products:', products);
       
-      container.innerHTML = products.map(product => {
+      container.innerHTML = products.map((product, index) => {
         // Handle different data structures
         const name = product.name || product.nickname || 'Unnamed Snake';
         const productId = product.id || product.product_id || 'Unknown';
@@ -263,7 +277,7 @@
         const status = product.status || product.acquisition_type || 'Owned';
         
         return `
-          <div class="snake-card">
+          <div class="snake-card" data-product-index="${index}">
             <div class="snake-header">
               <div class="snake-name">${name}</div>
               <div class="snake-species">${species}</div>
@@ -290,21 +304,46 @@
               </div>
             ` : ''}
             
-            <div style="margin-top: 1rem;">
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+              <button class="secondary-btn btn-view-details" style="flex: 1;" data-product-index="${index}">
+                ℹ️ Details
+              </button>
               <a href="game.html?user=${new URLSearchParams(window.location.search).get('user') || ''}" 
                  class="primary-btn" 
-                 style="width: 100%; text-align: center; display: block;">
-                🎮 Play with ${name}
+                 style="flex: 1; text-align: center; display: block; text-decoration: none;">
+                🎮 Play
               </a>
             </div>
           </div>
         `;
       }).join('');
+      
+      // Store products for modal access
+      window.userProducts = products;
     }
     
     // Load collection on page load
     loadUserCollection();
   </script>
+  
+  <!-- Snake Detail Modal -->
+  <script type="module">
+    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
+
+    // Delegate event listener for "View Details" buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-view-details')) {
+        const btn = e.target.closest('.btn-view-details');
+        const index = parseInt(btn.dataset.productIndex);
+        const product = window.userProducts?.[index];
+        
+        if (product) {
+          openSnakeDetail(product, 'farm');
+        }
+      }
+    });
+  </script>
+  
   <!-- Debug Panel (auto-loads only in DEBUG mode) -->
   <script type="module">
     import { initDebugPanel } from './src/components/DebugPanel.js';

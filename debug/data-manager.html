@@ -218,6 +218,7 @@
       Verify that data is synchronized between Stripe, KV, and Worker API
     </p>
     <button class="btn" onclick="runFullVerification()">Run Full Verification</button>
+    <button class="btn btn-danger" onclick="clearAllKV()">Clear All KV</button>
     <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
     <div id="syncOutput" class="output"></div>
   </div>
@@ -656,6 +657,45 @@
       
       log('syncOutput', '', 'info');
       log('syncOutput', '✅ Verification complete!', 'success');
+    }
+
+    async function clearAllKV() {
+      if (!confirm('⚠️ Delete ALL data from ALL KV namespaces?')) return;
+      
+      clearLog('syncOutput');
+      log('syncOutput', '🗑️ Clearing all KV namespaces via Worker...', 'warning');
+      log('syncOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
+      
+      try {
+        const res = await fetch('https://catalog.serpent-town.workers.dev/clear-kv-all', {
+          method: 'POST'
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          log('syncOutput', `✅ Total keys deleted: ${data.totalKeysDeleted}`, 'success');
+          log('syncOutput', '', 'info');
+          
+          for (const ns of data.namespaces) {
+            if (ns.success) {
+              log('syncOutput', `  📦 ${ns.namespace}: ${ns.keysDeleted} keys`, 'success');
+            } else {
+              log('syncOutput', `  ❌ ${ns.namespace}: ${ns.error}`, 'error');
+            }
+          }
+          
+          log('syncOutput', '', 'info');
+          log('syncOutput', '✅ All KV data cleared!', 'success');
+          
+          await refreshStats();
+        } else {
+          log('syncOutput', `❌ Failed: ${data.error}`, 'error');
+        }
+        
+      } catch (err) {
+        log('syncOutput', `❌ Error: ${err.message}`, 'error');
+      }
     }
 
     async function clearAllData() {

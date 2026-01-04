@@ -49,6 +49,7 @@ export const VERSION_CONFIG = {
     { code: 'S1.1,2,3,4,5.01',            desc: 'Happy path purchase flow',             ver: 's0.6.0', done: 0   },
     { code: 'S1.1,2,3,4.01',              desc: 'Returning user purchase flow',         ver: 's0.6.0', done: 0   },
     { code: 'S1.1.01',                    desc: 'Product availability status check',    ver: 's0.5.0', done: 0   },
+    { code: 'S1-2.1,11.1',                desc: 'Real snake detail completeness',       ver: 's0.7.1', done: 100 },
     { code: 'S5.5,5-1,5-2.01',            desc: 'Webhook signature security verify',    ver: 's0.6.0', done: 0   },
     { code: 'S3.3,5.01',                  desc: 'User hash validation check',           ver: 's0.5.0', done: 0   },
     { code: 'S4.4,5.01',                  desc: 'Product schema validation check',      ver: 's0.5.0', done: 0   },

@@ -1,8 +1,8 @@
-# 🐍 Snake Muffin v0.7.1
+# 🐍 Snake Muffin v0.7.2
 
 > A snake breeding and care e-commerce game with real Stripe payments
 
-[![Version](https://img.shields.io/badge/version-0.7.1-purple)](https://github.com/vinas8/catalog)
+[![Version](https://img.shields.io/badge/version-0.7.2-purple)](https://github.com/vinas8/catalog)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/vinas8/catalog)
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://vinas8.github.io/catalog/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -242,7 +242,7 @@ node test-worker.js
 
 ## 📊 Current Status
 
-**Version:** 0.7.1 (Aquarium Redesign + Debug System)  
+**Version:** 0.7.2 (AI Avatar Generation - FREE tier)  
 **Status:** ⚠️ BETA - Not Production Ready  
 **Tests:** 54/60 passing (88%) ⚠️  
 **Features:** Core functionality working, needs hardening

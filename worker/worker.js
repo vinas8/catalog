@@ -39,8 +39,8 @@
 
 import { createEmailService } from './email-service.js';
 
-const WORKER_VERSION = '0.7.0';
-const WORKER_UPDATED = '2025-12-27T06:50:00Z';
+const WORKER_VERSION = '0.7.2';
+const WORKER_UPDATED = '2026-01-03T15:49:00Z';
 
 // Test Registry - Maps all tests to metadata
 const TEST_REGISTRY = {
@@ -298,6 +298,11 @@ export default {
     // Route: POST /clear-stripe-products (Clear all Stripe products)
     if (pathname === '/clear-stripe-products' && request.method === 'POST') {
       return handleClearStripeProducts(env, corsHeaders);
+    }
+
+    // Route: POST /clear-kv-all (Clear ALL KV namespaces)
+    if (pathname === '/clear-kv-all' && request.method === 'POST') {
+      return handleClearAllKV(env, corsHeaders);
     }
 
     return new Response(JSON.stringify({ error: 'Not found' }), { 
@@ -1766,6 +1771,61 @@ async function handleClearStripeProducts(env, corsHeaders) {
       deleted: successCount,
       failed: products.length - successCount,
       results
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Clear all KV namespaces
+ */
+async function handleClearAllKV(env, corsHeaders) {
+  try {
+    const namespaces = [
+      { name: 'USER_PRODUCTS', kv: env.USER_PRODUCTS },
+      { name: 'PRODUCT_STATUS', kv: env.PRODUCT_STATUS },
+      { name: 'PRODUCTS', kv: env.PRODUCTS }
+    ].filter(ns => ns.kv !== undefined);
+
+    const results = [];
+
+    for (const ns of namespaces) {
+      try {
+        const { keys } = await ns.kv.list();
+        let deleted = 0;
+        
+        for (const key of keys) {
+          await ns.kv.delete(key.name);
+          deleted++;
+        }
+
+        results.push({
+          namespace: ns.name,
+          success: true,
+          keysDeleted: deleted
+        });
+      } catch (err) {
+        results.push({
+          namespace: ns.name,
+          success: false,
+          error: err.message
+        });
+      }
+    }
+
+    const totalDeleted = results.reduce((sum, r) => sum + (r.keysDeleted || 0), 0);
+
+    return new Response(JSON.stringify({
+      success: true,
+      totalKeysDeleted: totalDeleted,
+      namespaces: results
     }), {
       status: 200,
       headers: corsHeaders

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMRI S1.4 - Real Snake Detail Completeness</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .test-header {
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .test-section {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+    }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .product-card {
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .product-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .status-indicator {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    .status-pass { background: #d4edda; color: #155724; }
+    .status-fail { background: #f8d7da; color: #721c24; }
+    .status-warn { background: #fff3cd; color: #856404; }
+    .validation-results {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .check-item {
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      border-left: 3px solid #dee2e6;
+      padding-left: 1rem;
+    }
+    .check-item.pass { border-color: #28a745; color: #28a745; }
+    .check-item.fail { border-color: #dc3545; color: #dc3545; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div class="test-header">
+      <h1>SMRI S1.4 - Real Snake Detail Completeness</h1>
+      <p><strong>Module:</strong> S1 (Shop)</p>
+      <p><strong>Requirement:</strong> Real snakes must display complete industry-standard information</p>
+      <p><strong>Status:</strong> <span id="overall-status" class="status-indicator">⏳ Testing...</span></p>
+    </div>
+
+    <div class="test-section">
+      <h2>📋 Required Fields Checklist</h2>
+      <p>For real snakes, the following fields must be present:</p>
+      <ul>
+        <li>✅ Morph name</li>
+        <li>✅ Genetics (visual traits + hets)</li>
+        <li>✅ Sex (male/female/unknown)</li>
+        <li>✅ Age (hatch date or calculated age)</li>
+        <li>✅ Size (weight and/or length)</li>
+        <li>✅ Breeder information (name, location, ID)</li>
+      </ul>
+    </div>
+
+    <div class="test-section">
+      <h2>🐍 Test Products</h2>
+      <p>Click any product card to open detail view and verify completeness</p>
+      <div id="test-products" class="test-grid">
+        <div class="loading">Loading products...</div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>✅ Validation Results</h2>
+      <div id="validation-results" class="validation-results">
+        <p>No validation run yet. Click products above to test.</p>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>📊 Summary</h2>
+      <div id="test-summary">
+        <p><strong>Total Products:</strong> <span id="total-count">0</span></p>
+        <p><strong>Complete Products:</strong> <span id="complete-count">0</span></p>
+        <p><strong>Incomplete Products:</strong> <span id="incomplete-count">0</span></p>
+        <p><strong>Completion Rate:</strong> <span id="completion-rate">0%</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { openSnakeDetail } from '../src/components/SnakeDetailModal.js';
+
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    let allProducts = [];
+    let validationResults = [];
+
+    async function loadProducts() {
+      try {
+        const response = await fetch(`${WORKER_URL}/products`);
+        const data = await response.json();
+        allProducts = Array.isArray(data) ? data : (data.products || []);
+        
+        const realProducts = allProducts.filter(p => p.type === 'real');
+        console.log(`Loaded ${realProducts.length} real products`);
+        
+        renderProducts(realProducts);
+        validateAllProducts(realProducts);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        document.getElementById('test-products').innerHTML = 
+          `<div class="error-state">Failed to load products: ${err.message}</div>`;
+      }
+    }
+
+    function validateProduct(product) {
+      const checks = {
+        morph: { required: true, present: !!product.morph, label: 'Morph name' },
+        genetics: { required: true, present: !!product.genetics, label: 'Genetics data' },
+        geneticsVisual: { required: true, present: product.genetics?.visual?.length > 0, label: 'Visual traits' },
+        sex: { required: true, present: !!product.sex, label: 'Sex' },
+        age: { required: true, present: !!(product.age || product.birth_year), label: 'Age/Hatch date' },
+        size: { required: true, present: !!(product.weight_grams || product.length_cm), label: 'Size (weight/length)' },
+        breeder: { required: true, present: !!product.breeder, label: 'Breeder info' },
+        breederName: { required: true, present: !!product.breeder?.name, label: 'Breeder name' }
+      };
+
+      const missingFields = Object.entries(checks)
+        .filter(([key, check]) => check.required && !check.present)
+        .map(([key, check]) => check.label);
+
+      const completionRate = Object.values(checks).filter(c => c.present).length / Object.values(checks).length;
+
+      return {
+        product,
+        checks,
+        missingFields,
+        isComplete: missingFields.length === 0,
+        completionRate: Math.round(completionRate * 100)
+      };
+    }
+
+    function renderProducts(products) {
+      const container = document.getElementById('test-products');
+      
+      if (products.length === 0) {
+        container.innerHTML = '<div class="empty-state">No real products found</div>';
+        return;
+      }
+
+      container.innerHTML = products.map(product => {
+        const validation = validateProduct(product);
+        const statusClass = validation.isComplete ? 'pass' : 'fail';
+        const statusText = validation.isComplete ? '✅ Complete' : `❌ ${validation.missingFields.length} missing`;
+
+        return `
+          <div class="product-card" data-product-id="${product.id}">
+            <h3>${product.name}</h3>
+            <p><strong>${product.species.replace('_', ' ')}</strong> • ${product.morph || 'No morph'}</p>
+            <p class="status-indicator status-${statusClass}">${statusText}</p>
+            <p style="font-size: 0.85rem; color: #6c757d;">Completion: ${validation.completionRate}%</p>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const productId = card.dataset.productId;
+          const product = products.find(p => p.id === productId);
+          if (product) {
+            openSnakeDetail(product, 'shop');
+            showValidation(product);
+          }
+        });
+      });
+    }
+
+    function validateAllProducts(products) {
+      validationResults = products.map(validateProduct);
+      
+      const totalCount = products.length;
+      const completeCount = validationResults.filter(r => r.isComplete).length;
+      const incompleteCount = totalCount - completeCount;
+      const completionRate = totalCount > 0 ? Math.round((completeCount / totalCount) * 100) : 0;
+
+      document.getElementById('total-count').textContent = totalCount;
+      document.getElementById('complete-count').textContent = completeCount;
+      document.getElementById('incomplete-count').textContent = incompleteCount;
+      document.getElementById('completion-rate').textContent = `${completionRate}%`;
+
+      const overallStatus = document.getElementById('overall-status');
+      if (completionRate === 100) {
+        overallStatus.textContent = '✅ PASS';
+        overallStatus.className = 'status-indicator status-pass';
+      } else if (completionRate >= 80) {
+        overallStatus.textContent = '⚠️ PARTIAL';
+        overallStatus.className = 'status-indicator status-warn';
+      } else {
+        overallStatus.textContent = '❌ FAIL';
+        overallStatus.className = 'status-indicator status-fail';
+      }
+
+      // Show incomplete products
+      const incompleteProducts = validationResults.filter(r => !r.isComplete);
+      if (incompleteProducts.length > 0) {
+        const resultsHtml = incompleteProducts.map(result => `
+          <div style="margin: 1rem 0; padding: 1rem; border: 1px solid #dc3545; border-radius: 8px; background: #fff5f5;">
+            <h4 style="margin: 0 0 0.5rem 0;">${result.product.name} (${result.product.id})</h4>
+            <p style="color: #dc3545; font-weight: 600;">Missing fields:</p>
+            <ul>
+              ${result.missingFields.map(field => `<li>${field}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('');
+
+        document.getElementById('validation-results').innerHTML = 
+          `<h3 style="color: #dc3545;">❌ ${incompleteProducts.length} Incomplete Products</h3>${resultsHtml}`;
+      } else {
+        document.getElementById('validation-results').innerHTML = 
+          '<h3 style="color: #28a745;">✅ All Products Complete!</h3><p>All real snake products have complete information.</p>';
+      }
+    }
+
+    function showValidation(product) {
+      const validation = validateProduct(product);
+      const checksHtml = Object.entries(validation.checks).map(([key, check]) => {
+        const className = check.present ? 'check-item pass' : 'check-item fail';
+        const icon = check.present ? '✅' : '❌';
+        return `<div class="${className}">${icon} ${check.label}</div>`;
+      }).join('');
+
+      document.getElementById('validation-results').innerHTML = `
+        <h3>Validation for: ${product.name}</h3>
+        ${checksHtml}
+        <p style="margin-top: 1rem;"><strong>Completion:</strong> ${validation.completionRate}%</p>
+      `;
+    }
+
+    // Load products on page load
+    loadProducts();
+  </script>
+</body>
+</html>

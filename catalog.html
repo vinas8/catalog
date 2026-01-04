@@ -99,7 +99,7 @@
           '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
       
       return `
-        <div class="catalog-item ${soldClass}">
+        <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
           ${soldBadge}
           <div class="item-image">${product.image || '🐍'}</div>
           <h3>${product.name}</h3>
@@ -107,6 +107,9 @@
           <p>${product.description || ''}</p>
           <p class="item-info">${product.info || ''}</p>
           <div class="item-price">€${priceFormatted}</div>
+          <button class="secondary-btn btn-view-details" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>
+            ℹ️ View Details
+          </button>
           ${buyButton}
         </div>
       `;
@@ -255,6 +258,25 @@
     // Filter change
     document.getElementById('species-filter').addEventListener('change', loadAndRenderCatalog);
   </script>
+
+  <!-- Snake Detail Modal -->
+  <script type="module">
+    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
+
+    // Delegate event listener for "View Details" buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-view-details')) {
+        const btn = e.target.closest('.btn-view-details');
+        try {
+          const productData = JSON.parse(btn.dataset.product);
+          openSnakeDetail(productData, 'shop');
+        } catch (err) {
+          console.error('Failed to parse product data:', err);
+        }
+      }
+    });
+  </script>
+
   <!-- Debug Panel (auto-loads only in DEBUG mode) -->
   <script type="module">
     import { initDebugPanel } from './src/components/DebugPanel.js';

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KV Admin - Serpent Town</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+    h1 {
+      color: #4CAF50;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .section {
+      background: #2a2a2a;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button.danger {
+      background: #f44336;
+    }
+    button.danger:hover {
+      background: #da190b;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .result.success {
+      background: #1b5e20;
+      border: 1px solid #4CAF50;
+    }
+    .result.error {
+      background: #5e1b1b;
+      border: 1px solid #f44336;
+    }
+    .warning {
+      background: #5e4c1b;
+      border: 1px solid #ffa726;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    code {
+      background: #000;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <h1>🗄️ KV Admin Panel</h1>
+
+  <div class="section">
+    <h2>⚠️ Clear All KV Data</h2>
+    <div class="warning">
+      <strong>⚠️ Warning:</strong> This will delete ALL data from ALL KV namespaces:
+      <ul>
+        <li>USER_PRODUCTS</li>
+        <li>PRODUCT_STATUS</li>
+        <li>PRODUCTS</li>
+        <li>PRODUCTS_REAL</li>
+        <li>PRODUCTS_VIRTUAL</li>
+        <li>USERS</li>
+      </ul>
+      This action cannot be undone!
+    </div>
+    
+    <button class="danger" onclick="clearAllKV()" id="clearBtn">
+      🗑️ Clear All KV Data
+    </button>
+    
+    <div id="clearResult"></div>
+  </div>
+
+  <div class="section">
+    <h2>📋 How It Works</h2>
+    <p>
+      This page calls <code>POST /clear-kv-all</code> on your Cloudflare Worker.
+      The worker iterates through all KV namespaces and deletes all keys.
+    </p>
+    <p>
+      <strong>Endpoint:</strong> <code id="workerUrl">https://your-worker.workers.dev/clear-kv-all</code>
+    </p>
+    <p>
+      <strong>Why this works:</strong> Worker-to-worker calls bypass browser CORS restrictions.
+    </p>
+  </div>
+
+  <script>
+    // Update this to your worker URL
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev/clear-kv-all';
+    document.getElementById('workerUrl').textContent = WORKER_URL;
+
+    async function clearAllKV() {
+      const btn = document.getElementById('clearBtn');
+      const resultDiv = document.getElementById('clearResult');
+      
+      if (!confirm('⚠️ Are you ABSOLUTELY sure you want to delete ALL KV data? This cannot be undone!')) {
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Clearing...';
+      resultDiv.innerHTML = '';
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = `✅ Success!\n\nTotal keys deleted: ${data.totalKeysDeleted}\n\n` +
+            'Namespaces:\n' +
+            data.namespaces.map(ns => 
+              `  • ${ns.namespace}: ${ns.success ? ns.keysDeleted + ' keys deleted' : 'ERROR: ' + ns.error}`
+            ).join('\n');
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = `❌ Error: ${data.error || 'Unknown error'}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = `❌ Network Error: ${error.message}\n\nMake sure:\n1. Worker is deployed\n2. Worker URL is correct\n3. CORS is enabled`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🗑️ Clear All KV Data';
+      }
+    }
+  </script>
+</body>
+</html>

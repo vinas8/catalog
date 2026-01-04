@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMRI S1-2.1.11.1 - Real Snake Detail Completeness</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    .test-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .test-header {
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .status-pass { background: #d4edda; color: #155724; }
+    .status-fail { background: #f8d7da; color: #721c24; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .snake-card {
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .snake-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+      transform: translateY(-4px);
+    }
+    .snake-card.complete {
+      border-color: #28a745;
+    }
+    .snake-card.incomplete {
+      border-color: #dc3545;
+    }
+    .completeness-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-complete { background: #d4edda; color: #155724; }
+    .badge-incomplete { background: #f8d7da; color: #721c24; }
+    .field-checklist {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .field-check {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+    }
+    .field-check.present { color: #28a745; }
+    .field-check.missing { color: #dc3545; }
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 2px solid #dee2e6;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    .context-demo {
+      margin: 2rem 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .context-section {
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .context-section h3 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <!-- Header -->
+    <div class="test-header">
+      <h1>🧪 SMRI S1-2.1.11.1 - Real Snake Detail Completeness</h1>
+      <p><strong>Module:</strong> S1 (Shop) → 2.1 (Product Detail) → 11.1 (KV Storage)</p>
+      <p><strong>Objective:</strong> Verify real snakes display complete industry-standard information</p>
+      <p><strong>Status:</strong> <span id="overall-status" class="status-badge status-pending">⏳ Running Tests...</span></p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-stats">
+      <div class="stat-card">
+        <div class="stat-label">Total Snakes</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Complete</div>
+        <div class="stat-value" style="color: #28a745;" id="stat-complete">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Incomplete</div>
+        <div class="stat-value" style="color: #dc3545;" id="stat-incomplete">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pass Rate</div>
+        <div class="stat-value" id="stat-rate">0%</div>
+      </div>
+    </div>
+
+    <!-- Required Fields Checklist -->
+    <div style="background: #e7f3ff; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+      <h3>📋 Required Fields (ALL must be present)</h3>
+      <ul style="columns: 2; column-gap: 2rem;">
+        <li>✅ Morph name</li>
+        <li>✅ Genetics (visual traits)</li>
+        <li>✅ Genetics (hets)</li>
+        <li>✅ Sex (male/female/unknown)</li>
+        <li>✅ Age (hatch date or months)</li>
+        <li>✅ Size (weight or length)</li>
+        <li>✅ Breeder name</li>
+        <li>✅ Breeder location</li>
+      </ul>
+    </div>
+
+    <!-- Test Snakes Grid -->
+    <h2>🐍 Test Snakes (Click to View Details)</h2>
+    <div id="snakes-grid" class="test-grid">
+      <div class="loading">Loading test snakes...</div>
+    </div>
+
+    <!-- Context Demo -->
+    <h2>🔄 Context Verification</h2>
+    <p class="muted">Verify that Shop and Farm contexts use the SAME component with SAME data</p>
+    <div class="context-demo">
+      <div class="context-section">
+        <h3>🛒 Shop Context</h3>
+        <p>Shows: Morph, Genetics, Sex, Age, Size, Breeder, Price, Buy Button</p>
+        <button id="test-shop-context" class="primary-btn" style="width: 100%;">Test Shop Detail</button>
+      </div>
+      <div class="context-section">
+        <h3>🏡 Farm Context</h3>
+        <p>Shows: Morph, Genetics, Sex, Age, Size, Breeder, Care Stats</p>
+        <button id="test-farm-context" class="primary-btn" style="width: 100%;">Test Farm Detail</button>
+      </div>
+    </div>
+
+    <!-- Validation Results -->
+    <div id="validation-results" style="margin-top: 2rem;">
+      <!-- Will be populated after validation -->
+    </div>
+  </div>
+
+  <script type="module">
+    import { openSnakeDetail } from '../src/components/SnakeDetailModal.js';
+
+    let testSnakes = [];
+    let validationResults = [];
+
+    // Load test data
+    async function loadTestData() {
+      try {
+        const response = await fetch('../data/products-real-test.json');
+        testSnakes = await response.json();
+        console.log('✅ Loaded test snakes:', testSnakes.length);
+        
+        validateAllSnakes();
+        renderSnakesGrid();
+        updateSummaryStats();
+      } catch (err) {
+        console.error('❌ Failed to load test data:', err);
+        document.getElementById('snakes-grid').innerHTML = 
+          `<div class="error-state">Failed to load test data: ${err.message}</div>`;
+      }
+    }
+
+    // Validate a single snake
+    function validateSnake(snake) {
+      const checks = {
+        morph: { required: true, present: !!snake.morph, label: 'Morph name' },
+        geneticsVisual: { required: true, present: snake.genetics?.visual?.length > 0, label: 'Visual traits' },
+        geneticsHets: { required: true, present: snake.genetics !== undefined, label: 'Genetics object' },
+        sex: { required: true, present: !!snake.sex, label: 'Sex' },
+        age: { required: true, present: !!(snake.age?.hatch_date), label: 'Hatch date' },
+        size: { required: true, present: !!(snake.weight_grams || snake.length_cm), label: 'Size' },
+        breederName: { required: true, present: !!snake.breeder?.name, label: 'Breeder name' },
+        breederLocation: { required: true, present: !!snake.breeder?.location, label: 'Breeder location' }
+      };
+
+      const missingFields = Object.entries(checks)
+        .filter(([key, check]) => check.required && !check.present)
+        .map(([key, check]) => check.label);
+
+      const presentCount = Object.values(checks).filter(c => c.present).length;
+      const totalCount = Object.values(checks).length;
+      const completionRate = Math.round((presentCount / totalCount) * 100);
+
+      return {
+        snake,
+        checks,
+        missingFields,
+        isComplete: missingFields.length === 0,
+        completionRate
+      };
+    }
+
+    // Validate all snakes
+    function validateAllSnakes() {
+      validationResults = testSnakes.map(validateSnake);
+      console.log('✅ Validation complete:', validationResults);
+    }
+
+    // Render snakes grid
+    function renderSnakesGrid() {
+      const grid = document.getElementById('snakes-grid');
+      
+      grid.innerHTML = testSnakes.map((snake, index) => {
+        const validation = validationResults[index];
+        const completeClass = validation.isComplete ? 'complete' : 'incomplete';
+        const badgeClass = validation.isComplete ? 'badge-complete' : 'badge-incomplete';
+        const badgeText = validation.isComplete ? '✅ Complete' : `❌ ${validation.missingFields.length} missing`;
+
+        return `
+          <div class="snake-card ${completeClass}" data-index="${index}">
+            <span class="completeness-badge ${badgeClass}">${badgeText}</span>
+            
+            <div style="font-size: 2rem; margin-bottom: 1rem;">${snake.images?.[0] || '🐍'}</div>
+            <h3>${snake.name}</h3>
+            <p><strong>${snake.species.replace('_', ' ')}</strong></p>
+            <p style="color: #667eea; font-weight: 600;">${snake.morph}</p>
+            
+            <div class="field-checklist">
+              <div class="field-check ${validation.checks.morph.present ? 'present' : 'missing'}">
+                ${validation.checks.morph.present ? '✅' : '❌'} Morph
+              </div>
+              <div class="field-check ${validation.checks.geneticsVisual.present ? 'present' : 'missing'}">
+                ${validation.checks.geneticsVisual.present ? '✅' : '❌'} Genetics
+              </div>
+              <div class="field-check ${validation.checks.sex.present ? 'present' : 'missing'}">
+                ${validation.checks.sex.present ? '✅' : '❌'} Sex
+              </div>
+              <div class="field-check ${validation.checks.age.present ? 'present' : 'missing'}">
+                ${validation.checks.age.present ? '✅' : '❌'} Age
+              </div>
+              <div class="field-check ${validation.checks.size.present ? 'present' : 'missing'}">
+                ${validation.checks.size.present ? '✅' : '❌'} Size
+              </div>
+              <div class="field-check ${validation.checks.breederName.present ? 'present' : 'missing'}">
+                ${validation.checks.breederName.present ? '✅' : '❌'} Breeder
+              </div>
+            </div>
+            
+            <p style="margin-top: 1rem; text-align: center; font-weight: 600; color: ${validation.isComplete ? '#28a745' : '#dc3545'};">
+              ${validation.completionRate}% Complete
+            </p>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      grid.querySelectorAll('.snake-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const index = parseInt(card.dataset.index);
+          const snake = testSnakes[index];
+          openSnakeDetail(snake, 'shop');
+        });
+      });
+    }
+
+    // Update summary stats
+    function updateSummaryStats() {
+      const total = validationResults.length;
+      const complete = validationResults.filter(r => r.isComplete).length;
+      const incomplete = total - complete;
+      const rate = total > 0 ? Math.round((complete / total) * 100) : 0;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-complete').textContent = complete;
+      document.getElementById('stat-incomplete').textContent = incomplete;
+      document.getElementById('stat-rate').textContent = `${rate}%`;
+
+      // Update overall status
+      const statusEl = document.getElementById('overall-status');
+      if (rate === 100) {
+        statusEl.textContent = '✅ PASS - All Complete';
+        statusEl.className = 'status-badge status-pass';
+      } else {
+        statusEl.textContent = `❌ FAIL - ${incomplete} Incomplete`;
+        statusEl.className = 'status-badge status-fail';
+      }
+
+      // Show detailed results if incomplete
+      if (incomplete > 0) {
+        const incompleteSnakes = validationResults.filter(r => !r.isComplete);
+        const resultsHtml = `
+          <div style="background: #f8d7da; padding: 1.5rem; border-radius: 12px; border: 2px solid #dc3545;">
+            <h3 style="color: #721c24; margin-top: 0;">❌ ${incomplete} Snake(s) Missing Required Fields</h3>
+            ${incompleteSnakes.map(result => `
+              <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 8px;">
+                <h4 style="margin: 0 0 0.5rem 0;">${result.snake.name} (${result.snake.id})</h4>
+                <p style="color: #dc3545; font-weight: 600;">Missing:</p>
+                <ul style="margin: 0.5rem 0;">
+                  ${result.missingFields.map(field => `<li>${field}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        document.getElementById('validation-results').innerHTML = resultsHtml;
+      } else {
+        document.getElementById('validation-results').innerHTML = `
+          <div style="background: #d4edda; padding: 1.5rem; border-radius: 12px; border: 2px solid #28a745;">
+            <h3 style="color: #155724; margin-top: 0;">✅ All Snakes Complete!</h3>
+            <p>All ${total} test snakes have complete industry-standard information.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Context testing
+    document.getElementById('test-shop-context').addEventListener('click', () => {
+      if (testSnakes.length > 0) {
+        openSnakeDetail(testSnakes[0], 'shop');
+      }
+    });
+
+    document.getElementById('test-farm-context').addEventListener('click', () => {
+      if (testSnakes.length > 0) {
+        // Add mock care stats for farm context
+        const farmSnake = {
+          ...testSnakes[0],
+          stats: {
+            hunger: 85,
+            water: 90,
+            temperature: 95,
+            humidity: 88,
+            health: 92,
+            stress: 15,
+            cleanliness: 94,
+            happiness: 87
+          }
+        };
+        openSnakeDetail(farmSnake, 'farm');
+      }
+    });
+
+    // Initialize
+    loadTestData();
+  </script>
+</body>
+</html>
