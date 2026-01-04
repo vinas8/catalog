@@ -129,36 +129,51 @@
 
     .matrix-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 5px;
+      border-collapse: collapse;
+      table-layout: fixed;
     }
 
     .matrix-table th,
     .matrix-table td {
       padding: 10px;
       text-align: center;
-      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      vertical-align: middle;
     }
 
     .matrix-table thead th {
       background: #f7fafc;
       color: #2d3748;
       font-weight: 600;
-      border: 2px solid #e2e8f0;
-      min-width: 100px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .matrix-table tbody th {
       background: #f7fafc;
       color: #2d3748;
       font-weight: 600;
-      border: 2px solid #e2e8f0;
+      position: sticky;
+      left: 0;
+      z-index: 5;
+    }
+
+    .matrix-table thead th:first-child,
+    .matrix-table tbody th {
       min-width: 100px;
-      white-space: nowrap;
+      width: 100px;
+    }
+
+    .matrix-table thead th:not(:first-child) {
+      min-width: 110px;
+      width: 110px;
     }
 
     .matrix-table tbody td {
-      min-width: 100px;
+      min-width: 110px;
+      width: 110px;
+      background: white;
     }
 
     .header-cell {
@@ -237,15 +252,25 @@
         flex-direction: column;
       }
 
-      .matrix-table thead th,
-      .matrix-table tbody th {
-        min-width: 70px;
-        padding: 8px;
+      .breeding-matrix {
+        padding: 15px;
+        overflow-x: auto;
       }
 
+      .matrix-table {
+        min-width: 650px;
+      }
+
+      .matrix-table thead th:first-child,
+      .matrix-table tbody th {
+        min-width: 80px;
+        width: 80px;
+      }
+
+      .matrix-table thead th:not(:first-child),
       .matrix-table tbody td {
-        min-width: 75px;
-        padding: 8px;
+        min-width: 90px;
+        width: 90px;
       }
 
       .snake-name {
@@ -279,16 +304,21 @@
       transition: all 0.3s ease;
       border: 3px solid transparent;
       min-height: 100px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      height: 100%;
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .breeding-cell > div {
+      display: block;
+      width: 100%;
     }
 
     .breeding-cell:hover {
-      transform: translateY(-3px);
+      transform: scale(1.05);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       border-color: #4a5568;
+      z-index: 20;
     }
 
     /* Compatibility colors */
