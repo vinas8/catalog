@@ -691,8 +691,16 @@
         age: 3,
         weight: 1800,
         morphs: ['mojave'],
-        genetics: { visual: ['mojave'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['mojave'], 
+          hets: [],
+          alleles: { mojave: 'Moj', albino: 'wt', piebald: 'wt', spider: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_alpha'
+        }
       },
       {
         id: 'male_2',
@@ -701,8 +709,16 @@
         age: 4,
         weight: 2000,
         morphs: ['spider'],
-        genetics: { visual: ['spider'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['spider'], 
+          hets: [],
+          alleles: { spider: 'Spd', mojave: 'wt', albino: 'wt', piebald: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_beta'
+        }
       },
       {
         id: 'male_3',
@@ -711,8 +727,16 @@
         age: 2.5,
         weight: 1600,
         morphs: ['piebald'],
-        genetics: { visual: ['piebald'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['piebald'], 
+          hets: [],
+          alleles: { piebald: 'pie', mojave: 'wt', albino: 'wt', spider: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_gamma'
+        }
       },
       {
         id: 'male_4',
@@ -721,8 +745,16 @@
         age: 3,
         weight: 1700,
         morphs: ['pastel'],
-        genetics: { visual: ['pastel'], hets: ['albino'] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['pastel'], 
+          hets: ['albino'],
+          alleles: { pastel: 'Pas', albino: 'alb', piebald: 'wt', spider: 'wt', mojave: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_delta'
+        }
       },
       {
         id: 'male_5',
@@ -731,8 +763,16 @@
         age: 2,
         weight: 1400,
         morphs: ['normal'],
-        genetics: { visual: [], hets: ['piebald', 'albino'] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: [], 
+          hets: ['piebald', 'albino'],
+          alleles: { piebald: 'pie', albino: 'alb', spider: 'wt', mojave: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: 'male_3', 
+          parent_female_id: 'female_3',
+          lineage_id: 'line_gamma'
+        }
       }
     ];
 
@@ -744,8 +784,16 @@
         age: 3,
         weight: 1500,
         morphs: ['albino'],
-        genetics: { visual: ['albino'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['albino'], 
+          hets: [],
+          alleles: { albino: 'alb', mojave: 'wt', piebald: 'wt', spider: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_epsilon'
+        }
       },
       {
         id: 'female_2',
@@ -754,8 +802,16 @@
         age: 4,
         weight: 1600,
         morphs: ['pastel'],
-        genetics: { visual: ['pastel'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['pastel'], 
+          hets: [],
+          alleles: { pastel: 'Pas', mojave: 'wt', albino: 'wt', piebald: 'wt', spider: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_zeta'
+        }
       },
       {
         id: 'female_3',
@@ -764,8 +820,16 @@
         age: 2,
         weight: 1200,
         morphs: ['normal'],
-        genetics: { visual: [], hets: ['piebald'] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: [], 
+          hets: ['piebald'],
+          alleles: { piebald: 'pie', mojave: 'wt', albino: 'wt', spider: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_gamma'
+        }
       },
       {
         id: 'female_4',
@@ -774,8 +838,16 @@
         age: 5,
         weight: 1800,
         morphs: ['spider'],
-        genetics: { visual: ['spider'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['spider'], 
+          hets: [],
+          alleles: { spider: 'Spd', mojave: 'wt', albino: 'wt', piebald: 'wt', pastel: 'wt', lesser: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: 'male_2', 
+          parent_female_id: null,
+          lineage_id: 'line_beta'
+        }
       },
       {
         id: 'female_5',
@@ -784,8 +856,16 @@
         age: 3,
         weight: 1500,
         morphs: ['lesser'],
-        genetics: { visual: ['lesser'], hets: [] },
-        lineage: { parent_male_id: null, parent_female_id: null }
+        genetics: { 
+          visual: ['lesser'], 
+          hets: [],
+          alleles: { lesser: 'Les', mojave: 'wt', albino: 'wt', piebald: 'wt', spider: 'wt', pastel: 'wt' }
+        },
+        lineage: { 
+          parent_male_id: null, 
+          parent_female_id: null,
+          lineage_id: 'line_eta'
+        }
       }
     ];
 
@@ -794,6 +874,25 @@
       { morphs: ['spider', 'spider'], reason: 'Super Spider is lethal (neurological defects)' },
       { morphs: ['champagne', 'champagne'], reason: 'Super Champagne has severe wobble' }
     ];
+
+    // Morph health risk database (Phase 2)
+    const MORPH_HEALTH_DATABASE = {
+      'spider': {
+        risk: 'MODERATE',
+        issues: ['Wobble syndrome (neurological)'],
+        avoidWith: ['spider', 'woma', 'hidden_gene_woma', 'champagne']
+      },
+      'champagne': {
+        risk: 'MODERATE',
+        issues: ['Wobble, duck billing'],
+        avoidWith: ['champagne', 'spider']
+      },
+      'woma': {
+        risk: 'LOW',
+        issues: ['Mild head wobble in some lines'],
+        avoidWith: ['spider']
+      }
+    };
 
     // Morph market values (USD)
     const MORPH_VALUES = {
@@ -809,13 +908,15 @@
       'piebald_pastel': 800
     };
 
-    // Calculate compatibility score
+    // Calculate compatibility score (Phase 2: Advanced)
     function calculateCompatibility(male, female) {
       let score = 100;
       let warnings = [];
+      let bonuses = [];
       let outcomes = [];
+      let metrics = {};
 
-      // Check for lethal combinations
+      // 1. LETHAL GENETICS (-100, instant fail)
       const isLethal = checkLethalCombo(male.morphs, female.morphs);
       if (isLethal) {
         return {
@@ -823,46 +924,140 @@
           risk: 'FATAL',
           breed: false,
           warnings: [isLethal.reason],
+          bonuses: [],
           outcomes: [],
-          value: 0
+          value: 0,
+          metrics: {}
         };
       }
 
-      // Age check
+      // 2. INBREEDING COEFFICIENT (CoI)
+      const CoI = calculateInbreedingCoefficient(male, female);
+      metrics.CoI = CoI;
+      
+      if (CoI > 0.25) {
+        score -= 60;
+        warnings.push(`Severe inbreeding: CoI=${(CoI*100).toFixed(1)}% (>25% threshold)`);
+      } else if (CoI > 0.125) {
+        score -= 30;
+        warnings.push(`Moderate inbreeding: CoI=${(CoI*100).toFixed(1)}% (12.5-25%)`);
+      } else if (CoI > 0.0625) {
+        score -= 15;
+        warnings.push(`Mild inbreeding: CoI=${(CoI*100).toFixed(1)}% (6.25-12.5%)`);
+      } else if (CoI === 0) {
+        bonuses.push('Unrelated pair (0% CoI)');
+      }
+
+      // 3. MORPH HEALTH RISKS
+      const healthRisk = assessMorphHealthRisk(male.morphs, female.morphs);
+      if (healthRisk.severity === 'HIGH') {
+        score -= 40;
+        warnings.push(healthRisk.reason);
+      } else if (healthRisk.severity === 'MODERATE') {
+        score -= 20;
+        warnings.push(healthRisk.reason);
+      }
+
+      // 4. AGE COMPATIBILITY (Extended)
       if (male.age < 2 || female.age < 2) {
         score -= 15;
-        warnings.push('One or both snakes under 2 years old');
+        warnings.push('Snake(s) under 2 years old (sexual maturity risk)');
+      }
+      if (female.age > 10) {
+        score -= 10;
+        warnings.push('Female over 10 years (reduced fertility)');
+      }
+      if (male.age > 15 || female.age > 15) {
+        score -= 5;
+        warnings.push('Advanced age (breeding decline)');
       }
 
-      // Size compatibility
+      // 5. SIZE COMPATIBILITY (Extended)
+      const weightRatio = male.weight / female.weight;
       const sizeDiff = Math.abs(male.weight - female.weight);
-      if (sizeDiff > 500) {
-        score -= 20;
+      
+      if (sizeDiff > 800) {
+        score -= 25;
+        warnings.push(`Extreme size mismatch (${sizeDiff}g difference)`);
+      } else if (sizeDiff > 500) {
+        score -= 15;
         warnings.push(`Large size difference (${sizeDiff}g)`);
       }
+      
+      if (female.weight < 1200) {
+        score -= 20;
+        warnings.push('Female under 1200g (egg-binding risk)');
+      }
+      
+      if (weightRatio > 1.5) {
+        score -= 10;
+        warnings.push('Male significantly larger (breeding difficulty)');
+      }
 
-      // Calculate offspring and value
+      // 6. GENETIC DIVERSITY BONUS
+      const diversityScore = calculateGeneticDiversity(male, female);
+      metrics.diversity = diversityScore;
+      
+      if (diversityScore > 0.8) {
+        score += 15;
+        bonuses.push('Excellent genetic diversity (unrelated lines)');
+      } else if (diversityScore > 0.6) {
+        score += 8;
+        bonuses.push('Good genetic diversity');
+      }
+
+      // 7. HETEROZYGOSITY ADVANTAGE
+      const heterozygosity = calculateHeterozygosity(male.genetics, female.genetics);
+      metrics.heterozygosity = heterozygosity;
+      
+      if (heterozygosity > 0.7) {
+        score += 10;
+        bonuses.push('High heterozygosity (hybrid vigor potential)');
+      }
+
+      // 8. OFFSPRING VALUE ESTIMATION
       const offspringData = calculateOffspring(male, female);
       outcomes = offspringData.outcomes;
       const totalValue = offspringData.totalValue;
+      const avgOffspringValue = totalValue / offspringData.clutchSize;
+      metrics.avgOffspringValue = avgOffspringValue;
 
-      // Value bonus
-      if (totalValue > 2000) {
+      if (avgOffspringValue > 400) {
         score += 20;
-      } else if (totalValue > 1000) {
+        bonuses.push(`High-value offspring (avg $${avgOffspringValue.toFixed(0)}/snake)`);
+      } else if (avgOffspringValue > 200) {
         score += 10;
+        bonuses.push(`Good value offspring (avg $${avgOffspringValue.toFixed(0)}/snake)`);
+      } else if (avgOffspringValue < 100) {
+        score -= 5;
+        warnings.push('Low market value offspring');
+      }
+
+      // 9. RARE MORPH POTENTIAL
+      const rareMorphChance = outcomes.some(o => o.value >= 600) ? 
+        outcomes.find(o => o.value >= 600).percentage / 100 : 0;
+      metrics.rareMorphChance = rareMorphChance;
+      
+      if (rareMorphChance > 0.25) {
+        score += 15;
+        bonuses.push(`${(rareMorphChance*100).toFixed(0)}% chance of rare morph`);
       }
 
       // Determine risk level
-      const risk = score >= 80 ? 'EXCELLENT' : score >= 60 ? 'GOOD' : score >= 40 ? 'RISKY' : 'BAD';
+      const finalScore = Math.max(0, Math.min(100, score));
+      const risk = finalScore >= 80 ? 'EXCELLENT' : 
+                   finalScore >= 60 ? 'GOOD' : 
+                   finalScore >= 40 ? 'RISKY' : 'BAD';
 
       return {
-        score: Math.max(0, Math.min(100, score)),
+        score: finalScore,
         risk,
-        breed: score >= 50,
+        breed: finalScore >= 50,
         warnings,
+        bonuses,
         outcomes,
-        value: totalValue
+        value: totalValue,
+        metrics
       };
     }
 
@@ -877,6 +1072,139 @@
         }
       }
       return null;
+    }
+
+    // === PHASE 2: ADVANCED GENETICS FUNCTIONS ===
+
+    // Assess morph health risks
+    function assessMorphHealthRisk(maleMorphs, femaleMorphs) {
+      let severity = 'NONE';
+      let reasons = [];
+      
+      maleMorphs.forEach(mMorph => {
+        femaleMorphs.forEach(fMorph => {
+          if (MORPH_HEALTH_DATABASE[mMorph]) {
+            const morphData = MORPH_HEALTH_DATABASE[mMorph];
+            
+            if (morphData.avoidWith.includes(fMorph)) {
+              severity = morphData.risk;
+              reasons.push(`${mMorph} + ${fMorph}: ${morphData.issues.join(', ')}`);
+            }
+          }
+        });
+      });
+      
+      return { severity, reason: reasons.join('; ') };
+    }
+
+    // Calculate inbreeding coefficient (Wright's formula)
+    function calculateInbreedingCoefficient(male, female) {
+      let CoI = 0;
+      const allSnakes = [...mockMales, ...mockFemales];
+      
+      // Get ancestors (5 generations)
+      const maleAncestors = getAncestors(male, allSnakes, 5);
+      const femaleAncestors = getAncestors(female, allSnakes, 5);
+      
+      // Find common ancestors
+      const commonAncestors = maleAncestors.filter(a => 
+        femaleAncestors.some(b => b.id === a.id)
+      );
+      
+      if (commonAncestors.length === 0) return 0; // Unrelated
+      
+      commonAncestors.forEach(ancestor => {
+        const pathMale = getGenerationsTo(male, ancestor, allSnakes);
+        const pathFemale = getGenerationsTo(female, ancestor, allSnakes);
+        const n = pathMale + pathFemale;
+        
+        CoI += Math.pow(0.5, n);
+      });
+      
+      return CoI;
+    }
+
+    // Get ancestors up to N generations
+    function getAncestors(snake, allSnakes, generations, visited = new Set()) {
+      if (generations === 0 || !snake || visited.has(snake.id)) return [];
+      
+      visited.add(snake.id);
+      let ancestors = [];
+      
+      if (snake.lineage.parent_male_id) {
+        const father = allSnakes.find(s => s.id === snake.lineage.parent_male_id);
+        if (father) {
+          ancestors.push(father);
+          ancestors.push(...getAncestors(father, allSnakes, generations - 1, visited));
+        }
+      }
+      
+      if (snake.lineage.parent_female_id) {
+        const mother = allSnakes.find(s => s.id === snake.lineage.parent_female_id);
+        if (mother) {
+          ancestors.push(mother);
+          ancestors.push(...getAncestors(mother, allSnakes, generations - 1, visited));
+        }
+      }
+      
+      return ancestors;
+    }
+
+    // Count generations to ancestor
+    function getGenerationsTo(snake, ancestor, allSnakes, depth = 0) {
+      if (!snake || depth > 10) return Infinity;
+      if (snake.id === ancestor.id) return 0;
+      
+      let minPath = Infinity;
+      
+      if (snake.lineage.parent_male_id) {
+        const father = allSnakes.find(s => s.id === snake.lineage.parent_male_id);
+        if (father) {
+          const path = getGenerationsTo(father, ancestor, allSnakes, depth + 1);
+          minPath = Math.min(minPath, path + 1);
+        }
+      }
+      
+      if (snake.lineage.parent_female_id) {
+        const mother = allSnakes.find(s => s.id === snake.lineage.parent_female_id);
+        if (mother) {
+          const path = getGenerationsTo(mother, ancestor, allSnakes, depth + 1);
+          minPath = Math.min(minPath, path + 1);
+        }
+      }
+      
+      return minPath;
+    }
+
+    // Calculate genetic diversity score
+    function calculateGeneticDiversity(male, female) {
+      const uniqueMorphs = new Set([...male.morphs, ...female.morphs]).size;
+      const totalMorphs = male.morphs.length + female.morphs.length;
+      
+      const diversity = uniqueMorphs / Math.max(totalMorphs, 1);
+      
+      // Lineage bonus: different bloodlines = better
+      const lineageBonus = male.lineage.lineage_id !== female.lineage.lineage_id ? 1.2 : 0.8;
+      
+      return Math.min(1.0, diversity * lineageBonus);
+    }
+
+    // Calculate heterozygosity index
+    function calculateHeterozygosity(maleGenetics, femaleGenetics) {
+      let hetLoci = 0;
+      let totalLoci = 0;
+      
+      const allGenes = ['albino', 'piebald', 'spider', 'pastel', 'mojave', 'lesser'];
+      
+      allGenes.forEach(gene => {
+        const maleAllele = maleGenetics.alleles[gene] || 'wt';
+        const femaleAllele = femaleGenetics.alleles[gene] || 'wt';
+        
+        if (maleAllele !== femaleAllele) hetLoci++;
+        totalLoci++;
+      });
+      
+      return hetLoci / totalLoci;
     }
 
     // Calculate offspring probabilities (simplified)
@@ -1149,6 +1477,43 @@
           </div>
         </div>
       `;
+
+      // Phase 2 Advanced Metrics
+      if (compat.metrics) {
+        html += `
+          <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 10px;">
+            <h3 style="margin-bottom: 15px; color: #2d3748;">🔬 Advanced Genetics</h3>
+            <div class="stats">
+              <div class="stat-box">
+                <div class="stat-label">Inbreeding Coefficient (CoI)</div>
+                <div class="stat-value">${(compat.metrics.CoI * 100).toFixed(1)}%</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Genetic Diversity</div>
+                <div class="stat-value">${(compat.metrics.diversity * 100).toFixed(0)}%</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Heterozygosity</div>
+                <div class="stat-value">${(compat.metrics.heterozygosity * 100).toFixed(0)}%</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Avg Offspring Value</div>
+                <div class="stat-value">$${compat.metrics.avgOffspringValue.toFixed(0)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Bonuses section
+      if (compat.bonuses && compat.bonuses.length > 0) {
+        html += `
+          <div class="success-box" style="margin-top: 20px;">
+            <h4>✅ Bonuses</h4>
+            ${compat.bonuses.map(b => `<p>• ${b}</p>`).join('')}
+          </div>
+        `;
+      }
 
       document.getElementById('modalContent').innerHTML = html;
       document.getElementById('detailModal').classList.add('active');
