@@ -130,23 +130,35 @@
     .matrix-table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 10px;
-      min-width: 800px;
+      border-spacing: 5px;
     }
 
     .matrix-table th,
     .matrix-table td {
-      padding: 15px;
+      padding: 10px;
       text-align: center;
       border-radius: 8px;
-      min-width: 120px;
     }
 
-    .matrix-table th {
+    .matrix-table thead th {
       background: #f7fafc;
       color: #2d3748;
       font-weight: 600;
       border: 2px solid #e2e8f0;
+      min-width: 100px;
+    }
+
+    .matrix-table tbody th {
+      background: #f7fafc;
+      color: #2d3748;
+      font-weight: 600;
+      border: 2px solid #e2e8f0;
+      min-width: 100px;
+      white-space: nowrap;
+    }
+
+    .matrix-table tbody td {
+      min-width: 100px;
     }
 
     .header-cell {
@@ -154,19 +166,111 @@
     }
 
     .snake-name {
-      font-size: 1.1em;
+      font-size: 0.95em;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 3px;
     }
 
     .snake-morph {
-      font-size: 0.85em;
+      font-size: 0.75em;
       color: #718096;
     }
 
     .snake-sex {
-      font-size: 1.5em;
-      margin-bottom: 5px;
+      font-size: 1.2em;
+      margin-bottom: 3px;
+    }
+
+    /* Responsive layout */
+    @media (max-width: 1200px) {
+      .breeding-matrix {
+        padding: 15px;
+      }
+
+      .matrix-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .matrix-table thead th,
+      .matrix-table tbody th {
+        min-width: 80px;
+      }
+
+      .matrix-table tbody td {
+        min-width: 90px;
+      }
+
+      .snake-name {
+        font-size: 0.85em;
+      }
+
+      .snake-morph {
+        font-size: 0.7em;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 1.8em;
+      }
+
+      .header p {
+        font-size: 0.95em;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .controls button {
+        width: 100%;
+      }
+
+      .legend-items {
+        flex-direction: column;
+      }
+
+      .matrix-table thead th,
+      .matrix-table tbody th {
+        min-width: 70px;
+        padding: 8px;
+      }
+
+      .matrix-table tbody td {
+        min-width: 75px;
+        padding: 8px;
+      }
+
+      .snake-name {
+        font-size: 0.8em;
+      }
+
+      .snake-morph {
+        font-size: 0.65em;
+      }
+
+      .score-value {
+        font-size: 1.5em;
+      }
+
+      .outcome-text {
+        font-size: 0.75em;
+      }
+
+      .value-estimate {
+        font-size: 0.7em;
+      }
+
+      .risk-indicator {
+        font-size: 0.7em;
+      }
     }
 
     .breeding-cell {
@@ -806,7 +910,7 @@
     // Generate matrix
     function generateMatrix() {
       const table = document.getElementById('breedingMatrix');
-      let html = '<thead><tr><th class="header-cell">🧬 Breeding<br>Matrix</th>';
+      let html = '<thead><tr><th class="header-cell">♂ Males<br>♀ Females</th>';
 
       // Female headers
       mockFemales.forEach(female => {
@@ -848,7 +952,7 @@
               <div class="score-value">${compat.score}</div>
               <div class="outcome-text">${compat.outcomes[0]?.morph || 'N/A'}</div>
               <div class="value-estimate">~$${compat.value}</div>
-              <div class="risk-indicator">${compat.risk} ${indicator}</div>
+              <div class="risk-indicator">${indicator}</div>
             </td>
           `;
         });
