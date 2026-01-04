@@ -33,6 +33,21 @@ METADATA=$(cat <<EOF
       "namespace_id": "ecbcb79f3df64379863872965f993991"
     },
     {
+      "type": "kv_namespace",
+      "name": "PRODUCTS_REAL",
+      "namespace_id": "a618c6b71cc249e1accadd95d7ce4545"
+    },
+    {
+      "type": "kv_namespace",
+      "name": "PRODUCTS_VIRTUAL",
+      "namespace_id": "6f7cf9f61f694021be0ecf65a35bbd31"
+    },
+    {
+      "type": "kv_namespace",
+      "name": "USERS",
+      "namespace_id": "e2c1dcb3559246cfb670b76658a27d43"
+    },
+    {
       "type": "secret_text",
       "name": "STRIPE_SECRET_KEY",
       "text": "$STRIPE_SECRET_KEY"

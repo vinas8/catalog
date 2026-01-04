@@ -40,7 +40,7 @@
 import { createEmailService } from './email-service.js';
 
 const WORKER_VERSION = '0.7.2';
-const WORKER_UPDATED = '2026-01-03T15:49:00Z';
+const WORKER_UPDATED = '2026-01-04T05:24:00Z';
 
 // Test Registry - Maps all tests to metadata
 const TEST_REGISTRY = {
@@ -246,12 +246,106 @@ export default {
       return handleAssignVirtualSnake(request, env, corsHeaders);
     }
 
+    // Route: GET /kv/products/list (list PRODUCTS namespace keys)
+    if (pathname === '/kv/products/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.PRODUCTS, corsHeaders);
+    }
+
+    // Route: GET /kv/products-real/list (list PRODUCTS_REAL namespace keys)
+    if (pathname === '/kv/products-real/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.PRODUCTS_REAL, corsHeaders);
+    }
+
+    // Route: GET /kv/products-virtual/list (list PRODUCTS_VIRTUAL namespace keys)
+    if (pathname === '/kv/products-virtual/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.PRODUCTS_VIRTUAL, corsHeaders);
+    }
+
+    // Route: GET /kv/user-products/list (list USER_PRODUCTS namespace keys)
+    if (pathname === '/kv/user-products/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.USER_PRODUCTS, corsHeaders);
+    }
+
+    // Route: GET /kv/product-status/list (list PRODUCT_STATUS namespace keys)
+    if (pathname === '/kv/product-status/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.PRODUCT_STATUS, corsHeaders);
+    }
+
+    // Route: GET /kv/users/list (list USERS namespace keys)
+    if (pathname === '/kv/users/list' && request.method === 'GET') {
+      return handleKVNamespaceList(env.USERS, corsHeaders);
+    }
+
+    // Route: GET /kv/get (get key from any namespace)
+    if (pathname === '/kv/get' && request.method === 'GET') {
+      return handleKVGet(request, env, corsHeaders);
+    }
+
+    // Route: POST /kv/set (set key in any namespace)
+    if (pathname === '/kv/set' && request.method === 'POST') {
+      return handleKVSet(request, env, corsHeaders);
+    }
+
+    // Route: POST /kv/delete (delete key from any namespace)
+    if (pathname === '/kv/delete' && request.method === 'POST') {
+      return handleKVDelete(request, env, corsHeaders);
+    }
+
     // Route: GET /health (health check)
     if (pathname === '/health' && request.method === 'GET') {
       return new Response(JSON.stringify({
         status: 'healthy',
         version: WORKER_VERSION,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        endpoints: {
+          core: [
+            'GET /health',
+            'GET /debug',
+            'GET /version'
+          ],
+          stripe: [
+            'POST /stripe-webhook',
+            'POST /stripe-product-webhook'
+          ],
+          products: [
+            'GET /products',
+            'GET /product-status?id=<id>',
+            'GET /session-info?session_id=<id>'
+          ],
+          users: [
+            'GET /user-products?user=<hash>',
+            'POST /register-user',
+            'POST /register',
+            'GET /user-data?user=<hash>'
+          ],
+          kv_read: [
+            'GET /kv/list-all',
+            'GET /kv/list-products',
+            'GET /kv/customer-count',
+            'GET /kv/list-customers',
+            'GET /kv/list-user-products',
+            'GET /kv/user-stats',
+            'GET /kv/get?ns=<namespace>&key=<key>',
+            'GET /kv/products/list',
+            'GET /kv/products-real/list',
+            'GET /kv/products-virtual/list',
+            'GET /kv/user-products/list',
+            'GET /kv/product-status/list',
+            'GET /kv/users/list'
+          ],
+          kv_write: [
+            'POST /kv/set',
+            'POST /kv/delete',
+            'POST /clear-kv-all',
+            'POST /assign-product',
+            'POST /assign-virtual-snake'
+          ],
+          admin: [
+            'POST /upload-products',
+            'POST /sync-stripe-to-kv',
+            'POST /clear-stripe-products'
+          ]
+        }
       }), {
         status: 200,
         headers: corsHeaders
@@ -1272,26 +1366,33 @@ async function handleKVListUserProducts(env, corsHeaders) {
  */
 async function handleKVListAll(env, corsHeaders) {
   try {
-    const productsKeys = await env.PRODUCTS.list();
-    const userKeys = await env.USER_PRODUCTS.list();
-    const statusKeys = await env.PRODUCT_STATUS.list();
+    const result = {};
     
-    const allKeys = [
-      ...productsKeys.keys.map(k => ({ ...k, namespace: 'PRODUCTS' })),
-      ...userKeys.keys.map(k => ({ ...k, namespace: 'USER_PRODUCTS' })),
-      ...statusKeys.keys.map(k => ({ ...k, namespace: 'PRODUCT_STATUS' }))
+    // Safely list each namespace
+    const namespaces = [
+      { name: 'PRODUCTS', kv: env.PRODUCTS },
+      { name: 'PRODUCTS_REAL', kv: env.PRODUCTS_REAL },
+      { name: 'PRODUCTS_VIRTUAL', kv: env.PRODUCTS_VIRTUAL },
+      { name: 'USER_PRODUCTS', kv: env.USER_PRODUCTS },
+      { name: 'PRODUCT_STATUS', kv: env.PRODUCT_STATUS },
+      { name: 'USERS', kv: env.USERS }
     ];
     
-    return new Response(JSON.stringify({
-      success: true,
-      result: allKeys,
-      count: allKeys.length,
-      breakdown: {
-        products: productsKeys.keys.length,
-        user_products: userKeys.keys.length,
-        product_status: statusKeys.keys.length
+    for (const ns of namespaces) {
+      try {
+        if (ns.kv) {
+          const keys = await ns.kv.list();
+          result[ns.name] = keys.keys || [];
+        } else {
+          result[ns.name] = [];
+        }
+      } catch (err) {
+        console.error(`Error listing ${ns.name}:`, err);
+        result[ns.name] = [];
       }
-    }), {
+    }
+    
+    return new Response(JSON.stringify(result), {
       status: 200,
       headers: corsHeaders
     });
@@ -1827,6 +1928,143 @@ async function handleClearAllKV(env, corsHeaders) {
       totalKeysDeleted: totalDeleted,
       namespaces: results
     }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * List all keys in a KV namespace
+ */
+async function handleKVNamespaceList(namespace, corsHeaders) {
+  try {
+    const { keys } = await namespace.list();
+    return new Response(JSON.stringify(keys), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Get a key from any namespace
+ */
+async function handleKVGet(request, env, corsHeaders) {
+  try {
+    const url = new URL(request.url);
+    const ns = url.searchParams.get('ns');
+    const key = url.searchParams.get('key');
+
+    if (!ns || !key) {
+      return new Response(JSON.stringify({ error: 'Missing ns or key parameter' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    const namespace = env[ns];
+    if (!namespace) {
+      return new Response(JSON.stringify({ error: `Invalid namespace: ${ns}` }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    const value = await namespace.get(key, { type: 'json' });
+    
+    if (value === null) {
+      return new Response(JSON.stringify({ error: 'Key not found' }), {
+        status: 404,
+        headers: corsHeaders
+      });
+    }
+
+    return new Response(JSON.stringify(value), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Set a key in any namespace
+ */
+async function handleKVSet(request, env, corsHeaders) {
+  try {
+    const body = await request.json();
+    const { namespace: ns, key, value } = body;
+
+    if (!ns || !key || value === undefined) {
+      return new Response(JSON.stringify({ error: 'Missing namespace, key, or value' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    const namespace = env[ns];
+    if (!namespace) {
+      return new Response(JSON.stringify({ error: `Invalid namespace: ${ns}` }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    await namespace.put(key, JSON.stringify(value));
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Delete a key from any namespace
+ */
+async function handleKVDelete(request, env, corsHeaders) {
+  try {
+    const body = await request.json();
+    const { namespace: ns, key } = body;
+
+    if (!ns || !key) {
+      return new Response(JSON.stringify({ error: 'Missing namespace or key' }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    const namespace = env[ns];
+    if (!namespace) {
+      return new Response(JSON.stringify({ error: `Invalid namespace: ${ns}` }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    await namespace.delete(key);
+
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: corsHeaders
     });

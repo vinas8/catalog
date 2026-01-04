@@ -3,7 +3,7 @@
  * Version, test registry, and SMRI scenarios
  */
 
-export const WORKER_VERSION = '0.7.1';
+export const WORKER_VERSION = '0.7.2';
 export const WORKER_UPDATED = '2026-01-03T12:20:00Z';
 
 // Test Registry - Maps all tests to metadata

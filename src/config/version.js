@@ -4,24 +4,27 @@
  */
 
 export const VERSION_CONFIG = {
-  CURRENT: 's0.5.0',
+  CURRENT: 's0.7.2',
   MAJOR: 0,
-  MODULE: 5,
-  PATCH: 0,
+  MODULE: 7,
+  PATCH: 2,
   
   HISTORY: [
     { version: 's0.1.0', date: '2024-01', description: 'MVP - Shop and game' },
     { version: 's0.3.0', date: '2024-06', description: 'SMRI test system' },
-    { version: 's0.5.0', date: '2024-12', description: 'Production ready' }
+    { version: 's0.5.0', date: '2024-12', description: 'Production ready' },
+    { version: 's0.7.0', date: '2025-12', description: 'Context separation + KV manager' },
+    { version: 's0.7.2', date: '2026-01', description: 'Full KV CRUD + User assignment' }
   ],
   
   MODULES: {
-    shop: 's0.5.0',
-    game: 's0.5.0',
-    payment: 's0.5.0',
-    worker: 's0.5.0',
-    auth: 's0.3.0',
-    smri: 's0.3.0'
+    shop: 's0.7.2',
+    game: 's0.7.2',
+    payment: 's0.7.2',
+    worker: 's0.7.2',
+    auth: 's0.7.2',
+    smri: 's0.7.2',
+    debug: 's0.7.2'
   },
   
   // SMRI Scenarios: { code, desc, ver, done }

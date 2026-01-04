@@ -151,6 +151,7 @@
 <body>
   <div class="nav">
     <a href="index.html">← Back to Debug Hub</a>
+    <a href="kv-manager.html">🗄️ KV Manager</a>
   </div>
   
   <h1>📊 Data Manager</h1>
@@ -185,6 +186,7 @@
     <h2>💳 Stripe Data Inspector</h2>
     <button class="btn" onclick="fetchAllStripeProducts()">Fetch All Products</button>
     <button class="btn" onclick="fetchStripePrices()">Fetch Prices</button>
+    <button class="btn" onclick="syncStripeToKV()">🔄 Sync to KV</button>
     <button class="btn btn-danger" onclick="clearStripeProducts()">Clear</button>
     <div id="stripeOutput" class="output"></div>
   </div>
@@ -928,6 +930,50 @@
         log('csvOutput', `❌ Sync failed: ${err.message}`, 'error');
         log('csvOutput', '', 'info');
         log('csvOutput', '💡 Make sure Worker is deployed with latest code', 'warning');
+      }
+    }
+
+    async function syncStripeToKV() {
+      clearLog('stripeOutput');
+      log('stripeOutput', '🔄 Syncing Stripe → KV via Worker...', 'info');
+      log('stripeOutput', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+      
+      try {
+        log('stripeOutput', '📡 Sending request to Worker...', 'info');
+        const res = await fetch(`${WORKER_URL}/sync-stripe-to-kv`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+        }
+        
+        const result = await res.json();
+        
+        log('stripeOutput', '', 'info');
+        log('stripeOutput', `✅ Sync complete!`, 'success');
+        log('stripeOutput', `   📦 Total: ${result.total} products`, 'info');
+        log('stripeOutput', `   ✅ Synced: ${result.synced}`, 'success');
+        log('stripeOutput', `   ❌ Failed: ${result.failed}`, result.failed > 0 ? 'error' : 'info');
+        
+        if (result.results && result.failed > 0) {
+          log('stripeOutput', '', 'info');
+          log('stripeOutput', 'Failed products:', 'warning');
+          result.results.filter(r => !r.success).forEach(r => {
+            log('stripeOutput', `  ❌ ${r.name}: ${r.error}`, 'error');
+          });
+        }
+        
+        log('stripeOutput', '', 'info');
+        log('stripeOutput', '🎉 KV storage updated! Check catalog.html', 'success');
+        await refreshKVCount();
+        
+      } catch (err) {
+        log('stripeOutput', '', 'info');
+        log('stripeOutput', `❌ Sync failed: ${err.message}`, 'error');
+        log('stripeOutput', '', 'info');
+        log('stripeOutput', '💡 Make sure Worker is deployed with latest code', 'warning');
       }
     }
 

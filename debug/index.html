@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Debug Hub - Snake Muffin</title>
-  <link rel="stylesheet" href="../styles.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>🐍 Debug Hub - Snake Muffin v0.7.2</title>
+  <link rel="stylesheet" href="../styles.css?v=20260104">
   <script type="module" src="../src/components/Navigation.js"></script>
   <style>
     .debug-content {
@@ -123,7 +126,8 @@
     <p class="subtitle">
       <strong>Version:</strong> <span id="app-version">Loading...</span> | 
       <strong>SMRI:</strong> <span id="smri-count">Loading...</span> scenarios | 
-      <strong>Progress:</strong> <span id="overall-progress">Loading...</span>
+      <strong>Progress:</strong> <span id="overall-progress">Loading...</span> |
+      <strong>Updated:</strong> <span id="page-timestamp" style="color: #8b949e; font-size: 12px;">2026-01-04</span>
   </p>
 
   <!-- Quick Access -->
@@ -162,6 +166,10 @@
         🏠 Aquarium Shelf Demo<br>
         <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Visual snake collection system</span>
       </a>
+      <a href="breeding-calculator.html" style="background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        🧬 Breeding Calculator<br>
+        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Genetics matrix & compatibility</span>
+      </a>
     </div>
   </div>
 
@@ -170,12 +178,18 @@
   </div>
 
   <script type="module">
-    import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js';
+    import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js?v=20260104';
+
+    console.log('🐛 Debug Hub Loading...');
+    console.log('📦 VERSION:', VERSION);
+    console.log('📦 VERSION_CONFIG.CURRENT:', VERSION_CONFIG.CURRENT);
 
     const stats = getSMRIStats();
     document.getElementById('app-version').textContent = VERSION.substring(1);
     document.getElementById('smri-count').textContent = stats.total;
     document.getElementById('overall-progress').textContent = `${stats.completed}/${stats.total} done (${stats.avgProgress}%)`;
+    
+    console.log('✅ Version displayed:', VERSION.substring(1));
 
     const moduleGroups = {};
     const moduleNames = {

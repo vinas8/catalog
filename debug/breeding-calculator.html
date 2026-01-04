@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Breeding Calculator - Snake Muffin Debug</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #718096;
+      font-size: 1.1em;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    .legend {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .legend h3 {
+      margin-bottom: 15px;
+      color: #2d3748;
+    }
+
+    .legend-items {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .legend-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+    }
+
+    .breeding-matrix {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow-x: auto;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 10px;
+      min-width: 800px;
+    }
+
+    .matrix-table th,
+    .matrix-table td {
+      padding: 15px;
+      text-align: center;
+      border-radius: 8px;
+      min-width: 120px;
+    }
+
+    .matrix-table th {
+      background: #f7fafc;
+      color: #2d3748;
+      font-weight: 600;
+      border: 2px solid #e2e8f0;
+    }
+
+    .header-cell {
+      position: relative;
+    }
+
+    .snake-name {
+      font-size: 1.1em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .snake-morph {
+      font-size: 0.85em;
+      color: #718096;
+    }
+
+    .snake-sex {
+      font-size: 1.5em;
+      margin-bottom: 5px;
+    }
+
+    .breeding-cell {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .breeding-cell:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-color: #4a5568;
+    }
+
+    /* Compatibility colors */
+    .score-excellent {
+      background: linear-gradient(135deg, #48bb78, #38a169);
+      color: white;
+    }
+
+    .score-good {
+      background: linear-gradient(135deg, #ecc94b, #d69e2e);
+      color: #2d3748;
+    }
+
+    .score-risky {
+      background: linear-gradient(135deg, #ed8936, #dd6b20);
+      color: white;
+    }
+
+    .score-bad {
+      background: linear-gradient(135deg, #f56565, #e53e3e);
+      color: white;
+    }
+
+    .score-value {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .outcome-text {
+      font-size: 0.9em;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    .risk-indicator {
+      margin-top: 5px;
+      font-size: 0.85em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .value-estimate {
+      font-size: 0.85em;
+      margin-top: 3px;
+      opacity: 0.9;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2em;
+      cursor: pointer;
+      color: #718096;
+      transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: #2d3748;
+    }
+
+    .modal-title {
+      font-size: 2em;
+      color: #2d3748;
+      margin-bottom: 20px;
+    }
+
+    .pairing-info {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f7fafc;
+      border-radius: 10px;
+    }
+
+    .parent-info {
+      text-align: center;
+    }
+
+    .parent-info .sex {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .parent-info .name {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #2d3748;
+    }
+
+    .parent-info .morph {
+      color: #718096;
+      margin-top: 5px;
+    }
+
+    .punnett-square {
+      margin: 30px 0;
+    }
+
+    .punnett-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 15px;
+    }
+
+    .punnett-grid {
+      display: grid;
+      grid-template-columns: 50px repeat(2, 1fr);
+      grid-template-rows: 50px repeat(2, 1fr);
+      gap: 5px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .punnett-cell {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      font-weight: 600;
+      min-height: 60px;
+    }
+
+    .punnett-header {
+      background: #667eea;
+      color: white;
+      font-weight: bold;
+    }
+
+    .punnett-result {
+      background: #f7fafc;
+      color: #2d3748;
+    }
+
+    .outcomes {
+      margin: 30px 0;
+    }
+
+    .outcome-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: #f7fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .outcome-percentage {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .outcome-morph {
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .outcome-value {
+      color: #48bb78;
+      font-weight: 600;
+    }
+
+    .warning-box {
+      background: #fff5f5;
+      border-left: 4px solid #f56565;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .warning-box h4 {
+      color: #c53030;
+      margin-bottom: 10px;
+    }
+
+    .warning-box p {
+      color: #742a2a;
+    }
+
+    .success-box {
+      background: #f0fff4;
+      border-left: 4px solid #48bb78;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .success-box h4 {
+      color: #2f855a;
+      margin-bottom: 10px;
+    }
+
+    .success-box p {
+      color: #22543d;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-label {
+      color: #718096;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #2d3748;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧬 Breeding Calculator</h1>
+      <p>Snake Muffin - Genetics & Compatibility Matrix</p>
+      <p style="margin-top: 10px; font-size: 0.9em; color: #a0aec0;">Debug Tool v0.7.2</p>
+    </div>
+
+    <div class="controls">
+      <button class="btn-primary" onclick="loadMockData()">🔄 Load Mock Data</button>
+      <button class="btn-secondary" onclick="filterExcellent()">✨ Show Only Excellent</button>
+      <button class="btn-secondary" onclick="showAll()">👁️ Show All</button>
+      <button class="btn-secondary" onclick="sortByValue()">💰 Sort by Value</button>
+      <button class="btn-secondary" onclick="exportPlan()">📥 Export Plan</button>
+    </div>
+
+    <div class="legend">
+      <h3>🎨 Compatibility Legend</h3>
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-box" style="background: linear-gradient(135deg, #48bb78, #38a169); color: white;">
+            🟢
+          </div>
+          <div>
+            <strong>Excellent (80-100)</strong>
+            <div style="color: #718096; font-size: 0.9em;">Safe genetics, high value</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: linear-gradient(135deg, #ecc94b, #d69e2e);">
+            🟡
+          </div>
+          <div>
+            <strong>Good (60-79)</strong>
+            <div style="color: #718096; font-size: 0.9em;">Minor concerns</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: linear-gradient(135deg, #ed8936, #dd6b20); color: white;">
+            🟠
+          </div>
+          <div>
+            <strong>Risky (40-59)</strong>
+            <div style="color: #718096; font-size: 0.9em;">Health/genetic concerns</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: linear-gradient(135deg, #f56565, #e53e3e); color: white;">
+            🔴
+          </div>
+          <div>
+            <strong>Bad (0-39)</strong>
+            <div style="color: #718096; font-size: 0.9em;">Avoid breeding</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="breeding-matrix">
+      <h2 style="margin-bottom: 20px; color: #2d3748;">🐍 Breeding Compatibility Matrix</h2>
+      <table class="matrix-table" id="breedingMatrix">
+        <!-- Matrix will be populated by JavaScript -->
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal for detailed genetics -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modalContent">
+        <!-- Content populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock snake data
+    const mockMales = [
+      {
+        id: 'male_1',
+        name: 'Zeus',
+        sex: 'male',
+        age: 3,
+        weight: 1800,
+        morphs: ['mojave'],
+        genetics: { visual: ['mojave'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'male_2',
+        name: 'Rocky',
+        sex: 'male',
+        age: 4,
+        weight: 2000,
+        morphs: ['spider'],
+        genetics: { visual: ['spider'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'male_3',
+        name: 'Max',
+        sex: 'male',
+        age: 2.5,
+        weight: 1600,
+        morphs: ['piebald'],
+        genetics: { visual: ['piebald'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'male_4',
+        name: 'Apollo',
+        sex: 'male',
+        age: 3,
+        weight: 1700,
+        morphs: ['pastel'],
+        genetics: { visual: ['pastel'], hets: ['albino'] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'male_5',
+        name: 'Shadow',
+        sex: 'male',
+        age: 2,
+        weight: 1400,
+        morphs: ['normal'],
+        genetics: { visual: [], hets: ['piebald', 'albino'] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      }
+    ];
+
+    const mockFemales = [
+      {
+        id: 'female_1',
+        name: 'Luna',
+        sex: 'female',
+        age: 3,
+        weight: 1500,
+        morphs: ['albino'],
+        genetics: { visual: ['albino'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'female_2',
+        name: 'Bella',
+        sex: 'female',
+        age: 4,
+        weight: 1600,
+        morphs: ['pastel'],
+        genetics: { visual: ['pastel'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'female_3',
+        name: 'Nala',
+        sex: 'female',
+        age: 2,
+        weight: 1200,
+        morphs: ['normal'],
+        genetics: { visual: [], hets: ['piebald'] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'female_4',
+        name: 'Cleo',
+        sex: 'female',
+        age: 5,
+        weight: 1800,
+        morphs: ['spider'],
+        genetics: { visual: ['spider'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      },
+      {
+        id: 'female_5',
+        name: 'Ivy',
+        sex: 'female',
+        age: 3,
+        weight: 1500,
+        morphs: ['lesser'],
+        genetics: { visual: ['lesser'], hets: [] },
+        lineage: { parent_male_id: null, parent_female_id: null }
+      }
+    ];
+
+    // Lethal combinations database
+    const LETHAL_COMBOS = [
+      { morphs: ['spider', 'spider'], reason: 'Super Spider is lethal (neurological defects)' },
+      { morphs: ['champagne', 'champagne'], reason: 'Super Champagne has severe wobble' }
+    ];
+
+    // Morph market values (USD)
+    const MORPH_VALUES = {
+      'normal': 50,
+      'albino': 300,
+      'spider': 150,
+      'piebald': 600,
+      'pastel': 150,
+      'mojave': 200,
+      'lesser': 200,
+      'albino_pastel': 500,
+      'blue_eyed_leucistic': 800,
+      'piebald_pastel': 800
+    };
+
+    // Calculate compatibility score
+    function calculateCompatibility(male, female) {
+      let score = 100;
+      let warnings = [];
+      let outcomes = [];
+
+      // Check for lethal combinations
+      const isLethal = checkLethalCombo(male.morphs, female.morphs);
+      if (isLethal) {
+        return {
+          score: 0,
+          risk: 'FATAL',
+          breed: false,
+          warnings: [isLethal.reason],
+          outcomes: [],
+          value: 0
+        };
+      }
+
+      // Age check
+      if (male.age < 2 || female.age < 2) {
+        score -= 15;
+        warnings.push('One or both snakes under 2 years old');
+      }
+
+      // Size compatibility
+      const sizeDiff = Math.abs(male.weight - female.weight);
+      if (sizeDiff > 500) {
+        score -= 20;
+        warnings.push(`Large size difference (${sizeDiff}g)`);
+      }
+
+      // Calculate offspring and value
+      const offspringData = calculateOffspring(male, female);
+      outcomes = offspringData.outcomes;
+      const totalValue = offspringData.totalValue;
+
+      // Value bonus
+      if (totalValue > 2000) {
+        score += 20;
+      } else if (totalValue > 1000) {
+        score += 10;
+      }
+
+      // Determine risk level
+      const risk = score >= 80 ? 'EXCELLENT' : score >= 60 ? 'GOOD' : score >= 40 ? 'RISKY' : 'BAD';
+
+      return {
+        score: Math.max(0, Math.min(100, score)),
+        risk,
+        breed: score >= 50,
+        warnings,
+        outcomes,
+        value: totalValue
+      };
+    }
+
+    // Check for lethal combinations
+    function checkLethalCombo(morphs1, morphs2) {
+      for (const combo of LETHAL_COMBOS) {
+        const hasAll = combo.morphs.every(m => 
+          morphs1.includes(m) && morphs2.includes(m)
+        );
+        if (hasAll) {
+          return { reason: combo.reason };
+        }
+      }
+      return null;
+    }
+
+    // Calculate offspring probabilities (simplified)
+    function calculateOffspring(male, female) {
+      const outcomes = [];
+      let totalValue = 0;
+      const clutchSize = 8; // Average clutch
+
+      // Simplified genetics - just demo the concept
+      const maleMorphs = male.genetics.visual.concat(male.genetics.hets);
+      const femaleMorphs = female.genetics.visual.concat(female.genetics.hets);
+
+      // Check for special combos
+      if (male.genetics.visual.includes('mojave') && female.genetics.visual.includes('lesser')) {
+        // BEL combo
+        outcomes.push({
+          morph: 'Blue Eyed Leucistic',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['blue_eyed_leucistic'] || 800
+        });
+        outcomes.push({
+          morph: 'Mojave',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['mojave']
+        });
+        outcomes.push({
+          morph: 'Lesser',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['lesser']
+        });
+        outcomes.push({
+          morph: 'Normal',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['normal']
+        });
+      } else if (male.genetics.hets.includes('albino') && female.genetics.hets.includes('albino')) {
+        // Het albino pairing
+        outcomes.push({
+          morph: 'Albino',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['albino']
+        });
+        outcomes.push({
+          morph: 'Het Albino',
+          percentage: 50,
+          count: 4,
+          value: MORPH_VALUES['normal'] * 1.5
+        });
+        outcomes.push({
+          morph: 'Normal',
+          percentage: 25,
+          count: 2,
+          value: MORPH_VALUES['normal']
+        });
+      } else {
+        // Default simple outcome
+        const mainMorph = male.genetics.visual[0] || female.genetics.visual[0] || 'normal';
+        outcomes.push({
+          morph: mainMorph.charAt(0).toUpperCase() + mainMorph.slice(1),
+          percentage: 50,
+          count: 4,
+          value: MORPH_VALUES[mainMorph] || 100
+        });
+        outcomes.push({
+          morph: 'Normal',
+          percentage: 50,
+          count: 4,
+          value: MORPH_VALUES['normal']
+        });
+      }
+
+      // Calculate total value
+      outcomes.forEach(outcome => {
+        totalValue += outcome.count * outcome.value;
+      });
+
+      return { outcomes, totalValue };
+    }
+
+    // Generate matrix
+    function generateMatrix() {
+      const table = document.getElementById('breedingMatrix');
+      let html = '<thead><tr><th class="header-cell">🧬 Breeding<br>Matrix</th>';
+
+      // Female headers
+      mockFemales.forEach(female => {
+        html += `
+          <th class="header-cell">
+            <div class="snake-sex">♀</div>
+            <div class="snake-name">${female.name}</div>
+            <div class="snake-morph">${formatMorphs(female.morphs)}</div>
+          </th>
+        `;
+      });
+
+      html += '</tr></thead><tbody>';
+
+      // Male rows
+      mockMales.forEach(male => {
+        html += `<tr><th class="header-cell">
+          <div class="snake-sex">♂</div>
+          <div class="snake-name">${male.name}</div>
+          <div class="snake-morph">${formatMorphs(male.morphs)}</div>
+        </th>`;
+
+        mockFemales.forEach(female => {
+          const compat = calculateCompatibility(male, female);
+          const colorClass = compat.score >= 80 ? 'score-excellent' : 
+                             compat.score >= 60 ? 'score-good' : 
+                             compat.score >= 40 ? 'score-risky' : 'score-bad';
+          
+          const indicator = compat.score >= 80 ? '🟢' : 
+                            compat.score >= 60 ? '🟡' : 
+                            compat.score >= 40 ? '🟠' : '🔴';
+
+          html += `
+            <td class="breeding-cell ${colorClass}" 
+                onclick="showDetails('${male.id}', '${female.id}')"
+                data-male="${male.id}"
+                data-female="${female.id}"
+                data-score="${compat.score}">
+              <div class="score-value">${compat.score}</div>
+              <div class="outcome-text">${compat.outcomes[0]?.morph || 'N/A'}</div>
+              <div class="value-estimate">~$${compat.value}</div>
+              <div class="risk-indicator">${compat.risk} ${indicator}</div>
+            </td>
+          `;
+        });
+
+        html += '</tr>';
+      });
+
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+
+    // Format morphs for display
+    function formatMorphs(morphs) {
+      if (morphs.length === 0 || morphs[0] === 'normal') return 'Normal';
+      return morphs.map(m => m.charAt(0).toUpperCase() + m.slice(1)).join(', ');
+    }
+
+    // Show detailed genetics modal
+    function showDetails(maleId, femaleId) {
+      const male = mockMales.find(m => m.id === maleId);
+      const female = mockFemales.find(f => f.id === femaleId);
+      const compat = calculateCompatibility(male, female);
+
+      let html = `
+        <h2 class="modal-title">🧬 Breeding Genetics</h2>
+        
+        <div class="pairing-info">
+          <div class="parent-info">
+            <div class="sex">♂</div>
+            <div class="name">${male.name}</div>
+            <div class="morph">${formatMorphs(male.morphs)}</div>
+            <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+              ${male.age} years, ${male.weight}g
+            </div>
+          </div>
+          <div style="font-size: 3em; color: #cbd5e0;">×</div>
+          <div class="parent-info">
+            <div class="sex">♀</div>
+            <div class="name">${female.name}</div>
+            <div class="morph">${formatMorphs(female.morphs)}</div>
+            <div style="font-size: 0.85em; color: #718096; margin-top: 5px;">
+              ${female.age} years, ${female.weight}g
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Warnings
+      if (compat.warnings.length > 0) {
+        html += `
+          <div class="warning-box">
+            <h4>⚠️ Warnings</h4>
+            ${compat.warnings.map(w => `<p>• ${w}</p>`).join('')}
+          </div>
+        `;
+      }
+
+      // Success indicators
+      if (compat.score >= 80) {
+        html += `
+          <div class="success-box">
+            <h4>✅ Excellent Pairing!</h4>
+            <p>Safe genetics with high-value offspring potential.</p>
+          </div>
+        `;
+      }
+
+      // Punnett Square (simplified visualization)
+      html += `
+        <div class="punnett-square">
+          <h3 class="punnett-title">Genetic Punnett Square</h3>
+          <div class="punnett-grid">
+            <div class="punnett-cell"></div>
+            <div class="punnett-cell punnett-header">${male.genetics.visual[0] || 'N'}</div>
+            <div class="punnett-cell punnett-header">${male.genetics.hets[0] || 'n'}</div>
+            
+            <div class="punnett-cell punnett-header">${female.genetics.visual[0] || 'N'}</div>
+            <div class="punnett-cell punnett-result">Nn</div>
+            <div class="punnett-cell punnett-result">nn</div>
+            
+            <div class="punnett-cell punnett-header">${female.genetics.hets[0] || 'n'}</div>
+            <div class="punnett-cell punnett-result">Nn</div>
+            <div class="punnett-cell punnett-result">nn</div>
+          </div>
+        </div>
+      `;
+
+      // Outcomes
+      html += `
+        <div class="outcomes">
+          <h3 class="punnett-title">Expected Offspring (8 eggs)</h3>
+          ${compat.outcomes.map(outcome => `
+            <div class="outcome-item">
+              <div>
+                <span class="outcome-percentage">${outcome.percentage}%</span>
+                <span class="outcome-morph"> - ${outcome.morph}</span>
+                <span style="color: #718096;"> (${outcome.count} eggs)</span>
+              </div>
+              <div class="outcome-value">$${outcome.value} each</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Stats summary
+      html += `
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-label">Compatibility Score</div>
+            <div class="stat-value">${compat.score}/100</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Risk Level</div>
+            <div class="stat-value">${compat.risk}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Expected Clutch Value</div>
+            <div class="stat-value">$${compat.value}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Recommended</div>
+            <div class="stat-value">${compat.breed ? '✅ Yes' : '❌ No'}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modalContent').innerHTML = html;
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    // Filter functions
+    function filterExcellent() {
+      document.querySelectorAll('.breeding-cell').forEach(cell => {
+        const score = parseInt(cell.dataset.score);
+        cell.style.display = score >= 80 ? 'flex' : 'none';
+      });
+    }
+
+    function showAll() {
+      document.querySelectorAll('.breeding-cell').forEach(cell => {
+        cell.style.display = 'flex';
+      });
+    }
+
+    function sortByValue() {
+      alert('Sort by value feature coming soon!');
+    }
+
+    function exportPlan() {
+      alert('Export breeding plan feature coming soon!');
+    }
+
+    function loadMockData() {
+      generateMatrix();
+      alert('✅ Mock data loaded! Click any cell to see detailed genetics.');
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      generateMatrix();
+    };
+
+    // Close modal on outside click
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+      if (e.target.id === 'detailModal') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
