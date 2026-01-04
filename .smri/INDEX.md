@@ -422,29 +422,63 @@ Original documentation this replaces
 
 ### Large File Policy:
 - **Soft limit:** 500 lines per file
-- **Hard limit:** 1000 lines per file
-- **Exceptions:** Test files, data files, documentation
+- **Hard limit:** 1000 lines per file  
+- **Exceptions:** Test files, data files
+- **Documentation limit:** 500 lines per .md file in `.smri/docs/`
+
+### SMRI Documentation Structure Rule:
+
+**When .smri/docs/{topic}.md exceeds 500 lines:**
+
+1. **Create subfolder:** `.smri/docs/{topic}/`
+2. **Split into focused files:**
+   - `README.md` - Overview & navigation (50-100 lines)
+   - `config.md` - Constants, thresholds, data (150-250 lines)
+   - `formulas.md` - Algorithms, calculations (250-350 lines)
+   - `research.md` - Sources, science, references (150-250 lines)
+   - `implementation.md` - Roadmap, specs, dev notes (150-250 lines)
+
+3. **Each file must:**
+   - ✅ Stay under 500 lines
+   - ✅ Have clear purpose
+   - ✅ Link to related files
+   - ✅ Include version & date
+
+**Example Structure:**
+```
+.smri/docs/
+├── breeding-calculator/
+│   ├── README.md          # Quick reference & links
+│   ├── config.md          # LETHAL_COMBOS, MORPH_VALUES
+│   ├── formulas.md        # CoI, heterozygosity calculations
+│   ├── research.md        # Wright's formula, sources
+│   └── implementation.md  # Phase 1-4, UI specs
+├── business.md            # Simple topic (< 500 lines, no split)
+├── technical.md           # Simple topic (< 500 lines, no split)
+└── ... 
+```
 
 ### When AI Sees Large Files:
-1. **Check if it's a known exception** (test/data/docs)
-2. **If code file >500 lines:** Suggest split with specific file structure
-3. **If >1000 lines:** Recommend immediate refactor
-4. **Always show:** Deep tree to understand module structure
+1. **Check if it's SMRI doc** (`.smri/docs/*.md`)
+2. **If >500 lines:** Suggest split with specific structure
+3. **If >1000 lines:** Recommend immediate split
+4. **Show:** Proposed file breakdown with line counts
 
 ### Refactoring Guidance:
-When user says "update X", AI should:
-1. Check file size of X
-2. If >500 lines, suggest split BEFORE updating
-3. Show proposed file structure
+When user says "add to {topic}.md":
+1. Check current line count
+2. If >400 lines, warn: "File is {N} lines, approaching 500 limit"
+3. If >500 lines, suggest: "Split into {topic}/ subfolder first?"
 4. Wait for approval
-5. Split file, THEN apply update
+5. Split, THEN add content
 
 **Example:**
 ```
-User: "Update game-controller to add feature X"
-AI: "game-controller.js is 1219 lines. Should I:
-     1. Split into game-init.js + game-actions.js first?
-     2. Add feature to existing file (not recommended)?
+User: "Add breeding research to breeding-calculator.md"
+AI: "breeding-calculator.md is 854 lines (over 500 limit). 
+     Should I:
+     1. Split into breeding-calculator/ subfolder (5 files)?
+     2. Add to existing file (not recommended)?
      Choose: "
 ```
 
