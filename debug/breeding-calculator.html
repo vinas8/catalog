@@ -910,6 +910,11 @@
     // Generate matrix
     function generateMatrix() {
       const table = document.getElementById('breedingMatrix');
+      
+      console.log('Generating matrix...');
+      console.log('Males:', mockMales.length, mockMales.map(m => m.name));
+      console.log('Females:', mockFemales.length, mockFemales.map(f => f.name));
+      
       let html = '<thead><tr><th class="header-cell">♂ Males<br>♀ Females</th>';
 
       // Female headers
@@ -926,14 +931,16 @@
       html += '</tr></thead><tbody>';
 
       // Male rows
-      mockMales.forEach(male => {
+      mockMales.forEach((male, maleIndex) => {
+        console.log(`Row ${maleIndex}: ${male.name}`);
         html += `<tr><th class="header-cell">
           <div class="snake-sex">♂</div>
           <div class="snake-name">${male.name}</div>
           <div class="snake-morph">${formatMorphs(male.morphs)}</div>
         </th>`;
 
-        mockFemales.forEach(female => {
+        mockFemales.forEach((female, femaleIndex) => {
+          console.log(`  Cell: ${male.name} x ${female.name}`);
           const compat = calculateCompatibility(male, female);
           const colorClass = compat.score >= 80 ? 'score-excellent' : 
                              compat.score >= 60 ? 'score-good' : 
@@ -948,7 +955,8 @@
                 onclick="showDetails('${male.id}', '${female.id}')"
                 data-male="${male.id}"
                 data-female="${female.id}"
-                data-score="${compat.score}">
+                data-score="${compat.score}"
+                title="${male.name} x ${female.name}">
               <div class="score-value">${compat.score}</div>
               <div class="outcome-text">${compat.outcomes[0]?.morph || 'N/A'}</div>
               <div class="value-estimate">~$${compat.value}</div>
@@ -962,6 +970,7 @@
 
       html += '</tbody>';
       table.innerHTML = html;
+      console.log('Matrix generation complete!');
     }
 
     // Format morphs for display
