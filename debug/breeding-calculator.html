@@ -166,14 +166,16 @@
     }
 
     .matrix-table thead th:not(:first-child) {
-      min-width: 110px;
-      width: 110px;
+      min-width: 120px;
+      width: 120px;
     }
 
     .matrix-table tbody td {
-      min-width: 110px;
-      width: 110px;
+      min-width: 120px;
+      width: 120px;
       background: white;
+      vertical-align: top;
+      padding: 12px 8px;
     }
 
     .header-cell {
@@ -303,15 +305,14 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border: 3px solid transparent;
-      min-height: 100px;
-      height: 100%;
-      display: table-cell;
-      vertical-align: middle;
+      min-height: 120px;
+      padding: 10px;
     }
 
     .breeding-cell > div {
       display: block;
       width: 100%;
+      text-align: center;
     }
 
     .breeding-cell:hover {
@@ -346,12 +347,16 @@
       font-size: 2em;
       font-weight: bold;
       margin-bottom: 5px;
+      display: block;
+      line-height: 1;
     }
 
     .outcome-text {
-      font-size: 0.9em;
+      font-size: 0.85em;
       margin-top: 5px;
       font-weight: 500;
+      display: block;
+      line-height: 1.2;
     }
 
     .risk-indicator {
@@ -360,12 +365,16 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      display: block;
+      line-height: 1;
     }
 
     .value-estimate {
-      font-size: 0.85em;
+      font-size: 0.8em;
       margin-top: 3px;
       opacity: 0.9;
+      display: block;
+      line-height: 1;
     }
 
     /* Modal */
