@@ -950,16 +950,21 @@
                             compat.score >= 60 ? '🟡' : 
                             compat.score >= 40 ? '🟠' : '🔴';
 
+          // Get the most valuable/interesting outcome (first one)
+          const primaryOutcome = compat.outcomes && compat.outcomes.length > 0 
+            ? compat.outcomes[0].morph 
+            : 'Normal';
+
           html += `
             <td class="breeding-cell ${colorClass}" 
                 onclick="showDetails('${male.id}', '${female.id}')"
                 data-male="${male.id}"
                 data-female="${female.id}"
                 data-score="${compat.score}"
-                title="${male.name} x ${female.name}">
+                title="${male.name} x ${female.name}: Click for full genetics">
               <div class="score-value">${compat.score}</div>
-              <div class="outcome-text">${compat.outcomes[0]?.morph || 'N/A'}</div>
-              <div class="value-estimate">~$${compat.value}</div>
+              <div class="outcome-text">${primaryOutcome}</div>
+              <div class="value-estimate">$${compat.value}</div>
               <div class="risk-indicator">${indicator}</div>
             </td>
           `;
@@ -970,7 +975,7 @@
 
       html += '</tbody>';
       table.innerHTML = html;
-      console.log('Matrix generation complete!');
+      console.log('Matrix generation complete! Expected cells:', mockMales.length * mockFemales.length);
     }
 
     // Format morphs for display
