@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-01-04T19:30:00Z",
+  "source": "wobp",
+  "lethal_combinations": [
+    {
+      "morph1": "lesser",
+      "morph2": "butter",
+      "result": "Lesser Butter (Super Lesser Butter)",
+      "lethality": "fatal",
+      "stage": "embryonic",
+      "description": "Lesser bred to Butter produces lethal super form",
+      "verified": true,
+      "source_url": "https://www.worldofballpythons.com/morphs/lesser/",
+      "fetched_at": "2026-01-04T19:30:00Z"
+    },
+    {
+      "morph1": "spider",
+      "morph2": "spider",
+      "result": "No viable super spider",
+      "lethality": "fatal",
+      "stage": "unknown",
+      "description": "Spider gene does not produce viable super form",
+      "verified": true,
+      "source_url": "https://www.worldofballpythons.com/morphs/spider/",
+      "fetched_at": "2026-01-04T19:30:00Z"
+    },
+    {
+      "morph1": "hidden-gene-woma",
+      "morph2": "hidden-gene-woma",
+      "result": "No viable super HGW",
+      "lethality": "fatal",
+      "stage": "unknown",
+      "description": "HGW gene does not produce viable super form",
+      "verified": true,
+      "source_url": "https://www.worldofballpythons.com/morphs/hidden-gene-woma/",
+      "fetched_at": "2026-01-04T19:30:00Z"
+    }
+  ]
+}

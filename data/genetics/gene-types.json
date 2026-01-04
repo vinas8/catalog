@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-01-04T19:26:00Z",
+  "gene_types": {
+    "dominant": {
+      "description": "Single copy shows visual trait",
+      "inheritance_pattern": "one_copy_sufficient",
+      "notation": "{Morph}",
+      "examples": ["Spider", "Pinstripe", "Clown"]
+    },
+    "co-dominant": {
+      "description": "Single copy shows trait, double copy shows super form",
+      "inheritance_pattern": "additive_dosage_effect",
+      "super_form_exists": true,
+      "notation": "{Morph} (single), Super {Morph} (double)",
+      "examples": ["Banana", "Pastel", "Mojave", "Lesser"]
+    },
+    "recessive": {
+      "description": "Two copies required to show visual trait",
+      "inheritance_pattern": "two_copies_required",
+      "het_notation": "Het {Morph}",
+      "visual_notation": "{Morph}",
+      "examples": ["Albino", "Piebald", "Axanthic", "Ghost"]
+    },
+    "incomplete_dominant": {
+      "description": "Single copy shows intermediate trait",
+      "inheritance_pattern": "incomplete_dominance",
+      "notation": "{Morph}",
+      "note": "Often grouped with co-dominant in ball python genetics",
+      "examples": ["Fire", "Orange Dream"]
+    }
+  }
+}

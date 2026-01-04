@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "active_source": "wobp",
+  "sources": {
+    "wobp": {
+      "name": "World of Ball Pythons",
+      "url": "https://www.worldofballpythons.com",
+      "enabled": true,
+      "last_updated": "2026-01-04T19:26:00Z",
+      "extraction_method": "manual",
+      "respect_robots_txt": true,
+      "crawl_delay_seconds": 1.0
+    },
+    "morphmarket": {
+      "name": "MorphMarket",
+      "url": "https://www.morphmarket.com",
+      "enabled": false,
+      "role": "validation_only",
+      "note": "Used for price/availability verification only - no scraping"
+    }
+  },
+  "data_guidelines": {
+    "ethics": [
+      "Respect robots.txt",
+      "Request rate <= 1 req/sec",
+      "Public pages only",
+      "Extract factual fields only",
+      "Rewrite in our own words",
+      "No verbatim copying",
+      "No image downloads",
+      "Include source attribution"
+    ],
+    "fields_extracted": [
+      "morph_name",
+      "aliases",
+      "gene_type",
+      "health_risks_summary",
+      "source_url",
+      "fetched_at"
+    ]
+  }
+}
