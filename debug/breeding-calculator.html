@@ -611,6 +611,13 @@
 
     <div class="breeding-matrix">
       <h2 style="margin-bottom: 20px; color: #2d3748;">🐍 Breeding Compatibility Matrix</h2>
+      
+      <!-- Debug Console -->
+      <div style="background: #1a202c; color: #00ff00; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-family: monospace; font-size: 0.85em; max-height: 200px; overflow-y: auto;" id="debugConsole">
+        <div style="color: #48bb78; font-weight: bold; margin-bottom: 10px;">🔧 Debug Console</div>
+        <div id="debugOutput">Initializing...</div>
+      </div>
+      
       <table class="matrix-table" id="breedingMatrix">
         <!-- Matrix will be populated by JavaScript -->
       </table>
@@ -628,6 +635,14 @@
   </div>
 
   <script>
+    // Debug console helper
+    const debugLog = (...args) => {
+      const output = document.getElementById('debugOutput');
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+      output.innerHTML += `<div>${msg}</div>`;
+      console.log(...args);
+    };
+
     // Mock snake data
     const mockMales = [
       {
@@ -911,9 +926,10 @@
     function generateMatrix() {
       const table = document.getElementById('breedingMatrix');
       
-      console.log('Generating matrix...');
-      console.log('Males:', mockMales.length, mockMales.map(m => m.name));
-      console.log('Females:', mockFemales.length, mockFemales.map(f => f.name));
+      debugLog('🚀 Generating matrix...');
+      debugLog('Males:', mockMales.length, mockMales.map(m => m.name));
+      debugLog('Females:', mockFemales.length, mockFemales.map(f => f.name));
+      debugLog('Expected cells:', mockMales.length * mockFemales.length);
       
       let html = '<thead><tr><th class="header-cell">♂ Males<br>♀ Females</th>';
 
@@ -930,9 +946,11 @@
 
       html += '</tr></thead><tbody>';
 
+      let cellCount = 0;
+      
       // Male rows
       mockMales.forEach((male, maleIndex) => {
-        console.log(`Row ${maleIndex}: ${male.name}`);
+        debugLog(`Row ${maleIndex + 1}: ${male.name}`);
         html += `<tr><th class="header-cell">
           <div class="snake-sex">♂</div>
           <div class="snake-name">${male.name}</div>
@@ -940,7 +958,7 @@
         </th>`;
 
         mockFemales.forEach((female, femaleIndex) => {
-          console.log(`  Cell: ${male.name} x ${female.name}`);
+          cellCount++;
           const compat = calculateCompatibility(male, female);
           const colorClass = compat.score >= 80 ? 'score-excellent' : 
                              compat.score >= 60 ? 'score-good' : 
@@ -975,7 +993,7 @@
 
       html += '</tbody>';
       table.innerHTML = html;
-      console.log('Matrix generation complete! Expected cells:', mockMales.length * mockFemales.length);
+      debugLog(`✅ Matrix complete! Generated ${cellCount} cells (${mockMales.length} males x ${mockFemales.length} females)`);
     }
 
     // Format morphs for display
