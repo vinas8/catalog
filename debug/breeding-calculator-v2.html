@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Breeding Calculator V2 - Modular</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      color: #2d3748;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #718096;
+      font-size: 1.1em;
+    }
+
+    .debug-console {
+      background: #1a202c;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .debug-console h3 {
+      color: #48bb78;
+      margin-bottom: 10px;
+    }
+
+    #debugOutput {
+      color: #e2e8f0;
+    }
+
+    .info-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+
+    .status-loading {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .test-results {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .test-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .test-item.pass {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .test-item.fail {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #667eea;
+      color: white;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧬 Breeding Calculator V2</h1>
+      <p>Modular Architecture with JSON Database Integration</p>
+      <div style="margin-top: 10px;">
+        <span class="status-badge status-loading" id="statusBadge">⏳ Initializing...</span>
+      </div>
+    </div>
+
+    <!-- Debug Console -->
+    <div class="debug-console">
+      <h3>🔧 Debug Console</h3>
+      <div id="debugOutput">Initializing modules...</div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-box">
+      <h2>📊 System Status</h2>
+      <div class="test-results" id="testResults">
+        <div class="test-item"><span>⏳</span> Loading modules...</div>
+      </div>
+      <div style="margin-top: 15px;">
+        <button onclick="runTests()">🧪 Run Tests</button>
+        <button onclick="window.location.href='/debug/breeding-calculator-OLD.html'">🔙 Old Version</button>
+        <button onclick="clearDebug()">🗑️ Clear Console</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { loadGeneticsData, getMorphValue, getHealthRisk, checkLethalCombo, getAllMorphs } from './breeding-calculator/data-loader.js';
+    import { calculateInbreedingCoefficient, calculateGeneticDiversity, calculateHeterozygosity, assessMorphHealthRisk } from './breeding-calculator/genetics.js';
+    import { log, error, warn, success, info, clear as clearDebugConsole } from './breeding-calculator/debug-console.js';
+
+    // Make functions globally available
+    window.clearDebug = clearDebugConsole;
+
+    // Update status badge
+    function updateStatus(text, type) {
+      const badge = document.getElementById('statusBadge');
+      badge.textContent = text;
+      badge.className = `status-badge status-${type}`;
+    }
+
+    // Add test result
+    function addTestResult(text, passed) {
+      const results = document.getElementById('testResults');
+      const div = document.createElement('div');
+      div.className = `test-item ${passed ? 'pass' : 'fail'}`;
+      div.innerHTML = `<span>${passed ? '✅' : '❌'}</span> ${text}`;
+      results.appendChild(div);
+    }
+
+    // Run comprehensive tests
+    window.runTests = async function() {
+      const results = document.getElementById('testResults');
+      results.innerHTML = '';
+      
+      log('🧪 Starting test suite...');
+      
+      // Test 1: Data loader
+      try {
+        const loaded = await loadGeneticsData();
+        addTestResult('Genetics data loaded', loaded);
+        
+        if (loaded) {
+          const morphs = getAllMorphs();
+          addTestResult(`Morphs loaded: ${morphs.length}`, morphs.length > 0);
+          
+          // Test morph value lookup
+          const bananaValue = getMorphValue('banana');
+          addTestResult(`Banana value: $${bananaValue}`, bananaValue === 150);
+          
+          // Test health risk lookup
+          const spiderRisk = getHealthRisk('spider');
+          addTestResult(`Spider risk level: ${spiderRisk?.risk}`, spiderRisk?.risk === 'MODERATE' || spiderRisk?.risk === 'HIGH');
+          
+          // Test lethal combo check
+          const lethalTest = checkLethalCombo(['spider'], ['spider']);
+          addTestResult(`Lethal combo detection`, lethalTest !== null);
+        }
+      } catch (err) {
+        error('Test failed:', err.message);
+        addTestResult(`Error: ${err.message}`, false);
+      }
+      
+      // Test 2: Genetics calculations (mock data needed)
+      try {
+        const mockSnake1 = {
+          id: 'test1',
+          genetics: {
+            alleles: { mojave: 'Moj', albino: 'wt', piebald: 'wt' }
+          },
+          lineage: {}
+        };
+        
+        const mockSnake2 = {
+          id: 'test2',
+          genetics: {
+            alleles: { pastel: 'Pas', albino: 'alb', piebald: 'wt' }
+          },
+          lineage: {}
+        };
+        
+        const diversity = calculateGeneticDiversity(mockSnake1, mockSnake2);
+        addTestResult(`Genetic diversity calculated: ${(diversity * 100).toFixed(0)}%`, diversity > 0);
+        
+        const heterozygosity = calculateHeterozygosity(mockSnake1, mockSnake2);
+        addTestResult(`Heterozygosity calculated: ${(heterozygosity * 100).toFixed(0)}%`, heterozygosity >= 0);
+        
+      } catch (err) {
+        error('Genetics test failed:', err.message);
+        addTestResult(`Genetics error: ${err.message}`, false);
+      }
+      
+      success('✅ Test suite complete');
+    };
+
+    // Initialize on load
+    async function init() {
+      log('🚀 Initializing Breeding Calculator V2...');
+      updateStatus('⏳ Loading...', 'loading');
+      
+      try {
+        // Load genetics database
+        const loaded = await loadGeneticsData();
+        
+        if (loaded) {
+          success('✅ All modules loaded successfully');
+          updateStatus('✅ Ready', 'success');
+          
+          // Show morphs loaded
+          const morphs = getAllMorphs();
+          info(`📊 Database: ${morphs.length} morphs available`);
+          
+          // Auto-run tests
+          setTimeout(() => window.runTests(), 500);
+        } else {
+          warn('⚠️  Using fallback data (JSON loading failed)');
+          updateStatus('⚠️  Fallback Mode', 'loading');
+        }
+      } catch (err) {
+        error('❌ Initialization failed:', err.message);
+        updateStatus('❌ Error', 'error');
+      }
+    }
+
+    // Start initialization
+    init();
+  </script>
+</body>
+</html>
