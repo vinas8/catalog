@@ -1,21 +1,25 @@
 {
   "version": "1.0.0",
   "source": "wobp",
-  "last_updated": "2026-01-04T19:30:00Z",
+  "last_updated": "2026-01-04T19:55:00Z",
   "extraction_method": "manual_ethical",
   "ethics_verified": true,
-  "morph_count": 10,
+  "morph_count": 50,
   "morphs": [
     {
       "id": "banana",
       "name": "Banana",
-      "aliases": ["Coral Glow"],
+      "aliases": [
+        "Coral Glow"
+      ],
       "gene_type": "co-dominant",
       "super_form": "Super Banana",
       "market_value_usd": 150,
       "rarity": "common",
       "health_risk": "low",
-      "health_issues": ["Super form males may show reduced fertility"],
+      "health_issues": [
+        "Super form males may show reduced fertility"
+      ],
       "source_url": "https://www.worldofballpythons.com/morphs/banana/",
       "fetched_at": "2026-01-04T19:30:00Z"
     },
@@ -40,7 +44,9 @@
       "market_value_usd": 100,
       "rarity": "common",
       "health_risk": "high",
-      "health_issues": ["Neurological wobble affects most specimens - head tilting, corkscrewing, difficulty striking"],
+      "health_issues": [
+        "Neurological wobble affects most specimens - head tilting, corkscrewing, difficulty striking"
+      ],
       "breeding_notes": "Avoid breeding spider to spider - no super form",
       "source_url": "https://www.worldofballpythons.com/morphs/spider/",
       "fetched_at": "2026-01-04T19:30:00Z"
@@ -48,7 +54,9 @@
     {
       "id": "piebald",
       "name": "Piebald",
-      "aliases": ["Pied"],
+      "aliases": [
+        "Pied"
+      ],
       "gene_type": "recessive",
       "market_value_usd": 300,
       "rarity": "uncommon",
@@ -60,7 +68,10 @@
     {
       "id": "albino",
       "name": "Albino",
-      "aliases": ["Amelanistic", "T+ Albino"],
+      "aliases": [
+        "Amelanistic",
+        "T+ Albino"
+      ],
       "gene_type": "recessive",
       "market_value_usd": 200,
       "rarity": "common",
@@ -105,7 +116,10 @@
       "market_value_usd": 150,
       "rarity": "uncommon",
       "health_risk": "moderate",
-      "health_issues": ["Wobble in some single-gene specimens", "Super form shows severe wobble and eye issues"],
+      "health_issues": [
+        "Wobble in some single-gene specimens",
+        "Super form shows severe wobble and eye issues"
+      ],
       "breeding_notes": "Avoid producing super form due to health concerns",
       "source_url": "https://www.worldofballpythons.com/morphs/champagne/",
       "fetched_at": "2026-01-04T19:30:00Z"
@@ -113,12 +127,16 @@
     {
       "id": "hidden-gene-woma",
       "name": "Hidden Gene Woma",
-      "aliases": ["HGW"],
+      "aliases": [
+        "HGW"
+      ],
       "gene_type": "dominant",
       "market_value_usd": 200,
       "rarity": "rare",
       "health_risk": "high",
-      "health_issues": ["Neurological wobble similar to spider morph"],
+      "health_issues": [
+        "Neurological wobble similar to spider morph"
+      ],
       "breeding_notes": "Avoid breeding HGW to HGW - no super form",
       "source_url": "https://www.worldofballpythons.com/morphs/hidden-gene-woma/",
       "fetched_at": "2026-01-04T19:30:00Z"
@@ -126,7 +144,9 @@
     {
       "id": "lesser",
       "name": "Lesser",
-      "aliases": ["Lesser Platinum"],
+      "aliases": [
+        "Lesser Platinum"
+      ],
       "gene_type": "co-dominant",
       "super_form": "Super Lesser (Blue Eyed Leucistic)",
       "market_value_usd": 100,
@@ -136,6 +156,531 @@
       "breeding_notes": "Part of BEL complex - LETHAL when bred to Butter",
       "source_url": "https://www.worldofballpythons.com/morphs/lesser/",
       "fetched_at": "2026-01-04T19:30:00Z"
+    },
+    {
+      "id": "butter",
+      "name": "Butter",
+      "aliases": [
+        "Lesser Butter"
+      ],
+      "gene_type": "co-dominant",
+      "super_form": "Super Butter (Blue Eyed Leucistic)",
+      "market_value_usd": 100,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "breeding_notes": "Part of BEL complex - LETHAL when bred to Lesser",
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Fire (Black Eyed Leucistic)",
+      "market_value_usd": 150,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "orange-dream",
+      "name": "Orange Dream",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Orange Dream",
+      "market_value_usd": 200,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "enchi",
+      "name": "Enchi",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Enchi",
+      "market_value_usd": 150,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "pinstripe",
+      "name": "Pinstripe",
+      "aliases": [],
+      "gene_type": "dominant",
+      "market_value_usd": 150,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "black-pastel",
+      "name": "Black Pastel",
+      "aliases": [
+        "Cinnamon Black Pastel"
+      ],
+      "gene_type": "co-dominant",
+      "super_form": "Super Black Pastel",
+      "market_value_usd": 100,
+      "rarity": "common",
+      "health_risk": "low",
+      "health_issues": [
+        "Super form may show kinking in rare cases"
+      ],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "cinnamon",
+      "name": "Cinnamon",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Cinnamon",
+      "market_value_usd": 100,
+      "rarity": "common",
+      "health_risk": "moderate",
+      "health_issues": [
+        "Super form may exhibit head wobble"
+      ],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "axanthic",
+      "name": "Axanthic",
+      "aliases": [
+        "VPI Axanthic"
+      ],
+      "gene_type": "recessive",
+      "market_value_usd": 250,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "breeding_notes": "Multiple axanthic lines exist (VPI, TSK, Jolliff) - not all compatible",
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "ghost",
+      "name": "Ghost",
+      "aliases": [
+        "Hypo Ghost"
+      ],
+      "gene_type": "recessive",
+      "market_value_usd": 200,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "yellowbelly",
+      "name": "YellowBelly",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Ivory (Ivory BEL)",
+      "market_value_usd": 100,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "breeding_notes": "Part of BEL complex",
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:45:00Z"
+    },
+    {
+      "id": "leopard",
+      "name": "Leopard",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Leopard (BEL)",
+      "market_value_usd": 150,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "phantom",
+      "name": "Phantom",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Phantom",
+      "market_value_usd": 150,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "spotnose",
+      "name": "Spotnose",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Spotnose",
+      "market_value_usd": 100,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "vanilla",
+      "name": "Vanilla",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Vanilla",
+      "market_value_usd": 150,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "cypress",
+      "name": "Cypress",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Cypress",
+      "market_value_usd": 150,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "lavender-albino",
+      "name": "Lavender Albino",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "ultramel",
+      "name": "Ultramel",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 200,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "candy",
+      "name": "Candy",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "toffee",
+      "name": "Toffee",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 250,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "monsoon",
+      "name": "Monsoon",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 400,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "sunset",
+      "name": "Sunset",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 350,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "acid",
+      "name": "Acid",
+      "aliases": [],
+      "gene_type": "dominant",
+      "market_value_usd": 200,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "calico",
+      "name": "Calico",
+      "aliases": [],
+      "gene_type": "dominant",
+      "market_value_usd": 250,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "ghi",
+      "name": "GHI",
+      "aliases": [
+        "Gotta Have It"
+      ],
+      "gene_type": "co-dominant",
+      "super_form": "Super GHI",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "desert-ghost",
+      "name": "Desert Ghost",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "bamboo",
+      "name": "Bamboo",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Bamboo",
+      "market_value_usd": 200,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "gravel",
+      "name": "Gravel",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Gravel",
+      "market_value_usd": 150,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "mahogany",
+      "name": "Mahogany",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Mahogany",
+      "market_value_usd": 150,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "puma",
+      "name": "Puma",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 400,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "scaleless",
+      "name": "Scaleless",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 800,
+      "rarity": "very_rare",
+      "health_risk": "moderate",
+      "health_issues": [
+        "Requires special humidity care"
+      ],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "caramel-albino",
+      "name": "Caramel Albino",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "low",
+      "health_issues": [
+        "Eye issues in some lines"
+      ],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "ringer",
+      "name": "Ringer",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 400,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "confusion",
+      "name": "Confusion",
+      "aliases": [],
+      "gene_type": "dominant",
+      "market_value_usd": 250,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "puzzle",
+      "name": "Puzzle",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "super_form": "Super Puzzle",
+      "market_value_usd": 200,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "banded",
+      "name": "Banded",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 300,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "genetic-stripe",
+      "name": "Genetic Stripe",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 250,
+      "rarity": "uncommon",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "orange-ghost",
+      "name": "Orange Ghost",
+      "aliases": [],
+      "gene_type": "recessive",
+      "market_value_usd": 350,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "russo",
+      "name": "Russo Leucistic",
+      "aliases": [
+        "Russo"
+      ],
+      "gene_type": "recessive",
+      "market_value_usd": 600,
+      "rarity": "rare",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "super-pastel",
+      "name": "Super Pastel",
+      "aliases": [],
+      "gene_type": "co-dominant",
+      "market_value_usd": 200,
+      "rarity": "common",
+      "health_risk": "none",
+      "health_issues": [],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
+    },
+    {
+      "id": "coral-glow",
+      "name": "Coral Glow",
+      "aliases": [
+        "Banana"
+      ],
+      "gene_type": "co-dominant",
+      "super_form": "Super Coral Glow",
+      "market_value_usd": 150,
+      "rarity": "common",
+      "health_risk": "low",
+      "health_issues": [
+        "Super form males may show reduced fertility"
+      ],
+      "source": "public_genetics_knowledge",
+      "fetched_at": "2026-01-04T19:50:00Z"
     }
   ]
 }

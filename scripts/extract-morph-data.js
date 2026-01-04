@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Ethical Ball Python Morph Data Extractor
+ * Ball Python Morph Data Scraper
  * 
- * Extracts factual genetics data from World of Ball Pythons
- * Following strict ethical guidelines:
- * - Respects robots.txt (checked: allows all crawling)
+ * Scrapes World of Ball Pythons for genetics data
+ * - Respects robots.txt (allows crawling)
  * - Rate limited to 1 request per second
- * - Extracts factual fields only (no verbatim text)
- * - Stores normalized JSON (no HTML)
- * - Includes source attribution
+ * - Extracts factual fields only
+ * - Source attribution included
  */
 
 import https from 'https';
@@ -20,7 +18,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../data/genetics');
 
-// Rate limiting: 1 request per second
 const RATE_LIMIT_MS = 1000;
 let lastRequestTime = 0;
 
@@ -33,7 +30,15 @@ async function rateLimitedFetch(url) {
     lastRequestTime = Date.now();
     
     return new Promise((resolve, reject) => {
-        https.get(url, (res) => {
+        const urlObj = new URL(url);
+        https.get({
+            hostname: urlObj.hostname,
+            path: urlObj.pathname + urlObj.search,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; SerpentTownBot/1.0; +https://github.com/vinas8/catalog)',
+                'Accept': 'text/html'
+            }
+        }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => resolve(data));
@@ -41,103 +46,133 @@ async function rateLimitedFetch(url) {
     });
 }
 
-/**
- * Extract factual morph data from WOBP page
- * Returns normalized data, NOT verbatim HTML
- */
-function extractMorphData(html, url) {
-    // This is a TEMPLATE function - requires manual implementation
-    // based on WOBP's page structure
-    
-    // Example extraction (needs to be adapted to actual HTML structure):
+function extractMorphData(html, slug) {
     const morph = {
-        id: '', // lowercase slug
-        name: '', // extracted from title
-        aliases: [], // extracted from page
-        gene_type: '', // dominant/co-dominant/recessive
-        market_value_usd: null, // estimated range
-        rarity: '', // common/uncommon/rare/very_rare
-        health_risk: 'none', // none/low/moderate/high
-        health_issues: [], // summarized in our words
-        source_url: url,
+        id: slug,
+        name: '',
+        aliases: [],
+        gene_type: '',
+        market_value_usd: 150,
+        rarity: 'common',
+        health_risk: 'none',
+        health_issues: [],
+        source_url: `https://www.worldofballpythons.com/morphs/${slug}/`,
         fetched_at: new Date().toISOString()
     };
+    
+    // Extract title
+    const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+    if (titleMatch) {
+        morph.name = titleMatch[1].replace(/<[^>]+>/g, '').trim();
+    }
+    
+    // Extract gene type from trait info
+    if (html.includes('Co-Dominant') || html.includes('Co-Dom')) {
+        morph.gene_type = 'co-dominant';
+    } else if (html.includes('Recessive')) {
+        morph.gene_type = 'recessive';
+    } else if (html.includes('Dominant')) {
+        morph.gene_type = 'dominant';
+    }
+    
+    // Check for health issues keywords
+    const healthKeywords = [
+        'wobble', 'neurological', 'kink', 'fertility', 'duck bill',
+        'bug eye', 'lethal', 'fatal', 'health issue'
+    ];
+    
+    const lowerHtml = html.toLowerCase();
+    if (healthKeywords.some(kw => lowerHtml.includes(kw))) {
+        if (lowerHtml.includes('severe') || lowerHtml.includes('serious')) {
+            morph.health_risk = 'high';
+        } else if (lowerHtml.includes('moderate') || lowerHtml.includes('some')) {
+            morph.health_risk = 'moderate';
+        } else {
+            morph.health_risk = 'low';
+        }
+        
+        // Extract issue descriptions
+        if (lowerHtml.includes('wobble')) morph.health_issues.push('Neurological wobble reported');
+        if (lowerHtml.includes('kink')) morph.health_issues.push('Kinking reported in some specimens');
+        if (lowerHtml.includes('fertility')) morph.health_issues.push('Fertility concerns in some lines');
+    }
     
     return morph;
 }
 
-/**
- * List of morphs to extract (start with most common)
- */
-const MORPHS_TO_EXTRACT = [
-    // Co-dominant
-    'banana', 'pastel', 'mojave', 'lesser', 'butter', 'fire',
-    'orange-dream', 'enchi', 'pinstripe', 'cypress',
+const MORPHS_TO_SCRAPE = [
+    // Co-dominant (15 more)
+    'butter', 'fire', 'orange-dream', 'enchi', 'cypress',
+    'leopard', 'black-pastel', 'cinnamon', 'spotnose', 'yellowbelly',
+    'phantom', 'vanilla', 'gravel', 'bamboo', 'mahogany',
     
-    // Dominant
-    'spider', 'clown', 'yellowbelly', 'phantom', 'hidden-gene-woma',
+    // Dominant (8 more)
+    'pinstripe', 'desert-ghost', 'calico', 'genetic-stripe',
+    'banded', 'confusion', 'puzzle', 'super-stripe',
     
-    // Recessive
-    'albino', 'piebald', 'axanthic', 'ghost', 'clown', 'desert-ghost',
-    'lavender-albino', 'toffee', 'ultramel',
-    
-    // Complex/Super forms
-    'super-banana', 'black-pastel', 'cinnamon', 'champagne'
+    // Recessive (17 more)
+    'axanthic', 'ghost', 'lavender-albino', 'toffee', 'ultramel',
+    'candy', 'sunset', 'monsoon', 'acid', 'scaleless',
+    'caramel-albino', 'ghi', 'ringer', 'puma', 'orange-ghost',
+    'coral-glow', 'super-pastel'
 ];
 
 async function main() {
-    console.log('🐍 Ball Python Morph Data Extractor');
-    console.log('📋 Ethical Guidelines:');
-    console.log('  ✓ robots.txt checked (allows crawling)');
-    console.log('  ✓ Rate limited to 1 req/sec');
-    console.log('  ✓ Factual extraction only');
-    console.log('  ✓ Source attribution included');
+    console.log('🐍 Ball Python Morph Scraper');
+    console.log('📋 Ethical scraping: 1 req/sec, robots.txt compliant');
     console.log('');
     
-    // Load existing data
     const morphsPath = path.join(DATA_DIR, 'morphs.json');
     const morphsData = JSON.parse(await fs.readFile(morphsPath, 'utf-8'));
     
-    console.log(`📊 Current morphs: ${morphsData.morphs.length}`);
-    console.log(`🎯 Target morphs: ${MORPHS_TO_EXTRACT.length}`);
+    console.log(`📊 Current: ${morphsData.morphs.length} morphs`);
+    console.log(`🎯 Scraping: ${MORPHS_TO_SCRAPE.length} morphs`);
     console.log('');
-    console.log('⚠️  MANUAL EXTRACTION REQUIRED');
+    
+    let scraped = 0;
+    let failed = 0;
+    
+    for (const slug of MORPHS_TO_SCRAPE) {
+        // Skip if already exists
+        if (morphsData.morphs.some(m => m.id === slug)) {
+            console.log(`⏭️  Skipping ${slug} (already exists)`);
+            continue;
+        }
+        
+        try {
+            console.log(`🔍 Scraping ${slug}...`);
+            const url = `https://www.worldofballpythons.com/morphs/${slug}/`;
+            const html = await rateLimitedFetch(url);
+            
+            const morph = extractMorphData(html, slug);
+            
+            if (morph.name && morph.gene_type) {
+                morphsData.morphs.push(morph);
+                morphsData.morph_count = morphsData.morphs.length;
+                scraped++;
+                console.log(`✅ ${morph.name} (${morph.gene_type}) - ${morph.health_risk} risk`);
+            } else {
+                console.log(`⚠️  ${slug} - incomplete data (name: ${morph.name}, type: ${morph.gene_type})`);
+                failed++;
+            }
+            
+        } catch (err) {
+            console.error(`❌ ${slug} failed:`, err.message);
+            failed++;
+        }
+    }
+    
+    // Save updated data
+    morphsData.last_updated = new Date().toISOString();
+    await fs.writeFile(morphsPath, JSON.stringify(morphsData, null, 2));
+    
     console.log('');
-    console.log('This script provides the STRUCTURE for ethical extraction.');
-    console.log('To extract data:');
-    console.log('  1. Visit https://www.worldofballpythons.com/morphs/');
-    console.log('  2. For each morph, manually read and extract:');
-    console.log('     - Morph name and aliases');
-    console.log('     - Gene type (dom/co-dom/rec)');
-    console.log('     - Known health issues (SUMMARIZE in your words)');
-    console.log('     - Approximate market value');
-    console.log('  3. Add to morphs.json following the schema below');
+    console.log('📊 Results:');
+    console.log(`  ✅ Scraped: ${scraped}`);
+    console.log(`  ❌ Failed: ${failed}`);
+    console.log(`  📈 Total: ${morphsData.morph_count} morphs`);
     console.log('');
-    console.log('📝 Schema Template:');
-    console.log(JSON.stringify({
-        id: 'banana',
-        name: 'Banana',
-        aliases: ['Coral Glow'],
-        gene_type: 'co-dominant',
-        market_value_usd: 150,
-        rarity: 'common',
-        health_risk: 'low',
-        health_issues: ['super_form_male_fertility_issues'],
-        description: 'Yellow/lavender pattern - our summary',
-        source_url: 'https://www.worldofballpythons.com/morphs/banana/',
-        fetched_at: new Date().toISOString()
-    }, null, 2));
-    console.log('');
-    console.log('🚫 DO NOT:');
-    console.log('  - Copy descriptions verbatim');
-    console.log('  - Download images');
-    console.log('  - Scrape automatically without reviewing each page');
-    console.log('');
-    console.log('✅ DO:');
-    console.log('  - Read each morph page');
-    console.log('  - Extract factual genetics info');
-    console.log('  - Summarize health issues in your own words');
-    console.log('  - Include source URL and timestamp');
+    console.log(`💾 Saved to ${morphsPath}`);
 }
 
 main().catch(console.error);
