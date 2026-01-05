@@ -175,6 +175,7 @@
       
       try {
         // Check localStorage cache first (FAST!)
+        console.log('🔍 Checking cache...');
         const cached = localStorage.getItem('serpent_products_cache');
         const cacheTime = localStorage.getItem('serpent_products_cache_time');
         const now = Date.now();
@@ -182,9 +183,27 @@
         
         let data;
         
+        // Debug cache status
+        if (!cached) {
+          console.log('❌ No cache found - will fetch fresh data');
+        } else if (!cacheTime) {
+          console.log('⚠️ Cache exists but no timestamp - will fetch fresh');
+        } else {
+          const age = now - parseInt(cacheTime);
+          const ageSeconds = Math.floor(age / 1000);
+          console.log(`📦 Cache found - age: ${ageSeconds}s (TTL: 300s)`);
+          
+          if (age >= CACHE_TTL) {
+            console.log(`⏰ Cache EXPIRED (${ageSeconds}s > 300s) - will fetch fresh`);
+          } else {
+            console.log(`✅ Cache FRESH (${ageSeconds}s < 300s) - using cache!`);
+          }
+        }
+        
         if (cached && cacheTime && (now - parseInt(cacheTime)) < CACHE_TTL) {
           console.log('⚡ Using cached products (instant)');
           data = JSON.parse(cached);
+          console.log(`📊 Loaded ${data.length} products from cache`);
         } else {
           // Fetch products from Worker API
           console.log('📡 Fetching from:', WORKER_URL + '/products');
@@ -200,8 +219,10 @@
           console.log(`✅ Loaded ${Array.isArray(data) ? data.length : 0} products in ${duration}ms`);
           
           // Cache it
+          console.log('💾 Caching products...');
           localStorage.setItem('serpent_products_cache', JSON.stringify(data));
           localStorage.setItem('serpent_products_cache_time', now.toString());
+          console.log('✅ Products cached! Next load will be instant.');
         }
         
         console.log('✅ Raw response:', data);
