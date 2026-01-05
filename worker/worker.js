@@ -771,29 +771,31 @@ async function handleGetProducts(request, env, corsHeaders) {
     }
 
     const productIds = JSON.parse(indexData);
-    console.log(`📦 Loading ${productIds.length} products from KV`);
+    console.log(`📦 Loading ${productIds.length} products from KV (parallel)`);
 
-    // Fetch all products
-    const products = [];
-    for (const id of productIds) {
+    // Fetch all products IN PARALLEL (much faster!)
+    const productPromises = productIds.map(async (id) => {
       const key = `product:${id}`;
-      const productData = await env.PRODUCTS.get(key);
-      if (productData) {
-        const product = JSON.parse(productData);
-        
-        // Check if product is sold (filter out sold products)
-        if (env.PRODUCT_STATUS) {
-          const statusKey = `status:${id}`;
-          const statusValue = await env.PRODUCT_STATUS.get(statusKey);
-          if (statusValue === 'sold') {
-            console.log(`⏭️ Skipping sold product: ${id}`);
-            continue; // Skip sold products
-          }
-        }
-        
-        products.push(product);
+      const statusKey = `status:${id}`;
+      
+      // Parallel read: product data + status check
+      const [productData, statusValue] = await Promise.all([
+        env.PRODUCTS.get(key),
+        env.PRODUCT_STATUS ? env.PRODUCT_STATUS.get(statusKey) : Promise.resolve(null)
+      ]);
+      
+      if (!productData) return null;
+      if (statusValue === 'sold') {
+        console.log(`⏭️ Skipping sold product: ${id}`);
+        return null;
       }
-    }
+      
+      return JSON.parse(productData);
+    });
+    
+    // Wait for all products to load
+    const allProducts = await Promise.all(productPromises);
+    const products = allProducts.filter(p => p !== null);
 
     console.log(`✅ Returning ${products.length} available products from KV`);
     return new Response(JSON.stringify(products), {

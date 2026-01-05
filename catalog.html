@@ -160,15 +160,36 @@
       virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
       
       try {
-        // Fetch products from Worker API
-        console.log('📡 Fetching from:', WORKER_URL + '/products');
-        const response = await fetch(WORKER_URL + '/products');
+        // Check localStorage cache first (FAST!)
+        const cached = localStorage.getItem('serpent_products_cache');
+        const cacheTime = localStorage.getItem('serpent_products_cache_time');
+        const now = Date.now();
+        const CACHE_TTL = 300000; // 5 minutes
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let data;
+        
+        if (cached && cacheTime && (now - parseInt(cacheTime)) < CACHE_TTL) {
+          console.log('⚡ Using cached products (instant)');
+          data = JSON.parse(cached);
+        } else {
+          // Fetch products from Worker API
+          console.log('📡 Fetching from:', WORKER_URL + '/products');
+          const start = Date.now();
+          const response = await fetch(WORKER_URL + '/products');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          data = await response.json();
+          const duration = Date.now() - start;
+          console.log(`✅ Loaded ${Array.isArray(data) ? data.length : 0} products in ${duration}ms`);
+          
+          // Cache it
+          localStorage.setItem('serpent_products_cache', JSON.stringify(data));
+          localStorage.setItem('serpent_products_cache_time', now.toString());
         }
         
-        const data = await response.json();
         console.log('✅ Raw response:', data);
         
         // Handle array response
