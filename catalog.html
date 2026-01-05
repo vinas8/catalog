@@ -76,10 +76,25 @@
 
     // Render product card
     function renderProductCard(product, userHash, isSold) {
-      const price = typeof product.price === 'number' ? product.price : 0;
-      const priceFormatted = price.toFixed(2);
+      // Handle both Stripe format and legacy format
+      const name = product.name || product.metadata?.nickname || 'Unknown';
+      const morph = product.metadata?.morph || product.morph || 'Unknown';
+      const species = product.metadata?.species || product.species || 'ball_python';
+      const description = product.description || `${morph} ${species.replace('_', ' ')}`;
+      const info = product.metadata ? 
+        `${product.metadata.gender || 'Unknown'} • ${product.metadata.yob || '2024'}` :
+        (product.info || '');
       
+      // Price handling
+      const price = product.metadata?.price || product.price || 150;
+      const priceFormatted = typeof price === 'number' ? price.toFixed(2) : price;
+      
+      // Checkout URL
       let checkoutUrl = product.stripe_link;
+      if (!checkoutUrl && product.id) {
+        // Generate checkout URL for Stripe product
+        checkoutUrl = `checkout.html?product=${product.id}&hash=${userHash}`;
+      }
       if (checkoutUrl && checkoutUrl.includes('stripe.com')) {
         checkoutUrl += `?client_reference_id=${userHash}`;
       }
@@ -101,11 +116,11 @@
       return `
         <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
           ${soldBadge}
-          <div class="item-image">${product.image || '🐍'}</div>
-          <h3>${product.name}</h3>
-          <p class="species-info">${(product.species || '').replace('_', ' ')} - ${(product.morph || '').replace('_', ' ')}</p>
-          <p>${product.description || ''}</p>
-          <p class="item-info">${product.info || ''}</p>
+          <div class="item-image">${product.image || product.images?.[0] || '🐍'}</div>
+          <h3>${name}</h3>
+          <p class="species-info">${species.replace('_', ' ')} - ${morph.replace('_', ' ')}</p>
+          <p>${description}</p>
+          <p class="item-info">${info}</p>
           <div class="item-price">€${priceFormatted}</div>
           <button class="secondary-btn btn-view-details" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>
             ℹ️ View Details
@@ -160,30 +175,25 @@
         const allProducts = Array.isArray(data) ? data : (data.products || []);
         console.log('✅ Total products:', allProducts.length);
         
-        // Filter by species
+        // Filter by species (check metadata.species for Stripe products)
         const filteredProducts = speciesFilter === 'all' 
           ? allProducts 
-          : allProducts.filter(p => p.species === speciesFilter);
+          : allProducts.filter(p => {
+              const species = p.metadata?.species || p.species;
+              return species === speciesFilter;
+            });
         
         console.log('✅ After species filter:', filteredProducts.length);
         
-        // Separate by type (check for product_type, type, or default to real if has stripe_link)
-        const realProducts = filteredProducts.filter(p => {
-          const productType = p.product_type || p.type;
-          if (productType) return productType === 'real';
-          // If no type field but has stripe_link, assume real
-          return p.stripe_link || p.source === 'stripe';
-        });
-        const virtualProducts = filteredProducts.filter(p => {
-          const productType = p.product_type || p.type;
-          return productType === 'virtual';
-        });
+        // All Stripe products are "real" (not virtual), available (active=true)
+        const realProducts = filteredProducts.filter(p => p.active !== false);
+        const virtualProducts = []; // No virtual products from Stripe
         
         console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
         
-        // Separate by status
-        const available = realProducts.filter(p => p.status === 'available');
-        const sold = realProducts.filter(p => p.status === 'sold');
+        // Separate by status (Stripe products are all available if active)
+        const available = realProducts;
+        const sold = []; // Track sold separately (would need KV for this)
         
         console.log('✅ Available:', available.length, 'Sold:', sold.length);
         

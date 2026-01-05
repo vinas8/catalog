@@ -1066,11 +1066,18 @@ Lolipop,Salmon H. Bloodred,Female,2024,`;
         }
         
         if (products.length > 0) {
-          const hasStructure = products[0].id && products[0].name && products[0].price;
-          if (!hasStructure) {
-            throw new Error('Product missing required fields');
+          const product = products[0];
+          // Stripe products have: id, name, metadata, default_price (separate object)
+          // Check for Stripe structure
+          const hasId = !!product.id;
+          const hasName = !!product.name;
+          const hasMetadata = !!product.metadata;
+          
+          if (!hasId || !hasName) {
+            throw new Error(`Product structure invalid: id=${hasId}, name=${hasName}`);
           }
-          log('   ✅ Product structure valid', 'success');
+          log('   ✅ Product structure valid (Stripe format)', 'success');
+          log(`   ✅ Sample: ${product.name} (${product.metadata?.species || 'unknown'})`, 'success');
         }
         
         const duration = Date.now() - startTime;
