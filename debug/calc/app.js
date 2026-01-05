@@ -313,13 +313,32 @@ function calculateCompatibility(male, female, allSnakes) {
 function calculateOffspring(male, female) {
   const outcomes = [];
   
-  // Simplified Punnett for demo
+  // BEL complex (Mojave × Lesser)
   if (male.morphs.includes('mojave') && female.morphs.includes('lesser')) {
     outcomes.push({ morph: 'BEL', percentage: 25, count: 2, value: getMorphValue('blue_eyed_leucistic') || 800 });
     outcomes.push({ morph: 'Mojave', percentage: 25, count: 2, value: getMorphValue('mojave') });
     outcomes.push({ morph: 'Lesser', percentage: 25, count: 2, value: getMorphValue('lesser') });
     outcomes.push({ morph: 'Normal', percentage: 25, count: 2, value: getMorphValue('normal') });
-  } else {
+  } 
+  // Spider × any (dominant, no super)
+  else if (male.morphs.includes('spider') || female.morphs.includes('spider')) {
+    outcomes.push({ morph: 'Spider', percentage: 50, count: 4, value: getMorphValue('spider') });
+    outcomes.push({ morph: 'Normal', percentage: 50, count: 4, value: getMorphValue('normal') });
+  }
+  // Recessive × recessive (same morph)
+  else if (male.morphs[0] === female.morphs[0] && ['piebald', 'albino', 'clown'].includes(male.morphs[0])) {
+    const morphName = male.morphs[0].charAt(0).toUpperCase() + male.morphs[0].slice(1);
+    outcomes.push({ morph: morphName, percentage: 100, count: 8, value: getMorphValue(male.morphs[0]) });
+  }
+  // Co-dom × co-dom (different morphs)
+  else if (male.morphs[0] !== female.morphs[0]) {
+    const maleMorph = male.morphs[0].charAt(0).toUpperCase() + male.morphs[0].slice(1);
+    const femaleMorph = female.morphs[0].charAt(0).toUpperCase() + female.morphs[0].slice(1);
+    outcomes.push({ morph: `${maleMorph} Mix`, percentage: 50, count: 4, value: (getMorphValue(male.morphs[0]) + getMorphValue(female.morphs[0])) / 2 });
+    outcomes.push({ morph: 'Normal', percentage: 50, count: 4, value: getMorphValue('normal') });
+  }
+  // Default
+  else {
     const mainMorph = male.genetics?.visual?.[0] || 'normal';
     outcomes.push({ morph: mainMorph.charAt(0).toUpperCase() + mainMorph.slice(1), percentage: 50, count: 4, value: getMorphValue(mainMorph) });
     outcomes.push({ morph: 'Normal', percentage: 50, count: 4, value: getMorphValue('normal') });
@@ -374,7 +393,8 @@ function generateMatrix() {
       
       html += `<td><div class="breeding-cell score-${scoreClass}" data-male="${male.id}" data-female="${female.id}" data-score="${compat.score}" onclick="showDetails('${male.id}', '${female.id}')">`;
       html += `<div class="cell-score">${compat.score}</div>`;
-      html += `<div class="cell-morph">${compat.outcomes[0]?.morph || 'Mix'}</div>`;
+      const displayMorph = compat.outcomes[0]?.morph || `${male.morphs[0]}×${female.morphs[0]}`;
+      html += `<div class="cell-morph">${displayMorph}</div>`;
       html += `<div class="cell-value">$${(compat.metrics.avgOffspringValue || 0).toFixed(0)}</div>`;
       html += `<div class="cell-indicator">${indicator}</div>`;
       html += `</div></td>`;
