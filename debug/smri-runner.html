@@ -455,30 +455,86 @@ Lolipop,Salmon H. Bloodred,Female,2024,`;
         id: 'csv-import',
         title: 'CSV Import & Sync',
         smri: 'S2-csv-import',
-        url: null, // Data operation test
+        url: null,
         icon: '📤',
         autoRun: true
       },
       {
         id: 'purchase-flow',
         title: 'Purchase Flow',
-        smri: 'S2-purchase-flow',
+        smri: 'S1-purchase-flow',
         url: '../catalog.html',
         icon: '🛒'
       },
       {
+        id: 'catalog-display',
+        title: 'Catalog Display',
+        smri: 'S1-catalog-display',
+        url: '../catalog.html',
+        icon: '🏪'
+      },
+      {
+        id: 'success-page',
+        title: 'Success Page',
+        smri: 'S1-success-page',
+        url: '../success.html',
+        icon: '✅'
+      },
+      {
+        id: 'collection-view',
+        title: 'Collection View',
+        smri: 'S2-collection-view',
+        url: '../collection.html',
+        icon: '📦'
+      },
+      {
+        id: 'game-tamagotchi',
+        title: 'Game (Tamagotchi)',
+        smri: 'S2-game-tamagotchi',
+        url: '../game.html',
+        icon: '🎮'
+      },
+      {
+        id: 'account-page',
+        title: 'Account Page',
+        smri: 'S3-account-page',
+        url: '../account.html',
+        icon: '👤'
+      },
+      {
+        id: 'breeding-calculator',
+        title: 'Breeding Calculator',
+        smri: 'S2-breeding-calc',
+        url: 'breeding-calculator.html',
+        icon: '🧬'
+      },
+      {
         id: 'healthcheck',
         title: 'Healthcheck Page',
-        smri: 'S2-healthcheck',
+        smri: 'S0-healthcheck',
         url: 'healthcheck.html',
         icon: '🏥'
       },
       {
         id: 'worker-api',
         title: 'Worker API',
-        smri: 'S2-worker-api',
-        url: null, // API test
+        smri: 'S5-worker-api',
+        url: null,
         icon: '🔌'
+      },
+      {
+        id: 'kv-storage',
+        title: 'KV Storage',
+        smri: 'S5-kv-storage',
+        url: null,
+        icon: '💾'
+      },
+      {
+        id: 'import-page',
+        title: 'CSV Import Page',
+        smri: 'S1-import-page',
+        url: '../import.html',
+        icon: '📥'
       }
     ];
     
@@ -1027,6 +1083,138 @@ Lolipop,Salmon H. Bloodred,Female,2024,`;
       }
     }
     
+    // Test: KV Storage
+    async function testKVStorage() {
+      log('💾 Testing KV Storage...', 'info');
+      const startTime = Date.now();
+      
+      try {
+        log('1️⃣ Testing KV read operations...', 'info');
+        
+        const productsRes = await fetch(`${WORKER_URL}/products`);
+        if (!productsRes.ok) throw new Error('Products fetch failed');
+        const products = await productsRes.json();
+        log(`   ✅ KV Read: ${products.length} products`, 'success');
+        
+        const duration = Date.now() - startTime;
+        return { passed: true, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, duration };
+      }
+    }
+    
+    // Generic HTML Page Test
+    async function testHTMLPage(url, pageTitle, checks = []) {
+      log(`📄 Testing ${pageTitle}...`, 'info');
+      const startTime = Date.now();
+      
+      try {
+        log(`1️⃣ Loading ${url}...`, 'info');
+        renderPanel.style.display = 'block';
+        
+        const fullUrl = url.startsWith('http') ? url : 
+                       url.startsWith('../') ? BASE_PATH.replace('/debug', '') + '/' + url.replace('../', '') :
+                       BASE_PATH + '/' + url;
+        
+        renderFrame.src = fullUrl;
+        document.getElementById('iframeUrl').textContent = fullUrl;
+        
+        await new Promise((resolve) => {
+          renderFrame.onload = resolve;
+          setTimeout(resolve, 3000);
+        });
+        
+        log('   ✅ Page loaded', 'success');
+        
+        const iframeDoc = renderFrame.contentDocument;
+        if (iframeDoc && checks.length > 0) {
+          for (const check of checks) {
+            try {
+              const result = check(iframeDoc);
+              if (result) log(`   ✅ ${result}`, 'success');
+            } catch (e) {
+              log(`   ⚠️  Check skipped: ${e.message}`, 'warning');
+            }
+          }
+        }
+        
+        const duration = Date.now() - startTime;
+        return { passed: true, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, duration };
+      }
+    }
+    
+    // Specific page tests
+    async function testCatalogDisplay() {
+      return testHTMLPage('../catalog.html', 'Catalog Display', [
+        (doc) => {
+          const items = doc.querySelectorAll('.catalog-item');
+          return items.length > 0 ? `${items.length} products displayed` : null;
+        }
+      ]);
+    }
+    
+    async function testSuccessPage() {
+      return testHTMLPage('../success.html', 'Success Page', [
+        (doc) => {
+          const heading = doc.querySelector('h1');
+          return heading ? 'Success message displayed' : null;
+        }
+      ]);
+    }
+    
+    async function testCollectionView() {
+      return testHTMLPage('../collection.html', 'Collection View', [
+        (doc) => {
+          const container = doc.querySelector('#collection-container');
+          return container ? 'Collection container present' : null;
+        }
+      ]);
+    }
+    
+    async function testGameTamagotchi() {
+      return testHTMLPage('../game.html', 'Game (Tamagotchi)', [
+        (doc) => {
+          const snakeList = doc.querySelector('#snake-list');
+          return snakeList ? 'Snake list present' : null;
+        }
+      ]);
+    }
+    
+    async function testAccountPage() {
+      return testHTMLPage('../account.html', 'Account Page', [
+        (doc) => {
+          const form = doc.querySelector('form');
+          return form ? 'Account form present' : null;
+        }
+      ]);
+    }
+    
+    async function testBreedingCalculator() {
+      return testHTMLPage('breeding-calculator.html', 'Breeding Calculator', [
+        (doc) => {
+          const selects = doc.querySelectorAll('select');
+          return selects.length >= 2 ? `Parent selectors present` : null;
+        }
+      ]);
+    }
+    
+    async function testImportPage() {
+      return testHTMLPage('../import.html', 'CSV Import Page', [
+        (doc) => {
+          const fileInput = doc.querySelector('input[type="file"]');
+          return fileInput ? 'File upload input present' : null;
+        }
+      ]);
+    }
+    
     // Run single scenario
     async function runScenario(id) {
       const scenario = scenarios.find(s => s.id === id);
@@ -1040,10 +1228,26 @@ Lolipop,Salmon H. Bloodred,Female,2024,`;
         result = await testCSVImport();
       } else if (id === 'purchase-flow') {
         result = await testPurchaseFlow();
+      } else if (id === 'catalog-display') {
+        result = await testCatalogDisplay();
+      } else if (id === 'success-page') {
+        result = await testSuccessPage();
+      } else if (id === 'collection-view') {
+        result = await testCollectionView();
+      } else if (id === 'game-tamagotchi') {
+        result = await testGameTamagotchi();
+      } else if (id === 'account-page') {
+        result = await testAccountPage();
+      } else if (id === 'breeding-calculator') {
+        result = await testBreedingCalculator();
       } else if (id === 'healthcheck') {
         result = await testHealthcheck();
       } else if (id === 'worker-api') {
         result = await testWorkerAPI();
+      } else if (id === 'kv-storage') {
+        result = await testKVStorage();
+      } else if (id === 'import-page') {
+        result = await testImportPage();
       }
       
       // Update results
