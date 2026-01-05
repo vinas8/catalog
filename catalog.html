@@ -89,24 +89,8 @@
       const price = product.metadata?.price || product.price || 150;
       const priceFormatted = typeof price === 'number' ? price.toFixed(2) : price;
       
-      // Checkout URL - use Worker API to create Stripe session
+      // Checkout URL - use Stripe payment link from product
       let checkoutUrl = product.stripe_link;
-      
-      if (!checkoutUrl && product.id) {
-        // Use Worker API to create checkout session
-        // NOTE: This requires Stripe Price ID to be set on products
-        // For testing, link to purchase demo instead
-        const isTestMode = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1');
-        
-        if (isTestMode) {
-          // Testing mode - link to demo
-          checkoutUrl = `debug/purchase-flow-demo.html?product=${product.id}&hash=${userHash}`;
-        } else {
-          // Production - would need real Stripe checkout session creation
-          // TODO: Implement /create-checkout-session endpoint in worker
-          checkoutUrl = null; // Disabled until Stripe setup complete
-        }
-      }
       
       if (checkoutUrl && checkoutUrl.includes('stripe.com')) {
         checkoutUrl += `?client_reference_id=${userHash}`;
@@ -120,12 +104,12 @@
       const buyButton = isSold ? 
         '<button class="primary-btn" disabled style="opacity: 0.5;">Sold Out</button>' :
         canBuy ? 
-          `<a href="${checkoutUrl}" ${checkoutUrl.includes('debug/') ? '' : 'target="_blank"'} class="primary-btn" onclick="
+          `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
             localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
             localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
             localStorage.setItem('serpent_user_hash', '${userHash}');
-          ">💳 ${checkoutUrl.includes('debug/') ? 'Test Purchase' : `Buy Now - €${priceFormatted}`}</a>` :
-          '<button class="primary-btn" onclick="alert(\'Stripe checkout not configured. Visit /debug/purchase-flow-demo.html to test the flow.\')">💳 Buy Now - €${priceFormatted}</button>';
+          ">💳 Buy Now - €${priceFormatted}</a>` :
+          '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
       
       return `
         <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
