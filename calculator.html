@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Breeding Calculator - Serpent Town</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calculator-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .calculator-header {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .calculator-header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .calculator-header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .calculator-body {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #2d3748;
+    }
+
+    .snake-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .snake-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .snake-card:hover {
+      border-color: #9333ea;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(147, 51, 234, 0.2);
+    }
+
+    .snake-card.selected {
+      border-color: #9333ea;
+      background: #f3e8ff;
+    }
+
+    .snake-card h3 {
+      font-size: 1.1em;
+      margin-bottom: 5px;
+      color: #2d3748;
+    }
+
+    .snake-card .morphs {
+      font-size: 0.9em;
+      color: #718096;
+    }
+
+    .breeding-matrix {
+      overflow-x: auto;
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: #9333ea;
+      color: white;
+      font-weight: 600;
+    }
+
+    .cell-score {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .cell-grade {
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .cell-morphs {
+      font-size: 0.85em;
+      color: #718096;
+    }
+
+    .grade-a { color: #10b981; }
+    .grade-b { color: #3b82f6; }
+    .grade-c { color: #f59e0b; }
+    .grade-d { color: #ef4444; }
+    .grade-f { color: #dc2626; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #718096;
+    }
+
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #9333ea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #7e22ce;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #718096;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .detail-item {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .detail-label {
+      font-size: 0.85em;
+      color: #718096;
+      margin-bottom: 5px;
+    }
+
+    .detail-value {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #2d3748;
+    }
+
+    .outcomes-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .outcome-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      margin-bottom: 5px;
+      background: #f7fafc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="src/components/Navigation.js"></script>
+
+  <div class="calculator-container">
+    <div class="calculator-header">
+      <h1>🧬 Breeding Calculator</h1>
+      <p>Advanced genetics analysis for ball python breeding</p>
+    </div>
+
+    <div class="calculator-body">
+      <!-- Instructions -->
+      <div class="section">
+        <h2>📋 How It Works</h2>
+        <p>Select your snakes below to see breeding compatibility. The calculator uses:</p>
+        <ul>
+          <li><strong>Inbreeding Coefficient (CoI)</strong> - Wright's formula with 5-generation tracking</li>
+          <li><strong>Genetic Diversity</strong> - Allele variation scoring</li>
+          <li><strong>Heterozygosity</strong> - Hybrid vigor calculations</li>
+          <li><strong>Health Risk Assessment</strong> - Spider, Champagne, HGW wobble detection</li>
+          <li><strong>Lethal Combo Checks</strong> - Super Spider, Lesser x Butter, etc.</li>
+        </ul>
+      </div>
+
+      <!-- Male Selection -->
+      <div class="section">
+        <h2>🐍 Select Males</h2>
+        <div id="male-selector" class="snake-selector">
+          <!-- Snake cards will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Female Selection -->
+      <div class="section">
+        <h2>🐍 Select Females</h2>
+        <div id="female-selector" class="snake-selector">
+          <!-- Snake cards will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="section" style="text-align: center;">
+        <button id="generate-btn" class="btn btn-primary">🧬 Generate Breeding Matrix</button>
+      </div>
+
+      <!-- Results -->
+      <div id="results-section" class="section" style="display: none;">
+        <h2>📊 Breeding Matrix</h2>
+        <div class="breeding-matrix">
+          <table id="breeding-table">
+            <!-- Table will be generated here -->
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-state-icon">🐍</div>
+        <h3>No Snakes in Collection</h3>
+        <p>Buy your first snake to start breeding!</p>
+        <a href="catalog.html" class="btn btn-primary">Browse Catalog</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detail-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Breeding Details</h2>
+        <button class="close-btn" onclick="document.getElementById('detail-modal').style.display='none'">✕</button>
+      </div>
+      <div id="modal-body">
+        <!-- Details will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      loadGeneticsDatabase,
+      calculateCompatibility,
+      calculateOffspring,
+      getMorphValue
+    } from './src/modules/breeding/genetics-core.js';
+
+    let userSnakes = [];
+    let selectedMales = [];
+    let selectedFemales = [];
+
+    async function init() {
+      console.log('🧬 Initializing breeding calculator...');
+      
+      // Initialize genetics engine
+      const loadResult = await loadGeneticsDatabase();
+      
+      if (loadResult) {
+        console.log(`✅ Genetics database loaded`);
+      } else {
+        console.warn('⚠️ Using fallback genetics data');
+      }
+
+      // Load user's snakes
+      await loadUserSnakes();
+
+      // Setup event listeners
+      document.getElementById('generate-btn').addEventListener('click', generateMatrix);
+    }
+
+    async function loadUserSnakes() {
+      try {
+        // Get user hash from URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+        const hashUser = window.location.hash.substring(1);
+        const userHash = userParam || hashUser || localStorage.getItem('serpent_user_hash');
+
+        if (!userHash) {
+          document.getElementById('empty-state').style.display = 'block';
+          return;
+        }
+
+        // Load from game storage (consistent with farm/aquarium)
+        const storageKey = `serpent_town_${userHash}`;
+        const gameData = localStorage.getItem(storageKey);
+
+        if (gameData) {
+          const data = JSON.parse(gameData);
+          userSnakes = data.snakes || [];
+          
+          if (userSnakes.length === 0) {
+            document.getElementById('empty-state').style.display = 'block';
+          } else {
+            document.getElementById('empty-state').style.display = 'none';
+            renderSnakeSelectors();
+          }
+        } else {
+          document.getElementById('empty-state').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Failed to load snakes:', err);
+        document.getElementById('empty-state').style.display = 'block';
+      }
+    }
+
+    function renderSnakeSelectors() {
+      const males = userSnakes.filter(s => s.sex === 'male');
+      const females = userSnakes.filter(s => s.sex === 'female');
+
+      const maleSelector = document.getElementById('male-selector');
+      const femaleSelector = document.getElementById('female-selector');
+
+      maleSelector.innerHTML = males.map(snake => `
+        <div class="snake-card" data-id="${snake.id}" data-sex="male">
+          <h3>${snake.name || 'Unnamed'}</h3>
+          <div class="morphs">${snake.morphs?.join(', ') || 'Normal'}</div>
+          <div style="font-size: 0.85em; color: #a0aec0; margin-top: 5px;">
+            ${snake.age || 0}y | ${snake.weight || 0}g
+          </div>
+        </div>
+      `).join('');
+
+      femaleSelector.innerHTML = females.map(snake => `
+        <div class="snake-card" data-id="${snake.id}" data-sex="female">
+          <h3>${snake.name || 'Unnamed'}</h3>
+          <div class="morphs">${snake.morphs?.join(', ') || 'Normal'}</div>
+          <div style="font-size: 0.85em; color: #a0aec0; margin-top: 5px;">
+            ${snake.age || 0}y | ${snake.weight || 0}g
+          </div>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      document.querySelectorAll('[data-sex="male"]').forEach(card => {
+        card.addEventListener('click', () => toggleSelection(card, 'male'));
+      });
+
+      document.querySelectorAll('[data-sex="female"]').forEach(card => {
+        card.addEventListener('click', () => toggleSelection(card, 'female'));
+      });
+    }
+
+    function toggleSelection(card, sex) {
+      const id = card.dataset.id;
+      
+      if (sex === 'male') {
+        if (selectedMales.includes(id)) {
+          selectedMales = selectedMales.filter(x => x !== id);
+          card.classList.remove('selected');
+        } else {
+          selectedMales.push(id);
+          card.classList.add('selected');
+        }
+      } else {
+        if (selectedFemales.includes(id)) {
+          selectedFemales = selectedFemales.filter(x => x !== id);
+          card.classList.remove('selected');
+        } else {
+          selectedFemales.push(id);
+          card.classList.add('selected');
+        }
+      }
+    }
+
+    function generateMatrix() {
+      if (selectedMales.length === 0 || selectedFemales.length === 0) {
+        alert('Please select at least one male and one female snake');
+        return;
+      }
+
+      const males = selectedMales.map(id => userSnakes.find(s => s.id === id));
+      const females = selectedFemales.map(id => userSnakes.find(s => s.id === id));
+
+      const table = document.getElementById('breeding-table');
+      let html = '<thead><tr><th></th>';
+      
+      females.forEach(f => {
+        html += `<th>${f.name}<br><span style="font-size:0.8em;">${f.morphs?.join(', ') || 'Normal'}</span></th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      males.forEach(male => {
+        html += `<tr><th>${male.name}<br><span style="font-size:0.8em;">${male.morphs?.join(', ') || 'Normal'}</span></th>`;
+        
+        females.forEach(female => {
+          const compat = calculateCompatibility(male, female);
+          const gradeClass = `grade-${(compat.score >= 90 ? 'a' : compat.score >= 70 ? 'b' : compat.score >= 50 ? 'c' : compat.score >= 30 ? 'd' : 'f')}`;
+          
+          html += `<td class="breeding-cell" data-male="${male.id}" data-female="${female.id}">
+            <div class="cell-score ${gradeClass}">${compat.score}</div>
+            <div class="cell-grade">${compat.score >= 90 ? 'A+' : compat.score >= 70 ? 'B' : compat.score >= 50 ? 'C' : compat.score >= 30 ? 'D' : 'F'}</div>
+            ${compat.score === 0 ? '<div style="color:#dc2626;">⚠️ LETHAL</div>' : ''}
+          </td>`;
+        });
+        
+        html += '</tr>';
+      });
+
+      html += '</tbody>';
+      table.innerHTML = html;
+
+      document.getElementById('results-section').style.display = 'block';
+
+      // Add cell click handlers
+      document.querySelectorAll('.breeding-cell').forEach(cell => {
+        cell.addEventListener('click', () => showDetails(cell.dataset.male, cell.dataset.female));
+      });
+    }
+
+    function showDetails(maleId, femaleId) {
+      const male = userSnakes.find(s => s.id === maleId);
+      const female = userSnakes.find(s => s.id === femaleId);
+      const compat = calculateCompatibility(male, female);
+      const outcomes = calculateOffspring(male, female);
+
+      const modal = document.getElementById('detail-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalBody = document.getElementById('modal-body');
+
+      modalTitle.textContent = `${male.name} × ${female.name}`;
+
+      const grade = compat.score >= 90 ? 'A+' : compat.score >= 70 ? 'B' : compat.score >= 50 ? 'C' : compat.score >= 30 ? 'D' : 'F';
+      const gradeClass = `grade-${grade.toLowerCase().charAt(0)}`;
+
+      let html = `
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Compatibility Score</div>
+            <div class="detail-value ${gradeClass}">${compat.score}/100 (${grade})</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 20px;">Expected Offspring</h3>
+        <ul class="outcomes-list">
+          ${outcomes?.map(o => `
+            <li class="outcome-item">
+              <span>${o.morph}</span>
+              <span><strong>${o.percentage}%</strong> | $${o.value}</span>
+            </li>
+          `).join('') || '<li>No outcomes calculated</li>'}
+        </ul>
+      `;
+
+      if (compat.score === 0) {
+        html = `<div style="background:#fee; border-left:4px solid #dc2626; padding:15px; margin-bottom:20px;">
+          <strong style="color:#dc2626;">⚠️ LETHAL COMBINATION</strong>
+          <p>This pairing is not viable</p>
+        </div>` + html;
+      }
+
+      modalBody.innerHTML = html;
+      modal.style.display = 'flex';
+    }
+
+    // Close modal on outside click
+    document.getElementById('detail-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'detail-modal') {
+        e.target.style.display = 'none';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

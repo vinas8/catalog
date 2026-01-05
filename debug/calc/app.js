@@ -393,8 +393,19 @@ function generateMatrix() {
       
       html += `<td><div class="breeding-cell score-${scoreClass}" data-male="${male.id}" data-female="${female.id}" data-score="${compat.score}" onclick="showDetails('${male.id}', '${female.id}')">`;
       html += `<div class="cell-score">${compat.score}</div>`;
-      const displayMorph = compat.outcomes[0]?.morph || `${male.morphs[0]}×${female.morphs[0]}`;
-      html += `<div class="cell-morph">${displayMorph}</div>`;
+      
+      // Sort outcomes by value (highest first) and show top 2
+      const sortedOutcomes = [...compat.outcomes].sort((a, b) => b.value - a.value);
+      const topOutcome = sortedOutcomes[0]?.morph || 'Mix';
+      const secondOutcome = sortedOutcomes[1]?.morph || '';
+      
+      html += `<div class="cell-morph" style="font-size: 0.75em; line-height: 1.2;">`;
+      html += `<div style="font-weight: bold;">${topOutcome}</div>`;
+      if (secondOutcome && secondOutcome !== topOutcome) {
+        html += `<div style="opacity: 0.7;">${secondOutcome}</div>`;
+      }
+      html += `</div>`;
+      
       html += `<div class="cell-value">$${(compat.metrics.avgOffspringValue || 0).toFixed(0)}</div>`;
       html += `<div class="cell-indicator">${indicator}</div>`;
       html += `</div></td>`;
@@ -438,9 +449,15 @@ function showDetails(maleId, femaleId) {
   html += `<div class="stat-box"><div class="stat-label">Heterozygosity</div><div class="stat-value">${(compat.metrics.heterozygosity * 100).toFixed(0)}%</div></div>`;
   html += `</div></div>`;
   
-  html += `<div class="outcomes"><h3>🥚 Expected Offspring</h3>`;
-  compat.outcomes.forEach(o => {
-    html += `<div class="outcome-row"><span><strong>${o.morph}</strong> (${o.percentage}%)</span><span>${o.count} snakes @ $${o.value}</span></div>`;
+  // Sort outcomes by value (highest first)
+  const sortedOutcomes = [...compat.outcomes].sort((a, b) => b.value - a.value);
+  
+  html += `<div class="outcomes"><h3>🥚 Expected Offspring (sorted by value)</h3>`;
+  sortedOutcomes.forEach(o => {
+    html += `<div class="outcome-row">`;
+    html += `<span><strong>${o.morph}</strong> (${o.percentage}%)</span>`;
+    html += `<span>${o.count} snakes @ $${o.value} = <strong>$${o.count * o.value}</strong></span>`;
+    html += `</div>`;
   });
   html += `</div>`;
   
