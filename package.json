@@ -7,6 +7,7 @@
     "test": "node tests/modules/shop/game.test.js && node tests/snapshot/structure-validation.test.js && node tests/smri/scenario-runner.test.js",
     "test:fast": "node tests/modules/shop/game.test.js && node tests/snapshot/structure-validation.test.js",
     "test:smri": "node tests/smri/scenario-runner.test.js",
+    "test:smri:browser": "node tests/smri/smri-browser-runner.js",
     "test:slow": "node tests/slow/frontend-to-backend.test.js && node tests/slow/real-scenario.test.js && node tests/slow/worker-api.test.js",
     "test:e2e": "bash tests/e2e/e2e-purchase-flow.sh",
     "test:e2e:security": "node tests/e2e/security-scenarios.test.js",
