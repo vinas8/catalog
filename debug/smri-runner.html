@@ -251,13 +251,35 @@
       border-radius: 8px;
       overflow: hidden;
       margin-top: 20px;
-      height: 600px;
+      height: 700px;
+      position: relative;
     }
     
     .iframe-container iframe {
       width: 100%;
       height: 100%;
       border: none;
+      background: white;
+    }
+    
+    .iframe-header {
+      background: #21262d;
+      padding: 8px 16px;
+      border-bottom: 1px solid #30363d;
+      font-size: 12px;
+      color: #8b949e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .iframe-url {
+      font-family: monospace;
+      color: #58a6ff;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -341,7 +363,15 @@
 
     <div class="panel" id="renderPanel" style="display: none;">
       <h2>🎨 Live Render (Browser View)</h2>
+      <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">
+        See the actual page rendering in real-time. Scroll within the frame to view products.
+      </p>
       <div class="iframe-container">
+        <div class="iframe-header">
+          <span>🌐</span>
+          <span class="iframe-url" id="iframeUrl">about:blank</span>
+          <button onclick="renderFrame.src = renderFrame.src" style="padding: 4px 8px; font-size: 11px;">🔄 Reload</button>
+        </div>
         <iframe id="renderFrame" src="about:blank"></iframe>
       </div>
     </div>
@@ -458,35 +488,91 @@
     
     // Test: Purchase Flow
     async function testPurchaseFlow() {
-      log('🛒 Testing Purchase Flow...', 'info');
+      log('🛒 Testing Purchase Flow (Catalog)...', 'info');
       const startTime = Date.now();
       const steps = [];
       
       try {
         // Load catalog in iframe
+        const catalogUrl = BASE_PATH.replace('/debug', '') + '/catalog.html';
         log('1️⃣ Loading catalog.html...', 'info');
         renderPanel.style.display = 'block';
-        renderFrame.src = BASE_PATH.replace('/debug', '') + '/catalog.html';
+        renderFrame.src = catalogUrl;
+        document.getElementById('iframeUrl').textContent = catalogUrl;
         
         await new Promise(resolve => {
           renderFrame.onload = resolve;
           setTimeout(resolve, 5000); // Fallback timeout
         });
         
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for JS
-        
         steps.push({ step: 'Load catalog', passed: true });
-        log('   ✅ Catalog loaded', 'success');
+        log('   ✅ Catalog HTML loaded', 'success');
         
-        // Check if iframe has products (basic check)
+        // Wait for JavaScript to execute and render products
+        log('2️⃣ Waiting for products to render...', 'info');
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for fetch + render
+        
+        // Check if iframe has products
         const iframeDoc = renderFrame.contentDocument;
-        if (iframeDoc) {
-          const products = iframeDoc.querySelectorAll('.product-card, .snake-card, [data-product]');
-          log(`   ✅ Found ${products.length} product elements`, 'success');
-          steps.push({ step: 'Products rendered', passed: true, count: products.length });
+        if (!iframeDoc) {
+          throw new Error('Cannot access iframe document');
+        }
+        
+        // Check for catalog-item (actual product cards)
+        const catalogItems = iframeDoc.querySelectorAll('.catalog-item');
+        log(`   📦 Found ${catalogItems.length} .catalog-item elements`, catalogItems.length > 0 ? 'success' : 'warning');
+        
+        // Check loading state
+        const loadingElements = iframeDoc.querySelectorAll('.loading');
+        const hasLoading = Array.from(loadingElements).some(el => el.offsetParent !== null);
+        if (hasLoading) {
+          log('   ⚠️  Still showing "Loading..." - fetch may have failed', 'warning');
+        }
+        
+        // Check empty state
+        const emptyStates = iframeDoc.querySelectorAll('.empty-state');
+        if (emptyStates.length > 0) {
+          log(`   ℹ️  Found ${emptyStates.length} empty-state messages`, 'info');
+        }
+        
+        // Check for actual rendered products
+        const availableContainer = iframeDoc.getElementById('available-snakes');
+        const virtualContainer = iframeDoc.getElementById('virtual-snakes');
+        
+        if (availableContainer) {
+          const availableProducts = availableContainer.querySelectorAll('.catalog-item:not(.virtual)');
+          log(`   🐍 Real snakes rendered: ${availableProducts.length}`, 'success');
+          steps.push({ step: 'Real snakes', passed: true, count: availableProducts.length });
+        }
+        
+        if (virtualContainer) {
+          const virtualProducts = virtualContainer.querySelectorAll('.catalog-item.virtual');
+          log(`   💰 Virtual snakes rendered: ${virtualProducts.length}`, 'success');
+          steps.push({ step: 'Virtual snakes', passed: true, count: virtualProducts.length });
+        }
+        
+        // Validate product structure
+        if (catalogItems.length > 0) {
+          const firstProduct = catalogItems[0];
+          const hasName = firstProduct.querySelector('h3');
+          const hasPrice = firstProduct.querySelector('.item-price');
+          const hasButton = firstProduct.querySelector('button, a.primary-btn');
+          
+          if (hasName && hasPrice && hasButton) {
+            log('   ✅ Product structure valid (name, price, button)', 'success');
+            steps.push({ step: 'Product structure', passed: true });
+          } else {
+            log(`   ⚠️  Product structure incomplete: name=${!!hasName}, price=${!!hasPrice}, button=${!!hasButton}`, 'warning');
+          }
+        }
+        
+        // Final validation
+        if (catalogItems.length === 0 && !hasLoading) {
+          throw new Error('No products rendered and not loading - check Worker API');
         }
         
         const duration = Date.now() - startTime;
+        log(`✅ Catalog test complete - ${catalogItems.length} products shown`, 'success');
         return { passed: true, steps, duration };
         
       } catch (error) {
@@ -502,9 +588,11 @@
       const startTime = Date.now();
       
       try {
+        const healthUrl = 'healthcheck.html';
         log('1️⃣ Loading healthcheck.html...', 'info');
         renderPanel.style.display = 'block';
-        renderFrame.src = 'healthcheck.html';
+        renderFrame.src = healthUrl;
+        document.getElementById('iframeUrl').textContent = BASE_PATH + '/' + healthUrl;
         
         await new Promise(resolve => {
           renderFrame.onload = resolve;
