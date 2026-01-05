@@ -1,7 +1,7 @@
 # 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.1  
-**Last Updated:** 2026-01-03  
+**Version:** 0.7.5  
+**Last Updated:** 2026-01-05  
 **Purpose:** SMRI system index and operating rules
 
 ---
