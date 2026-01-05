@@ -366,13 +366,42 @@
       <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">
         See the actual page rendering in real-time. Scroll within the frame to view products.
       </p>
+      
+      <!-- Pipeline Navigation -->
+      <div id="pipelineNav" style="display: none; margin-bottom: 20px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div style="font-size: 13px; font-weight: 600; color: #58a6ff;">📍 Purchase Pipeline</div>
+          <div id="pipelineProgress" style="font-size: 11px; color: #8b949e;">Step 1 of 6</div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="btnPrevStep" class="secondary" style="padding: 8px 16px; font-size: 12px;">◀ Previous</button>
+          <button id="btnNextStep" class="secondary" style="padding: 8px 16px; font-size: 12px;">Next ▶</button>
+          <button id="btnResetPipeline" style="padding: 8px 16px; font-size: 12px; background: #21262d;">🔄 Reset</button>
+          <div id="currentStep" style="flex: 1; padding: 8px 12px; background: #161b22; border-radius: 6px; font-size: 12px; color: #c9d1d9; text-align: center;"></div>
+        </div>
+      </div>
+      
       <div class="iframe-container">
         <div class="iframe-header">
           <span>🌐</span>
           <span class="iframe-url" id="iframeUrl">about:blank</span>
           <button onclick="renderFrame.src = renderFrame.src" style="padding: 4px 8px; font-size: 11px;">🔄 Reload</button>
+          <button id="btnShowPipeline" style="padding: 4px 8px; font-size: 11px; background: #1f6feb;">📍 Show Pipeline</button>
         </div>
         <iframe id="renderFrame" src="about:blank"></iframe>
+      </div>
+    </div>
+    
+    <!-- Debug Console -->
+    <div class="panel" id="debugConsolePanel" style="display: none;">
+      <h2>🐛 Debug Console</h2>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button onclick="clearDebugConsole()" style="padding: 6px 12px; font-size: 12px; background: #21262d;">🗑️ Clear</button>
+        <button onclick="toggleDebugAutoScroll()" id="btnAutoScroll" style="padding: 6px 12px; font-size: 12px; background: #238636;">✅ Auto-scroll</button>
+        <span style="flex: 1; text-align: right; color: #8b949e; font-size: 12px; line-height: 30px;" id="debugLogCount">0 logs</span>
+      </div>
+      <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;" id="debugOutput">
+        <div style="color: #8b949e;">Console ready...</div>
       </div>
     </div>
   </div>
@@ -380,6 +409,18 @@
   <script type="module">
     const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
     const BASE_PATH = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+    
+    // Purchase pipeline steps
+    const PIPELINE_STEPS = [
+      { id: 'catalog', title: '1. Browse Catalog', url: '../catalog.html', icon: '🛒' },
+      { id: 'product', title: '2. Select Product', url: '../catalog.html', icon: '🐍' },
+      { id: 'checkout', title: '3. Checkout (Stripe)', url: null, icon: '💳', info: 'Opens Stripe' },
+      { id: 'success', title: '4. Success Page', url: '../success.html', icon: '✅' },
+      { id: 'collection', title: '5. View Collection', url: '../collection.html', icon: '📦' },
+      { id: 'game', title: '6. Play Game', url: '../game.html', icon: '🎮' }
+    ];
+    
+    let currentPipelineStep = 0;
     
     // Test definitions
     const scenarios = [
@@ -421,6 +462,12 @@
     const renderPanel = document.getElementById('renderPanel');
     const renderFrame = document.getElementById('renderFrame');
     const globalStatus = document.getElementById('globalStatus');
+    const debugOutput = document.getElementById('debugOutput');
+    const debugConsolePanel = document.getElementById('debugConsolePanel');
+    const pipelineNav = document.getElementById('pipelineNav');
+    
+    let debugLogs = [];
+    let debugAutoScroll = true;
     
     // Initialize UI
     function initScenarios() {
@@ -455,6 +502,91 @@
       `;
       consoleOutput.appendChild(entry);
       consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      
+      // Also add to debug console
+      debugLog(message, type);
+    }
+    
+    // Debug Console
+    function debugLog(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      const colors = {
+        info: '#58a6ff',
+        success: '#3fb950',
+        error: '#f85149',
+        warning: '#f0883e'
+      };
+      
+      const icons = {
+        info: 'ℹ️',
+        success: '✅',
+        error: '❌',
+        warning: '⚠️'
+      };
+      
+      debugLogs.push({ time, message, type });
+      
+      const logEntry = document.createElement('div');
+      logEntry.style.marginBottom = '4px';
+      logEntry.style.color = colors[type] || '#c9d1d9';
+      logEntry.innerHTML = `<span style="color: #8b949e;">[${time}]</span> ${icons[type] || ''} ${message}`;
+      
+      debugOutput.appendChild(logEntry);
+      
+      if (debugAutoScroll) {
+        debugOutput.scrollTop = debugOutput.scrollHeight;
+      }
+      
+      document.getElementById('debugLogCount').textContent = `${debugLogs.length} logs`;
+    }
+    
+    function clearDebugConsole() {
+      debugLogs = [];
+      debugOutput.innerHTML = '<div style="color: #8b949e;">Console cleared...</div>';
+      document.getElementById('debugLogCount').textContent = '0 logs';
+    }
+    
+    function toggleDebugAutoScroll() {
+      debugAutoScroll = !debugAutoScroll;
+      const btn = document.getElementById('btnAutoScroll');
+      btn.textContent = debugAutoScroll ? '✅ Auto-scroll' : '⏸️ Paused';
+      btn.style.background = debugAutoScroll ? '#238636' : '#21262d';
+    }
+    
+    // Pipeline Navigation
+    function updatePipelineUI() {
+      const step = PIPELINE_STEPS[currentPipelineStep];
+      document.getElementById('currentStep').textContent = `${step.icon} ${step.title}`;
+      document.getElementById('pipelineProgress').textContent = `Step ${currentPipelineStep + 1} of ${PIPELINE_STEPS.length}`;
+      
+      document.getElementById('btnPrevStep').disabled = currentPipelineStep === 0;
+      document.getElementById('btnNextStep').disabled = currentPipelineStep === PIPELINE_STEPS.length - 1;
+    }
+    
+    function navigateToPipelineStep(stepIndex) {
+      if (stepIndex < 0 || stepIndex >= PIPELINE_STEPS.length) return;
+      
+      currentPipelineStep = stepIndex;
+      const step = PIPELINE_STEPS[stepIndex];
+      
+      debugLog(`Navigating to: ${step.title}`, 'info');
+      
+      if (step.url) {
+        const url = BASE_PATH.replace('/debug', '') + '/' + step.url.replace('../', '');
+        renderFrame.src = url;
+        document.getElementById('iframeUrl').textContent = url;
+      } else {
+        debugLog(`${step.info || 'External action required'}`, 'warning');
+      }
+      
+      updatePipelineUI();
+    }
+    
+    function showPipeline() {
+      pipelineNav.style.display = 'block';
+      debugConsolePanel.style.display = 'block';
+      updatePipelineUI();
+      debugLog('Pipeline navigation enabled', 'success');
     }
     
     // Update stats
@@ -497,11 +629,47 @@
         const catalogUrl = BASE_PATH.replace('/debug', '') + '/catalog.html';
         log('1️⃣ Loading catalog.html...', 'info');
         renderPanel.style.display = 'block';
+        debugConsolePanel.style.display = 'block';
         renderFrame.src = catalogUrl;
         document.getElementById('iframeUrl').textContent = catalogUrl;
         
+        // Show pipeline button
+        document.getElementById('btnShowPipeline').style.display = 'inline-block';
+        
+        // Capture iframe console logs
+        try {
+          renderFrame.onload = () => {
+            try {
+              const iframeWindow = renderFrame.contentWindow;
+              if (iframeWindow) {
+                const originalConsoleLog = iframeWindow.console.log;
+                const originalConsoleError = iframeWindow.console.error;
+                const originalConsoleWarn = iframeWindow.console.warn;
+                
+                iframeWindow.console.log = function(...args) {
+                  debugLog(`[IFRAME] ${args.join(' ')}`, 'info');
+                  originalConsoleLog.apply(iframeWindow.console, args);
+                };
+                
+                iframeWindow.console.error = function(...args) {
+                  debugLog(`[IFRAME] ${args.join(' ')}`, 'error');
+                  originalConsoleError.apply(iframeWindow.console, args);
+                };
+                
+                iframeWindow.console.warn = function(...args) {
+                  debugLog(`[IFRAME] ${args.join(' ')}`, 'warning');
+                  originalConsoleWarn.apply(iframeWindow.console, args);
+                };
+              }
+            } catch (e) {
+              debugLog('Cannot access iframe console (CORS)', 'warning');
+            }
+          };
+        } catch (e) {
+          debugLog('Console capture failed: ' + e.message, 'warning');
+        }
+        
         await new Promise(resolve => {
-          renderFrame.onload = resolve;
           setTimeout(resolve, 5000); // Fallback timeout
         });
         
@@ -737,6 +905,20 @@
     document.getElementById('btnRunHealthcheck').addEventListener('click', () => runScenario('healthcheck'));
     document.getElementById('btnRunAPI').addEventListener('click', () => runScenario('worker-api'));
     document.getElementById('btnClear').addEventListener('click', clearResults);
+    
+    // Pipeline navigation
+    document.getElementById('btnShowPipeline').addEventListener('click', showPipeline);
+    document.getElementById('btnPrevStep').addEventListener('click', () => navigateToPipelineStep(currentPipelineStep - 1));
+    document.getElementById('btnNextStep').addEventListener('click', () => navigateToPipelineStep(currentPipelineStep + 1));
+    document.getElementById('btnResetPipeline').addEventListener('click', () => {
+      currentPipelineStep = 0;
+      navigateToPipelineStep(0);
+      debugLog('Pipeline reset to step 1', 'info');
+    });
+    
+    // Expose global functions
+    window.clearDebugConsole = clearDebugConsole;
+    window.toggleDebugAutoScroll = toggleDebugAutoScroll;
     
     // Initialize
     initScenarios();
