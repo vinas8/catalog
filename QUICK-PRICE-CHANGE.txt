@@ -1,0 +1,54 @@
+🐍 QUICK PRICE CHANGE GUIDE
+
+Want to change snake prices? Here's where:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 MAIN PRICE FILE (Just created for you):
+   /src/config/price-config.js
+
+   Change these values:
+   
+   basePrices: {
+     ball_python: 150,  ← Change this number (EUR)
+     corn_snake: 100    ← Change this number (EUR)
+   }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 MORPH MULTIPLIERS (Affects final price):
+   Same file: /src/config/price-config.js
+   
+   morphMultipliers: {
+     banana: 4.0,    ← Makes Banana 4× base (€600)
+     piebald: 10.0   ← Makes Piebald 10× base (€1500)
+   }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 FALLBACK PRICE (If no price set):
+   /catalog.html line 89
+   
+   const price = product.metadata?.price || product.price || 150;
+                                                              ^^^
+                                                      Change this number
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📍 VIRTUAL SNAKE PRICES (In-game gold):
+   /src/modules/shop/business/economy.js lines 93-96
+   
+   'ball_python': 1000,  ← Gold price
+   'corn_snake': 500     ← Gold price
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 QUICK TEST:
+   1. Open http://localhost:8000/catalog.html
+   2. Check if prices look correct
+   3. Done!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 Full guide: .smri/docs/PRICING-GUIDE.md
+
