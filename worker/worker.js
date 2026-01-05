@@ -1900,7 +1900,10 @@ async function handleClearAllKV(env, corsHeaders) {
     const namespaces = [
       { name: 'USER_PRODUCTS', kv: env.USER_PRODUCTS },
       { name: 'PRODUCT_STATUS', kv: env.PRODUCT_STATUS },
-      { name: 'PRODUCTS', kv: env.PRODUCTS }
+      { name: 'PRODUCTS', kv: env.PRODUCTS },
+      { name: 'PRODUCTS_REAL', kv: env.PRODUCTS_REAL },
+      { name: 'PRODUCTS_VIRTUAL', kv: env.PRODUCTS_VIRTUAL },
+      { name: 'USERS', kv: env.USERS }
     ].filter(ns => ns.kv !== undefined);
 
     const results = [];
@@ -1914,8 +1917,10 @@ async function handleClearAllKV(env, corsHeaders) {
         for (const key of keys) {
           // Protection: Skip real snake products and user data
           const shouldSkip = (
-            ns.name === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes
+            ns.name === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes in legacy namespace
+            ns.name === 'PRODUCTS_REAL' ||  // All real snakes (new namespace)
             ns.name === 'USER_PRODUCTS' ||  // All user purchases
+            ns.name === 'USERS' ||  // All user profiles
             ns.name === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
           );
           
@@ -1981,14 +1986,17 @@ async function handleClearNamespace(request, env, corsHeaders) {
     const namespaceMap = {
       'USER_PRODUCTS': env.USER_PRODUCTS,
       'PRODUCT_STATUS': env.PRODUCT_STATUS,
-      'PRODUCTS': env.PRODUCTS
+      'PRODUCTS': env.PRODUCTS,
+      'PRODUCTS_REAL': env.PRODUCTS_REAL,
+      'PRODUCTS_VIRTUAL': env.PRODUCTS_VIRTUAL,
+      'USERS': env.USERS
     };
 
     const kv = namespaceMap[namespace];
     
     if (!kv) {
       return new Response(JSON.stringify({ 
-        error: `Unknown namespace: ${namespace}. Valid: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS` 
+        error: `Unknown namespace: ${namespace}. Valid: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS, PRODUCTS_REAL, PRODUCTS_VIRTUAL, USERS` 
       }), {
         status: 400,
         headers: corsHeaders
@@ -2004,8 +2012,10 @@ async function handleClearNamespace(request, env, corsHeaders) {
     for (const key of keys) {
       // Protection: Skip real snake products and user data
       const shouldSkip = (
-        namespace === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes
+        namespace === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes in legacy namespace
+        namespace === 'PRODUCTS_REAL' ||  // All real snakes (new namespace)
         namespace === 'USER_PRODUCTS' ||  // All user purchases
+        namespace === 'USERS' ||  // All user profiles
         namespace === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
       );
       
