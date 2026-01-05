@@ -545,6 +545,340 @@ Lolipop,Salmon H. Bloodred,Female,2024,`;
         url: '../account.html',
         icon: '👤'
       },
+      // === SYSTEM HEALTH (S0) - 11 scenarios ===
+      {
+        id: 's0-generic-health',
+        title: 'S0: Generic Debug Health',
+        smri: 'S0.0.01',
+        url: 'healthcheck.html',
+        icon: '🏥'
+      },
+      {
+        id: 's0-shop-rendering',
+        title: 'S0: Shop Product Rendering',
+        smri: 'S0-1.1.01',
+        url: '../catalog.html',
+        icon: '🛒'
+      },
+      {
+        id: 's0-game-mechanics',
+        title: 'S0: Game Mechanics Check',
+        smri: 'S0-2.2.01',
+        url: '../game.html',
+        icon: '🎮'
+      },
+      {
+        id: 's0-auth-validation',
+        title: 'S0: Auth User Validation',
+        smri: 'S0-3.3.01',
+        url: '../account.html',
+        icon: '🔐'
+      },
+      {
+        id: 's0-payment-stripe',
+        title: 'S0: Payment Stripe Check',
+        smri: 'S0-4.4.01',
+        url: null,
+        icon: '💳'
+      },
+      {
+        id: 's0-worker-api-check',
+        title: 'S0: Worker API Check',
+        smri: 'S0-5.5,5-1.01',
+        url: null,
+        icon: '☁️'
+      },
+      {
+        id: 's0-kv-health',
+        title: 'S0: KV Storage Health',
+        smri: 'S0-11.5-1.01',
+        url: null,
+        icon: '💾'
+      },
+      {
+        id: 's0-webhooks',
+        title: 'S0: Stripe Webhooks',
+        smri: 'S0-12.5-2.01',
+        url: null,
+        icon: '🔔'
+      },
+      {
+        id: 's0-full-system',
+        title: 'S0: Full System Health',
+        smri: 'S0.1,2,3,4,5,5-1,5-2.03',
+        url: 'healthcheck.html',
+        icon: '✅'
+      },
+      {
+        id: 's0-virtual-demo',
+        title: 'S0: Virtual Snakes Demo',
+        smri: 'S0.0.02',
+        url: '../catalog.html',
+        icon: '👻'
+      },
+      {
+        id: 's0-cleanup',
+        title: 'S0: Storage Cleanup',
+        smri: 'S0.0.03',
+        url: 'data-manager.html',
+        icon: '🗑️'
+      },
+      // === GAME MODULE (S2) - 10 scenarios ===
+      {
+        id: 's2-stats-display',
+        title: 'S2: View Snake Stats',
+        smri: 'S2.2.01',
+        url: '../game.html',
+        icon: '📊'
+      },
+      {
+        id: 's2-hunger-decay',
+        title: 'S2: Hunger/Thirst Decay',
+        smri: 'S2.2.02',
+        url: '../game.html',
+        icon: '⏱️'
+      },
+      {
+        id: 's2-feed-action',
+        title: 'S2: Feed Snake Action',
+        smri: 'S2.2.03',
+        url: '../game.html',
+        icon: '🍖'
+      },
+      {
+        id: 's2-water-action',
+        title: 'S2: Water Snake Action',
+        smri: 'S2.2.04',
+        url: '../game.html',
+        icon: '💧'
+      },
+      {
+        id: 's2-clean-action',
+        title: 'S2: Clean Enclosure',
+        smri: 'S2.2.05',
+        url: '../game.html',
+        icon: '🧹'
+      },
+      {
+        id: 's2-health-degradation',
+        title: 'S2: Health Degradation',
+        smri: 'S2.2.06',
+        url: '../game.html',
+        icon: '❤️'
+      },
+      {
+        id: 's2-auto-save',
+        title: 'S2: Auto-Save State',
+        smri: 'S2.5,5-1.01',
+        url: '../game.html',
+        icon: '💾'
+      },
+      {
+        id: 's2-buy-equipment',
+        title: 'S2: Buy Equipment',
+        smri: 'S2.4.01',
+        url: '../game.html',
+        icon: '🛍️'
+      },
+      {
+        id: 's2-insufficient-gold',
+        title: 'S2: Insufficient Gold',
+        smri: 'S2.4.02',
+        url: '../game.html',
+        icon: '🚫'
+      },
+      {
+        id: 's2-loyalty-tiers',
+        title: 'S2: Loyalty Tier Equipment',
+        smri: 'S2.2,3.01',
+        url: '../game.html',
+        icon: '⭐'
+      },
+      // === AUTH MODULE (S3) - 7 scenarios ===
+      {
+        id: 's3-hash-validation',
+        title: 'S3: User Hash Validation',
+        smri: 'S3.3,5.01',
+        url: null,
+        icon: '🔑'
+      },
+      {
+        id: 's3-invalid-hash',
+        title: 'S3: Invalid Hash Rejection',
+        smri: 'S3.3,5.02',
+        url: null,
+        icon: '🚫'
+      },
+      {
+        id: 's3-register-username',
+        title: 'S3: Register Username',
+        smri: 'S3.3,4.01',
+        url: '../account.html',
+        icon: '📝'
+      },
+      {
+        id: 's3-anonymous-play',
+        title: 'S3: Anonymous Play',
+        smri: 'S3.3.01',
+        url: '../game.html',
+        icon: '👤'
+      },
+      {
+        id: 's3-loyalty-points',
+        title: 'S3: Loyalty Points Earning',
+        smri: 'S3.3,4.02',
+        url: '../game.html',
+        icon: '⭐'
+      },
+      {
+        id: 's3-loyalty-progression',
+        title: 'S3: Loyalty Tier Progression',
+        smri: 'S3.3.02',
+        url: '../account.html',
+        icon: '📈'
+      },
+      {
+        id: 's3-xss-prevention',
+        title: 'S3: XSS Attack Prevention',
+        smri: 'S3.3,5.03',
+        url: null,
+        icon: '🛡️'
+      },
+      // === PAYMENT MODULE (S4) - 6 scenarios ===
+      {
+        id: 's4-product-schema',
+        title: 'S4: Product Schema Validation',
+        smri: 'S4.4,5.01',
+        url: null,
+        icon: '✅'
+      },
+      {
+        id: 's4-webhook-timeout',
+        title: 'S4: Webhook Timeout Handling',
+        smri: 'S4.4,5,5-2.02',
+        url: null,
+        icon: '⏱️'
+      },
+      {
+        id: 's4-webhook-idempotency',
+        title: 'S4: Webhook Idempotency',
+        smri: 'S4.4,5,5-2.03',
+        url: null,
+        icon: '🔄'
+      },
+      {
+        id: 's4-race-condition',
+        title: 'S4: Product Race Condition',
+        smri: 'S4.1,4,5.04',
+        url: null,
+        icon: '⚡'
+      },
+      {
+        id: 's4-csrf-protection',
+        title: 'S4: CSRF Webhook Protection',
+        smri: 'S4.4,5,5-2.05',
+        url: null,
+        icon: '🛡️'
+      },
+      {
+        id: 's4-sql-injection',
+        title: 'S4: SQL Injection Block',
+        smri: 'S4.4,5.02',
+        url: null,
+        icon: '🚫'
+      },
+      // === WORKER MODULE (S5) - 13 scenarios ===
+      {
+        id: 's5-webhook-signature',
+        title: 'S5: Webhook Signature Verify',
+        smri: 'S5.5,5-1,5-2.01',
+        url: null,
+        icon: '🔐'
+      },
+      {
+        id: 's5-game-cold-start',
+        title: 'S5: Game Cold Start KV',
+        smri: 'S5.2,5,5-1.01',
+        url: '../game.html',
+        icon: '❄️'
+      },
+      {
+        id: 's5-corrupted-kv',
+        title: 'S5: Corrupted KV Data',
+        smri: 'S5.5,5-1.01',
+        url: null,
+        icon: '⚠️'
+      },
+      {
+        id: 's5-network-failure',
+        title: 'S5: Network Failure Offline',
+        smri: 'S5.2,5-1.02',
+        url: '../game.html',
+        icon: '📡'
+      },
+      {
+        id: 's5-localstorage-recovery',
+        title: 'S5: LocalStorage Recovery',
+        smri: 'S5.2.03',
+        url: '../game.html',
+        icon: '💾'
+      },
+      {
+        id: 's5-product-sync',
+        title: 'S5: Product CRUD Stripe',
+        smri: 'S5.1,4,5-3.01',
+        url: '../import.html',
+        icon: '🔄'
+      },
+      {
+        id: 's5-kv-consistency',
+        title: 'S5: KV Data Consistency',
+        smri: 'S5.5,5-1.02',
+        url: null,
+        icon: '✅'
+      },
+      {
+        id: 's5-clear-stripe',
+        title: 'S5: Clear Stripe Products',
+        smri: 'S5.5.04',
+        url: 'data-manager.html',
+        icon: '🗑️'
+      },
+      {
+        id: 's5-clear-kv',
+        title: 'S5: Clear KV Storage',
+        smri: 'S5.5.05',
+        url: 'data-manager.html',
+        icon: '🗑️'
+      },
+      {
+        id: 's5-clear-all',
+        title: 'S5: Clear All Data',
+        smri: 'S5.5.06',
+        url: 'data-manager.html',
+        icon: '💣'
+      },
+      {
+        id: 's5-load-hundred',
+        title: 'S5: Load 100 Products',
+        smri: 'S5.1,5-1.01',
+        url: '../catalog.html',
+        icon: '💯'
+      },
+      {
+        id: 's5-twenty-snakes',
+        title: 'S5: Game 20 Snakes Multi',
+        smri: 'S5.2,5-1.04',
+        url: '../game.html',
+        icon: '🐍'
+      },
+      {
+        id: 's5-concurrent-webhooks',
+        title: 'S5: Concurrent Webhooks',
+        smri: 'S5.4,5,5-2.02',
+        url: null,
+        icon: '⚡'
+      },
       {
         id: 'breeding-calculator',
         title: 'Breeding Calculator',
