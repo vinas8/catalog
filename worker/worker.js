@@ -1909,16 +1909,29 @@ async function handleClearAllKV(env, corsHeaders) {
       try {
         const { keys } = await ns.kv.list();
         let deleted = 0;
+        let skipped = 0;
         
         for (const key of keys) {
-          await ns.kv.delete(key.name);
-          deleted++;
+          // Protection: Skip real snake products and user data
+          const shouldSkip = (
+            ns.name === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes
+            ns.name === 'USER_PRODUCTS' ||  // All user purchases
+            ns.name === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
+          );
+          
+          if (shouldSkip) {
+            skipped++;
+          } else {
+            await ns.kv.delete(key.name);
+            deleted++;
+          }
         }
 
         results.push({
           namespace: ns.name,
           success: true,
-          keysDeleted: deleted
+          keysDeleted: deleted,
+          keysSkipped: skipped
         });
       } catch (err) {
         results.push({
@@ -1982,19 +1995,36 @@ async function handleClearNamespace(request, env, corsHeaders) {
       });
     }
 
-    // Delete all keys from this namespace
+    // Delete all keys from this namespace (with protection)
     const { keys } = await kv.list();
     let deleted = 0;
+    let skipped = 0;
+    const skippedKeys = [];
     
     for (const key of keys) {
-      await kv.delete(key.name);
-      deleted++;
+      // Protection: Skip real snake products and user data
+      const shouldSkip = (
+        namespace === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes
+        namespace === 'USER_PRODUCTS' ||  // All user purchases
+        namespace === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
+      );
+      
+      if (shouldSkip) {
+        skipped++;
+        skippedKeys.push(key.name);
+      } else {
+        await kv.delete(key.name);
+        deleted++;
+      }
     }
 
     return new Response(JSON.stringify({
       success: true,
       namespace,
-      keysDeleted: deleted
+      keysDeleted: deleted,
+      keysSkipped: skipped,
+      skippedKeys: skippedKeys.slice(0, 10),  // Show first 10
+      message: skipped > 0 ? `Protected ${skipped} real snakes and user data` : 'All keys deleted'
     }), {
       status: 200,
       headers: corsHeaders
