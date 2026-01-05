@@ -895,8 +895,30 @@
     async function clearNamespace(binding) {
       if (!confirm(`⚠️ Clear ALL keys from ${binding}?`)) return;
 
-      alert('Clear namespace functionality requires worker endpoint implementation');
-      // TODO: Implement clear single namespace endpoint in worker
+      try {
+        statusDiv.textContent = `🔄 Clearing ${binding}...`;
+        statusDiv.className = 'status info';
+
+        const response = await fetch(`${API_URL}/clear-namespace`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ namespace: binding })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusDiv.textContent = `✅ Cleared ${result.keysDeleted} keys from ${binding}`;
+          statusDiv.className = 'status success';
+          loadKVData(); // Refresh
+        } else {
+          statusDiv.textContent = `❌ Error: ${result.error}`;
+          statusDiv.className = 'status error';
+        }
+      } catch (error) {
+        statusDiv.textContent = `❌ Failed to clear namespace: ${error.message}`;
+        statusDiv.className = 'status error';
+      }
     }
 
     async function clearAllKV() {

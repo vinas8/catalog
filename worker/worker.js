@@ -337,6 +337,7 @@ export default {
             'POST /kv/set',
             'POST /kv/delete',
             'POST /clear-kv-all',
+            'POST /clear-namespace',
             'POST /assign-product',
             'POST /assign-virtual-snake'
           ],
@@ -397,6 +398,11 @@ export default {
     // Route: POST /clear-kv-all (Clear ALL KV namespaces)
     if (pathname === '/clear-kv-all' && request.method === 'POST') {
       return handleClearAllKV(env, corsHeaders);
+    }
+
+    // Route: POST /clear-namespace (Clear single KV namespace)
+    if (pathname === '/clear-namespace' && request.method === 'POST') {
+      return handleClearNamespace(request, env, corsHeaders);
     }
 
     return new Response(JSON.stringify({ error: 'Not found' }), { 
@@ -1929,6 +1935,66 @@ async function handleClearAllKV(env, corsHeaders) {
       success: true,
       totalKeysDeleted: totalDeleted,
       namespaces: results
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Clear a single KV namespace
+ */
+async function handleClearNamespace(request, env, corsHeaders) {
+  try {
+    const body = await request.json();
+    const { namespace } = body;
+
+    if (!namespace) {
+      return new Response(JSON.stringify({ 
+        error: 'Missing namespace parameter' 
+      }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    // Map namespace name to KV binding
+    const namespaceMap = {
+      'USER_PRODUCTS': env.USER_PRODUCTS,
+      'PRODUCT_STATUS': env.PRODUCT_STATUS,
+      'PRODUCTS': env.PRODUCTS
+    };
+
+    const kv = namespaceMap[namespace];
+    
+    if (!kv) {
+      return new Response(JSON.stringify({ 
+        error: `Unknown namespace: ${namespace}. Valid: USER_PRODUCTS, PRODUCT_STATUS, PRODUCTS` 
+      }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    // Delete all keys from this namespace
+    const { keys } = await kv.list();
+    let deleted = 0;
+    
+    for (const key of keys) {
+      await kv.delete(key.name);
+      deleted++;
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      namespace,
+      keysDeleted: deleted
     }), {
       status: 200,
       headers: corsHeaders
