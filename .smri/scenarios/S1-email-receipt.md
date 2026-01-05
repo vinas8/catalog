@@ -1,0 +1,189 @@
+# S1.1,4.01 - Payment Confirmation Email Receipt
+
+**Version:** 0.8.0  
+**Module:** Shop (S1) + Payment (S4)  
+**Status:** ⏳ Implementation Needed  
+**Priority:** 🔥 High
+
+---
+
+## 📋 Overview
+
+After successful purchase, customer receives email with receipt and care guide.
+
+**User Story:** As a customer, I want to receive email confirmation with purchase details and snake care instructions.
+
+---
+
+## 🎯 Test Scenario
+
+### Setup
+```javascript
+// Configure Resend API (email service)
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const TEST_EMAIL = 'test@example.com';
+```
+
+### Steps
+
+**1. Purchase with Email**
+- Complete checkout
+- Stripe captures customer email
+- Webhook receives `checkout.session.completed`
+- Extract email from session metadata
+
+**2. Generate Receipt**
+- Format purchase details:
+  - Snake morph & species
+  - Price paid
+  - Purchase date
+  - Transaction ID
+- Include care guide link
+- Add collection access link
+
+**3. Send Email via Resend**
+```javascript
+const emailData = {
+  from: 'noreply@serpenttown.com',
+  to: session.customer_email,
+  subject: 'Your Snake Arrived! 🐍',
+  html: receiptTemplate(purchaseData)
+};
+await resend.emails.send(emailData);
+```
+
+**4. Verify Delivery**
+- Check Resend dashboard
+- Email delivered successfully
+- Customer receives within 2 minutes
+- Email contains all required info
+
+---
+
+## ✅ Success Criteria
+
+- [ ] Email sent on webhook trigger
+- [ ] Contains correct purchase details
+- [ ] Includes snake care guide link
+- [ ] Has collection access URL
+- [ ] Arrives within 2 minutes
+- [ ] No email on failed payment
+
+---
+
+## 🔧 Implementation
+
+### Worker Webhook Handler
+```javascript
+// worker/handlers/stripe-webhook.js (add to existing)
+async function handleCheckoutSuccess(session) {
+  const purchaseData = {
+    snakeMorph: session.metadata.snake_morph,
+    price: session.amount_total / 100,
+    purchaseDate: new Date().toISOString(),
+    userHash: session.metadata.user_hash,
+    transactionId: session.id
+  };
+  
+  // Send email
+  await sendPurchaseEmail(session.customer_email, purchaseData);
+  
+  // Assign to KV
+  await assignSnakeToUser(purchaseData);
+}
+
+async function sendPurchaseEmail(email, data) {
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'Snake Muffin <noreply@serpenttown.com>',
+      to: email,
+      subject: `Your ${data.snakeMorph} has arrived! 🐍`,
+      html: generateReceiptHTML(data)
+    })
+  });
+  
+  if (!response.ok) {
+    console.error('Email send failed:', await response.text());
+    // Don't fail webhook - product still delivered
+  }
+}
+```
+
+### Email Template
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; }
+    .header { text-align: center; color: #2ea043; }
+    .receipt { background: #f6f8fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .cta-button { display: inline-block; background: #2ea043; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="header">🐍 Your Snake Has Arrived!</h1>
+    <p>Thank you for your purchase! Your <strong>{{snakeMorph}}</strong> is now in your collection.</p>
+    
+    <div class="receipt">
+      <h3>Receipt Details</h3>
+      <p><strong>Snake:</strong> {{snakeMorph}}</p>
+      <p><strong>Price:</strong> ${{price}}</p>
+      <p><strong>Date:</strong> {{purchaseDate}}</p>
+      <p><strong>Transaction ID:</strong> {{transactionId}}</p>
+    </div>
+    
+    <a href="{{collectionLink}}" class="cta-button">View Your Collection</a>
+    <a href="{{careGuideLink}}" class="cta-button">Care Guide</a>
+    
+    <p style="color: #666; font-size: 12px; margin-top: 30px;">
+      Questions? Reply to this email or visit our support page.
+    </p>
+  </div>
+</body>
+</html>
+```
+
+---
+
+## 📊 Test Checklist
+
+```bash
+# Test email sending
+curl -X POST https://YOUR-WORKER.workers.dev/test-email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "snakeMorph": "Banana Ball Python",
+    "price": 150,
+    "userHash": "test123"
+  }'
+```
+
+---
+
+## 🔗 Related Scenarios
+
+- S1.1,2,3,4,5.01 - Happy path purchase
+- S4.4,5-2.01 - Webhook success event
+
+---
+
+## 📝 Notes
+
+**Email Service:** Using Resend.com (v0.7.0+)  
+**Fallback:** If email fails, still deliver snake to collection  
+**Testing:** Use Resend test mode for development
+
+---
+
+**Created:** 2026-01-05  
+**Status:** Ready for implementation  
+**Estimated Time:** 2-3 hours

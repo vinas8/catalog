@@ -34,42 +34,54 @@ const SMRI_SCENARIOS = [
     title: 'S1: Happy Path Purchase',
     smri: 'S1.1,2,3,4,5.01',
     url: '../catalog.html',
-    icon: '🛒'
+    icon: '🛒',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-happy-path-purchase.md'
   },
   {
     id: 's1-returning-user',
     title: 'S1: Returning User Purchase',
-    smri: 'S1.1,2,3,4,5.02',
+    smri: 'S1.1,2,3,4.01',
     url: '../catalog.html',
-    icon: '🔄'
+    icon: '🔄',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-returning-user-purchase.md'
   },
   {
     id: 's1-product-availability',
     title: 'S1: Product Availability Check',
-    smri: 'S1.1.02',
+    smri: 'S1.1.01',
     url: '../catalog.html',
-    icon: '✅'
+    icon: '✅',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-product-availability.md'
   },
   {
     id: 's1-buy-five',
     title: 'S1: Buy 5 Snakes',
-    smri: 'S1.1,2,3,4,5.03',
+    smri: 'S1.1,2.02',
     url: '../catalog.html',
-    icon: '🛍️'
+    icon: '🛍️',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-buy-five-snakes.md'
   },
   {
     id: 's1-buy-duplicate',
     title: 'S1: Buy Duplicate Snake',
-    smri: 'S1.1,2,3,4,5.04',
+    smri: 'S1.1,2.03',
     url: '../catalog.html',
-    icon: '🐍🐍'
+    icon: '🐍🐍',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-duplicate-morph.md'
   },
   {
     id: 's1-email-receipt',
     title: 'S1: Email Receipt Delivery',
-    smri: 'S1.4,5,5-2.01',
+    smri: 'S1.1,4.01',
     url: null,
-    icon: '📧'
+    icon: '📧',
+    status: '📝',
+    scenarioFile: '../.smri/scenarios/S1-email-receipt.md'
   },
   // === ORIGINAL SCENARIOS ===
   {

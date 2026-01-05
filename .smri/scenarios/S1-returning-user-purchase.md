@@ -1,0 +1,148 @@
+# S1.1,2,3,4.01 - Returning User Purchase Flow
+
+**Version:** 0.8.0  
+**Module:** Shop (S1)  
+**Status:** ⏳ Implementation Needed  
+**Priority:** 🔥 High
+
+---
+
+## 📋 Overview
+
+Purchase flow for user with existing hash and previous purchases.
+
+**User Story:** As a returning customer with saved hash, I want to buy another snake and have it added to my existing collection.
+
+---
+
+## 🎯 Test Scenario
+
+### Setup
+```javascript
+// Simulate returning user
+localStorage.setItem('userHash', 'test_user_abc123');
+// Add existing purchase to KV
+await mockKVData('USER_PRODUCTS:test_user_abc123', [
+  { id: 'snake_001', morph: 'Banana', purchaseDate: '2026-01-01' }
+]);
+```
+
+### Steps
+
+**1. Load Catalog (Authenticated)**
+- Open `/catalog.html`
+- Verify: `userHash` detected from localStorage
+- Products load from KV
+- User sees "Welcome back" message (optional)
+
+**2. Select New Product**
+- Browse available snakes
+- Click different snake than existing
+- Modal shows full details
+- "Checkout" button ready
+
+**3. Fast Checkout**
+- Click "Checkout"
+- Skip user creation (hash exists)
+- Stripe session includes metadata: `{ userHash: 'test_user_abc123' }`
+- Redirect to Stripe
+
+**4. Payment & Assignment**
+- Complete payment
+- Webhook receives `checkout.session.completed`
+- Worker fetches existing user products
+- Appends new snake to array
+- Saves updated array to KV
+
+**5. Collection Update**
+- Redirect to `/success.html`
+- Link to collection
+- Collection now shows 2 snakes
+- Both purchases visible with dates
+
+---
+
+## ✅ Success Criteria
+
+- [ ] Existing userHash detected on page load
+- [ ] New product different from existing
+- [ ] Checkout skips user creation
+- [ ] Stripe metadata includes userHash
+- [ ] Webhook appends (not replaces) products
+- [ ] Collection shows 2 items after purchase
+
+---
+
+## 🔧 Implementation
+
+### Test File
+```javascript
+// /tests/smri/S1-returning-user-purchase.test.js
+test('S1: Returning User Purchase', async ({ page, context }) => {
+  // Setup: Inject existing user
+  await context.addInitScript(() => {
+    localStorage.setItem('userHash', 'test_user_abc123');
+  });
+  
+  // Load catalog
+  await page.goto('/catalog.html');
+  
+  // Verify existing hash
+  const userHash = await page.evaluate(() => localStorage.getItem('userHash'));
+  expect(userHash).toBe('test_user_abc123');
+  
+  // Select second product
+  const cards = await page.$$('.snake-card');
+  await cards[1].click();
+  
+  // Checkout
+  await page.click('button:has-text("Checkout")');
+  await page.waitForURL(/stripe\.com/);
+  
+  // After payment (mock)
+  await page.goto('/collection.html');
+  await page.waitForSelector('.collection-item');
+  
+  const items = await page.$$('.collection-item');
+  expect(items.length).toBe(2); // Original + new
+});
+```
+
+---
+
+## 🔍 Edge Cases
+
+**Duplicate Purchase:**
+- What if user buys same morph twice?
+- Should it be allowed?
+- How to distinguish in collection?
+
+**Session Expiry:**
+- userHash exists but KV data deleted
+- Should treat as new user?
+
+**Multi-Device:**
+- Hash saved on mobile, desktop
+- Both devices show same collection
+
+---
+
+## 📊 Modules Tested
+
+- ✅ **S1 (Shop):** Returning user detection
+- ✅ **S3 (Auth):** Hash validation, persistence
+- ✅ **S4 (Payment):** Metadata passing
+- ✅ **S5 (Worker):** Array append logic in KV
+
+---
+
+## 🔗 Related Scenarios
+
+- S1.1,2,3,4,5.01 - Happy path (first purchase)
+- S1.1,2.03 - Buy same morph twice
+- S3.3,5.01 - User hash validation
+
+---
+
+**Created:** 2026-01-05  
+**Status:** Ready for implementation

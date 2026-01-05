@@ -1,0 +1,159 @@
+# S1.1.01 - Product Availability Status Check
+
+**Version:** 0.8.0  
+**Module:** Shop (S1)  
+**Status:** ⏳ Implementation Needed  
+**Priority:** 🔥 Medium
+
+---
+
+## 📋 Overview
+
+Verify catalog displays product availability status and handles out-of-stock items correctly.
+
+**User Story:** As a customer, I want to see which snakes are available vs sold out before attempting purchase.
+
+---
+
+## 🎯 Test Scenario
+
+### Setup
+```javascript
+// Mock product data with mixed availability
+const mockProducts = [
+  { id: 'p1', morph: 'Banana', available: true, stock: 1 },
+  { id: 'p2', morph: 'Piebald', available: true, stock: 3 },
+  { id: 'p3', morph: 'Albino', available: false, stock: 0 },
+  { id: 'p4', morph: 'Pastel', available: true, stock: 1 }
+];
+```
+
+### Steps
+
+**1. Load Catalog**
+- Navigate to `/catalog.html`
+- Fetch products from KV/Stripe
+- Render all products including out-of-stock
+
+**2. Visual Status Indicators**
+- Available products: Green "Available" badge
+- Out-of-stock: Red "Sold Out" badge
+- Low stock (1 left): Yellow "Last One!" badge
+
+**3. Interaction Restrictions**
+- Available products: "Buy Now" button enabled
+- Sold out products: "Notify Me" button instead
+- Low stock: Show urgency message
+
+**4. Filtering Options**
+- "Show Available Only" toggle
+- Filter hides sold-out items
+- Count updates (e.g., "Showing 3 of 4 snakes")
+
+---
+
+## ✅ Success Criteria
+
+- [ ] All products render regardless of availability
+- [ ] Status badges display correctly
+- [ ] Sold-out items have disabled checkout
+- [ ] Available items can be purchased
+- [ ] Filter toggle works correctly
+- [ ] Stock count accurate
+
+---
+
+## 🔧 Implementation
+
+### Test File
+```javascript
+// /tests/smri/S1-product-availability.test.js
+test('S1: Product Availability Check', async ({ page }) => {
+  await page.goto('/catalog.html');
+  await page.waitForSelector('.snake-card');
+  
+  // Check badges
+  const availableBadges = await page.$$('.badge-available');
+  const soldOutBadges = await page.$$('.badge-sold-out');
+  
+  expect(availableBadges.length).toBeGreaterThan(0);
+  expect(soldOutBadges.length).toBeGreaterThan(0);
+  
+  // Verify buttons
+  const soldOutCard = await page.$('.snake-card:has(.badge-sold-out)');
+  const buyButton = await soldOutCard.$('button:has-text("Buy Now")');
+  expect(buyButton).toBeNull(); // Should not exist
+  
+  const notifyButton = await soldOutCard.$('button:has-text("Notify")');
+  expect(notifyButton).toBeTruthy();
+});
+```
+
+### Catalog UI Update
+```javascript
+// src/modules/shop/catalog-view.js
+export function renderProductCard(product) {
+  const statusBadge = product.available 
+    ? `<span class="badge badge-success">Available</span>`
+    : `<span class="badge badge-danger">Sold Out</span>`;
+  
+  const actionButton = product.available
+    ? `<button class="btn-primary" onclick="checkout('${product.id}')">Buy Now</button>`
+    : `<button class="btn-secondary" onclick="notifyMe('${product.id}')">Notify Me</button>`;
+  
+  return `
+    <div class="snake-card" data-available="${product.available}">
+      <img src="${product.image}" alt="${product.morph}">
+      <h3>${product.morph}</h3>
+      ${statusBadge}
+      <p class="price">$${product.price}</p>
+      ${actionButton}
+    </div>
+  `;
+}
+```
+
+---
+
+## 📊 Data Source
+
+Products should have `available` field in KV:
+
+```json
+{
+  "id": "snake_banana_001",
+  "morph": "Banana Ball Python",
+  "price": 15000,
+  "available": true,
+  "stock": 1,
+  "lastUpdated": "2026-01-05T08:00:00Z"
+}
+```
+
+---
+
+## 🔗 Related Scenarios
+
+- S1.1,2,3,4,5.01 - Happy path purchase (available only)
+- S4.1,4,5.04 - Product race condition (stock = 0)
+- S5.1,4,5-3.01 - Product sync CRUD Stripe
+
+---
+
+## 📝 Notes
+
+**Stripe Integration:**
+- Use `active` field from Stripe Product
+- Map to `available` in catalog
+- Sync status via webhook or cron
+
+**Real-time Updates:**
+- When product purchased → set available=false
+- Update KV immediately
+- Refresh catalog for other users
+
+---
+
+**Created:** 2026-01-05  
+**Status:** Ready for implementation  
+**Estimated Time:** 1-2 hours
