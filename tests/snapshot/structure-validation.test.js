@@ -128,33 +128,33 @@ test('Has SerpentTown class', () => {
 });
 
 test('Imports Economy module', () => {
-  assert(gameController.includes('import { Economy'), 'Missing Economy import');
-  assert(gameController.includes('../shop/business/economy.js'), 'Wrong Economy path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/business/economy.js'), 'Missing Economy import');
+  assert(gameController.includes('Economy = economyModule.Economy') || gameController.includes('let Economy'), 'Missing Economy variable');
 });
 
 test('Imports EquipmentShop module', () => {
-  assert(gameController.includes('import { EquipmentShop'), 'Missing EquipmentShop import');
-  assert(gameController.includes('../shop/business/equipment.js'), 'Wrong EquipmentShop path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/business/equipment.js'), 'Missing EquipmentShop import');
+  assert(gameController.includes('EquipmentShop = equipmentModule.EquipmentShop') || gameController.includes('let EquipmentShop'), 'Missing EquipmentShop variable');
 });
 
 test('Imports shop view', () => {
-  assert(gameController.includes('import { openShop'), 'Missing openShop import');
-  assert(gameController.includes('../shop/ui/shop-view.js'), 'Wrong shop view path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/ui/shop-view.js'), 'Missing openShop import');
+  assert(gameController.includes('openShop = shopViewModule.openShop') || gameController.includes('let openShop'), 'Missing openShop variable');
 });
 
 test('Imports species profiles', () => {
-  assert(gameController.includes('import { SPECIES_PROFILES'), 'Missing species import');
-  assert(gameController.includes('../shop/data/species-profiles.js'), 'Wrong species path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/data/species-profiles.js'), 'Missing species import');
+  assert(gameController.includes('SPECIES_PROFILES = speciesModule.SPECIES_PROFILES') || gameController.includes('let SPECIES_PROFILES'), 'Missing species variable');
 });
 
 test('Imports morphs data', () => {
-  assert(gameController.includes('import { getMorphsForSpecies'), 'Missing morphs import');
-  assert(gameController.includes('../shop/data/morphs.js'), 'Wrong morphs path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/data/morphs.js'), 'Missing morphs import');
+  assert(gameController.includes('getMorphsForSpecies = morphsModule.getMorphsForSpecies') || gameController.includes('let getMorphsForSpecies'), 'Missing morphs variable');
 });
 
 test('Imports catalog', () => {
-  assert(gameController.includes('import { getProductsBySpecies'), 'Missing catalog import');
-  assert(gameController.includes('../shop/data/catalog.js'), 'Wrong catalog path');
+  assert(gameController.includes('await import(') && gameController.includes('../shop/data/catalog.js'), 'Missing catalog import');
+  assert(gameController.includes('getProductsBySpecies = catalogModule.getProductsBySpecies') || gameController.includes('let getProductsBySpecies'), 'Missing catalog variable');
 });
 
 test('Has async init method', () => {
