@@ -422,8 +422,43 @@
     
     let currentPipelineStep = 0;
     
+    // Default CSV data (24 snakes from collection)
+    const DEFAULT_CSV = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,
+Chocolate Chip,Pastel DG,Male,2021,
+Gangsta,Spotnose Clown,Male,2024,
+Mashmellow,Ivory (Super yellow belly),Male,2024,
+Brownie,Black head,Male,2024,
+Almond,Hurricane Butter Fire Yellow belly H.clown,Female,2024,
+Caramel,Hurricane butter Spider pos H.Ghost Clown Pied,Female,2024,
+Cookie,HRA Pastel Fire Paradox 50% pos het clown,Female,2024,
+Hershy,Super Mystic,Female,2024,
+Halibo,Spotnose Super Enchi H.Clown,Female,2023,
+Biscuit,Leopard Lesser Pastel H. Clown,Female,2024,
+Salabao,OD Highway,Female,2023,
+Waffel,HGW Enchi Fire,Female,2023,
+Toffee,Spotnose Pastel H.DG,Female,2023,
+Coco,Pastel het. DG,Female,2023,
+Latte,Lesser Spotnose 66% pos h.clown 50% pos h.DG hypo,Female,2023,
+Mochi,Salmon Hypo Bloodred,Male,2023,
+Milkshake,Salmon Tessera H.Bloored,Female,2024,
+Berry,Snow poss Hypo Strawberry,Female,2024,
+Honey,Opal,Female,2024,
+Peachy,Opal Tessera,Male,2024,
+Lavender,Lavender tessera,Female,2024,
+Lolipop,Salmon H. Bloodred,Female,2024,`;
+    
     // Test definitions
     const scenarios = [
+      {
+        id: 'csv-import',
+        title: 'CSV Import & Sync',
+        smri: 'S2-csv-import',
+        url: null, // Data operation test
+        icon: '📤',
+        autoRun: true
+      },
       {
         id: 'purchase-flow',
         title: 'Purchase Flow',
@@ -616,6 +651,175 @@
         <span class="icon">${icons[status]}</span>
         <span>${message}</span>
       `;
+    }
+    
+    // CSV Import Manager (inline for simplicity)
+    class CSVImportManager {
+      constructor(config = {}) {
+        this.workerUrl = config.workerUrl || WORKER_URL;
+        this.onLog = config.onLog || console.log;
+        this.csvData = null;
+      }
+
+      parseCSV(csvText) {
+        const lines = csvText.trim().split('\n').filter(l => l.trim());
+        if (lines.length < 2) throw new Error('CSV must have headers and at least one data row');
+        
+        const headers = lines[0].split(',').map(h => h.trim());
+        const products = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.trim());
+          const row = {};
+          headers.forEach((h, idx) => row[h] = values[idx] || '');
+          products.push(row);
+        }
+        
+        this.csvData = products;
+        this.onLog(`✅ Parsed ${products.length} products from CSV`, 'success');
+        return products;
+      }
+
+      formatProductsForStripe() {
+        if (!this.csvData) throw new Error('No CSV data loaded');
+        
+        return this.csvData.map(row => {
+          const morph = row.Morph || '';
+          const isCornSnake = morph.includes('Corn') || morph.includes('Salmon') || 
+                             morph.includes('Opal') || morph.includes('Tessera') || 
+                             morph.includes('Bloodred');
+          
+          return {
+            name: row.Name || 'Unnamed Snake',
+            morph: morph,
+            gender: row.Gender || 'Unknown',
+            yob: row.YOB || new Date().getFullYear().toString(),
+            weight: row.Weight || 'TBD',
+            species: isCornSnake ? 'corn_snake' : 'ball_python',
+            price: parseFloat(row.Price) || 150.00
+          };
+        });
+      }
+
+      async uploadToStripe() {
+        if (!this.csvData) throw new Error('No CSV data loaded');
+        
+        this.onLog('⬆️ Uploading products to Stripe...', 'info');
+        const products = this.formatProductsForStripe();
+        
+        const res = await fetch(`${this.workerUrl}/upload-products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products })
+        });
+        
+        const result = await res.json();
+        
+        if (res.ok) {
+          this.onLog(`✅ Stripe upload: ${result.uploaded}/${result.total} succeeded`, 'success');
+          return result;
+        } else {
+          throw new Error(result.error || 'Upload failed');
+        }
+      }
+
+      async syncToKV() {
+        this.onLog('🔄 Syncing Stripe → KV...', 'info');
+        
+        const res = await fetch(`${this.workerUrl}/sync-stripe-to-kv`, { method: 'POST' });
+        const result = await res.json();
+        
+        if (res.ok) {
+          this.onLog(`✅ KV sync: ${result.synced}/${result.total} synced`, 'success');
+          return result;
+        } else {
+          throw new Error(result.error || 'Sync failed');
+        }
+      }
+
+      async getProducts() {
+        const res = await fetch(`${this.workerUrl}/products`);
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const products = await res.json();
+        this.onLog(`📦 Fetched ${products.length} products from KV`, 'info');
+        return products;
+      }
+
+      async fullImport(csvText) {
+        this.onLog('🚀 Starting full import flow...', 'info');
+        
+        this.parseCSV(csvText);
+        const uploadResult = await this.uploadToStripe();
+        const syncResult = await this.syncToKV();
+        const products = await this.getProducts();
+        
+        this.onLog('✅ Full import complete!', 'success');
+        this.onLog(`📊 Final: ${products.length} products in catalog`, 'success');
+        
+        return {
+          success: true,
+          parsed: this.csvData.length,
+          uploaded: uploadResult.uploaded,
+          synced: syncResult.synced,
+          total: products.length
+        };
+      }
+    }
+    
+    // Test: CSV Import & Sync
+    async function testCSVImport() {
+      log('📤 Testing CSV Import & Sync...', 'info');
+      const startTime = Date.now();
+      const steps = [];
+      
+      try {
+        // Initialize CSV manager
+        const csvManager = new CSVImportManager({
+          workerUrl: WORKER_URL,
+          onLog: (msg, type) => log(`   ${msg}`, type)
+        });
+        
+        log('1️⃣ Parsing default CSV (24 snakes)...', 'info');
+        const products = csvManager.parseCSV(DEFAULT_CSV);
+        steps.push({ step: 'Parse CSV', passed: true, count: products.length });
+        
+        log('2️⃣ Uploading to Stripe...', 'info');
+        const uploadResult = await csvManager.uploadToStripe();
+        steps.push({ 
+          step: 'Upload to Stripe', 
+          passed: uploadResult.uploaded > 0, 
+          uploaded: uploadResult.uploaded 
+        });
+        
+        log('3️⃣ Syncing to KV...', 'info');
+        const syncResult = await csvManager.syncToKV();
+        steps.push({ 
+          step: 'Sync to KV', 
+          passed: syncResult.synced > 0, 
+          synced: syncResult.synced 
+        });
+        
+        log('4️⃣ Verifying products in catalog...', 'info');
+        const catalogProducts = await csvManager.getProducts();
+        steps.push({ 
+          step: 'Verify Catalog', 
+          passed: catalogProducts.length > 0, 
+          count: catalogProducts.length 
+        });
+        
+        if (catalogProducts.length === 0) {
+          throw new Error('No products found in catalog after import');
+        }
+        
+        const duration = Date.now() - startTime;
+        log(`✅ CSV Import test complete - ${catalogProducts.length} products ready`, 'success');
+        return { passed: true, steps, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, steps, duration };
+      }
     }
     
     // Test: Purchase Flow
@@ -832,7 +1036,9 @@
       updateScenarioCard(id, 'running', 'Running...');
       
       let result;
-      if (id === 'purchase-flow') {
+      if (id === 'csv-import') {
+        result = await testCSVImport();
+      } else if (id === 'purchase-flow') {
         result = await testPurchaseFlow();
       } else if (id === 'healthcheck') {
         result = await testHealthcheck();
@@ -923,6 +1129,15 @@
     // Initialize
     initScenarios();
     updateStats();
+    
+    // Auto-run CSV import on page load
+    setTimeout(() => {
+      const csvImportScenario = scenarios.find(s => s.autoRun);
+      if (csvImportScenario) {
+        log('🚀 Auto-running CSV import test...', 'info');
+        runScenario(csvImportScenario.id);
+      }
+    }, 500);
     
     console.log('🐍 SMRI Test Runner initialized');
     console.log('Click scenarios or use Quick Actions to run tests');
