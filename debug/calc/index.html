@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Breeding Calculator - Phase 2</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🧬 Ball Python Breeding Calculator</h1>
+      <p>Phase 2: Advanced Genetics with 50 Morphs Database</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button onclick="generateMatrix()">🔄 Regenerate Matrix</button>
+      <button class="btn-secondary" onclick="debug.log('Filters coming soon')">🔍 Filter Results</button>
+      <button class="btn-secondary" onclick="window.location.href='/data/genetics/README.md'">📊 Database Info</button>
+    </div>
+
+    <!-- Debug Console -->
+    <div class="debug-console">
+      <h3>🔧 Debug Console</h3>
+      <div id="debugOutput">Initializing...</div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h3>📊 Score Legend</h3>
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-color score-excellent"></div>
+          <div>
+            <strong>Excellent (80-100)</strong><br>
+            <small>Ideal pairing</small>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color score-good"></div>
+          <div>
+            <strong>Good (60-79)</strong><br>
+            <small>Recommended</small>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color score-fair"></div>
+          <div>
+            <strong>Fair (40-59)</strong><br>
+            <small>Acceptable with caution</small>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color score-poor"></div>
+          <div>
+            <strong>Poor (0-39)</strong><br>
+            <small>Avoid breeding</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breeding Matrix -->
+    <div class="breeding-matrix">
+      <h2>🐍 Breeding Compatibility Matrix</h2>
+      <table class="matrix-table" id="breedingMatrix">
+        <!-- Populated by JavaScript -->
+      </table>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal" id="detailModal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modalContent">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
