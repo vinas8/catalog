@@ -1,4 +1,4 @@
-# S3.1 - Breeding Calculator Genetics Data Load
+# S3 - Breeding Calculator Genetics Data Load
 
 **Version:** 0.8.0  
 **Module:** Calculator (S3)  
