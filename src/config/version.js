@@ -100,7 +100,17 @@ export const VERSION_CONFIG = {
     { code: 'S1.1,2.02',                  desc: 'Buy five different snakes',            ver: 's0.9.0', done: 0   },
     { code: 'S1.1,2.03',                  desc: 'Buy same morph twice',                 ver: 's0.9.0', done: 0   },
     { code: 'S1.1,4.01',                  desc: 'Payment confirmation email receipt',   ver: 's0.8.0', done: 0   },
-    { code: 'S4.4,5.02',                  desc: 'SQL injection attack block',           ver: 's0.7.0', done: 0   }
+    { code: 'S4.4,5.02',                  desc: 'SQL injection attack block',           ver: 's0.7.0', done: 0   },
+    
+    // Demo System (S6.x) - v0.7.7 Interactive Presentation
+    { code: 'S6.1,4,5.01',                desc: 'Demo Pipeline: Website Owner Setup',   ver: 's0.7.7', done: 0   },
+    { code: 'S6.1,2,3,4,5.02',            desc: 'Demo Pipeline: Customer Purchase',     ver: 's0.7.7', done: 0   },
+    { code: 'S6.2,5.03',                  desc: 'Demo Pipeline: Farm Gameplay',         ver: 's0.7.7', done: 0   },
+    { code: 'S6.5.04',                    desc: 'Demo Pipeline: Data Management',       ver: 's0.7.7', done: 0   },
+    { code: 'S6.1,2,3,4,5.05',            desc: 'Demo Orchestrator: Step execution',    ver: 's0.7.7', done: 0   },
+    { code: 'S6.6.06',                    desc: 'Demo UI: Progress tracking',           ver: 's0.7.7', done: 0   },
+    { code: 'S6.6.07',                    desc: 'Demo UI: Auto-advance control',        ver: 's0.7.7', done: 0   },
+    { code: 'S6.6.08',                    desc: 'Demo UI: Checkpoint save/restore',     ver: 's0.7.7', done: 0   }
   ],
   
   API: {
