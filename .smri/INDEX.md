@@ -112,13 +112,26 @@ Debug endpoint: /api/debug?run=VCT-1.0
 
 ### `.smri`
 Complete project briefing:
-1. Check version (`package.json`)
-2. Load `.smri/INDEX.md` (navigation + rules)
-3. Load `README.md` (project overview)
-4. Load `src/SMRI.md` (quick reference)
-5. **Show deep directory tree** (4 levels with file sizes)
-6. **Analyze file sizes** (find files >400 lines)
-7. Check for inconsistencies:
+1. **Load SMRI Format Rule:**
+   ```
+   S{M}.{RRR}.{II}
+   - S = Scenario prefix
+   - M = Primary module (0-13)
+   - RRR = Relations (comma-separated)
+   - II = Iteration (01-99)
+   
+   Separators:
+   - DOT (.) = Separates parts
+   - COMMA (,) = Separates modules  
+   - DASH (-) = External services (5-1=KV, 5-2=Stripe)
+   ```
+2. Check version (`package.json`)
+3. Load `.smri/INDEX.md` (navigation + rules)
+4. Load `README.md` (project overview)
+5. Load `src/SMRI.md` (quick reference)
+6. **Show deep directory tree** (4 levels with file sizes)
+7. **Analyze file sizes** (find files >400 lines)
+8. Check for inconsistencies:
    - Version mismatches (package.json vs docs)
    - Duplicate documentation
    - Outdated files
