@@ -27,6 +27,7 @@
     "test:all": "npm test && npm run test:slow && npm run test:external && npm run test:stripe-kv",
     "test:full": "npm run test:all && npm run test:e2e && npm run test:e2e:security",
     "test:collection:tutorial": "node tests/collections/run-tutorial-collection.js",
+    "test:collection:demo": "node tests/collections/run-demo-collection.js",
     "start": "python3 -m http.server 8000"
   },
   "keywords": [
