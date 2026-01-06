@@ -20,18 +20,96 @@
  */
 
 const SMRI_SCENARIOS = [
+  // === HEALTH MODULE (S0) - 11 scenarios ===
   {
-    id: 'csv-import',
-    title: 'CSV Import & Sync',
-    smri: 'S2-csv-import',
-    url: null,
-    icon: '📤',
-    autoRun: true
+    id: 's0-health-generic',
+    title: 'S0.0.01: Generic Debug Health',
+    smri: 'S0.0.01',
+    url: '../debug/healthcheck.html',
+    icon: '🏥',
+    status: '✅',
+    autoRun: true,
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
   },
+  {
+    id: 's0-game-mechanics',
+    title: 'S0-2.2.01: Game Mechanics Check',
+    smri: 'S0-2.2.01',
+    url: '../game.html',
+    icon: '🎮',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-auth-validation',
+    title: 'S0-3.3.01: Auth Validation',
+    smri: 'S0-3.3.01',
+    url: '../account.html',
+    icon: '🔐',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-stripe-integration',
+    title: 'S0-4.4.01: Stripe Integration',
+    smri: 'S0-4.4.01',
+    url: '../catalog.html',
+    icon: '💳',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-worker-kv',
+    title: 'S0-5.5,5-1.01: Worker API & KV',
+    smri: 'S0-5.5,5-1.01',
+    url: null,
+    icon: '⚙️',
+    status: '✅',
+    autoRun: true,
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-kv-storage',
+    title: 'S0-11.5-1.01: KV Storage Health',
+    smri: 'S0-11.5-1.01',
+    url: '../admin-kv.html',
+    icon: '💾',
+    status: '✅',
+    autoRun: true,
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-webhooks',
+    title: 'S0-12.5-2.01: Stripe Webhooks',
+    smri: 'S0-12.5-2.01',
+    url: null,
+    icon: '🪝',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-demo-mode',
+    title: 'S0.0.02: Virtual Snakes Demo',
+    smri: 'S0.0.02',
+    url: '../game.html?demo=true',
+    icon: '🐍',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  {
+    id: 's0-cleanup',
+    title: 'S0.0.03: Storage Cleanup',
+    smri: 'S0.0.03',
+    url: '../debug/index.html',
+    icon: '🧹',
+    status: '⏳',
+    scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
+  },
+  
   // === SHOP MODULE (S1) - 6 scenarios ===
   {
     id: 's1-happy-path',
-    title: 'S1: Happy Path Purchase',
+    title: 'S1.1,2,3,4,5.01: Happy Path Purchase',
     smri: 'S1.1,2,3,4,5.01',
     url: '../catalog.html',
     icon: '🛒',
