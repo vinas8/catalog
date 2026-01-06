@@ -110,7 +110,8 @@ export const VERSION_CONFIG = {
     { code: 'S6.1,2,3,4,5.05',            desc: 'Demo Orchestrator: Step execution',    ver: 's0.7.7', done: 0   },
     { code: 'S6.6.06',                    desc: 'Demo UI: Progress tracking',           ver: 's0.7.7', done: 0   },
     { code: 'S6.6.07',                    desc: 'Demo UI: Auto-advance control',        ver: 's0.7.7', done: 0   },
-    { code: 'S6.6.08',                    desc: 'Demo UI: Checkpoint save/restore',     ver: 's0.7.7', done: 0   }
+    { code: 'S6.6.08',                    desc: 'Demo UI: Checkpoint save/restore',     ver: 's0.7.7', done: 0   },
+    { code: 'S6.1,2,3.09',                desc: 'Fluent Customer Journey Design',       ver: 's0.7.7', done: 0   }
   ],
   
   API: {

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 Integrated Breeding Calculator - Serpent Town</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calculator-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 15px 15px 0 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .calculator-section {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      background: #f7fafc;
+      padding: 20px 30px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.5em;
+      color: #2d3748;
+    }
+
+    .section-body {
+      padding: 30px;
+    }
+
+    /* MorphMarket iframe section */
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      min-height: 600px;
+      border: 3px solid #9333ea;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .iframe-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(147, 51, 234, 0.95);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Local calculator UI */
+    .morph-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .parent-section {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .parent-section h3 {
+      margin-top: 0;
+      color: #2d3748;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .morph-input-group {
+      margin-bottom: 15px;
+    }
+
+    .morph-input-group label {
+      display: block;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+
+    .morph-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 40px;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f7fafc;
+    }
+
+    .morph-tag {
+      background: #9333ea;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .morph-tag .remove {
+      cursor: pointer;
+      font-weight: bold;
+      opacity: 0.8;
+    }
+
+    .morph-tag .remove:hover {
+      opacity: 1;
+    }
+
+    .morph-autocomplete {
+      position: relative;
+    }
+
+    .morph-autocomplete input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.95em;
+    }
+
+    .morph-autocomplete input:focus {
+      outline: none;
+      border-color: #9333ea;
+    }
+
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #9333ea;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+
+    .autocomplete-dropdown.show {
+      display: block;
+    }
+
+    .autocomplete-item {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .autocomplete-item:hover {
+      background: #f7fafc;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .morph-info {
+      font-size: 0.8em;
+      color: #718096;
+      margin-left: 5px;
+    }
+
+    .calculate-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .calculate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(147, 51, 234, 0.4);
+    }
+
+    .calculate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Results display */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .result-card {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .result-card h4 {
+      margin-top: 0;
+      color: #2d3748;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+
+    .outcome-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .outcome-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .outcome-item:last-child {
+      border-bottom: none;
+    }
+
+    .outcome-morph {
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .outcome-probability {
+      color: #9333ea;
+      font-weight: 600;
+    }
+
+    .outcome-value {
+      color: #10b981;
+      font-size: 0.9em;
+    }
+
+    .sync-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .sync-indicator.synced {
+      background: #10b981;
+    }
+
+    .sync-indicator.unsynced {
+      background: #ef4444;
+    }
+
+    .sync-indicator.partial {
+      background: #f59e0b;
+    }
+
+    .db-match-info {
+      font-size: 0.85em;
+      color: #718096;
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff;
+      border-left: 3px solid #9333ea;
+      border-radius: 4px;
+    }
+
+    .compatibility-score {
+      text-align: center;
+      padding: 30px;
+      background: linear-gradient(135deg, #9333ea20 0%, #7e22ce20 100%);
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .score-value {
+      font-size: 3em;
+      font-weight: bold;
+      color: #9333ea;
+      margin: 10px 0;
+    }
+
+    .score-grade {
+      font-size: 1.5em;
+      color: #2d3748;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .alert-danger {
+      background: #fee;
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      color: #92400e;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="src/components/Navigation.js"></script>
+
+  <div class="calculator-container">
+    <div class="header">
+      <h1>🧬 Integrated Breeding Calculator</h1>
+      <p>MorphMarket calculator with advanced Serpent Town genetics analysis</p>
+    </div>
+
+    <!-- MorphMarket Calculator Section -->
+    <div class="calculator-section">
+      <div class="section-header">
+        <h2>📊 MorphMarket Genetic Calculator</h2>
+        <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9em;">
+          Industry-standard calculator - selections sync to our system below
+        </p>
+      </div>
+      <div class="section-body">
+        <div class="alert alert-info">
+          <strong>🔗 Integration Active:</strong> Morph selections from MorphMarket are automatically synced to our database.
+          Make your selections above, then see advanced analysis below.
+        </div>
+        
+        <div class="iframe-container">
+          <div class="iframe-overlay">
+            <span class="sync-indicator synced"></span>
+            Sync Active
+          </div>
+          <iframe 
+            id="morphmarket-iframe"
+            src="https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/genetic-calculator/"
+            width="100%"
+            height="600"
+            frameborder="0"
+            sandbox="allow-scripts allow-same-origin allow-forms"
+            style="width: 100%; height: 600px; border: none;"
+          ></iframe>
+        </div>
+
+        <div class="db-match-info">
+          <strong>📋 Database Sync Status:</strong>
+          <div id="sync-status" style="margin-top: 10px;">
+            Waiting for morph selections...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Serpent Town Calculator Section -->
+    <div class="calculator-section">
+      <div class="section-header">
+        <h2>🐍 Serpent Town Advanced Genetics</h2>
+        <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9em;">
+          Enhanced analysis with market values, health risks, and breeding compatibility
+        </p>
+      </div>
+      <div class="section-body">
+        <!-- Morph Selection -->
+        <div class="morph-selector">
+          <!-- Male Parent -->
+          <div class="parent-section">
+            <h3>♂ Male Parent</h3>
+            <div class="morph-input-group">
+              <label>Select Morphs:</label>
+              <div id="male-morphs" class="morph-tags"></div>
+              <div class="morph-autocomplete">
+                <input 
+                  type="text" 
+                  id="male-morph-input" 
+                  placeholder="Type morph name..."
+                  autocomplete="off"
+                >
+                <div id="male-autocomplete" class="autocomplete-dropdown"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Female Parent -->
+          <div class="parent-section">
+            <h3>♀ Female Parent</h3>
+            <div class="morph-input-group">
+              <label>Select Morphs:</label>
+              <div id="female-morphs" class="morph-tags"></div>
+              <div class="morph-autocomplete">
+                <input 
+                  type="text" 
+                  id="female-morph-input" 
+                  placeholder="Type morph name..."
+                  autocomplete="off"
+                >
+                <div id="female-autocomplete" class="autocomplete-dropdown"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button id="calculate-btn" class="calculate-btn">
+          🧬 Calculate Breeding Compatibility & Outcomes
+        </button>
+
+        <!-- Results Section -->
+        <div id="results-container" style="display: none; margin-top: 30px;">
+          <!-- Compatibility Score -->
+          <div class="compatibility-score">
+            <div style="font-size: 1.1em; color: #718096;">Breeding Compatibility</div>
+            <div id="score-value" class="score-value">--</div>
+            <div id="score-grade" class="score-grade">--</div>
+          </div>
+
+          <!-- Alerts -->
+          <div id="alerts-container"></div>
+
+          <!-- Results Grid -->
+          <div class="results-grid">
+            <!-- Offspring Outcomes -->
+            <div class="result-card">
+              <h4>🥚 Expected Offspring</h4>
+              <ul id="offspring-list" class="outcome-list"></ul>
+            </div>
+
+            <!-- Genetic Metrics -->
+            <div class="result-card">
+              <h4>🧬 Genetic Analysis</h4>
+              <ul id="genetics-list" class="outcome-list"></ul>
+            </div>
+
+            <!-- Market Analysis -->
+            <div class="result-card">
+              <h4>💰 Market Value</h4>
+              <ul id="market-list" class="outcome-list"></ul>
+            </div>
+
+            <!-- Health Assessment -->
+            <div class="result-card">
+              <h4>⚕️ Health Assessment</h4>
+              <ul id="health-list" class="outcome-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      loadGeneticsDatabase,
+      calculateCompatibility,
+      calculateOffspring,
+      getMorphValue,
+      checkLethalCombo,
+      assessHealthRisk,
+      calculateInbreedingCoefficient,
+      calculateGeneticDiversity,
+      calculateHeterozygosity
+    } from './src/modules/breeding/genetics-core.js';
+
+    let morphDatabase = [];
+    let selectedMaleMorphs = [];
+    let selectedFemaleMorphs = [];
+
+    async function init() {
+      console.log('🧬 Initializing integrated calculator...');
+      
+      // Load genetics database
+      const loadResult = await loadGeneticsDatabase();
+      if (loadResult) {
+        console.log('✅ Genetics database loaded');
+        morphDatabase = loadResult.morphs || [];
+      }
+
+      // Setup autocomplete
+      setupAutocomplete('male');
+      setupAutocomplete('female');
+
+      // Setup calculate button
+      document.getElementById('calculate-btn').addEventListener('click', calculateResults);
+
+      // Try to listen for iframe changes (limited by CORS)
+      setupIframeSyncListener();
+    }
+
+    function setupAutocomplete(parent) {
+      const input = document.getElementById(`${parent}-morph-input`);
+      const dropdown = document.getElementById(`${parent}-autocomplete`);
+      const tagsContainer = document.getElementById(`${parent}-morphs`);
+
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+          dropdown.classList.remove('show');
+          return;
+        }
+
+        const matches = morphDatabase.filter(m => 
+          m.name.toLowerCase().includes(query) ||
+          m.aliases?.some(a => a.toLowerCase().includes(query))
+        );
+
+        if (matches.length === 0) {
+          dropdown.innerHTML = '<div class="autocomplete-item">No morphs found</div>';
+          dropdown.classList.add('show');
+          return;
+        }
+
+        dropdown.innerHTML = matches.map(m => `
+          <div class="autocomplete-item" data-morph-id="${m.id}">
+            <strong>${m.name}</strong>
+            <span class="morph-info">
+              ${m.gene_type} | $${m.market_value_usd || 'N/A'}
+              ${m.health_risk !== 'none' ? ` | ⚠️ ${m.health_risk}` : ''}
+            </span>
+          </div>
+        `).join('');
+
+        dropdown.classList.add('show');
+
+        // Add click handlers
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const morphId = item.dataset.morphId;
+            if (morphId) {
+              addMorph(parent, morphId);
+              input.value = '';
+              dropdown.classList.remove('show');
+            }
+          });
+        });
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.remove('show');
+        }
+      });
+    }
+
+    function addMorph(parent, morphId) {
+      const morphArray = parent === 'male' ? selectedMaleMorphs : selectedFemaleMorphs;
+      
+      if (morphArray.includes(morphId)) {
+        return; // Already added
+      }
+
+      morphArray.push(morphId);
+      renderMorphTags(parent);
+      updateSyncStatus();
+    }
+
+    function removeMorph(parent, morphId) {
+      const morphArray = parent === 'male' ? selectedMaleMorphs : selectedFemaleMorphs;
+      const index = morphArray.indexOf(morphId);
+      
+      if (index > -1) {
+        morphArray.splice(index, 1);
+        renderMorphTags(parent);
+        updateSyncStatus();
+      }
+    }
+
+    function renderMorphTags(parent) {
+      const morphArray = parent === 'male' ? selectedMaleMorphs : selectedFemaleMorphs;
+      const container = document.getElementById(`${parent}-morphs`);
+
+      if (morphArray.length === 0) {
+        container.innerHTML = '<span style="color: #a0aec0; font-size: 0.9em;">No morphs selected</span>';
+        return;
+      }
+
+      container.innerHTML = morphArray.map(id => {
+        const morph = morphDatabase.find(m => m.id === id);
+        if (!morph) return '';
+
+        return `
+          <div class="morph-tag">
+            ${morph.name}
+            <span class="remove" onclick="window.removeMorph('${parent}', '${id}')">×</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateSyncStatus() {
+      const statusDiv = document.getElementById('sync-status');
+      const maleCount = selectedMaleMorphs.length;
+      const femaleCount = selectedFemaleMorphs.length;
+
+      const maleMatched = selectedMaleMorphs.filter(id => 
+        morphDatabase.find(m => m.id === id)
+      ).length;
+
+      const femaleMatched = selectedFemaleMorphs.filter(id => 
+        morphDatabase.find(m => m.id === id)
+      ).length;
+
+      statusDiv.innerHTML = `
+        <div>
+          ♂ Male: ${maleCount} morphs selected (${maleMatched}/${maleCount} in database)
+        </div>
+        <div style="margin-top: 5px;">
+          ♀ Female: ${femaleCount} morphs selected (${femaleMatched}/${femaleCount} in database)
+        </div>
+      `;
+    }
+
+    function setupIframeSyncListener() {
+      // Note: Due to CORS, we can't directly access iframe content
+      // This would require MorphMarket to implement postMessage API
+      
+      window.addEventListener('message', (event) => {
+        // Check if message is from MorphMarket iframe
+        if (event.origin !== 'https://www.morphmarket.com') return;
+
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.type === 'morph_selected') {
+            syncMorphFromIframe(data.parent, data.morphName);
+          }
+        } catch (err) {
+          console.log('Message parsing failed:', err);
+        }
+      });
+    }
+
+    function syncMorphFromIframe(parent, morphName) {
+      // Try to match morph name to our database
+      const morph = morphDatabase.find(m => 
+        m.name.toLowerCase() === morphName.toLowerCase() ||
+        m.aliases?.some(a => a.toLowerCase() === morphName.toLowerCase())
+      );
+
+      if (morph) {
+        addMorph(parent, morph.id);
+        console.log(`✅ Synced ${morphName} to ${parent}`);
+      } else {
+        console.warn(`⚠️ Morph not found in database: ${morphName}`);
+      }
+    }
+
+    async function calculateResults() {
+      if (selectedMaleMorphs.length === 0 || selectedFemaleMorphs.length === 0) {
+        alert('Please select morphs for both male and female parents');
+        return;
+      }
+
+      // Create snake objects for calculation
+      const male = {
+        name: 'Male',
+        morphs: selectedMaleMorphs.map(id => morphDatabase.find(m => m.id === id)?.name).filter(Boolean),
+        age: 3, // Default values
+        weight: 1800,
+        sex: 'male'
+      };
+
+      const female = {
+        name: 'Female',
+        morphs: selectedFemaleMorphs.map(id => morphDatabase.find(m => m.id === id)?.name).filter(Boolean),
+        age: 3,
+        weight: 1700,
+        sex: 'female'
+      };
+
+      console.log('Calculating compatibility...', { male, female });
+
+      // Calculate compatibility
+      const compatibility = calculateCompatibility(male, female);
+      const offspring = calculateOffspring(male, female);
+      const healthRisk = assessHealthRisk(male, female);
+      const lethalCheck = checkLethalCombo(male.morphs, female.morphs);
+
+      // Display results
+      displayResults(compatibility, offspring, healthRisk, lethalCheck, male, female);
+    }
+
+    function displayResults(compatibility, offspring, healthRisk, lethalCheck, male, female) {
+      const resultsContainer = document.getElementById('results-container');
+      const scoreValue = document.getElementById('score-value');
+      const scoreGrade = document.getElementById('score-grade');
+      const alertsContainer = document.getElementById('alerts-container');
+
+      // Show results
+      resultsContainer.style.display = 'block';
+
+      // Compatibility score
+      scoreValue.textContent = compatibility.score;
+      const grade = compatibility.score >= 90 ? 'A+ Excellent' :
+                    compatibility.score >= 70 ? 'B Good' :
+                    compatibility.score >= 50 ? 'C Acceptable' :
+                    compatibility.score >= 30 ? 'D Poor' : 'F Not Recommended';
+      scoreGrade.textContent = grade;
+
+      // Alerts
+      alertsContainer.innerHTML = '';
+      
+      if (lethalCheck && lethalCheck.lethal) {
+        alertsContainer.innerHTML += `
+          <div class="alert alert-danger">
+            <strong>⚠️ LETHAL COMBINATION:</strong> ${lethalCheck.reason}
+          </div>
+        `;
+      }
+
+      if (healthRisk && healthRisk.risk !== 'none') {
+        alertsContainer.innerHTML += `
+          <div class="alert alert-warning">
+            <strong>⚕️ Health Risk:</strong> ${healthRisk.risk.toUpperCase()} - ${healthRisk.issues?.join(', ')}
+          </div>
+        `;
+      }
+
+      // Offspring outcomes
+      const offspringList = document.getElementById('offspring-list');
+      if (offspring && offspring.length > 0) {
+        offspringList.innerHTML = offspring.map(o => `
+          <li class="outcome-item">
+            <span class="outcome-morph">${o.morph}</span>
+            <span>
+              <span class="outcome-probability">${o.percentage}%</span>
+              <span class="outcome-value">$${o.value}</span>
+            </span>
+          </li>
+        `).join('');
+      } else {
+        offspringList.innerHTML = '<li class="outcome-item">No data available</li>';
+      }
+
+      // Genetic metrics
+      const geneticsList = document.getElementById('genetics-list');
+      const diversity = calculateGeneticDiversity(male, female);
+      const heterozygosity = calculateHeterozygosity(male, female);
+      const coi = calculateInbreedingCoefficient(male, female);
+
+      geneticsList.innerHTML = `
+        <li class="outcome-item">
+          <span>Genetic Diversity</span>
+          <span class="outcome-probability">${diversity}%</span>
+        </li>
+        <li class="outcome-item">
+          <span>Heterozygosity</span>
+          <span class="outcome-probability">${heterozygosity}%</span>
+        </li>
+        <li class="outcome-item">
+          <span>Inbreeding (CoI)</span>
+          <span class="outcome-probability">${coi}%</span>
+        </li>
+      `;
+
+      // Market analysis
+      const marketList = document.getElementById('market-list');
+      const avgValue = offspring?.reduce((sum, o) => sum + (o.value * o.percentage / 100), 0) || 0;
+      const maxValue = Math.max(...(offspring?.map(o => o.value) || [0]));
+
+      marketList.innerHTML = `
+        <li class="outcome-item">
+          <span>Avg. Offspring Value</span>
+          <span class="outcome-value">$${Math.round(avgValue)}</span>
+        </li>
+        <li class="outcome-item">
+          <span>Max Potential</span>
+          <span class="outcome-value">$${maxValue}</span>
+        </li>
+        <li class="outcome-item">
+          <span>Profitability</span>
+          <span class="outcome-probability">${avgValue > 300 ? 'High' : avgValue > 150 ? 'Medium' : 'Low'}</span>
+        </li>
+      `;
+
+      // Health assessment
+      const healthList = document.getElementById('health-list');
+      healthList.innerHTML = `
+        <li class="outcome-item">
+          <span>Risk Level</span>
+          <span style="color: ${healthRisk?.risk === 'high' ? '#dc2626' : healthRisk?.risk === 'moderate' ? '#f59e0b' : '#10b981'}">
+            ${healthRisk?.risk?.toUpperCase() || 'NONE'}
+          </span>
+        </li>
+        <li class="outcome-item">
+          <span>Compatibility</span>
+          <span class="outcome-probability">${grade}</span>
+        </li>
+        <li class="outcome-item">
+          <span>Recommendation</span>
+          <span style="color: ${compatibility.score >= 70 ? '#10b981' : '#dc2626'}">
+            ${compatibility.score >= 70 ? '✅ Breed' : '❌ Avoid'}
+          </span>
+        </li>
+      `;
+
+      // Scroll to results
+      resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Expose functions to global scope for inline handlers
+    window.removeMorph = removeMorph;
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>
