@@ -1,146 +1,125 @@
 /**
- * SMRI Module and Scenario Configuration
- * Central source of truth for SMRI codes
- * Use these constants instead of hardcoding S numbers
- */
-
-export const SMRI_MODULES = {
-  HEALTH: '0',
-  SHOP: '1',
-  GAME: '2',
-  AUTH: '3',
-  PAYMENT: '4',
-  WORKER: '5',
-  UTILS: '6',
-  KV: '11.1',
-  CF_RUNTIME: '11.2',
-  CF_CDN: '11.3',
-  STRIPE: '12',
-  STRIPE_CHECKOUT: '12.1',
-  STRIPE_WEBHOOKS: '12.2',
-  GITHUB_PAGES: '13.1'
-};
-
-export const SMRI_SUBMODULES = {
-  GAME_TUTORIAL: '2-7',    // Tutorial under Game
-  GAME_INVENTORY: '2-8',   // Inventory under Game
-  GAME_CARE: '2-9',        // Care mechanics under Game
-  // Add more as needed
-};
-
-/**
- * Build SMRI code from module, relations, and version
- * @param {string} module - Module number (e.g., '2-7', '1', '5')
- * @param {string[]} relations - Array of relation numbers (e.g., ['5', '11.1'])
- * @param {string} version - Version number (default '01')
- * @returns {string} Complete SMRI code (e.g., 'S2-7.5,11.1.01')
- */
-export function buildSmriCode(module, relations, version = '01') {
-  const relStr = Array.isArray(relations) ? relations.join(',') : relations;
-  return `S${module}.${relStr}.${version}`;
-}
-
-/**
- * Scenario metadata structure
- */
-export class SmriScenario {
-  constructor({ id, module, relations, version = '01', priority = 'P1', description = '' }) {
-    this.id = id;
-    this.module = module;
-    this.relations = relations;
-    this.version = version;
-    this.priority = priority;
-    this.description = description;
-  }
-
-  get smriCode() {
-    return buildSmriCode(this.module, this.relations, this.version);
-  }
-
-  get fullName() {
-    return `${this.smriCode} - ${this.description}`;
-  }
-}
-
-/**
- * Tutorial scenarios (S2-7.x)
- */
-export const TUTORIAL_SCENARIOS = {
-  HAPPY_PATH: new SmriScenario({
-    id: 'tutorial-happy-path',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '01',
-    priority: 'P0',
-    description: 'Happy Path (Daily Check-in)'
-  }),
-  
-  MISSED_CARE: new SmriScenario({
-    id: 'tutorial-missed-care',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '02',
-    priority: 'P0',
-    description: 'Missed Care (2-3 Days)'
-  }),
-  
-  EDUCATION_COMMERCE: new SmriScenario({
-    id: 'tutorial-education-commerce',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.SHOP, SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '03',
-    priority: 'P0',
-    description: 'Education-First Commerce'
-  }),
-  
-  TRUST_PROTECTION: new SmriScenario({
-    id: 'tutorial-trust-protection',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.SHOP, SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '04',
-    priority: 'P0',
-    description: 'Trust Protection'
-  }),
-  
-  EMAIL_REENTRY: new SmriScenario({
-    id: 'tutorial-email-reentry',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '05',
-    priority: 'P1',
-    description: 'Email-Driven Re-entry'
-  }),
-  
-  FAILURE_EDUCATIONAL: new SmriScenario({
-    id: 'tutorial-failure-educational',
-    module: SMRI_SUBMODULES.GAME_TUTORIAL,
-    relations: [SMRI_MODULES.WORKER, SMRI_MODULES.KV],
-    version: '06',
-    priority: 'P1',
-    description: 'Failure Case (Educational)'
-  })
-};
-
-/**
- * Get all tutorial scenarios as array
- */
-export function getTutorialScenarios() {
-  return Object.values(TUTORIAL_SCENARIOS);
-}
-
-/**
- * Get scenario by ID
- */
-export function getScenarioById(id) {
-  return Object.values(TUTORIAL_SCENARIOS).find(s => s.id === id);
-}
-
-/**
- * Example usage:
+ * SMRI Configuration - Central Source of Truth
+ * Format: S{M}.{RRR}.{II}
  * 
- * import { TUTORIAL_SCENARIOS } from './src/config/smri-config.js';
+ * - S = Scenario prefix
+ * - M = Primary module (0-13)
+ * - RRR = Relations (comma-separated)
+ * - II = Iteration (01-99)
  * 
- * const scenario = TUTORIAL_SCENARIOS.HAPPY_PATH;
- * console.log(scenario.smriCode);  // "S2-7.5,11.1.01"
- * console.log(scenario.fullName);  // "S2-7.5,11.1.01 - Happy Path (Daily Check-in)"
+ * Separators:
+ * - DOT (.) = Separates parts
+ * - COMMA (,) = Separates modules
+ * - DASH (-) = External services (5-1=KV, 5-2=Stripe)
  */
+
+/**
+ * SMRI Registry - URL to S Number mapping
+ * Key: URL/identifier (kebab-case)
+ * Value: SMRI code (S{M}.{RRR}.{II})
+ */
+export const SMRI_REGISTRY = {
+  // === S0: Health Checks ===
+  'healthcheck': 'S0.0.01',
+  'health-generic': 'S0.0.01',
+  'demo-mode': 'S0.0.02',
+  'cleanup': 'S0.0.03',
+  'shop-rendering': 'S0.1.01',
+  'game-mechanics': 'S0.2.01',
+  'auth-validation': 'S0.3.01',
+  'stripe-integration': 'S0.4.01',
+  'worker-kv': 'S0.5,5-1.01',
+  'kv-storage': 'S0.11,5-1.01',
+  'webhooks': 'S0.12,5-2.01',
+  'all-health-checks': 'S0.1,2,3,4,5,5-1,5-2.01',
+
+  // === S1: Shop ===
+  'catalog-display': 'S1.1.01',
+  'product-availability': 'S1.1.01',
+  'csv-import': 'S1.1.02',
+  'buy-five-snakes': 'S1.1,2.02',
+  'duplicate-morph': 'S1.1,2.03',
+  'email-receipt': 'S1.1,4.01',
+  'returning-user-purchase': 'S1.1,2,3,4.01',
+  'happy-path-purchase': 'S1.1,2,3,4,5.01',
+  'purchase-flow': 'S1.1,2,3,4,5.01',
+  'real-snake-completeness': 'S1.2,11.1.01',
+  'success-page': 'S1.5.01',
+
+  // === S2: Game ===
+  'stats-display': 'S2.2.01',
+  'hunger-decay': 'S2.2.02',
+  'feed-water': 'S2.2.03',
+  'clean-habitat': 'S2.2.04',
+  'equipment-shop': 'S2.2.05',
+  'multi-snake': 'S2.2.06',
+  'death-event': 'S2.2.07',
+  'breeding-check': 'S2.2.08',
+  'offspring-calculate': 'S2.2.09',
+  'auto-save': 'S2.5,5-1.01',
+  'breeding-calc': 'S2.2,3.01',
+  'collection-view': 'S2.2.10',
+  'game-tamagotchi': 'S2.2.11',
+  'aquarium-shelf-system': 'S2.2.12',
+  'gamified-shop': 'S2.1,2.01',
+  
+  // === S2: Tutorial (S2.7.x) ===
+  'tutorial-happy-path': 'S2.7,5,5-1.01',
+  'tutorial-missed-care': 'S2.7,5,5-1.02',
+  'tutorial-education-commerce': 'S2.1,7,5,5-1.03',
+  'tutorial-trust-protection': 'S2.1,7,5,5-1.04',
+  'tutorial-email-reentry': 'S2.7,5,5-1.05',
+  'tutorial-failure-educational': 'S2.7,5,5-1.06',
+
+  // === S3: Auth ===
+  'anonymous-user': 'S3.3.01',
+  'hash-validation': 'S3.3.02',
+  'loyalty-points': 'S3.3.03',
+  'data-export': 'S3.3.04',
+  'data-wipe': 'S3.3.05',
+  'multi-device': 'S3.3,5-1.01',
+  'purchase-history': 'S3.3,5-1.02',
+  'account-page': 'S3.3.06',
+  'calculator-genetics-data': 'S3.2,3.01',
+
+  // === S4: Payment ===
+  'stripe-session': 'S4.4,5.01',
+  'refund-check': 'S4.4.02',
+  'webhook-success': 'S4.4,5-2.01',
+  'webhook-failure': 'S4.4,5-2.02',
+  'idempotency': 'S4.4,5-2.03',
+  'email-receipt-payment': 'S4.4,5-2.04',
+
+  // === S5: Worker ===
+  'products-endpoint': 'S5.5,5-1.01',
+  'upload-products': 'S5.5.01',
+  'sync-stripe-kv': 'S5.5,5-1.02',
+  'kv-read-write': 'S5.5-1.01',
+  'kv-list': 'S5.5-1.02',
+  'user-save': 'S5.3,5-1.01',
+  'user-load': 'S5.3,5-1.02',
+  'webhook-signature': 'S5.5-2.01',
+  'webhook-handler': 'S5.4,5-2.01',
+  'error-recovery': 'S5.5.02',
+  'rate-limiting': 'S5.5.03',
+  'game-state-sync': 'S5.2,5-1.04',
+  'worker-api': 'S5.5.04',
+  'kv-storage-worker': 'S5.5-1.03',
+
+  // === S6: Common/Utils ===
+  'fluent-customer-journey': 'S6.1,2,3.09',
+};
+
+/**
+ * Get SMRI code by URL/identifier
+ */
+export function getSmriCode(urlKey) {
+  return SMRI_REGISTRY[urlKey] || null;
+}
+
+/**
+ * Get URL/identifier by SMRI code
+ */
+export function getUrlBySmri(smriCode) {
+  return Object.keys(SMRI_REGISTRY).find(key => SMRI_REGISTRY[key] === smriCode) || null;
+}
