@@ -1,0 +1,209 @@
+{
+  "version": "1.0.0",
+  "purpose": "Manual testing checklist to verify Serpent Town calculator matches MorphMarket results",
+  "note": "Cannot scrape MorphMarket (403) - must test manually by comparing outputs",
+  "last_updated": "2026-01-06T14:15:00Z",
+  "test_pairings": [
+    {
+      "id": "test-001",
+      "male": ["pastel"],
+      "female": ["pastel"],
+      "expected_outcomes": [
+        {"phenotype": "Super Pastel", "percentage": 25},
+        {"phenotype": "Pastel", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 25}
+      ],
+      "morphmarket_url": "https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/calculator",
+      "test_status": "pending",
+      "notes": "Basic co-dominant test"
+    },
+    {
+      "id": "test-002",
+      "male": ["banana"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Banana", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 50}
+      ],
+      "test_status": "pending",
+      "notes": "Co-dominant × normal"
+    },
+    {
+      "id": "test-003",
+      "male": ["het-piebald"],
+      "female": ["het-piebald"],
+      "expected_outcomes": [
+        {"phenotype": "Piebald", "percentage": 25},
+        {"phenotype": "Het Piebald", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 25}
+      ],
+      "test_status": "pending",
+      "notes": "Recessive het × het"
+    },
+    {
+      "id": "test-004",
+      "male": ["piebald"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Het Piebald", "percentage": 100}
+      ],
+      "test_status": "pending",
+      "notes": "Recessive × normal = all hets"
+    },
+    {
+      "id": "test-005",
+      "male": ["spider"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Spider", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 50}
+      ],
+      "test_status": "pending",
+      "health_warning": "Spider wobble present in 50% of offspring",
+      "notes": "Dominant × normal"
+    },
+    {
+      "id": "test-006",
+      "male": ["lesser"],
+      "female": ["mojave"],
+      "expected_outcomes": [
+        {"phenotype": "Blue Eyed Leucistic (BEL)", "percentage": 25},
+        {"phenotype": "Lesser", "percentage": 25},
+        {"phenotype": "Mojave", "percentage": 25},
+        {"phenotype": "Lesser Mojave", "percentage": 25}
+      ],
+      "test_status": "pending",
+      "notes": "BEL complex combo - critical test"
+    },
+    {
+      "id": "test-007",
+      "male": ["pastel", "banana"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Pastel Banana", "percentage": 25},
+        {"phenotype": "Pastel", "percentage": 25},
+        {"phenotype": "Banana", "percentage": 25},
+        {"phenotype": "Normal", "percentage": 25}
+      ],
+      "test_status": "pending",
+      "notes": "Multi-gene combo test"
+    },
+    {
+      "id": "test-008",
+      "male": ["pastel", "spider"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Bumblebee (Pastel Spider)", "percentage": 25},
+        {"phenotype": "Pastel", "percentage": 25},
+        {"phenotype": "Spider", "percentage": 25},
+        {"phenotype": "Normal", "percentage": 25}
+      ],
+      "test_status": "pending",
+      "health_warning": "Spider wobble present in 50% of offspring",
+      "notes": "Classic combo - Bumblebee"
+    },
+    {
+      "id": "test-009",
+      "male": ["spider"],
+      "female": ["spider"],
+      "expected_outcomes": "LETHAL",
+      "test_status": "pending",
+      "health_warning": "LETHAL COMBINATION - No super Spider exists",
+      "notes": "Lethal detection test - CRITICAL"
+    },
+    {
+      "id": "test-010",
+      "male": ["lesser"],
+      "female": ["butter"],
+      "expected_outcomes": "LETHAL",
+      "test_status": "pending",
+      "health_warning": "LETHAL COMBINATION - Lesser × Butter produces non-viable super",
+      "notes": "Lethal detection test - CRITICAL"
+    },
+    {
+      "id": "test-011",
+      "male": ["albino"],
+      "female": ["albino"],
+      "expected_outcomes": [
+        {"phenotype": "Albino", "percentage": 100}
+      ],
+      "test_status": "pending",
+      "notes": "Recessive × recessive = 100% visual"
+    },
+    {
+      "id": "test-012",
+      "male": ["champagne"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Champagne", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 50}
+      ],
+      "test_status": "pending",
+      "health_warning": "Moderate wobble risk",
+      "notes": "Health risk detection test"
+    },
+    {
+      "id": "test-013",
+      "male": ["hidden-gene-woma"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Hidden Gene Woma", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 50}
+      ],
+      "test_status": "pending",
+      "health_warning": "High wobble risk",
+      "notes": "High health risk detection test"
+    },
+    {
+      "id": "test-014",
+      "male": ["pastel", "enchi"],
+      "female": ["pastel", "enchi"],
+      "expected_outcomes": [
+        {"phenotype": "Super Pastel Super Enchi", "percentage": 6.25},
+        {"phenotype": "Super Pastel Enchi", "percentage": 12.5},
+        {"phenotype": "Super Pastel", "percentage": 6.25},
+        {"phenotype": "Pastel Super Enchi", "percentage": 12.5},
+        {"phenotype": "Pastel Enchi", "percentage": 25},
+        {"phenotype": "Pastel", "percentage": 12.5},
+        {"phenotype": "Super Enchi", "percentage": 6.25},
+        {"phenotype": "Enchi", "percentage": 12.5},
+        {"phenotype": "Normal", "percentage": 6.25}
+      ],
+      "test_status": "pending",
+      "notes": "Complex multi-gene combo - 16 square Punnett"
+    },
+    {
+      "id": "test-015",
+      "male": ["yellowbelly", "yellowbelly"],
+      "female": ["normal"],
+      "expected_outcomes": [
+        {"phenotype": "Ivory (Super YellowBelly)", "percentage": 25},
+        {"phenotype": "YellowBelly", "percentage": 50},
+        {"phenotype": "Normal", "percentage": 25}
+      ],
+      "test_status": "pending",
+      "notes": "Super form naming test (Ivory = Super YellowBelly)"
+    }
+  ],
+  "validation_criteria": {
+    "outcome_match": "Phenotype names and percentages match MorphMarket",
+    "lethal_detection": "Calculator correctly flags lethal combinations",
+    "health_warnings": "Wobble and health risks properly displayed",
+    "combo_recognition": "Popular combo names recognized (Bumblebee, BEL, etc)",
+    "percentage_accuracy": "Genetic percentages accurate to 2 decimal places"
+  },
+  "test_workflow": {
+    "step_1": "Open MorphMarket calculator in one tab",
+    "step_2": "Open calculator-integrated.html in another tab",
+    "step_3": "Input same morphs in both calculators",
+    "step_4": "Compare results side-by-side",
+    "step_5": "Mark test_status as 'pass', 'fail', or 'partial'",
+    "step_6": "Document any discrepancies in notes"
+  },
+  "known_limitations": {
+    "naming_variations": "MorphMarket may use different combo names",
+    "percentage_rounding": "Minor rounding differences acceptable (±0.01%)",
+    "morph_coverage": "Serpent Town has 50 morphs vs MorphMarket's 500+",
+    "rare_morphs": "Rare/new morphs may not be in our database yet"
+  }
+}

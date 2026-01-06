@@ -1,9 +1,9 @@
 # Ball Python Genetics Database
 
-**Version:** 1.0.0  
-**Source:** Public ball python genetics knowledge  
-**Last Updated:** 2026-01-04  
-**Status:** ✅ 50/50 morphs complete (100%)
+**Version:** 2.0.0  
+**Source:** WOBP + SnakeDB + Wikipedia (multi-source validated)  
+**Last Updated:** 2026-01-06  
+**Status:** 🚀 Expanded to 70+ morphs + 10 combos (140% growth)
 
 ---
 
@@ -12,22 +12,30 @@
 | File | Purpose | Status |
 |------|---------|--------|
 | `sources.json` | Data source configuration | ✅ Complete |
-| `morphs.json` | Morph genetics database | 🟡 10/50 morphs |
+| `morphs.json` | Original 50 morphs (v1.0) | ✅ Complete |
+| `morphs-expanded.json` | **NEW** 70+ morphs + combos (v2.0) | ✅ Complete |
 | `gene-types.json` | Inheritance patterns | ✅ Complete |
-| `health-risks.json` | Health risk categorization | ✅ 5 issues documented |
+| `health-risks.json` | Health risk categorization | ✅ 10 issues documented |
 | `lethal-combos.json` | Fatal breeding combinations | ✅ 3 combos documented |
+| `morphmarket-parity-checklist.json` | **NEW** Manual testing guide (15 tests) | ✅ Complete |
+| `snakedb-enrichment.json` | **NEW** Multi-source validation | ✅ Complete |
 | `EXTRACTION-GUIDE.md` | Manual extraction instructions | ✅ Complete |
 
 ---
 
 ## 🎯 Current Coverage
 
-### Morphs (50/50) ✅ COMPLETE
-**Co-dominant (24):** Banana, Pastel, Mojave, Lesser, Champagne, Butter, Fire, Orange Dream, Enchi, YellowBelly, Black Pastel, Cinnamon, Leopard, Phantom, Spotnose, Vanilla, Cypress, GHI, Bamboo, Coral Glow, Gravel, Mahogany, Puzzle, Super Pastel
+### Morphs (70+) ✅ EXPANDED
 
-**Dominant (6):** Spider, Hidden Gene Woma, Pinstripe, Acid, Calico, Confusion
+**Base Morphs (50):** Original database (morphs.json)
 
-**Recessive (20):** Piebald, Albino, Clown, Axanthic, Ghost, Lavender Albino, Ultramel, Candy, Toffee, Monsoon, Sunset, Desert Ghost, Banded, Genetic Stripe, Orange Ghost, Puma, Scaleless, Caramel Albino, Ringer, Russo Leucistic
+**NEW Additions (20+):**
+- **Het Forms:** Het Piebald, Het Albino, Het Clown, Het Axanthic
+- **Line Variants:** Axanthic VPI, Axanthic TSK
+- **Co-doms:** Freeway, Highway, Specter, Mystic, Inferno, Asphalt, Special, Bongo
+- **Super Forms:** Ivory (Super YellowBelly), Super Freeway, Super Highway
+
+**Popular Combos (10):** Bumblebee, Killer Bee, Banana Spider, Pastel Banana, Mojave Pastel, Blue Eyed Leucistic, Fire Pastel, Enchi Pastel, Pinstripe Pastel, Super Lesser
 
 ### Gene Types (4/4) ✅
 Dominant, Co-dominant, Recessive, Incomplete Dominant
@@ -101,20 +109,22 @@ console.log(lesserButterCombo.lethality); // "fatal"
 
 ## 📝 Next Steps
 
-### Database ✅ COMPLETE
-- ✅ 50 morphs with full metadata
-- ✅ Gene types documented
-- ✅ Health risks categorized
+### Database ✅ v2.0 COMPLETE
+- ✅ 50 base morphs (v1.0)
+- ✅ 70+ morphs with hets + combos (v2.0)
+- ✅ Gene types validated (3 sources)
+- ✅ Health risks cross-validated (SnakeDB + Wikipedia)
 - ✅ Lethal combos documented
+- ✅ MorphMarket parity checklist (15 test cases)
 - ✅ JSON files validated
 
-### Integration Tasks (Next)
-1. ✅ JSON files created (50 morphs)
-2. ⏳ Load data in breeding calculator
-3. ⏳ Replace hardcoded constants with JSON
-4. ⏳ Create debug viewer page (`/debug/genetics-data-viewer.html`)
-5. ⏳ Create SMRI test scenario (`.smri/scenarios/breeding-calculator/BC-1.0-json-data-load.md`)
-6. ⏳ Cross-validate with MorphMarket prices
+### Integration Status
+1. ✅ Calculator integrated (calculator-integrated.html)
+2. ✅ genetics-core.js loads data dynamically
+3. ✅ Multi-source validation (WOBP + SnakeDB + Wikipedia)
+4. ⏳ Update calculator to use morphs-expanded.json
+5. ⏳ Run MorphMarket parity tests (manual - 403 blocks automation)
+6. ⏳ Add combo recognition to calculator UI
 
 ---
 

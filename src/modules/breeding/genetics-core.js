@@ -13,12 +13,16 @@ let morphMap = new Map();
 let morphValueMap = new Map();
 let healthRiskMap = new Map();
 
-export async function loadGeneticsDatabase() {
+export async function loadGeneticsDatabase(useExpandedData = true) {
   try {
     const basePath = window.APP_BASE_PATH || '';
     
-    // Load morphs database
-    const morphsResponse = await fetch(`${basePath}/data/genetics/morphs.json`);
+    // Load morphs database (use expanded v2.0 if available)
+    const morphFile = useExpandedData 
+      ? `${basePath}/data/genetics/morphs-expanded.json`
+      : `${basePath}/data/genetics/morphs.json`;
+    
+    const morphsResponse = await fetch(morphFile);
     morphsData = await morphsResponse.json();
     
     // Load health risks
@@ -29,14 +33,26 @@ export async function loadGeneticsDatabase() {
     const lethalResponse = await fetch(`${basePath}/data/genetics/lethal-combos.json`);
     lethalCombosData = await lethalResponse.json();
     
-    // Build lookup maps
+    // Build lookup maps from base morphs
     morphsData.morphs.forEach(morph => {
       morphMap.set(morph.id, morph);
-      morphValueMap.set(morph.id, morph.market_value_usd?.median || 200);
+      const value = morph.market_value_usd?.median || morph.market_value_usd || 200;
+      morphValueMap.set(morph.id, value);
       healthRiskMap.set(morph.id, morph.health_risk || 'NONE');
     });
     
-    console.log(`✅ Loaded ${morphsData.morphs.length} morphs from genetics database`);
+    // Add popular combos to lookup if available
+    if (morphsData.popular_combos) {
+      morphsData.popular_combos.forEach(combo => {
+        morphMap.set(combo.id, combo);
+        morphValueMap.set(combo.id, combo.market_value_usd || 300);
+        healthRiskMap.set(combo.id, combo.health_risk || 'NONE');
+      });
+    }
+    
+    const baseCount = morphsData.morphs.length;
+    const comboCount = morphsData.popular_combos?.length || 0;
+    console.log(`✅ Loaded ${baseCount} morphs + ${comboCount} combos from genetics database v${morphsData.version}`);
     return true;
   } catch (error) {
     console.warn('⚠️ Failed to load genetics database, using fallback constants', error);
