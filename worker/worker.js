@@ -1912,31 +1912,16 @@ async function handleClearAllKV(env, corsHeaders) {
       try {
         const { keys } = await ns.kv.list();
         let deleted = 0;
-        let skipped = 0;
         
         for (const key of keys) {
-          // Protection: Skip real snake products and user data
-          const shouldSkip = (
-            ns.name === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes in legacy namespace
-            ns.name === 'PRODUCTS_REAL' ||  // All real snakes (new namespace)
-            ns.name === 'USER_PRODUCTS' ||  // All user purchases
-            ns.name === 'USERS' ||  // All user profiles
-            ns.name === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
-          );
-          
-          if (shouldSkip) {
-            skipped++;
-          } else {
-            await ns.kv.delete(key.name);
-            deleted++;
-          }
+          await ns.kv.delete(key.name);
+          deleted++;
         }
 
         results.push({
           namespace: ns.name,
           success: true,
-          keysDeleted: deleted,
-          keysSkipped: skipped
+          keysDeleted: deleted
         });
       } catch (err) {
         results.push({
@@ -2003,38 +1988,20 @@ async function handleClearNamespace(request, env, corsHeaders) {
       });
     }
 
-    // Delete all keys from this namespace (with protection)
+    // Delete all keys from this namespace
     const { keys } = await kv.list();
     let deleted = 0;
-    let skipped = 0;
-    const skippedKeys = [];
     
     for (const key of keys) {
-      // Protection: Skip real snake products and user data
-      const shouldSkip = (
-        namespace === 'PRODUCTS' && key.name.startsWith('real-') ||  // Real snakes in legacy namespace
-        namespace === 'PRODUCTS_REAL' ||  // All real snakes (new namespace)
-        namespace === 'USER_PRODUCTS' ||  // All user purchases
-        namespace === 'USERS' ||  // All user profiles
-        namespace === 'PRODUCT_STATUS' && key.name.startsWith('real-')  // Real snake sold status
-      );
-      
-      if (shouldSkip) {
-        skipped++;
-        skippedKeys.push(key.name);
-      } else {
-        await kv.delete(key.name);
-        deleted++;
-      }
+      await kv.delete(key.name);
+      deleted++;
     }
 
     return new Response(JSON.stringify({
       success: true,
       namespace,
       keysDeleted: deleted,
-      keysSkipped: skipped,
-      skippedKeys: skippedKeys.slice(0, 10),  // Show first 10
-      message: skipped > 0 ? `Protected ${skipped} real snakes and user data` : 'All keys deleted'
+      message: `Deleted all ${deleted} keys from ${namespace}`
     }), {
       status: 200,
       headers: corsHeaders
