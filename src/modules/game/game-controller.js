@@ -6,6 +6,12 @@ console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
 // Module imports (dynamic loading below)
 import { getSnakeAvatar } from '../common/snake-avatar.js';
 import { SnakeDetailView } from './snake-detail-view.js';
+import { 
+  DEFAULT_SNAKE_STATS, 
+  DEFAULT_SNAKE_WEIGHT,
+  TIMEOUTS,
+  STRING_LIMITS
+} from '../common/constants.js';
 
 // Dynamic imports
 let Economy, createInitialGameState, EquipmentShop, openShop;
@@ -175,7 +181,7 @@ class SnakeMuffin {
         debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:#000;color:#0f0;padding:5px;z-index:99999;font-size:10px;';
         debugDiv.textContent = msg;
         document.body.appendChild(debugDiv);
-        setTimeout(() => debugDiv.remove(), 5000);
+        setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
       }
     };
 
@@ -188,7 +194,7 @@ class SnakeMuffin {
       
       // Load user's snakes from Cloudflare Worker KV
       const workerUrl = WORKER_CONFIG.getUserEndpoint('USER_PRODUCTS', this.currentUser.user_id);
-      debug(`🔄 Fetching from: ${workerUrl.substring(0, 50)}...`);
+      debug(`🔄 Fetching from: ${workerUrl.substring(0, STRING_LIMITS.URL_DISPLAY_LENGTH)}...`);
       console.log(`🔄 Fetching snakes from: ${workerUrl}`);
       
       const response = await fetch(workerUrl);
@@ -232,7 +238,7 @@ class SnakeMuffin {
       debugDiv.style.cssText = 'position:fixed;top:200px;left:10px;background:#f0f;color:#fff;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
       debugDiv.textContent = msg;
       document.body.appendChild(debugDiv);
-      setTimeout(() => debugDiv.remove(), 5000);
+      setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
     };
     
     debug(`🔄 Converting ${userProducts.length} products...`);
@@ -258,19 +264,10 @@ class SnakeMuffin {
           type: up.product_type || 'real',
           sex: up.sex || up.gender || 'unknown',
           birth_date: up.birth_date || up.yob || 2024,
-          weight_grams: 100,
+          weight_grams: DEFAULT_SNAKE_WEIGHT,
           length_cm: 30,
           acquired_date: up.acquired_at || up.purchased_at,
-          stats: up.stats || {
-            hunger: 80,
-            water: 100,
-            temperature: 80,
-            humidity: 50,
-            health: 100,
-            stress: 10,
-            cleanliness: 100,
-            happiness: 80
-          },
+          stats: up.stats || DEFAULT_SNAKE_STATS,
           equipment: {
             heater: null,
             mister: null,
@@ -307,16 +304,7 @@ class SnakeMuffin {
         length_cm: product?.length_cm || up.length_cm || 30,
         acquired_date: up.acquired_at || up.purchased_at,
         acquisition_type: up.acquisition_type || up.source || 'purchase',
-        stats: up.stats || {
-          hunger: 80,
-          water: 100,
-          temperature: 80,
-          humidity: 50,
-          health: 100,
-          stress: 10,
-          cleanliness: 100,
-          happiness: 80
-        },
+        stats: up.stats || { ...DEFAULT_SNAKE_STATS },
         equipment: {
           heater: null,
           mister: null,
@@ -356,16 +344,7 @@ class SnakeMuffin {
       length_cm: catalogProduct?.length_cm || userProduct.length_cm || 30,
       acquired_date: userProduct.acquired_at || userProduct.purchased_at || new Date().toISOString(),
       acquisition_type: userProduct.acquisition_type || userProduct.source || 'purchase',
-      stats: userProduct.stats || {
-        hunger: 80,
-        water: 100,
-        temperature: 80,
-        humidity: 50,
-        health: 100,
-        stress: 10,
-        cleanliness: 100,
-        happiness: 80
-      },
+      stats: userProduct.stats || DEFAULT_SNAKE_STATS,
       equipment: userProduct.equipment || {
         heater: null,
         mister: null,
@@ -567,7 +546,7 @@ class SnakeMuffin {
       debugDiv.style.cssText = 'position:fixed;bottom:10px;left:10px;background:#ff0;color:#000;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
       debugDiv.textContent = msg;
       document.body.appendChild(debugDiv);
-      setTimeout(() => debugDiv.remove(), 5000);
+      setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
     };
     
     debug(`🎯 Context: ${this.context}`);
@@ -1148,7 +1127,7 @@ class SnakeMuffin {
     notification.textContent = message;
     document.body.appendChild(notification);
     
-    setTimeout(() => notification.remove(), 3000);
+    setTimeout(() => notification.remove(), TIMEOUTS.NOTIFICATION_AUTO_REMOVE);
   }
   
   saveGame() {
