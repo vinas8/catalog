@@ -6,139 +6,107 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Serpent Town - SMRI Game</title>
+    <title>Serpent Town - Your Snake Adventure</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4a7c59">
 </head>
 <body>
-    <div id="app">
-        <!-- Title Screen -->
+    <div id="app" class="pixel-art">
+        <!-- Title Screen - Stardew Valley style -->
         <div id="screen-title" class="screen active">
             <div class="title-content">
                 <h1>🐍 Serpent Town</h1>
                 <p class="subtitle">A cozy snake breeding adventure</p>
-                <button id="btn-start" class="btn-primary">Start Game</button>
+                <button id="btn-start" class="btn-primary">New Game</button>
                 <button id="btn-continue" class="btn-secondary" style="display:none">Continue</button>
             </div>
         </div>
 
-        <!-- Shop Screen -->
-        <div id="screen-shop" class="screen">
-            <div class="screen-header">
-                <h2>🏪 Snake Shop</h2>
-                <button class="btn-back" data-back="title">← Back</button>
+        <!-- Town Map - Top-down Stardew Valley style -->
+        <div id="screen-town" class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-icon">💰</span>
+                    <span id="status-gold">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon">🐍</span>
+                    <span id="status-snakes">0</span>
+                </div>
             </div>
-            <div class="screen-content">
-                <div class="shop-grid">
-                    <div class="shop-item" id="item-egg">
-                        <div class="item-icon">🥚</div>
-                        <h3>Mystery Egg</h3>
-                        <p>A rare ball python egg waiting to hatch</p>
-                        <div class="item-price">$5.00 <span class="stub">(stub)</span></div>
-                        <button class="btn-buy" data-item="egg">Buy Egg</button>
+
+            <div class="town-map">
+                <h2 style="text-align: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); padding: 3rem 0 1rem 0; font-size: 2.5rem;">🏘️ Serpent Town</h2>
+                <div class="town-grid">
+                    <!-- Shop (unlocked) -->
+                    <div class="building" data-module="shop">
+                        <div class="building-icon">🏪</div>
+                        <div class="building-name">Snake Shop</div>
+                        <div class="building-desc">Buy snakes with real money</div>
+                    </div>
+
+                    <!-- Snake Dex (unlocked - Pokédex style!) -->
+                    <div class="building" data-module="dex">
+                        <div class="building-icon">📖</div>
+                        <div class="building-name">Snake Dex</div>
+                        <div class="building-desc">Encyclopedia of all snakes</div>
+                    </div>
+
+                    <!-- Collection (locked until first purchase) -->
+                    <div class="building locked" data-module="collection">
+                        <div class="building-icon">🎒</div>
+                        <div class="building-name">My Collection</div>
+                        <div class="building-desc">View your snakes</div>
+                    </div>
+
+                    <!-- Game/Care (locked until first snake) -->
+                    <div class="building locked" data-module="game">
+                        <div class="building-icon">🎮</div>
+                        <div class="building-name">Care Station</div>
+                        <div class="building-desc">Feed & care for snakes</div>
+                    </div>
+
+                    <!-- Calculator (locked) -->
+                    <div class="building locked" data-module="calculator">
+                        <div class="building-icon">🧮</div>
+                        <div class="building-name">Genetics Calculator</div>
+                        <div class="building-desc">Predict breeding outcomes</div>
+                    </div>
+
+                    <!-- Breeding (locked) -->
+                    <div class="building locked" data-module="breeding">
+                        <div class="building-icon">🧬</div>
+                        <div class="building-name">Breeding Center</div>
+                        <div class="building-desc">Breed snakes for morphs</div>
+                    </div>
+
+                    <!-- Farm (locked) -->
+                    <div class="building locked" data-module="farm">
+                        <div class="building-icon">🌾</div>
+                        <div class="building-name">Snake Farm</div>
+                        <div class="building-desc">Outdoor habitats</div>
+                    </div>
+
+                    <!-- Tutorial (always unlocked) -->
+                    <div class="building" data-module="tutorial">
+                        <div class="building-icon">📚</div>
+                        <div class="building-name">Tutorial Center</div>
+                        <div class="building-desc">Learn the game</div>
+                    </div>
+
+                    <!-- Admin (always unlocked) -->
+                    <div class="building" data-module="admin">
+                        <div class="building-icon">🔧</div>
+                        <div class="building-name">Admin Panel</div>
+                        <div class="building-desc">Settings & debug</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Egg View Screen -->
-        <div id="screen-egg" class="screen">
-            <div class="screen-header">
-                <h2>🥚 Your Egg</h2>
-                <button class="btn-back" data-back="shop">← Back to Shop</button>
-            </div>
-            <div class="screen-content center">
-                <div class="egg-container">
-                    <div class="egg-visual" id="egg-visual">🥚</div>
-                    <p class="egg-status" id="egg-status">Click to start hatching...</p>
-                    <div class="progress-bar" id="hatch-progress">
-                        <div class="progress-fill" style="width: 0%"></div>
-                    </div>
-                    <button id="btn-hatch" class="btn-primary">Begin Hatching</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Snake Born Screen -->
-        <div id="screen-born" class="screen">
-            <div class="screen-content center">
-                <div class="celebration">
-                    <h1>🎉 It's a Snake! 🐍</h1>
-                    <div class="snake-preview">
-                        <div class="snake-icon">🐍</div>
-                        <p><strong>Ball Python</strong></p>
-                        <p>Morph: <span id="snake-morph">Normal</span></p>
-                    </div>
-                    <div class="tutorial-hint">
-                        <p>💡 Your home has been unlocked!</p>
-                        <p>Visit your house to care for your new snake.</p>
-                    </div>
-                    <button id="btn-goto-home" class="btn-primary">Go to Home</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Home Screen -->
-        <div id="screen-home" class="screen">
-            <div class="screen-header">
-                <h2>🏠 Your House</h2>
-                <button class="btn-back" data-back="title">← Town</button>
-            </div>
-            <div class="screen-content">
-                <div class="room">
-                    <h3>Living Room</h3>
-                    <div class="room-grid">
-                        <!-- Shelf with snake -->
-                        <div class="interactable" data-module="collection">
-                            <span class="icon">📦</span>
-                            <span class="label">Collection</span>
-                        </div>
-                        <!-- Bed -->
-                        <div class="interactable" data-module="care">
-                            <span class="icon">🛏️</span>
-                            <span class="label">Care Station</span>
-                        </div>
-                        <!-- Board -->
-                        <div class="interactable" data-module="breeding">
-                            <span class="icon">📋</span>
-                            <span class="label">Breeding Board</span>
-                        </div>
-                        <!-- Computer -->
-                        <div class="interactable" data-module="dex">
-                            <span class="icon">💻</span>
-                            <span class="label">Snake Dex</span>
-                        </div>
-                        <!-- Bookshelf -->
-                        <div class="interactable" data-module="tutorial">
-                            <span class="icon">📚</span>
-                            <span class="label">Tutorials</span>
-                        </div>
-                        <!-- Safe -->
-                        <div class="interactable" data-module="admin">
-                            <span class="icon">🔒</span>
-                            <span class="label">Admin</span>
-                        </div>
-                    </div>
-                    <p class="expansion-hint">🔨 Room expansion coming soon...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Module Panel (Fullscreen Overlay) -->
-        <div id="module-panel" class="screen">
-            <div class="screen-header">
-                <h2 id="module-title">Module</h2>
-                <button class="btn-back" id="btn-close-module">← Back</button>
-            </div>
-            <div class="screen-content">
-                <div id="module-content">
-                    <p>Loading module...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tutorial Overlay -->
+        <!-- Tutorial Overlay - Pokémon text box style -->
         <div id="tutorial-overlay" class="overlay" style="display:none">
             <div class="tutorial-box">
                 <h3 id="tutorial-title">Tutorial</h3>
@@ -149,32 +117,16 @@
         </div>
     </div>
 
-    <script type="module" src="game.js"></script>
+    <script src="game.js"></script>
     <script>
-        // Register Service Worker for PWA
+        // PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/catalog/smri-game/sw.js')
-                    .then(reg => console.log('✅ Service Worker registered', reg.scope))
-                    .catch(err => console.log('❌ Service Worker registration failed', err));
+                    .then(reg => console.log('✅ Service Worker registered'))
+                    .catch(err => console.log('❌ Service Worker failed', err));
             });
         }
-
-        // PWA Install prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            console.log('💾 PWA install prompt ready');
-            
-            // Show custom install button if you want
-            // For now, browser will show default install UI
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('✅ PWA installed successfully');
-            deferredPrompt = null;
-        });
     </script>
 </body>
 </html>

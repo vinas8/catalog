@@ -1,4 +1,6 @@
-/* SMRI Game - Stardew Valley Cozy Aesthetic */
+/* SMRI Game - Stardew Valley + Pokémon Aesthetic */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 * {
     margin: 0;
@@ -7,31 +9,50 @@
 }
 
 :root {
-    --bg-primary: #f4e8d8;
-    --bg-secondary: #e8d5c4;
-    --bg-dark: #4a7c59;
-    --text-primary: #2d2d2d;
-    --text-light: #ffffff;
-    --accent: #d4a373;
-    --border: #8b7355;
-    --shadow: rgba(0, 0, 0, 0.2);
+    /* Stardew Valley Color Palette */
+    --grass-green: #88c070;
+    --dark-green: #306850;
+    --dirt-brown: #b8945f;
+    --wood-brown: #8b6f47;
+    --roof-red: #c84848;
+    --sky-blue: #87ceeb;
+    --stone-gray: #8a8a8a;
+    --gold: #ffd700;
+    
+    /* UI Colors */
+    --ui-bg: #f5e6d3;
+    --ui-border: #3d2817;
+    --ui-text: #2d1b00;
+    --ui-hover: #ffe4b5;
+    --shadow: rgba(0, 0, 0, 0.3);
+    
+    /* Pokémon-style colors */
+    --pokedex-red: #dc0a2d;
+    --pokedex-blue: #0075be;
+    --pokedex-yellow: #ffcb05;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--sky-blue);
+    color: var(--ui-text);
     overflow: hidden;
     width: 100vw;
     height: 100vh;
-    -webkit-user-select: none;
-    user-select: none;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.pixel-art {
+    image-rendering: pixelated;
 }
 
 #app {
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 /* Screen Management */
@@ -43,7 +64,6 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    background: var(--bg-primary);
     animation: fadeIn 0.3s ease-in;
 }
 
@@ -52,116 +72,226 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-/* Screen Header */
-.screen-header {
-    display: flex;
-    justify-content: space-between;
+/* Title Screen - Stardew Valley style */
+#screen-title {
+    background: linear-gradient(180deg, #87ceeb 0%, #f0e68c 50%, #88c070 100%);
+    justify-content: center;
     align-items: center;
-    padding: 1rem;
-    background: var(--bg-dark);
-    color: var(--text-light);
-    box-shadow: 0 2px 8px var(--shadow);
 }
 
-.screen-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+.title-content {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: 4px solid var(--ui-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow);
+    max-width: 500px;
 }
 
-/* Screen Content */
-.screen-content {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+.title-content h1 {
+    font-size: 2.5rem;
+    color: var(--dark-green);
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 0 var(--gold);
+    letter-spacing: 2px;
 }
 
-.screen-content.center {
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--ui-text);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+/* Buttons - Stardew Valley style */
+button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: 3px solid var(--ui-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 0 var(--ui-border);
+    position: relative;
+}
+
+button:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ui-border);
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: var(--ui-text);
+}
+
+.btn-primary:hover {
+    background: #ffed4e;
+}
+
+.btn-secondary {
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    margin-top: 1rem;
+}
+
+/* Town Map - Top-down Stardew Valley style */
+#screen-town {
+    background: var(--grass-green);
+    position: relative;
+}
+
+.town-map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            var(--grass-green) 0px,
+            var(--grass-green) 32px,
+            #78b060 32px,
+            #78b060 34px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            var(--grass-green) 0px,
+            var(--grass-green) 32px,
+            #78b060 32px,
+            #78b060 34px
+        );
+    overflow: auto;
+}
+
+.town-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.building {
+    background: var(--ui-bg);
+    border: 4px solid var(--ui-border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 0 var(--ui-border);
+    min-height: 200px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-/* Title Screen */
-#screen-title {
-    background: linear-gradient(135deg, #4a7c59 0%, #2d5a3d 100%);
+.building:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 0 var(--ui-border);
+    background: var(--ui-hover);
 }
 
-.title-content {
+.building:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--ui-border);
+}
+
+.building-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.2));
+}
+
+.building-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--ui-text);
+}
+
+.building-desc {
+    font-size: 0.9rem;
+    color: #5d4a37;
+    font-style: italic;
+}
+
+.building.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.building.locked:hover {
+    transform: none;
+    box-shadow: 0 6px 0 var(--ui-border);
+}
+
+/* Shop Screen - Store interior */
+#screen-shop {
+    background: var(--wood-brown);
+}
+
+.shop-interior {
+    background: linear-gradient(180deg, #f5e6d3 0%, #e8d5c4 100%);
     width: 100%;
-    max-width: 500px;
-    margin: auto;
-    text-align: center;
+    height: 100%;
     padding: 2rem;
 }
 
-.title-content h1 {
-    font-size: 3rem;
-    color: var(--text-light);
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px var(--shadow);
-}
-
-.subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2rem;
-    margin-bottom: 3rem;
-}
-
-/* Buttons */
-button {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 600;
-}
-
-.btn-primary {
-    background: var(--accent);
-    color: var(--text-primary);
+.shop-header {
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
+    border-radius: 12px 12px 0 0;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     box-shadow: 0 4px 8px var(--shadow);
 }
 
-.btn-primary:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 4px var(--shadow);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--text-light);
-    border: 2px solid var(--text-light);
-    margin-top: 1rem;
+.shop-header h2 {
+    font-size: 2rem;
+    color: var(--dark-green);
 }
 
 .btn-back {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--text-light);
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
 }
 
-/* Shop Grid */
 .shop-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .shop-item {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
+    background: white;
+    border: 3px solid var(--ui-border);
     border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
-    box-shadow: 0 2px 8px var(--shadow);
+    box-shadow: 0 4px 0 var(--ui-border);
+    transition: all 0.2s ease;
+}
+
+.shop-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 var(--ui-border);
 }
 
 .item-icon {
@@ -169,230 +299,185 @@ button {
     margin-bottom: 1rem;
 }
 
-.shop-item h3 {
-    margin-bottom: 0.5rem;
-    color: var(--bg-dark);
-}
-
-.shop-item p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
-
 .item-price {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 1rem;
+    color: var(--gold);
+    margin: 1rem 0;
 }
 
-.stub {
-    font-size: 0.8rem;
-    color: #999;
-    font-weight: normal;
+/* Pokédex-style Module Panel */
+.module-panel {
+    background: var(--pokedex-red);
+    border: 6px solid #8b0000;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 8px 16px var(--shadow);
 }
 
-.btn-buy {
-    width: 100%;
-    background: var(--bg-dark);
-    color: var(--text-light);
-}
-
-/* Egg Container */
-.egg-container {
-    text-align: center;
-    max-width: 400px;
-}
-
-.egg-visual {
-    font-size: 8rem;
-    margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.egg-status {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: var(--bg-dark);
-}
-
-.progress-bar {
-    width: 100%;
-    height: 30px;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
-    border-radius: 15px;
-    overflow: hidden;
+.pokedex-header {
+    background: linear-gradient(135deg, var(--pokedex-blue) 0%, #005a8e 100%);
+    border: 3px solid #003d5c;
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
-.progress-fill {
+.pokedex-light {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #87ceeb 0%, var(--pokedex-blue) 100%);
+    border: 4px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(135, 206, 235, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(135, 206, 235, 0.8); }
+    50% { box-shadow: 0 0 40px rgba(135, 206, 235, 1); }
+}
+
+.pokedex-content {
+    background: #f0f0f0;
+    border: 3px solid #666;
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 400px;
+}
+
+/* Home/Farm Interior */
+.room {
+    background: var(--wood-brown);
+    width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, #4a7c59, #6ba583);
-    transition: width 0.3s ease;
+    padding: 2rem;
 }
 
-/* Celebration Screen */
-.celebration {
-    text-align: center;
-    max-width: 500px;
-}
-
-.celebration h1 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: var(--bg-dark);
-}
-
-.snake-preview {
-    background: var(--bg-secondary);
-    border: 3px solid var(--accent);
+.room-interior {
+    background: linear-gradient(180deg, #f5deb3 0%, #e8d5c4 100%);
+    border: 4px solid var(--ui-border);
     border-radius: 16px;
     padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.snake-icon {
-    font-size: 6rem;
-    margin-bottom: 1rem;
-}
-
-.tutorial-hint {
-    background: rgba(212, 163, 115, 0.2);
-    border-left: 4px solid var(--accent);
-    padding: 1rem;
-    margin-bottom: 2rem;
-    text-align: left;
-}
-
-/* Room Grid */
-.room {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.room h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: var(--bg-dark);
+    min-height: calc(100% - 4rem);
 }
 
 .room-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .interactable {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
     border-radius: 12px;
     padding: 1.5rem 1rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+    box-shadow: 0 4px 0 var(--ui-border);
 }
 
 .interactable:hover {
-    background: var(--accent);
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px var(--shadow);
+    box-shadow: 0 8px 0 var(--ui-border);
+    background: var(--ui-hover);
+}
+
+.interactable:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--ui-border);
 }
 
 .interactable .icon {
     font-size: 3rem;
+    margin-bottom: 0.5rem;
+    display: block;
 }
 
 .interactable .label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
-.expansion-hint {
-    text-align: center;
-    color: #999;
-    font-style: italic;
+/* Screen Header - Consistent style */
+.screen-header {
+    background: linear-gradient(135deg, var(--dark-green) 0%, var(--grass-green) 100%);
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid var(--ui-border);
 }
 
-/* Module Panel */
-#module-panel {
-    z-index: 100;
+.screen-header h2 {
+    color: white;
+    font-size: 1.8rem;
+    text-shadow: 2px 2px 0 var(--ui-border);
 }
 
-#module-content {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
-    min-height: 300px;
+.screen-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Tutorial Overlay */
-.overlay {
+/* Player Status Bar - Like Stardew Valley */
+.status-bar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    right: 0;
+    background: rgba(61, 40, 23, 0.9);
+    border-bottom: 3px solid var(--gold);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    gap: 2rem;
+    z-index: 1000;
+    box-shadow: 0 4px 8px var(--shadow);
+}
+
+.status-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    z-index: 200;
+    gap: 0.5rem;
+    color: white;
+    font-weight: bold;
 }
 
-.tutorial-box {
-    background: var(--bg-secondary);
-    border: 3px solid var(--accent);
-    border-radius: 16px;
-    padding: 2rem;
-    max-width: 500px;
-    margin: 1rem;
-    text-align: center;
-}
-
-.tutorial-box h3 {
-    color: var(--bg-dark);
-    margin-bottom: 1rem;
-}
-
-.tutorial-box p {
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-#btn-tutorial-skip {
-    margin-left: 1rem;
+.status-icon {
+    font-size: 1.5rem;
 }
 
 /* Mobile Optimizations */
 @media (max-width: 600px) {
-    .title-content h1 {
-        font-size: 2rem;
-    }
-
-    .shop-grid {
+    .town-grid {
         grid-template-columns: 1fr;
+        padding: 1.5rem;
     }
-
+    
+    .building {
+        min-height: 150px;
+    }
+    
+    .building-icon {
+        font-size: 3.5rem;
+    }
+    
     .room-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    .screen-header h2 {
-        font-size: 1.2rem;
+    
+    .title-content h1 {
+        font-size: 1.8rem;
     }
 }
 
@@ -402,4 +487,110 @@ button {
         padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
     }
+}
+
+/* Shake animation for egg */
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+/* Progress bar - Pokémon HP bar style */
+.progress-bar {
+    width: 100%;
+    height: 32px;
+    background: #3d2817;
+    border: 3px solid #000;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 1rem 0;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(180deg, #7ac74c 0%, #5a9c3c 100%);
+    transition: width 0.3s ease;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
+}
+
+/* Tutorial overlay - Pokémon text box style */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+}
+
+.tutorial-box {
+    background: white;
+    border: 6px solid #000;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+}
+
+.tutorial-box h3 {
+    color: var(--dark-green);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.tutorial-box p {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+#btn-tutorial-skip {
+    margin-left: 1rem;
+}
+
+/* Celebration screen */
+.celebration {
+    text-align: center;
+    max-width: 600px;
+    background: white;
+    border: 6px solid var(--gold);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 8px 32px var(--shadow);
+}
+
+.celebration h1 {
+    font-size: 2.5rem;
+    color: var(--dark-green);
+    margin-bottom: 2rem;
+}
+
+.snake-preview {
+    background: var(--ui-bg);
+    border: 4px solid var(--ui-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.snake-icon {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+}
+
+.tutorial-hint {
+    background: #fffacd;
+    border: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: left;
 }
