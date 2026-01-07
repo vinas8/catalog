@@ -143,8 +143,14 @@
         }
         
         .morph-icon {
-            font-size: 4rem;
-            margin: 1rem 0;
+            width: 120px;
+            height: 120px;
+            margin: 0.5rem auto;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            object-fit: contain;
         }
         
         .morph-name {
@@ -252,18 +258,18 @@
     </div>
 
     <script type="module">
-        // Snake Pokemon mapping (from PokeRogue)
+        // Snake Pokemon mapping with real sprite URLs from Pokemon DB
         const snakePokemon = {
-            23: { name: 'Ekans', emoji: '🐍' },
-            24: { name: 'Arbok', emoji: '🐍' },
-            95: { name: 'Onix', emoji: '🪨🐍' },
-            208: { name: 'Steelix', emoji: '⚙️🐍' },
-            843: { name: 'Silicobra', emoji: '🏜️🐍' },
-            844: { name: 'Sandaconda', emoji: '🏜️🐍' },
-            336: { name: 'Seviper', emoji: '⚔️🐍' },
-            495: { name: 'Snivy', emoji: '🍃🐍' },
-            496: { name: 'Servine', emoji: '🍃🐍' },
-            497: { name: 'Serperior', emoji: '👑🐍' }
+            23: { name: 'Ekans', sprite: 'https://img.pokemondb.net/sprites/home/normal/ekans.png' },
+            24: { name: 'Arbok', sprite: 'https://img.pokemondb.net/sprites/home/normal/arbok.png' },
+            95: { name: 'Onix', sprite: 'https://img.pokemondb.net/sprites/home/normal/onix.png' },
+            208: { name: 'Steelix', sprite: 'https://img.pokemondb.net/sprites/home/normal/steelix.png' },
+            843: { name: 'Silicobra', sprite: 'https://img.pokemondb.net/sprites/home/normal/silicobra.png' },
+            844: { name: 'Sandaconda', sprite: 'https://img.pokemondb.net/sprites/home/normal/sandaconda.png' },
+            336: { name: 'Seviper', sprite: 'https://img.pokemondb.net/sprites/home/normal/seviper.png' },
+            495: { name: 'Snivy', sprite: 'https://img.pokemondb.net/sprites/home/normal/snivy.png' },
+            496: { name: 'Servine', sprite: 'https://img.pokemondb.net/sprites/home/normal/servine.png' },
+            497: { name: 'Serperior', sprite: 'https://img.pokemondb.net/sprites/home/normal/serperior.png' }
         };
         
         // Load genetics data (same as trait-dex)
@@ -321,13 +327,13 @@
 
             grid.innerHTML = filtered.map(morph => {
                 const owned = ownedMorphs.includes(morph.id);
-                const sprite = morph.pokemon ? morph.pokemon.emoji : '🐍';
+                const sprite = morph.pokemon ? morph.pokemon.sprite : 'https://img.pokemondb.net/sprites/home/normal/ekans.png';
                 return `
                     <div class="morph-card ${owned ? 'owned' : ''}" onclick="alert('${morph.name}\\n\\nGene Type: ${morph.gene_type}\\nPrice: $${morph.market_value_usd}\\nRarity: ${morph.rarity}\\nPokemon Spirit: ${morph.pokemon?.name || 'Ekans'}${morph.health_issues?.length ? '\\n\\n⚠️ Health Issues: ' + morph.health_issues.join(', ') : ''}')">
                         ${morph.health_risk === 'high' ? '<div class="health-risk">⚠️</div>' : ''}
                         ${owned ? '<div class="owned-badge">✓</div>' : ''}
                         <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
-                        <div class="morph-icon">${sprite}</div>
+                        <img src="${sprite}" alt="${morph.pokemon?.name || 'Ekans'}" class="morph-icon" style="width: 120px; height: 120px; image-rendering: pixelated; object-fit: contain;">
                         <div class="morph-name">${morph.name}</div>
                         <div class="morph-gene gene-${morph.gene_type?.replace('-', '_') || 'unknown'}">${morph.gene_type || 'Unknown'}</div>
                         <div class="morph-price">$${morph.market_value_usd || 0}</div>
@@ -361,7 +367,7 @@
         });
 
         render();
-        console.log(`✅ Loaded ${allMorphs.length} ball python morphs with Pokemon sprites!`);
+        console.log(`✅ Loaded ${allMorphs.length} ball python morphs with Pokemon DB sprites!`);
     </script>
 </body>
 </html>
