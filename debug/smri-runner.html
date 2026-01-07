@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧪 SMRI Test Runner - Snake Muffin v0.8.0</title>
+  <title>🧪 SMRI Test Runner - Snake Muffin v0.7.7</title>
+  <script src="../src/utils/debug-loader.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -134,6 +135,7 @@
       overflow-y: auto;
       font-family: 'Courier New', monospace;
       font-size: 13px;
+      display: none; /* Hidden - using mobile console instead */
     }
     .log-entry {
       margin-bottom: 5px;
@@ -180,9 +182,12 @@
       <div id="scenarioGrid" class="grid"></div>
     </div>
 
-    <div class="panel">
-      <h2>📝 Console Output</h2>
+    <div class="panel" style="display: none;">
+      <h2>📝 Console Output (Using Mobile Console)</h2>
       <div id="consoleOutput"></div>
+      <p style="color: #8b949e; font-size: 13px; margin-top: 10px;">
+        💡 Console output is now displayed via the floating debug console (bottom-right button 📋).
+      </p>
     </div>
 
     <div class="panel">
@@ -228,8 +233,16 @@ Muffin,Spider Yellowbelly,Female,2024`;
       `).join('');
     }
 
-    // Logging
+    // Logging - Use both console.log (mobile console) and inline
     function log(message, type = 'info') {
+      // Log to browser console (will be captured by debug-loader.js)
+      const logMethod = type === 'error' ? console.error : 
+                       type === 'warning' ? console.warn : 
+                       type === 'success' ? console.info : 
+                       console.log;
+      logMethod(`[SMRI] ${message}`);
+      
+      // Also update inline console (hidden by default, but kept for compatibility)
       const time = new Date().toLocaleTimeString();
       const entry = document.createElement('div');
       entry.className = 'log-entry';
@@ -238,12 +251,16 @@ Muffin,Spider Yellowbelly,Female,2024`;
         <span class="log-message log-${type}">${message}</span>
       `;
       const output = document.getElementById('consoleOutput');
-      output.appendChild(entry);
-      output.scrollTop = output.scrollHeight;
+      if (output) {
+        output.appendChild(entry);
+        output.scrollTop = output.scrollHeight;
+      }
     }
 
     function clearConsole() {
-      document.getElementById('consoleOutput').innerHTML = '';
+      const output = document.getElementById('consoleOutput');
+      if (output) output.innerHTML = '';
+      console.clear();
     }
 
     function updateScenarioCard(id, status, message) {
