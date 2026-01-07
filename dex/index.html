@@ -254,7 +254,12 @@
             grid.innerHTML = allMorphs.map(morph => `
                 <div class="morph-thumb" onclick="showDetail('${morph.id}')">
                     <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
-                    <div style="font-size: 4rem;">🐍</div>
+                    <svg width="100" height="100" viewBox="0 0 100 100" style="opacity: 0.3;">
+                        <path d="M20,50 Q30,30 50,30 T80,50 Q70,60 60,65 Q50,70 40,65 Q30,60 20,50" 
+                              fill="#4a5568" stroke="#2d3748" stroke-width="2"/>
+                        <circle cx="45" cy="40" r="2" fill="#2d3748"/>
+                        <circle cx="55" cy="40" r="2" fill="#2d3748"/>
+                    </svg>
                     <div class="morph-name">${morph.name}</div>
                 </div>
             `).join('');
@@ -277,7 +282,13 @@
                 
                 <div class="detail-header">
                     <div class="detail-image">
-                        <div style="font-size: 10rem; text-align: center;">🐍</div>
+                        <svg width="200" height="200" viewBox="0 0 200 200" style="opacity: 0.2;">
+                            <path d="M40,100 Q60,60 100,60 T160,100 Q140,120 120,130 Q100,140 80,130 Q60,120 40,100" 
+                                  fill="#4a5568" stroke="#2d3748" stroke-width="3"/>
+                            <circle cx="90" cy="80" r="4" fill="#2d3748"/>
+                            <circle cx="110" cy="80" r="4" fill="#2d3748"/>
+                            <text x="100" y="110" text-anchor="middle" font-size="16" fill="#718096">Ball Python</text>
+                        </svg>
                     </div>
                     <div class="detail-info">
                         <div class="detail-number">National № ${String(morph.index).padStart(4, '0')}</div>
