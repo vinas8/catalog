@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐍 Snake Dex</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(180deg, #87ceeb 0%, #88c070 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .dex-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dex-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 4px solid #3d2817;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .dex-header h1 {
+            font-size: 3rem;
+            color: #2d5a3d;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5a3d;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #5d4a37;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 3px solid #3d2817;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 3px solid #3d2817;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 3px solid #3d2817;
+            border-radius: 10px;
+            background: #fff;
+            color: #2d1b00;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #2d1b00;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2d1b00;
+        }
+        
+        .filter-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2d1b00;
+        }
+        
+        .filter-btn.active {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .morphs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .morph-card {
+            background: linear-gradient(135deg, #fff 0%, #f5e6d3 100%);
+            border: 5px solid #3d2817;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 0 #2d1b00, 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .morph-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 0 #2d1b00, 0 18px 35px rgba(0,0,0,0.4);
+        }
+        
+        .morph-card.owned {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe8a1 100%);
+        }
+        
+        .morph-number {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .morph-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0.5rem auto;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            object-fit: contain;
+        }
+        
+        .morph-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d1b00;
+            margin-bottom: 0.5rem;
+        }
+        
+        .morph-gene {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0.3rem 0;
+        }
+        
+        .gene-dominant { background: #ff6b6b; color: white; }
+        .gene-co-dominant { background: #ffd93d; color: #000; }
+        .gene-recessive { background: #4dabf7; color: white; }
+        .gene-incomplete_dominant { background: #a371f7; color: white; }
+        
+        .morph-price {
+            font-size: 1.1rem;
+            color: #2d5a3d;
+            font-weight: bold;
+            margin-top: 0.8rem;
+        }
+        
+        .owned-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 3px solid #3d2817;
+        }
+        
+        .health-risk {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.5rem;
+            color: #2d1b00;
+        }
+    </style>
+</head>
+<body>
+    <div class="dex-container">
+        <div class="dex-header">
+            <h1>🐍 Snake Dex</h1>
+            <p>Complete Ball Python Morph Encyclopedia</p>
+            
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-value" id="stat-owned">0</div>
+                    <div class="stat-label">Owned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Morphs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-completion">0%</div>
+                    <div class="stat-label">Complete</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <input 
+                type="text" 
+                id="search" 
+                class="search-box" 
+                placeholder="🔍 Search morphs by name, gene type..."
+            >
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Morphs</button>
+                <button class="filter-btn" data-filter="owned">Owned Only</button>
+                <button class="filter-btn" data-filter="co-dominant">Co-Dominant</button>
+                <button class="filter-btn" data-filter="recessive">Recessive</button>
+                <button class="filter-btn" data-filter="dominant">Dominant</button>
+            </div>
+        </div>
+        
+        <div class="morphs-grid" id="grid">
+            <div class="loading">Loading morphs from genetics database...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Snake Pokemon mapping with real sprite URLs from Pokemon DB
+        const snakePokemon = {
+            23: { name: 'Ekans', sprite: 'https://img.pokemondb.net/sprites/home/normal/ekans.png' },
+            24: { name: 'Arbok', sprite: 'https://img.pokemondb.net/sprites/home/normal/arbok.png' },
+            95: { name: 'Onix', sprite: 'https://img.pokemondb.net/sprites/home/normal/onix.png' },
+            208: { name: 'Steelix', sprite: 'https://img.pokemondb.net/sprites/home/normal/steelix.png' },
+            843: { name: 'Silicobra', sprite: 'https://img.pokemondb.net/sprites/home/normal/silicobra.png' },
+            844: { name: 'Sandaconda', sprite: 'https://img.pokemondb.net/sprites/home/normal/sandaconda.png' },
+            336: { name: 'Seviper', sprite: 'https://img.pokemondb.net/sprites/home/normal/seviper.png' },
+            495: { name: 'Snivy', sprite: 'https://img.pokemondb.net/sprites/home/normal/snivy.png' },
+            496: { name: 'Servine', sprite: 'https://img.pokemondb.net/sprites/home/normal/servine.png' },
+            497: { name: 'Serperior', sprite: 'https://img.pokemondb.net/sprites/home/normal/serperior.png' }
+        };
+        
+        // Load genetics data (same as trait-dex)
+        const [morphsBase, morphsExpanded] = await Promise.all([
+            fetch('../data/genetics/morphs.json').then(r => r.json()),
+            fetch('../data/genetics/morphs-expanded.json').then(r => r.json())
+        ]);
+        
+        const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => {
+            // Assign Pokemon sprite based on morph characteristics
+            let pokemonId = 23; // Default: Ekans
+            if (m.super_form) pokemonId = 24; // Arbok for super forms
+            if (m.health_risk === 'high') pokemonId = 336; // Seviper for dangerous
+            if (m.gene_type === 'recessive') pokemonId = 495; // Snivy
+            if (m.gene_type === 'co-dominant') pokemonId = 496; // Servine
+            if (m.market_value_usd > 300) pokemonId = 497; // Serperior for expensive
+            if (m.name.includes('Pied') || m.name.includes('Clown')) pokemonId = 95; // Onix for patterned
+            if (m.name.includes('Desert') || m.name.includes('Sand')) pokemonId = 843; // Silicobra
+            
+            return {
+                ...m,
+                index: i + 1,
+                pokemon: snakePokemon[pokemonId]
+            };
+        });
+
+        let ownedMorphs = JSON.parse(localStorage.getItem('owned_morphs') || '[]');
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        function render() {
+            let filtered = allMorphs;
+
+            // Search
+            if (searchQuery) {
+                filtered = filtered.filter(m => 
+                    m.name.toLowerCase().includes(searchQuery) ||
+                    m.id.toLowerCase().includes(searchQuery) ||
+                    m.gene_type?.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            // Filter
+            if (currentFilter === 'owned') {
+                filtered = filtered.filter(m => ownedMorphs.includes(m.id));
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(m => m.gene_type === currentFilter);
+            }
+
+            const grid = document.getElementById('grid');
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">No morphs found</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(morph => {
+                const owned = ownedMorphs.includes(morph.id);
+                const sprite = morph.pokemon ? morph.pokemon.sprite : 'https://img.pokemondb.net/sprites/home/normal/ekans.png';
+                return `
+                    <div class="morph-card ${owned ? 'owned' : ''}" onclick="alert('${morph.name}\\n\\nGene Type: ${morph.gene_type}\\nPrice: $${morph.market_value_usd}\\nRarity: ${morph.rarity}\\nPokemon Spirit: ${morph.pokemon?.name || 'Ekans'}${morph.health_issues?.length ? '\\n\\n⚠️ Health Issues: ' + morph.health_issues.join(', ') : ''}')">
+                        ${morph.health_risk === 'high' ? '<div class="health-risk">⚠️</div>' : ''}
+                        ${owned ? '<div class="owned-badge">✓</div>' : ''}
+                        <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
+                        <img src="${sprite}" alt="${morph.pokemon?.name || 'Ekans'}" class="morph-icon" style="width: 120px; height: 120px; image-rendering: pixelated; object-fit: contain;">
+                        <div class="morph-name">${morph.name}</div>
+                        <div class="morph-gene gene-${morph.gene_type?.replace('-', '_') || 'unknown'}">${morph.gene_type || 'Unknown'}</div>
+                        <div class="morph-price">$${morph.market_value_usd || 0}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update stats
+            document.getElementById('stat-owned').textContent = ownedMorphs.length;
+            document.getElementById('stat-total').textContent = allMorphs.length;
+            const completion = allMorphs.length > 0 
+                ? Math.round((ownedMorphs.length / allMorphs.length) * 100) 
+                : 0;
+            document.getElementById('stat-completion').textContent = completion + '%';
+        }
+
+        // Search
+        document.getElementById('search').addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            render();
+        });
+
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                render();
+            });
+        });
+
+        render();
+        console.log(`✅ Loaded ${allMorphs.length} ball python morphs with Pokemon DB sprites!`);
+    </script>
+</body>
+</html>
