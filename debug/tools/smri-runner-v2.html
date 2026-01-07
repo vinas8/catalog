@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 SMRI Test Runner v2 - Browser Component</title>
+  <script src="../../src/utils/debug-loader.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    .container { max-width: 1600px; margin: 0 auto; }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .header h1 { color: white; font-size: 32px; margin-bottom: 10px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #2ea043; transform: translateY(-1px); }
+    .btn.active { background: #1f6feb; }
+    .btn.secondary { background: #1f6feb; }
+    .status {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #58a6ff;
+      text-align: center;
+    }
+    #browser-container {
+      margin-bottom: 30px;
+    }
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .scenario-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      padding: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scenario-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+    }
+    .scenario-card.active {
+      border-color: #3fb950;
+      background: rgba(63,185,80,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 SMRI Test Runner v2</h1>
+      <p>Powered by BrowserFrame Component</p>
+    </div>
+
+    <div class="status" id="status">
+      ✅ Ready - Click a test below to run
+    </div>
+
+    <div class="controls">
+      <button class="btn secondary" onclick="runTest('catalog')">🛒 Catalog</button>
+      <button class="btn secondary" onclick="runTest('game')">🎮 Game</button>
+      <button class="btn secondary" onclick="runTest('collection')">🎒 Collection</button>
+      <button class="btn secondary" onclick="runTest('dex')">📚 Dex</button>
+      <button class="btn secondary" onclick="runTest('admin')">⚙️ Admin</button>
+      <button class="btn secondary" onclick="runTest('purchase-flow')">💳 Purchase Flow</button>
+      <button class="btn" onclick="closeBrowser()">✕ Close</button>
+    </div>
+
+    <div id="browser-container"></div>
+
+    <h3 style="color: #58a6ff; margin-bottom: 15px;">All Test Scenarios</h3>
+    <div class="scenarios-grid" id="scenarios"></div>
+  </div>
+
+  <script type="module">
+    import { BrowserFrame } from '../../src/components/BrowserFrame.js';
+
+    const scenarios = [
+      { id: 'catalog', title: '🛒 Catalog', url: '../../catalog.html', smri: 'S1.1,2,3,4,5.01' },
+      { id: 'game', title: '🎮 Game', url: '../../game.html', smri: 'S2.2,5.01' },
+      { id: 'collection', title: '🎒 Collection', url: '../../collection.html', smri: 'S1.1,2,5.02' },
+      { id: 'dex', title: '📚 Dex', url: '../../dex.html', smri: 'S2.6,5.01' },
+      { id: 'admin', title: '⚙️ Admin KV', url: '../../admin-kv.html', smri: 'S5.5-1.01' },
+      { id: 'purchase-flow', title: '💳 Purchase Flow', url: '../purchase-flow-demo.html', smri: 'S1.1,2,3,4,5.01' },
+      { id: 'health', title: '🏥 Health Check', url: '../tools/healthcheck.html', smri: 'S0.0.01' },
+      { id: 'kv-manager', title: '💾 KV Manager', url: '../tools/kv-manager.html', smri: 'S5.5-1.02' },
+    ];
+
+    // Initialize browser frame
+    const browser = new BrowserFrame('browser-container', {
+      height: '700px',
+      showControls: true,
+      showURL: true,
+      allowFullscreen: true
+    });
+
+    // Render scenario cards
+    const grid = document.getElementById('scenarios');
+    grid.innerHTML = scenarios.map(s => `
+      <div class="scenario-card" data-id="${s.id}" onclick="runTest('${s.id}')">
+        <div style="font-weight: 600; margin-bottom: 5px;">${s.title}</div>
+        <div style="font-size: 12px; color: #8b949e;">${s.smri}</div>
+      </div>
+    `).join('');
+
+    // Run test
+    window.runTest = function(id) {
+      const scenario = scenarios.find(s => s.id === id);
+      if (!scenario) return;
+
+      const status = document.getElementById('status');
+      status.textContent = `🔄 Loading ${scenario.title}...`;
+      status.style.color = '#f59e0b';
+
+      // Update active card
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.id === id);
+      });
+
+      // Load in browser
+      browser.load(scenario.url);
+
+      setTimeout(() => {
+        status.textContent = `✅ Running: ${scenario.title} (${scenario.smri})`;
+        status.style.color = '#3fb950';
+      }, 500);
+    };
+
+    window.closeBrowser = function() {
+      browser.close();
+      document.getElementById('status').textContent = '✅ Ready - Click a test below to run';
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.classList.remove('active');
+      });
+    };
+
+    // Listen to browser events
+    document.getElementById('browser-container').addEventListener('browserframe:loaded', (e) => {
+      console.log('✅ Page loaded:', e.detail.url);
+    });
+
+    console.log('🧪 SMRI Runner v2 initialized with BrowserFrame component');
+  </script>
+</body>
+</html>
