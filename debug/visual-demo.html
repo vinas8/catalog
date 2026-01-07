@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Visual Demo - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    .container { max-width: 1600px; margin: 0 auto; }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .header h1 { font-size: 32px; margin-bottom: 10px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #2ea043; transform: translateY(-1px); }
+    .btn.active { background: #1f6feb; }
+    .demo-viewport {
+      background: white;
+      border: 3px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      height: 800px;
+    }
+    .demo-viewport iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .status-bar {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #58a6ff;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #238636;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .demo-viewport { height: 600px; }
+      .controls { gap: 8px; }
+      .btn { padding: 10px 16px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎬 Visual Demo System</h1>
+      <p>Watch the real app in action</p>
+    </div>
+
+    <div class="status-bar" id="status">
+      ✅ Demo ready - Click a button below to start
+    </div>
+
+    <div class="controls">
+      <button class="btn active" onclick="loadDemo('shop')">
+        🛒 Shop Demo
+      </button>
+      <button class="btn" onclick="loadDemo('catalog')">
+        📖 Full Catalog
+      </button>
+      <button class="btn" onclick="loadDemo('collection')">
+        🎒 Collection
+      </button>
+      <button class="btn" onclick="loadDemo('game')">
+        🎮 Game
+      </button>
+      <button class="btn" onclick="loadDemo('dex')">
+        📚 Dex
+      </button>
+      <button class="btn" onclick="loadDemo('admin')">
+        ⚙️ Admin
+      </button>
+      <button class="btn" onclick="loadDemo('purchase-flow')">
+        💳 Purchase Flow
+      </button>
+    </div>
+
+    <div class="demo-viewport">
+      <iframe id="demo-frame" src="../shop/index.html"></iframe>
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Debug Hub</a>
+  </div>
+
+  <script>
+    const pages = {
+      'shop': '../shop/index.html',
+      'catalog': '../catalog.html',
+      'collection': '../collection.html',
+      'game': '../game.html',
+      'dex': '../dex.html',
+      'admin': '../admin/index.html',
+      'purchase-flow': 'purchase-flow-demo.html'
+    };
+
+    function loadDemo(page) {
+      const frame = document.getElementById('demo-frame');
+      const status = document.getElementById('status');
+      const url = pages[page];
+      
+      // Update status
+      status.textContent = `🔄 Loading ${page}...`;
+      status.style.color = '#f59e0b';
+      
+      // Update active button
+      document.querySelectorAll('.btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Load page
+      frame.src = url;
+      
+      // Update status after load
+      setTimeout(() => {
+        status.textContent = `✅ ${page} demo loaded - Interact with the app below`;
+        status.style.color = '#3fb950';
+      }, 500);
+    }
+    
+    console.log('🎬 Visual Demo System loaded');
+    console.log('Pages available:', Object.keys(pages));
+  </script>
+</body>
+</html>
