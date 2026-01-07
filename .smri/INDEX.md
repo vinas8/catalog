@@ -202,6 +202,25 @@ List all SMRI scenarios with status:
 3. **Source:** `debug/smri-scenarios.js` (canonical)
 4. **Fast:** <1 second, grep-based, no parsing
 
+### `.smri mcp`
+Test MCP (Model Context Protocol) integration:
+1. **Execute parallel tests:** GitHub MCP + code search
+2. **Display results:**
+   ```
+   🔌 MCP Status Check (v0.7.7)
+   
+   ✅ GitHub MCP: 0 issues, 5 recent commits
+   ✅ Code Search: 4 files with KV.put
+   
+   📚 Docs: .smri/docs/mcp-quickstart.md
+   🔧 Config: ~/.copilot/config.json
+   ```
+3. **Sources:** 
+   - GitHub issues API
+   - GitHub commits API  
+   - GitHub code search API
+4. **Fast:** <2 seconds, parallel MCP calls
+
 ### `.smri consolidate`
 Consolidate documentation:
 - Scan `/docs` and root `*.md` files
@@ -429,6 +448,23 @@ Original documentation this replaces
    ```
 2. **Display the complete output** (no summary, no extra text)
 3. **Just show what the script returns** - nothing else
+
+### When User Types `.smri mcp`:
+1. **Run parallel MCP tests:**
+   - `github-mcp-server-list_issues` (vinas8/catalog, 5 results)
+   - `github-mcp-server-list_commits` (vinas8/catalog, 5 results)
+   - `github-mcp-server-search_code` (query: "repo:vinas8/catalog KV.put", 3 results)
+2. **Display compact summary:**
+   ```
+   🔌 MCP Status (v0.7.7)
+   
+   ✅ GitHub MCP: {N} issues, {N} recent commits
+   ✅ Code Search: {N} files found
+   
+   📚 Quickstart: .smri/docs/mcp-quickstart.md
+   🔧 Config: ~/.copilot/config.json
+   ```
+3. **No extra explanation** - just test results
 
 ### When User Types `.smri consolidate`:
 1. Scan `/docs` and root `*.md` files
