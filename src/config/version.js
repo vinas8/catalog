@@ -102,16 +102,18 @@ export const VERSION_CONFIG = {
     { code: 'S1.1,4.01',                  desc: 'Payment confirmation email receipt',   ver: 's0.8.0', done: 0   },
     { code: 'S4.4,5.02',                  desc: 'SQL injection attack block',           ver: 's0.7.0', done: 0   },
     
-    // Demo System (S6.x) - v0.7.7 Interactive Presentation
-    { code: 'S6.1,4,5.01',                desc: 'Demo Pipeline: Website Owner Setup',   ver: 's0.7.7', done: 0   },
-    { code: 'S6.1,2,3,4,5.02',            desc: 'Demo Pipeline: Customer Purchase',     ver: 's0.7.7', done: 0   },
-    { code: 'S6.2,5.03',                  desc: 'Demo Pipeline: Farm Gameplay',         ver: 's0.7.7', done: 0   },
-    { code: 'S6.5.04',                    desc: 'Demo Pipeline: Data Management',       ver: 's0.7.7', done: 0   },
-    { code: 'S6.1,2,3,4,5.05',            desc: 'Demo Orchestrator: Step execution',    ver: 's0.7.7', done: 0   },
-    { code: 'S6.6.06',                    desc: 'Demo UI: Progress tracking',           ver: 's0.7.7', done: 0   },
-    { code: 'S6.6.07',                    desc: 'Demo UI: Auto-advance control',        ver: 's0.7.7', done: 0   },
-    { code: 'S6.6.08',                    desc: 'Demo UI: Checkpoint save/restore',     ver: 's0.7.7', done: 0   },
-    { code: 'S6.1,2,3.09',                desc: 'Fluent Customer Journey Design',       ver: 's0.7.7', done: 0   }
+    // P3 E2E Integration (9) - Reorganized from S6 Demo System
+    { code: 'S1.1,4,5.01',                desc: 'E2E: Website Owner Setup Flow',        ver: 's0.7.7', done: 0   },
+    { code: 'S1.1,2,3,4,5.02',            desc: 'E2E: Customer Purchase Flow',          ver: 's0.7.7', done: 0   },
+    { code: 'S2.2,5.03',                  desc: 'E2E: Farm Gameplay Session',           ver: 's0.7.7', done: 0   },
+    { code: 'S5.5.07',                    desc: 'E2E: Data Management Operations',      ver: 's0.7.7', done: 0   },
+    { code: 'S0.1,2,3,4,5.04',            desc: 'E2E: Multi-step Orchestration',        ver: 's0.7.7', done: 0   },
+    
+    // P3 Debug UI (4) - Reorganized from S6 Demo System
+    { code: 'S0.0.05',                    desc: 'Debug UI: Progress tracking display',  ver: 's0.7.7', done: 0   },
+    { code: 'S0.0.06',                    desc: 'Debug UI: Auto-advance control',       ver: 's0.7.7', done: 0   },
+    { code: 'S0.0.07',                    desc: 'Debug UI: Checkpoint save/restore',    ver: 's0.7.7', done: 0   },
+    { code: 'S1.1,2,3.09',                desc: 'E2E: Fluent Customer Journey',         ver: 's0.7.7', done: 100 }
   ],
   
   API: {

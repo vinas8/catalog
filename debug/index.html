@@ -310,8 +310,7 @@
       'S2-7': { name: '📚 Tutorial System', icon: '📚', color: '#f77f00', scenarios: [] },
       'S3': { name: '🔐 Auth/Identity', icon: '🔐', color: '#d29922', scenarios: [] },
       'S4': { name: '💳 Payment/Stripe', icon: '💳', color: '#f85149', scenarios: [] },
-      'S5': { name: '☁️ Worker/Backend', icon: '☁️', color: '#58a6ff', scenarios: [] },
-      'S6': { name: '🎬 Demo System', icon: '🎬', color: '#a855f7', scenarios: [] }
+      'S5': { name: '☁️ Worker/Backend', icon: '☁️', color: '#58a6ff', scenarios: [] }
     };
 
     // Categorize scenarios
@@ -331,8 +330,6 @@
         categories['S4'].scenarios.push(scenario);
       } else if (code.startsWith('S5')) {
         categories['S5'].scenarios.push(scenario);
-      } else if (code.startsWith('S6')) {
-        categories['S6'].scenarios.push(scenario);
       }
     });
 

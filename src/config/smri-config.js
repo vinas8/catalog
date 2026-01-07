@@ -106,8 +106,8 @@ export const SMRI_REGISTRY = {
   'worker-api': 'S5.5.04',
   'kv-storage-worker': 'S5.5-1.03',
 
-  // === S6: Common/Utils ===
-  'fluent-customer-journey': 'S6.1,2,3.09',
+  // === E2E & Debug UI ===
+  'fluent-customer-journey': 'S1.1,2,3.09',
 };
 
 /**
