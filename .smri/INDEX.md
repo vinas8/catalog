@@ -63,26 +63,40 @@ tree -L 3 /root/catalog/.smri/
 
 ### 4. Scenario Files Structure
 **Scenarios must be:**
-- Organized by feature: `.smri/scenarios/{feature-name}/`
-- Named by ID: `{ID}-{short-name}.md`
+- Named using SMRI format: `S{M}.{RRR}.{II}-{short-name}.md`
+- Stored flat in `.smri/scenarios/` (NO subfolders)
 - Linked to `/debug` endpoint for testing
-- Minimal: Only ONE file per scenario
+- One scenario per file
 
-**Example:**
+**SMRI Format:**
+```
+S{M}.{RRR}.{II}
+- S = Scenario prefix
+- M = Primary module (0-6)
+- RRR = Relations (comma-separated)
+- II = Iteration (01-99)
+
+Separators:
+- DOT (.) = Separates parts
+- COMMA (,) = Separates modules  
+- DASH (-) = External services (5-1=KV, 5-2=Stripe)
+```
+
+**Real Examples:**
 ```
 .smri/scenarios/
-└── virtual-care-tutorial/
-    ├── README.md (overview)
-    ├── VCT-1.0-happy-daily.md
-    ├── VCT-2.0-missed-care.md
-    └── VCT-3.0-commerce.md
+├── S0.0,1,2,3,4,5.01-all-health-checks.md
+├── S1.1,2,3,4,5.01-happy-path-purchase.md
+├── S2.7,5,5-1.01-tutorial-happy-path.md
+├── S2.7,5,5-1.02-tutorial-missed-care.md
+└── S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md
 ```
 
 **NOT:**
 ```
-❌ .smri/scenarios/virtual-care-tutorial/tests/
-❌ .smri/scenarios/virtual-care-tutorial/VCT-1.0/setup.md
-❌ .smri/scenarios/virtual-care-tutorial/VCT-1.0/test.md
+❌ .smri/scenarios/shop/purchase-flow.md (no subfolders)
+❌ .smri/scenarios/VCT-1.0.md (wrong format - use SMRI)
+❌ .smri/scenarios/tests/ (no test subfolders)
 ```
 
 ### 5. Scenarios Link to /debug Endpoint
