@@ -476,8 +476,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 'worker-api',
-    title: 'S5.5.02: Worker API Check',
-    smri: 'S5.5.02',
+    title: 'S5.5.04: Worker API Check',
+    smri: 'S5.5.04',
     url: null,
     icon: '☁️'
   },
