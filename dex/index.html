@@ -1,470 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Snake Dex - Pokedex Style</title>
-  <style>
-    /* SPDX-FileCopyrightText: 2024-2026 vinas8 (Serpent Town) */
-    /* SPDX-License-Identifier: MIT */
-    /* Visual design inspired by Pokemon Pokedex */
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #CC0000 0%, #8B0000 100%);
-      color: #fff;
-      min-height: 100vh;
-    }
-
-    /* Pokedex Frame */
-    .pokedex-container {
-      max-width: 1400px;
-      margin: 2rem auto;
-      background: #DC0A2D;
-      border: 8px solid #000;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-      position: relative;
-    }
-
-    /* Top Section - Classic Pokedex Style */
-    .pokedex-top {
-      background: linear-gradient(180deg, #DC0A2D 0%, #B30000 100%);
-      border-bottom: 4px solid #000;
-      padding: 2rem;
-      border-radius: 12px 12px 0 0;
-    }
-
-    .pokedex-lights {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .light-large {
-      width: 60px;
-      height: 60px;
-      background: radial-gradient(circle at 30% 30%, #4FC3F7, #0288D1);
-      border-radius: 50%;
-      border: 4px solid #000;
-      box-shadow: 0 0 20px #4FC3F7, inset 0 -5px 10px rgba(0,0,0,0.3);
-    }
-
-    .light-small {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 3px solid #000;
-      margin-top: 15px;
-    }
-    .light-red { background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a); }
-    .light-yellow { background: radial-gradient(circle at 30% 30%, #ffd93d, #f59f00); }
-    .light-green { background: radial-gradient(circle at 30% 30%, #51cf66, #2f9e44); }
-
-    .pokedex-title {
-      text-align: center;
-      font-size: 2.5rem;
-      text-shadow: 3px 3px 0 #000;
-      margin: 1rem 0;
-      letter-spacing: 2px;
-    }
-
-    /* Screen Section */
-    .pokedex-screen {
-      background: #000;
-      border: 6px solid #222;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin: 0 2rem 2rem 2rem;
-      box-shadow: inset 0 0 30px rgba(0,255,255,0.3);
-    }
-
-    .screen-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-display {
-      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
-      border: 3px solid #00d9ff;
-      border-radius: 8px;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0,217,255,0.5);
-    }
-
-    .stat-value {
-      font-size: 2.5rem;
-      color: #00ff88;
-      font-weight: bold;
-      text-shadow: 0 0 10px #00ff88;
-      font-family: 'Courier New', monospace;
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: #00d9ff;
-      margin-top: 0.3rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* Search & Controls */
-    .pokedex-controls {
-      background: #8B0000;
-      padding: 1.5rem 2rem;
-      border-top: 4px solid #000;
-      border-bottom: 4px solid #000;
-    }
-
-    .search-bar {
-      width: 100%;
-      padding: 0.9rem 1.2rem;
-      background: #000;
-      border: 3px solid #00d9ff;
-      border-radius: 8px;
-      color: #00ff88;
-      font-size: 1rem;
-      font-family: 'Courier New', monospace;
-      margin-bottom: 1rem;
-      box-shadow: inset 0 0 15px rgba(0,217,255,0.3);
-    }
-
-    .search-bar::placeholder {
-      color: #666;
-    }
-
-    .search-bar:focus {
-      outline: none;
-      box-shadow: 0 0 20px #00ff88, inset 0 0 15px rgba(0,217,255,0.3);
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: 0.7rem 1.3rem;
-      background: #000;
-      border: 3px solid #444;
-      border-radius: 8px;
-      color: #999;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-    }
-
-    .filter-btn:hover {
-      border-color: #00d9ff;
-      color: #00d9ff;
-      box-shadow: 0 0 10px rgba(0,217,255,0.5);
-    }
-
-    .filter-btn.active {
-      background: #00d9ff;
-      color: #000;
-      border-color: #00ff88;
-      box-shadow: 0 0 20px #00d9ff;
-    }
-
-    /* Grid - 9 Column Pokedex Layout */
-    .pokemon-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1rem;
-      padding: 2rem;
-      background: #000;
-    }
-
-    /* Pokemon Card - Pokedex Entry Style */
-    .pokemon-card {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border: 3px solid #00d9ff;
-      border-radius: 12px;
-      padding: 1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,217,255,0.3);
-    }
-
-    .pokemon-card:hover {
-      transform: translateY(-8px) scale(1.05);
-      border-color: #00ff88;
-      box-shadow: 0 10px 30px rgba(0,255,136,0.6);
-      background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
-    }
-
-    .pokemon-card.owned {
-      border-color: #ffd700;
-      background: linear-gradient(135deg, #2d1b00 0%, #4a3000 100%);
-      box-shadow: 0 0 20px rgba(255,215,0,0.5);
-    }
-
-    .pokemon-number {
-      font-size: 0.75rem;
-      color: #666;
-      font-family: 'Courier New', monospace;
-      margin-bottom: 0.5rem;
-    }
-
-    .pokemon-sprite {
-      font-size: 3.5rem;
-      margin: 0.5rem 0;
-      filter: drop-shadow(0 0 10px rgba(0,217,255,0.5));
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .pokemon-name {
-      font-size: 0.95rem;
-      font-weight: bold;
-      color: #00ff88;
-      text-shadow: 0 0 5px #00ff88;
-      margin: 0.5rem 0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .pokemon-type {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin: 0.3rem 0;
-    }
-
-    .type-dominant { background: #ff6b6b; color: #fff; }
-    .type-codominant { background: #ffd700; color: #000; }
-    .type-recessive { background: #4dabf7; color: #fff; }
-
-    .pokemon-price {
-      font-size: 0.85rem;
-      color: #ffd700;
-      font-weight: bold;
-      margin-top: 0.5rem;
-      text-shadow: 0 0 5px #ffd700;
-    }
-
-    .owned-badge {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: #ffd700;
-      color: #000;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1rem;
-      box-shadow: 0 0 10px #ffd700;
-      border: 2px solid #000;
-    }
-
-    .health-risk {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      font-size: 1.3rem;
-      filter: drop-shadow(0 0 5px #ff6b6b);
-    }
-
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      font-size: 1.5rem;
-      color: #00ff88;
-      font-family: 'Courier New', monospace;
-      text-shadow: 0 0 10px #00ff88;
-    }
-
-    /* Bottom Controls */
-    .pokedex-bottom {
-      background: #8B0000;
-      padding: 1.5rem 2rem;
-      border-radius: 0 0 12px 12px;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .control-button {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 4px solid #000;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 0 #000;
-    }
-
-    .control-button:active {
-      transform: translateY(4px);
-      box-shadow: none;
-    }
-
-    .btn-red { background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a); }
-    .btn-blue { background: radial-gradient(circle at 30% 30%, #4FC3F7, #0288D1); }
-    .btn-yellow { background: radial-gradient(circle at 30% 30%, #ffd93d, #f59f00); }
-    .btn-green { background: radial-gradient(circle at 30% 30%, #51cf66, #2f9e44); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐍 Snake Dex</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(180deg, #87ceeb 0%, #88c070 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .dex-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dex-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 4px solid #3d2817;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .dex-header h1 {
+            font-size: 3rem;
+            color: #2d5a3d;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5a3d;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #5d4a37;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 3px solid #3d2817;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 3px solid #3d2817;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 3px solid #3d2817;
+            border-radius: 10px;
+            background: #fff;
+            color: #2d1b00;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #2d1b00;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2d1b00;
+        }
+        
+        .filter-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2d1b00;
+        }
+        
+        .filter-btn.active {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .morphs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .morph-card {
+            background: linear-gradient(135deg, #fff 0%, #f5e6d3 100%);
+            border: 5px solid #3d2817;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 0 #2d1b00, 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .morph-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 0 #2d1b00, 0 18px 35px rgba(0,0,0,0.4);
+        }
+        
+        .morph-card.owned {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe8a1 100%);
+        }
+        
+        .morph-number {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .morph-icon {
+            font-size: 4rem;
+            margin: 1rem 0;
+        }
+        
+        .morph-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d1b00;
+            margin-bottom: 0.5rem;
+        }
+        
+        .morph-gene {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0.3rem 0;
+        }
+        
+        .gene-dominant { background: #ff6b6b; color: white; }
+        .gene-co-dominant { background: #ffd93d; color: #000; }
+        .gene-recessive { background: #4dabf7; color: white; }
+        .gene-incomplete_dominant { background: #a371f7; color: white; }
+        
+        .morph-price {
+            font-size: 1.1rem;
+            color: #2d5a3d;
+            font-weight: bold;
+            margin-top: 0.8rem;
+        }
+        
+        .owned-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 3px solid #3d2817;
+        }
+        
+        .health-risk {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.5rem;
+            color: #2d1b00;
+        }
+    </style>
 </head>
 <body>
-  <div class="pokedex-container">
-    <!-- Top Section -->
-    <div class="pokedex-top">
-      <div class="pokedex-lights">
-        <div class="light-large"></div>
-        <div class="light-small light-red"></div>
-        <div class="light-small light-yellow"></div>
-        <div class="light-small light-green"></div>
-      </div>
-      <h1 class="pokedex-title">🐍 SNAKE DEX</h1>
-    </div>
-
-    <!-- Screen -->
-    <div class="pokedex-screen">
-      <div class="screen-stats">
-        <div class="stat-display">
-          <div class="stat-value" id="stat-owned">0</div>
-          <div class="stat-label">Captured</div>
+    <div class="dex-container">
+        <div class="dex-header">
+            <h1>🐍 Snake Dex</h1>
+            <p>Complete Ball Python Morph Encyclopedia</p>
+            
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="stat-value" id="stat-owned">0</div>
+                    <div class="stat-label">Owned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Morphs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-completion">0%</div>
+                    <div class="stat-label">Complete</div>
+                </div>
+            </div>
         </div>
-        <div class="stat-display">
-          <div class="stat-value" id="stat-total">50</div>
-          <div class="stat-label">Discovered</div>
+        
+        <div class="controls">
+            <input 
+                type="text" 
+                id="search" 
+                class="search-box" 
+                placeholder="🔍 Search morphs by name, gene type..."
+            >
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Morphs</button>
+                <button class="filter-btn" data-filter="owned">Owned Only</button>
+                <button class="filter-btn" data-filter="co-dominant">Co-Dominant</button>
+                <button class="filter-btn" data-filter="recessive">Recessive</button>
+                <button class="filter-btn" data-filter="dominant">Dominant</button>
+            </div>
         </div>
-        <div class="stat-display">
-          <div class="stat-value" id="stat-completion">0%</div>
-          <div class="stat-label">Complete</div>
+        
+        <div class="morphs-grid" id="grid">
+            <div class="loading">Loading morphs from genetics database...</div>
         </div>
-      </div>
     </div>
 
-    <!-- Controls -->
-    <div class="pokedex-controls">
-      <input 
-        type="text" 
-        id="search" 
-        class="search-bar" 
-        placeholder="▶ SEARCH MORPHS..."
-      >
-      
-      <div class="filter-buttons">
-        <button class="filter-btn active" data-filter="all">ALL</button>
-        <button class="filter-btn" data-filter="owned">OWNED</button>
-        <button class="filter-btn" data-filter="co-dominant">CO-DOM</button>
-        <button class="filter-btn" data-filter="recessive">RECESSIVE</button>
-        <button class="filter-btn" data-filter="dominant">DOMINANT</button>
-      </div>
-    </div>
+    <script type="module">
+        // Load genetics data (same as trait-dex)
+        const [morphsBase, morphsExpanded] = await Promise.all([
+            fetch('../data/genetics/morphs.json').then(r => r.json()),
+            fetch('../data/genetics/morphs-expanded.json').then(r => r.json())
+        ]);
+        
+        const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => ({
+            ...m,
+            index: i + 1
+        }));
 
-    <!-- Grid -->
-    <div class="pokemon-grid" id="grid">
-      <div class="loading">LOADING DATABASE...</div>
-    </div>
+        let ownedMorphs = JSON.parse(localStorage.getItem('owned_morphs') || '[]');
+        let currentFilter = 'all';
+        let searchQuery = '';
 
-    <!-- Bottom Controls -->
-    <div class="pokedex-bottom">
-      <div class="control-button btn-red"></div>
-      <div class="control-button btn-blue"></div>
-      <div class="control-button btn-yellow"></div>
-      <div class="control-button btn-green"></div>
-    </div>
-  </div>
+        function render() {
+            let filtered = allMorphs;
 
-  <script type="module">
-    // Load morphs data (working data loader from trait-dex)
-    const morphsBase = await fetch('../data/genetics/morphs.json').then(r => r.json());
-    const morphsExpanded = await fetch('../data/genetics/morphs-expanded.json').then(r => r.json());
-    const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => ({
-      ...m,
-      index: i + 1
-    }));
+            // Search
+            if (searchQuery) {
+                filtered = filtered.filter(m => 
+                    m.name.toLowerCase().includes(searchQuery) ||
+                    m.id.toLowerCase().includes(searchQuery) ||
+                    m.gene_type?.toLowerCase().includes(searchQuery)
+                );
+            }
 
-    let ownedMorphs = JSON.parse(localStorage.getItem('owned_morphs') || '[]');
-    let currentFilter = 'all';
-    let searchQuery = '';
+            // Filter
+            if (currentFilter === 'owned') {
+                filtered = filtered.filter(m => ownedMorphs.includes(m.id));
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(m => m.gene_type === currentFilter);
+            }
 
-    function render() {
-      let filtered = allMorphs;
+            const grid = document.getElementById('grid');
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">No morphs found</div>';
+                return;
+            }
 
-      // Search
-      if (searchQuery) {
-        filtered = filtered.filter(m => 
-          m.name.toLowerCase().includes(searchQuery) ||
-          m.id.toLowerCase().includes(searchQuery) ||
-          m.gene_type?.toLowerCase().includes(searchQuery)
-        );
-      }
+            grid.innerHTML = filtered.map(morph => {
+                const owned = ownedMorphs.includes(morph.id);
+                return `
+                    <div class="morph-card ${owned ? 'owned' : ''}" onclick="alert('${morph.name}\\n\\nGene Type: ${morph.gene_type}\\nPrice: $${morph.market_value_usd}\\nRarity: ${morph.rarity}${morph.health_issues?.length ? '\\n\\n⚠️ Health Issues: ' + morph.health_issues.join(', ') : ''}')">
+                        ${morph.health_risk === 'high' ? '<div class="health-risk">⚠️</div>' : ''}
+                        ${owned ? '<div class="owned-badge">✓</div>' : ''}
+                        <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
+                        <div class="morph-icon">🐍</div>
+                        <div class="morph-name">${morph.name}</div>
+                        <div class="morph-gene gene-${morph.gene_type?.replace('-', '_') || 'unknown'}">${morph.gene_type || 'Unknown'}</div>
+                        <div class="morph-price">$${morph.market_value_usd || 0}</div>
+                    </div>
+                `;
+            }).join('');
 
-      // Filter
-      if (currentFilter === 'owned') {
-        filtered = filtered.filter(m => ownedMorphs.includes(m.id));
-      } else if (currentFilter !== 'all') {
-        filtered = filtered.filter(m => m.gene_type === currentFilter);
-      }
+            // Update stats
+            document.getElementById('stat-owned').textContent = ownedMorphs.length;
+            document.getElementById('stat-total').textContent = allMorphs.length;
+            const completion = allMorphs.length > 0 
+                ? Math.round((ownedMorphs.length / allMorphs.length) * 100) 
+                : 0;
+            document.getElementById('stat-completion').textContent = completion + '%';
+        }
 
-      const grid = document.getElementById('grid');
-      grid.innerHTML = filtered.map(morph => {
-        const owned = ownedMorphs.includes(morph.id);
-        return `
-          <div class="pokemon-card ${owned ? 'owned' : ''}" data-id="${morph.id}">
-            ${morph.health_risk === 'high' ? '<div class="health-risk">⚠️</div>' : ''}
-            ${owned ? '<div class="owned-badge">✓</div>' : ''}
-            <div class="pokemon-number">#${String(morph.index).padStart(3, '0')}</div>
-            <div class="pokemon-sprite">🐍</div>
-            <div class="pokemon-name">${morph.name}</div>
-            <div class="pokemon-type type-${morph.gene_type?.replace('-', '')}">${morph.gene_type || 'unknown'}</div>
-            <div class="pokemon-price">$${morph.market_value_usd}</div>
-          </div>
-        `;
-      }).join('') || '<div class="loading">NO MORPHS FOUND</div>';
+        // Search
+        document.getElementById('search').addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            render();
+        });
 
-      // Update stats
-      document.getElementById('stat-owned').textContent = ownedMorphs.length;
-      document.getElementById('stat-total').textContent = allMorphs.length;
-      const completion = Math.round((ownedMorphs.length / allMorphs.length) * 100);
-      document.getElementById('stat-completion').textContent = completion + '%';
-    }
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                render();
+            });
+        });
 
-    // Search
-    document.getElementById('search').addEventListener('input', (e) => {
-      searchQuery = e.target.value.toLowerCase();
-      render();
-    });
-
-    // Filters
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
         render();
-      });
-    });
-
-    render();
-    console.log(`📚 Loaded ${allMorphs.length} ball python morphs!`);
-  </script>
+        console.log(`✅ Loaded ${allMorphs.length} ball python morphs!`);
+    </script>
 </body>
 </html>
