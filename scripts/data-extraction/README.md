@@ -13,7 +13,20 @@ Automated tools for extracting ball python genetics data from external sources.
 
 ---
 
-## 🚀 Quick Start
+## ⚠️ Environment Note
+
+**This server environment (aarch64 PRoot-Distro) does not support Puppeteer.**
+
+To extract all 400+ morphs, you need to run the scraper on:
+- ✅ Local machine (Windows/Mac/Ubuntu)
+- ✅ GitHub Actions (cloud Ubuntu runner)
+- ✅ Cloud VM (AWS/GCP/DigitalOcean)
+
+See `.smri/docs/extraction-full-plan.md` for detailed options.
+
+---
+
+## 🚀 Quick Start (On Compatible Machine)
 
 ### 1. Install Dependencies
 
