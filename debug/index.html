@@ -282,21 +282,78 @@
     </div>
   </details>
 
-  <!-- Keep existing SMRI Scenarios section for full 69 scenario list -->
+  <!-- POSITION 5: 📚 SMRI Documentation & Reference - FOLDED -->
+  <details style="background: #161b22; border: 2px solid #667eea; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+    <summary style="cursor: pointer; font-size: 18px; font-weight: 600; color: #667eea; list-style: none; display: flex; align-items: center; gap: 10px;">
+      <span>📚</span>
+      <span>SMRI Documentation & Test Reference</span>
+      <span style="font-size: 13px; font-weight: 400; color: #8b949e; margin-left: auto;">Master reference index</span>
+    </summary>
+    
+    <div style="margin-top: 20px;">
+      <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+        <strong>SMRI</strong> = <strong>S</strong>erpent Town <strong>M</strong>aster <strong>R</strong>eference <strong>I</strong>ndex. 
+        All project documentation, test scenarios, and session logs consolidated in <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">.smri/</code>
+      </p>
 
-  <!-- SMRI Scenarios - All Organized & Executable -->
-  <div style="background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-    <h2 style="color: #58a6ff; margin-bottom: 15px; font-size: 18px;">🧪 SMRI Test Scenarios - All Executable</h2>
-    <p style="color: #8b949e; font-size: 13px; margin-bottom: 20px;">
-      <strong id="smri-total">69</strong> total scenarios | 
-      <strong id="smri-complete" style="color: #3fb950;">10</strong> complete | 
-      <strong id="smri-progress" style="color: #d29922;">12</strong> in progress | 
-      <strong id="smri-planned" style="color: #8b949e;">47</strong> planned
-    </p>
-    <div id="smri-categories" style="display: flex; flex-direction: column; gap: 15px;">
-      Loading scenarios...
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <!-- INDEX.md -->
+        <a href="https://github.com/vinas8/catalog/blob/main/.smri/INDEX.md" target="_blank" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📖 Master Index</div>
+          <div style="font-size: 18px; font-weight: 600;">INDEX.md</div>
+          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Navigation, rules, AI instructions</div>
+        </a>
+
+        <!-- Documentation -->
+        <a href="https://github.com/vinas8/catalog/tree/main/.smri/docs" target="_blank" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📄 Documentation</div>
+          <div style="font-size: 18px; font-weight: 600;">.smri/docs/</div>
+          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Business, technical, deployment guides</div>
+        </a>
+
+        <!-- Test Scenarios -->
+        <a href="https://github.com/vinas8/catalog/tree/main/.smri/scenarios" target="_blank" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(245, 158, 11, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">🧪 Test Scenarios</div>
+          <div style="font-size: 18px; font-weight: 600;">.smri/scenarios/</div>
+          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Structured test cases by feature</div>
+        </a>
+
+        <!-- Session Logs -->
+        <a href="https://github.com/vinas8/catalog/tree/main/.smri/logs" target="_blank" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(139, 92, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📝 Session Logs</div>
+          <div style="font-size: 18px; font-weight: 600;">.smri/logs/</div>
+          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Daily development conversation history</div>
+        </a>
+      </div>
+
+      <!-- Quick Links -->
+      <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-top: 20px;">
+        <div style="font-size: 14px; font-weight: 600; color: #c9d1d9; margin-bottom: 12px;">🔗 Quick Access</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <a href="smri-runner.html" style="background: #238636; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">▶ SMRI Test Runner</a>
+          <a href="../GENETICS-MODULE-MAP.md" target="_blank" style="background: #9333ea; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">🧬 Genetics Architecture</a>
+          <a href="../STRUCTURE.md" target="_blank" style="background: #1f6feb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">📁 Directory Structure</a>
+          <a href="../data/" style="background: #d29922; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">📊 Data Hub</a>
+        </div>
+      </div>
+
+      <!-- Stats (optional - collapsed) -->
+      <details style="margin-top: 15px;">
+        <summary style="cursor: pointer; font-size: 13px; color: #8b949e; padding: 8px;">
+          📊 View detailed scenario stats (69 total)
+        </summary>
+        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 15px; margin-top: 10px; font-size: 12px; color: #8b949e; line-height: 1.8;">
+          <strong style="color: #58a6ff;">69</strong> total scenarios | 
+          <strong style="color: #3fb950;">11</strong> complete | 
+          <strong style="color: #d29922;">12</strong> in progress | 
+          <strong style="color: #8b949e;">46</strong> planned
+          <div style="margin-top: 10px; font-size: 11px; color: #6e7681;">
+            Note: Most scenarios are lightweight placeholders. Use SMRI Test Runner for full execution.
+          </div>
+        </div>
+      </details>
     </div>
-  </div>
+  </details>
 
   <script type="module">
     import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js?v=20260107';
@@ -305,98 +362,6 @@
     document.getElementById('app-version').textContent = VERSION.substring(1);
     document.getElementById('smri-count').textContent = stats.total;
     document.getElementById('overall-progress').textContent = `${stats.completed}/${stats.total} done (${stats.avgProgress}%)`;
-
-    // Organize scenarios by category
-    const categories = {
-      'S0': { name: '🏥 Health Checks', icon: '🏥', color: '#238636', scenarios: [] },
-      'S1': { name: '🛒 Shop/Purchase', icon: '🛒', color: '#1f6feb', scenarios: [] },
-      'S2': { name: '🎮 Game Core', icon: '🎮', color: '#8957e5', scenarios: [] },
-      'S2-7': { name: '📚 Tutorial System', icon: '📚', color: '#f77f00', scenarios: [] },
-      'S3': { name: '🔐 Auth/Identity', icon: '🔐', color: '#d29922', scenarios: [] },
-      'S4': { name: '💳 Payment/Stripe', icon: '💳', color: '#f85149', scenarios: [] },
-      'S5': { name: '☁️ Worker/Backend', icon: '☁️', color: '#58a6ff', scenarios: [] }
-    };
-
-    // Categorize scenarios
-    VERSION_CONFIG.SMRI_SCENARIOS.forEach(scenario => {
-      const code = scenario.code;
-      if (code.startsWith('S2-7')) {
-        categories['S2-7'].scenarios.push(scenario);
-      } else if (code.startsWith('S0')) {
-        categories['S0'].scenarios.push(scenario);
-      } else if (code.startsWith('S1')) {
-        categories['S1'].scenarios.push(scenario);
-      } else if (code.startsWith('S2')) {
-        categories['S2'].scenarios.push(scenario);
-      } else if (code.startsWith('S3')) {
-        categories['S3'].scenarios.push(scenario);
-      } else if (code.startsWith('S4')) {
-        categories['S4'].scenarios.push(scenario);
-      } else if (code.startsWith('S5')) {
-        categories['S5'].scenarios.push(scenario);
-      }
-    });
-
-    // Update summary counts
-    const complete = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done === 100).length;
-    const inProgress = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done > 0 && s.done < 100).length;
-    const planned = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done === 0).length;
-    document.getElementById('smri-total').textContent = VERSION_CONFIG.SMRI_SCENARIOS.length;
-    document.getElementById('smri-complete').textContent = complete;
-    document.getElementById('smri-progress').textContent = inProgress;
-    document.getElementById('smri-planned').textContent = planned;
-
-    // Render categories
-    const container = document.getElementById('smri-categories');
-    container.innerHTML = '';
-
-    Object.keys(categories).forEach(key => {
-      const cat = categories[key];
-      if (cat.scenarios.length === 0) return;
-
-      const completed = cat.scenarios.filter(s => s.done === 100).length;
-      const avgProgress = Math.round(cat.scenarios.reduce((sum, s) => sum + s.done, 0) / cat.scenarios.length);
-
-      const section = document.createElement('details');
-      section.style.cssText = 'background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px;';
-      
-      section.innerHTML = `
-        <summary style="cursor: pointer; font-weight: 600; font-size: 15px; color: #c9d1d9; list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>${cat.name} <span style="color: #8b949e; font-weight: normal; font-size: 13px;">(${cat.scenarios.length} scenarios)</span></span>
-          <span style="display: flex; gap: 10px; align-items: center;">
-            <span style="font-size: 12px; color: #8b949e;">${completed}/${cat.scenarios.length} done</span>
-            <span style="background: ${cat.color}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">${avgProgress}%</span>
-          </span>
-        </summary>
-        <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-          ${cat.scenarios.map(s => {
-            const statusIcon = s.done === 100 ? '✅' : s.done > 0 ? '🔄' : '⬜';
-            const statusColor = s.done === 100 ? '#3fb950' : s.done > 0 ? '#d29922' : '#8b949e';
-            return `
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #161b22; border-radius: 6px; border-left: 3px solid ${statusColor};">
-                <div style="flex: 1;">
-                  <div style="font-size: 12px; font-weight: 600; color: #58a6ff; font-family: monospace;">${s.code}</div>
-                  <div style="font-size: 12px; color: #c9d1d9; margin-top: 2px;">${s.desc}</div>
-                  <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">
-                    ${statusIcon} ${s.done}% complete | Version: ${s.ver}
-                  </div>
-                </div>
-                <button 
-                  onclick="window.location.href='smri-runner.html?scenario=${encodeURIComponent(s.code)}'"
-                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;"
-                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'"
-                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
-                >
-                  ▶ Run Test
-                </button>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-
-      container.appendChild(section);
-    });
 
     // Demo System Functions
     window.playDemo = function() {
