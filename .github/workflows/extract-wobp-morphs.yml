@@ -1,0 +1,139 @@
+name: 🐍 Extract WOBP Morphs Data
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      mode:
+        description: 'Extraction mode'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - test
+          - full
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1000  # ~16 hours max
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install Puppeteer
+        run: |
+          npm install puppeteer
+          npx puppeteer browsers install chrome
+      
+      - name: 🧪 Test scraper (10 morphs)
+        if: github.event.inputs.mode == 'test'
+        run: |
+          node scripts/data-extraction/wobp-scraper.js --test
+      
+      - name: 🚀 Run full extraction (400+ morphs)
+        if: github.event.inputs.mode == 'full'
+        run: |
+          node scripts/data-extraction/wobp-scraper.js
+        continue-on-error: true
+      
+      - name: 📊 Show extraction stats
+        if: always()
+        run: |
+          echo "=== Extraction Summary ==="
+          if [ -f data/genetics/morphs-scraped-raw.json ]; then
+            MORPH_COUNT=$(node -e "const d=require('./data/genetics/morphs-scraped-raw.json'); console.log(d.morph_count)")
+            echo "✅ Morphs extracted: $MORPH_COUNT"
+          else
+            echo "⚠️  No raw data file found"
+          fi
+          
+          if [ -f data/genetics/scraper-checkpoint.json ]; then
+            CHECKPOINT=$(node -e "const d=require('./data/genetics/scraper-checkpoint.json'); console.log(d.processedCount)")
+            echo "📍 Checkpoint: $CHECKPOINT morphs processed"
+          fi
+      
+      - name: 🧹 Clean and merge data
+        if: always()
+        run: |
+          if [ -f data/genetics/morphs-scraped-raw.json ]; then
+            node scripts/data-extraction/clean-scraped-data.js
+          else
+            echo "⚠️  Skipping cleaning - no raw data"
+          fi
+      
+      - name: 📤 Upload raw results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wobp-morphs-raw-${{ github.run_number }}
+          path: |
+            data/genetics/morphs-scraped-raw.json
+            data/genetics/scraper-checkpoint.json
+          retention-days: 30
+      
+      - name: 📤 Upload cleaned results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wobp-morphs-complete-${{ github.run_number }}
+          path: |
+            data/genetics/morphs-complete.json
+          retention-days: 30
+      
+      - name: 💾 Commit results to repository
+        if: success() && github.event.inputs.mode == 'full'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+          git add data/genetics/morphs-scraped-raw.json
+          git add data/genetics/morphs-complete.json
+          git add data/genetics/scraper-checkpoint.json
+          
+          MORPH_COUNT=$(node -e "const d=require('./data/genetics/morphs-complete.json'); console.log(d.morph_count)")
+          
+          git commit -m "feat: auto-extracted $MORPH_COUNT morphs from WOBP
+
+- Automated extraction via GitHub Actions
+- Source: World of Ball Pythons
+- Method: Puppeteer browser automation
+- Rate limited: 2.5 sec per morph
+- Run #${{ github.run_number }}
+
+Files:
+- morphs-scraped-raw.json (raw extraction)
+- morphs-complete.json (cleaned & merged)
+- scraper-checkpoint.json (resume capability)" || echo "No changes to commit"
+          
+          git push
+      
+      - name: 📋 Summary
+        if: always()
+        run: |
+          echo "=== WOBP Extraction Complete ==="
+          echo ""
+          echo "Mode: ${{ github.event.inputs.mode }}"
+          echo "Run number: ${{ github.run_number }}"
+          echo ""
+          if [ -f data/genetics/morphs-complete.json ]; then
+            MORPH_COUNT=$(node -e "const d=require('./data/genetics/morphs-complete.json'); console.log(d.morph_count)")
+            echo "✅ Final morph count: $MORPH_COUNT"
+            echo ""
+            echo "Files created:"
+            ls -lh data/genetics/morphs-*.json
+            echo ""
+            echo "Next steps:"
+            echo "  1. Download artifacts from Actions tab"
+            echo "  2. Review data/genetics/morphs-complete.json"
+            echo "  3. Update calculator to use new data"
+            echo "  4. Deploy to production"
+          else
+            echo "⚠️  Extraction failed - check logs above"
+          fi
