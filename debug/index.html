@@ -13,67 +13,97 @@
       background: linear-gradient(135deg, #0a0e14 0%, #1a1e24 100%);
       color: #c9d1d9;
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px;
     }
     .container { max-width: 1400px; margin: 0 auto; }
     .header {
       text-align: center;
-      padding: 40px 20px;
+      padding: 30px 20px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 20px;
-      margin-bottom: 30px;
+      border-radius: 15px;
+      margin-bottom: 20px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
-    h1 { font-size: 48px; margin-bottom: 10px; color: white; }
-    .subtitle { font-size: 18px; color: rgba(255,255,255,0.9); }
+    h1 { font-size: 36px; margin-bottom: 10px; color: white; }
+    .subtitle { font-size: 16px; color: rgba(255,255,255,0.9); }
     .stats {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 15px;
       flex-wrap: wrap;
     }
-    .stat { font-size: 14px; color: rgba(255,255,255,0.8); }
+    .stat { font-size: 13px; color: rgba(255,255,255,0.8); }
     .section {
       background: #161b22;
       border: 2px solid #30363d;
-      border-radius: 15px;
-      padding: 30px;
-      margin-bottom: 30px;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
     .section h2 {
       color: #58a6ff;
-      font-size: 24px;
-      margin-bottom: 20px;
+      font-size: 20px;
+      margin-bottom: 15px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
     }
     .card {
       background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
-      padding: 25px;
+      padding: 20px;
       border-radius: 12px;
       text-decoration: none;
       color: white;
       transition: all 0.3s;
       display: block;
+      touch-action: manipulation;
     }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(31, 111, 235, 0.4);
+    .card:hover, .card:active {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(31, 111, 235, 0.4);
     }
-    .card-icon { font-size: 36px; margin-bottom: 15px; }
-    .card-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-    .card-desc { font-size: 14px; opacity: 0.9; line-height: 1.5; }
+    .card-icon { font-size: 32px; margin-bottom: 12px; }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .card-desc { font-size: 13px; opacity: 0.9; line-height: 1.5; }
     .card.demo { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); }
     .card.tool { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
     .card.data { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
     .card.docs { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      h1 { font-size: 28px; }
+      .subtitle { font-size: 14px; }
+      .header { padding: 20px 15px; margin-bottom: 15px; border-radius: 12px; }
+      .section { padding: 15px; margin-bottom: 15px; border-radius: 10px; }
+      .section h2 { font-size: 18px; margin-bottom: 12px; }
+      .grid { 
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .card { padding: 18px; }
+      .card-icon { font-size: 28px; margin-bottom: 10px; }
+      .card-title { font-size: 16px; }
+      .card-desc { font-size: 12px; }
+      .stat { font-size: 12px; }
+      .stats { gap: 10px; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 24px; }
+      .subtitle { font-size: 13px; }
+      .header { padding: 15px 10px; }
+      .section { padding: 12px; }
+      .section h2 { font-size: 16px; }
+      .card { padding: 15px; }
+    }
   </style>
 </head>
 <body>
