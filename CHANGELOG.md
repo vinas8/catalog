@@ -1,8 +1,16 @@
 # Changelog
 
-## [0.7.7] - 2026-01-06
+## [0.7.7] - 2026-01-07
 
 ### Added
+- **Progressive Web App (PWA) Support** - Full installable app functionality
+  - manifest.json with app metadata and shortcuts
+  - Service Worker (sw.js) for offline support and caching
+  - PWA install button component with iOS instructions
+  - Offline fallback page with reconnection prompt
+  - PWA meta tags on all main pages (index, catalog, game, collection)
+  - App shortcuts: Shop, Collection, Game
+  - Theme color and Apple touch icons
 - **Demo System Plan** - Comprehensive interactive demo for v0.7.7
   - 4 pipelines: Owner Setup, Customer Purchase, Farm Gameplay, Data Management
   - SMRI-driven execution with visual feedback
