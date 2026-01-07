@@ -3,440 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>🐍 Debug Hub - Snake Muffin v0.8.0</title>
-  <link rel="stylesheet" href="../styles.css?v=20260107">
+  <title>🐍 Debug Hub - Serpent Town</title>
   <script src="../src/utils/debug-loader.js"></script>
   <script type="module" src="../src/components/Navigation.js"></script>
   <style>
-    .debug-content {
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0e14;
+      background: linear-gradient(135deg, #0a0e14 0%, #1a1e24 100%);
       color: #c9d1d9;
-      padding: 20px;
-      max-width: 1400px;
-      margin: 0 auto;
       min-height: 100vh;
+      padding: 20px;
     }
-    body { background: #0a0e14; }
-    h1 { color: #58a6ff; margin-bottom: 10px; }
-    .subtitle { color: #8b949e; margin-bottom: 30px; font-size: 14px; }
-    .modules-grid {
+    .container { max-width: 1400px; margin: 0 auto; }
+    .header {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    h1 { font-size: 48px; margin-bottom: 10px; color: white; }
+    .subtitle { font-size: 18px; color: rgba(255,255,255,0.9); }
+    .stats {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .stat { font-size: 14px; color: rgba(255,255,255,0.8); }
+    .section {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      color: #58a6ff;
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      margin-bottom: 30px;
     }
-    .module-card {
-      background: #161b22;
-      border: 2px solid #30363d;
+    .card {
+      background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+      padding: 25px;
       border-radius: 12px;
-      padding: 20px;
-      transition: all 0.2s;
-    }
-    .module-card:hover {
-      border-color: #58a6ff;
-      transform: translateY(-2px);
-    }
-    .module-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      cursor: pointer;
-    }
-    .module-title { font-size: 18px; font-weight: 600; color: #58a6ff; }
-    .module-badge {
-      background: #238636;
-      color: white;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-    .module-stats {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-      font-size: 13px;
-      color: #8b949e;
-    }
-    .stat-item { display: flex; align-items: center; gap: 5px; }
-    .progress-bar-mini {
-      width: 100%;
-      height: 8px;
-      background: #21262d;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .progress-fill-mini {
-      height: 100%;
-      background: linear-gradient(90deg, #238636, #2ea043);
-      transition: width 0.3s;
-    }
-    .subcategories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .module-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 15px;
-    }
-    .module-link {
-      color: #58a6ff;
       text-decoration: none;
-      font-size: 13px;
-      padding: 8px;
-      background: #0d1117;
-      border-radius: 6px;
-      transition: all 0.2s;
+      color: white;
+      transition: all 0.3s;
+      display: block;
     }
-    .module-link:hover {
-      background: #1c2128;
-      transform: translateX(5px);
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(31, 111, 235, 0.4);
     }
-    .subcat-badge {
-      background: #21262d;
-      color: #8b949e;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-    }
-    details { margin-top: 15px; }
-    summary {
-      cursor: pointer;
-      color: #58a6ff;
-      font-size: 12px;
-      padding: 8px;
-      background: #0d1117;
-      border-radius: 6px;
-    }
-    summary:hover { background: #161b22; }
+    .card-icon { font-size: 36px; margin-bottom: 15px; }
+    .card-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .card-desc { font-size: 14px; opacity: 0.9; line-height: 1.5; }
+    .card.demo { background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); }
+    .card.tool { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .card.data { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .card.docs { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
   </style>
 </head>
 <body>
-  <div class="debug-content">
-    <h1>🐍 Snake Muffin - Debug Hub</h1>
-    <p class="subtitle">
-      <strong>Version:</strong> <span id="app-version">Loading...</span> | 
-      <strong>SMRI:</strong> <span id="smri-count">Loading...</span> scenarios | 
-      <strong>Progress:</strong> <span id="overall-progress">Loading...</span> |
-      <strong>Updated:</strong> <span id="page-timestamp" style="color: #8b949e; font-size: 12px;">2026-01-04</span>
-  </p>
-
-  <!-- POSITION 1: 🎬 App Demos (v0.8.0) - OPEN BY DEFAULT -->
-  <details open style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 3px solid #a855f7; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);">
-    <summary style="cursor: pointer; font-size: 22px; font-weight: 700; color: #a855f7; margin-bottom: 20px; list-style: none; display: flex; align-items: center; gap: 12px;">
-      <span>🎬</span>
-      <span>Interactive Demo System (v0.8.0)</span>
-      <span style="font-size: 14px; font-weight: 400; color: #8b949e; margin-left: auto;">Click to collapse</span>
-    </summary>
-    
-    <p style="color: #c9d1d9; font-size: 15px; margin-bottom: 25px; line-height: 1.7; background: rgba(168, 85, 247, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #a855f7;">
-      <strong style="color: #a855f7;">Watch Serpent Town in action!</strong><br>
-      Interactive slideshow with <strong>REAL storefront running</strong>. Demonstrates complete customer journey (browse → buy → care for snakes) and owner journey (setup → manage → view analytics). System executes actual workflows with live data.
-    </p>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-      <button onclick="playDemo()" style="background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 25px rgba(168, 85, 247, 0.6)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 6px 20px rgba(168, 85, 247, 0.4)'">
-        <span style="font-size: 20px;">▶️</span>
-        <span>Play Demo</span>
-      </button>
-      <button onclick="clearDemoData()" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)'; this.style.transform='translateY(0)'">
-        🗑️ Clear Data
-      </button>
-      <button onclick="fillDemoData()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='linear-gradient(135deg, #059669 0%, #047857 100%)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='linear-gradient(135deg, #10b981 0%, #059669 100%)'; this.style.transform='translateY(0)'">
-        📦 Fill Demo Data
-      </button>
-      <button onclick="executePipeline()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='linear-gradient(135deg, #d97706 0%, #b45309 100%)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'; this.style.transform='translateY(0)'">
-        ⚙️ Execute Pipeline
-      </button>
-    </div>
-
-    <div id="demo-status" style="background: #0d1117; border: 2px solid #30363d; border-radius: 10px; padding: 20px; font-family: 'Courier New', monospace; font-size: 14px; color: #58a6ff; min-height: 120px; line-height: 1.8;">
-      <div style="color: #3fb950;">✅ Demo System Ready</div>
-      <div style="margin-top: 8px; color: #8b949e;">Click "Play Demo" to start the interactive presentation...</div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px;">
-      <div style="background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%); border: 2px solid #1f6feb; padding: 15px; border-radius: 10px;">
-        <div style="font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 6px;">🛒 Customer Journey</div>
-        <div style="font-size: 15px; color: white; font-weight: 600;">S6.1,2,3.09</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px;">Browse → Buy → Care</div>
-      </div>
-      <div style="background: linear-gradient(135deg, #d29922 0%, #b87a1e 100%); border: 2px solid #d29922; padding: 15px; border-radius: 10px;">
-        <div style="font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 6px;">👔 Owner Journey</div>
-        <div style="font-size: 15px; color: white; font-weight: 600;">S6.1,4,5.01</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px;">Setup → Manage → Analytics</div>
-      </div>
-      <div style="background: linear-gradient(135deg, #8957e5 0%, #6366f1 100%); border: 2px solid #8957e5; padding: 15px; border-radius: 10px;">
-        <div style="font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 6px;">🎮 Gameplay Demo</div>
-        <div style="font-size: 15px; color: white; font-weight: 600;">S6.2,5.03</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px;">Feed → Water → Clean</div>
-      </div>
-      <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: 2px solid #10b981; padding: 15px; border-radius: 10px;">
-        <div style="font-size: 13px; color: rgba(255,255,255,0.8); margin-bottom: 6px;">📊 Data Management</div>
-        <div style="font-size: 15px; color: white; font-weight: 600;">S6.5.04</div>
-        <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px;">KV → Stripe → Sync</div>
+  <div class="container">
+    <div class="header">
+      <h1>🐍 Debug Hub</h1>
+      <div class="subtitle">Developer Tools & Testing Environment</div>
+      <div class="stats">
+        <span class="stat">📦 Version: 0.7.7</span>
+        <span class="stat">🧪 SMRI: 69 scenarios</span>
+        <span class="stat">✅ 11/69 complete (16%)</span>
       </div>
     </div>
-  </details>
 
-  <!-- POSITION 2: 🧪 SMRI Test Executor - FOLDED -->
-  <details style="background: #161b22; border: 2px solid #667eea; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-    <summary style="cursor: pointer; font-size: 18px; font-weight: 600; color: #667eea; list-style: none; display: flex; align-items: center; gap: 10px;">
-      <span>🧪</span>
-      <span>SMRI Test Executor - In-Browser Pages</span>
-      <span style="font-size: 13px; font-weight: 400; color: #8b949e; margin-left: auto;">Click to expand</span>
-    </summary>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-      <a href="../game/" style="background: linear-gradient(135deg, #8957e5 0%, #6366f1 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🎮 Game (Tamagotchi)<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Main snake care game - feed, water, clean</span>
-      </a>
-      <a href="../shop/" style="background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🛒 Shop Catalog<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Browse & buy snakes with Stripe checkout</span>
-      </a>
-      <a href="../shop/collection.html" style="background: linear-gradient(135deg, #f77f00 0%, #fb923c 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🏠 My Collection<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">View your purchased snakes</span>
-      </a>
-      <a href="../dex/" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        📖 Morph Dex<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Encyclopedia of all morphs & genetics</span>
-      </a>
-      <a href="../calc/" style="background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🧬 Breeding Calculator (S3)<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Dual-view: MorphMarket + Serpent Town genetics</span>
-      </a>
-      <a href="../tutorial/" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        📚 Tutorial (S2-7)<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Interactive onboarding for new users</span>
-      </a>
-    </div>
-  </details>
-
-  <!-- POSITION 3: ⚙️ Admin Tools - FOLDED -->
-  <details style="background: #161b22; border: 2px solid #dc2626; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-    <summary style="cursor: pointer; font-size: 18px; font-weight: 600; color: #dc2626; list-style: none; display: flex; align-items: center; gap: 10px;">
-      <span>⚙️</span>
-      <span>Admin Tools - Data Management</span>
-      <span style="font-size: 13px; font-weight: 400; color: #8b949e; margin-left: auto;">Click to expand</span>
-    </summary>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
-      <a href="kv-manager.html" style="background: linear-gradient(135deg, #f85149 0%, #ff6b6b 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        📊 KV Manager<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Inspect & manage Cloudflare KV data</span>
-      </a>
-      <a href="../admin/" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        ⚙️ Admin KV Panel<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Advanced KV operations (admin only)</span>
-      </a>
-      <a href="../admin/account.html" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        👤 Account Settings<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">User profile & preferences</span>
-      </a>
-    </div>
-  </details>
-
-  <!-- POSITION 4: 🛠️ Debug Tools - FOLDED -->
-  <details style="background: #161b22; border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-    <summary style="cursor: pointer; font-size: 18px; font-weight: 600; color: #10b981; list-style: none; display: flex; align-items: center; gap: 10px;">
-      <span>🛠️</span>
-      <span>Debug Tools - Testing Utilities</span>
-      <span style="font-size: 13px; font-weight: 400; color: #8b949e; margin-left: auto;">Click to expand</span>
-    </summary>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
-      <a href="smri-runner.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🧪 SMRI Test Runner<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Automated browser testing with live rendering</span>
-      </a>
-      <a href="healthcheck.html" style="background: linear-gradient(135deg, #238636 0%, #2ea043 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        🏥 System Health Check<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Test all API endpoints & connections</span>
-      </a>
-      <a href="purchase-flow-demo.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        💳 Purchase Flow Demo<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">E2E purchase test (S1.1,2,3,4,5.01)</span>
-      </a>
-      <a href="test-cache.html" style="background: linear-gradient(135deg, #d946ef 0%, #c026d3 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        💾 Cache Test Tool<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Test localStorage performance</span>
-      </a>
-      <a href="../data/genetics/trait-dex.html" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        📖 Trait Database<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Browse genetics data (70+ morphs)</span>
-      </a>
-      <a href="../data/" style="background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%); color: white; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: block;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        📊 Data Hub<br>
-        <span style="font-size: 12px; font-weight: normal; opacity: 0.9;">Central data repository & APIs</span>
-      </a>
-    </div>
-  </details>
-
-  <!-- POSITION 5: 📚 SMRI Documentation & Reference - FOLDED -->
-  <details style="background: #161b22; border: 2px solid #667eea; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-    <summary style="cursor: pointer; font-size: 18px; font-weight: 600; color: #667eea; list-style: none; display: flex; align-items: center; gap: 10px;">
-      <span>📚</span>
-      <span>SMRI Documentation & Test Reference</span>
-      <span style="font-size: 13px; font-weight: 400; color: #8b949e; margin-left: auto;">Master reference index</span>
-    </summary>
-    
-    <div style="margin-top: 20px;">
-      <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-        <strong>SMRI</strong> = <strong>S</strong>erpent Town <strong>M</strong>aster <strong>R</strong>eference <strong>I</strong>ndex. 
-        All project documentation, test scenarios, and session logs consolidated in <code style="background: #0d1117; padding: 2px 6px; border-radius: 4px;">.smri/</code>
-      </p>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px;">
-        <!-- INDEX.md -->
-        <a href="https://github.com/vinas8/catalog/blob/main/.smri/INDEX.md" target="_blank" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📖 Master Index</div>
-          <div style="font-size: 18px; font-weight: 600;">INDEX.md</div>
-          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Navigation, rules, AI instructions</div>
+    <!-- Release Demos -->
+    <div class="section">
+      <h2>🎬 Release Demos</h2>
+      <div class="grid">
+        <a href="releases/v0.7.7/demo.html" class="card demo">
+          <div class="card-icon">🎬</div>
+          <div class="card-title">v0.7.7 Demo System</div>
+          <div class="card-desc">Interactive demo with real workflows. Customer journey, owner dashboard, gameplay, and data management scenarios.</div>
         </a>
-
-        <!-- Documentation -->
-        <a href="https://github.com/vinas8/catalog/tree/main/.smri/docs" target="_blank" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📄 Documentation</div>
-          <div style="font-size: 18px; font-weight: 600;">.smri/docs/</div>
-          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Business, technical, deployment guides</div>
-        </a>
-
-        <!-- Test Scenarios -->
-        <a href="https://github.com/vinas8/catalog/tree/main/.smri/scenarios" target="_blank" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(245, 158, 11, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">🧪 Test Scenarios</div>
-          <div style="font-size: 18px; font-weight: 600;">.smri/scenarios/</div>
-          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Structured test cases by feature</div>
-        </a>
-
-        <!-- Session Logs -->
-        <a href="https://github.com/vinas8/catalog/tree/main/.smri/logs" target="_blank" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; transition: all 0.3s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(139, 92, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">📝 Session Logs</div>
-          <div style="font-size: 18px; font-weight: 600;">.smri/logs/</div>
-          <div style="font-size: 13px; opacity: 0.85; margin-top: 8px;">Daily development conversation history</div>
+        <a href="releases/v0.7.7/README.md" class="card demo">
+          <div class="card-icon">📋</div>
+          <div class="card-title">v0.7.7 Release Notes</div>
+          <div class="card-desc">What's new: 70 morphs, data hub, file organization, debug console, and complete feature list.</div>
         </a>
       </div>
-
-      <!-- Quick Links -->
-      <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-top: 20px;">
-        <div style="font-size: 14px; font-weight: 600; color: #c9d1d9; margin-bottom: 12px;">🔗 Quick Access</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-          <a href="smri-runner.html" style="background: #238636; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">▶ SMRI Test Runner</a>
-          <a href="../GENETICS-MODULE-MAP.md" target="_blank" style="background: #9333ea; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">🧬 Genetics Architecture</a>
-          <a href="../STRUCTURE.md" target="_blank" style="background: #1f6feb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">📁 Directory Structure</a>
-          <a href="../data/" style="background: #d29922; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">📊 Data Hub</a>
-        </div>
-      </div>
-
-      <!-- Stats (optional - collapsed) -->
-      <details style="margin-top: 15px;">
-        <summary style="cursor: pointer; font-size: 13px; color: #8b949e; padding: 8px;">
-          📊 View detailed scenario stats (69 total)
-        </summary>
-        <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 15px; margin-top: 10px; font-size: 12px; color: #8b949e; line-height: 1.8;">
-          <strong style="color: #58a6ff;">69</strong> total scenarios | 
-          <strong style="color: #3fb950;">11</strong> complete | 
-          <strong style="color: #d29922;">12</strong> in progress | 
-          <strong style="color: #8b949e;">46</strong> planned
-          <div style="margin-top: 10px; font-size: 11px; color: #6e7681;">
-            Note: Most scenarios are lightweight placeholders. Use SMRI Test Runner for full execution.
-          </div>
-        </div>
-      </details>
     </div>
-  </details>
 
-  <script type="module">
-    import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js?v=20260107';
+    <!-- Debug Tools -->
+    <div class="section">
+      <h2>🛠️ Debug Tools</h2>
+      <div class="grid">
+        <a href="tools/smri-runner.html" class="card tool">
+          <div class="card-icon">🧪</div>
+          <div class="card-title">SMRI Test Runner</div>
+          <div class="card-desc">Execute automated test scenarios with live rendering and validation.</div>
+        </a>
+        <a href="tools/healthcheck.html" class="card tool">
+          <div class="card-icon">🏥</div>
+          <div class="card-title">System Health Check</div>
+          <div class="card-desc">Test all API endpoints, worker status, and system connectivity.</div>
+        </a>
+        <a href="tools/kv-manager.html" class="card tool">
+          <div class="card-icon">📊</div>
+          <div class="card-title">KV Manager</div>
+          <div class="card-desc">Inspect and manage Cloudflare KV data storage.</div>
+        </a>
+        <a href="tools/test-cache.html" class="card tool">
+          <div class="card-icon">💾</div>
+          <div class="card-title">Cache Test Tool</div>
+          <div class="card-desc">Test localStorage performance and data persistence.</div>
+        </a>
+      </div>
+    </div>
 
-    const stats = getSMRIStats();
-    document.getElementById('app-version').textContent = VERSION.substring(1);
-    document.getElementById('smri-count').textContent = stats.total;
-    document.getElementById('overall-progress').textContent = `${stats.completed}/${stats.total} done (${stats.avgProgress}%)`;
-
-    // Demo System Functions
-    window.playDemo = function() {
-      console.log('🎬 [DEMO] Starting interactive demo...');
-      const status = document.getElementById('demo-status');
-      status.innerHTML = `
-        <div style="color: #f59e0b;">⏳ Demo starting...</div>
-        <div style="margin-top: 8px; color: #8b949e;">Loading S6 demo scenarios...</div>
-      `;
-      
-      // TODO: Implement S6 demo scenarios
-      setTimeout(() => {
-        status.innerHTML = `
-          <div style="color: #3fb950;">✅ Demo ready to execute</div>
-          <div style="margin-top: 8px; color: #c9d1d9;">S6.1,2,3.09 - Customer Journey loaded</div>
-          <div style="margin-top: 4px; color: #8b949e;">Click scenarios below to run them...</div>
-        `;
-      }, 1000);
-    };
-
-    window.clearDemoData = function() {
-      console.log('🗑️ [DEMO] Clearing demo data...');
-      const status = document.getElementById('demo-status');
-      status.innerHTML = `
-        <div style="color: #f85149;">🗑️ Clearing KV data...</div>
-        <div style="margin-top: 8px; color: #8b949e;">Removing products, users, test data...</div>
-      `;
-      
-      // TODO: Call KV clear endpoint
-      setTimeout(() => {
-        status.innerHTML = `
-          <div style="color: #3fb950;">✅ Demo data cleared</div>
-          <div style="margin-top: 8px; color: #8b949e;">KV storage is now empty</div>
-        `;
-      }, 1500);
-    };
-
-    window.fillDemoData = function() {
-      console.log('📦 [DEMO] Filling demo data...');
-      const status = document.getElementById('demo-status');
-      status.innerHTML = `
-        <div style="color: #10b981;">📦 Loading demo data...</div>
-        <div style="margin-top: 8px; color: #8b949e;">Creating sample products, users, purchases...</div>
-      `;
-      
-      // TODO: Load sample data
-      setTimeout(() => {
-        status.innerHTML = `
-          <div style="color: #3fb950;">✅ Demo data loaded</div>
-          <div style="margin-top: 8px; color: #c9d1d9;">• 10 products added</div>
-          <div style="margin-top: 4px; color: #c9d1d9;">• 3 demo users created</div>
-          <div style="margin-top: 4px; color: #c9d1d9;">• 5 purchases simulated</div>
-        `;
-      }, 2000);
-    };
-
-    window.executePipeline = function() {
-      console.log('⚙️ [DEMO] Executing pipeline...');
-      const status = document.getElementById('demo-status');
-      status.innerHTML = `
-        <div style="color: #f59e0b;">⚙️ Running automated workflows...</div>
-        <div style="margin-top: 8px; color: #8b949e;">Stripe → KV sync → Game state → Notifications...</div>
-      `;
-      
-      // TODO: Run automated workflows
-      setTimeout(() => {
-        status.innerHTML = `
-          <div style="color: #3fb950;">✅ Pipeline executed successfully</div>
-          <div style="margin-top: 8px; color: #c9d1d9;">• Stripe products synced</div>
-          <div style="margin-top: 4px; color: #c9d1d9;">• KV data validated</div>
-          <div style="margin-top: 4px; color: #c9d1d9;">• Game state initialized</div>
-        `;
-      }, 2500);
-    };
-  </script>
-  </div><!-- .debug-content -->
+    <!-- Data & Documentation -->
+    <div class="section">
+      <h2>📊 Data & Documentation</h2>
+      <div class="grid">
+        <a href="../data/" class="card data">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Data Hub</div>
+          <div class="card-desc">Central data repository: 70 morphs, products, genetics database.</div>
+        </a>
+        <a href="../data/genetics/" class="card data">
+          <div class="card-icon">🧬</div>
+          <div class="card-title">Genetics Data</div>
+          <div class="card-desc">50 base + 20 expanded morphs with health risks and combos.</div>
+        </a>
+        <a href="https://github.com/vinas8/catalog/blob/main/.smri/INDEX.md" class="card docs" target="_blank">
+          <div class="card-icon">📚</div>
+          <div class="card-title">SMRI Documentation</div>
+          <div class="card-desc">Master reference index with all project documentation.</div>
+        </a>
+        <a href="../GENETICS-MODULE-MAP.md" class="card docs" target="_blank">
+          <div class="card-icon">🗺️</div>
+          <div class="card-title">Architecture Map</div>
+          <div class="card-desc">Complete genetics module architecture and data flow diagrams.</div>
+        </a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
