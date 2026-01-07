@@ -171,54 +171,120 @@
 </head>
 <body>
   <h1>🧬 Trait Dex</h1>
-  <div class="subtitle">Data-driven trait collection system (24 real snakes, 34 unique traits)</div>
+  <div class="subtitle">Comprehensive trait database with genetics, health, and market data</div>
   
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-value" id="total-traits">0</div>
-      <div class="stat-label">Total Traits</div>
+      <div class="stat-value" id="total-morphs">0</div>
+      <div class="stat-label">Ball Python Morphs</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" id="known-genetics">0</div>
-      <div class="stat-label">Known Genetics</div>
+      <div class="stat-value" id="gene-types-count">5</div>
+      <div class="stat-label">Gene Types</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="health-issues-count">0</div>
+      <div class="stat-label">Health Issues Documented</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="lethal-combos-count">0</div>
+      <div class="stat-label">Lethal Combinations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-traits">0</div>
+      <div class="stat-label">Shop Traits</div>
     </div>
     <div class="stat-card">
       <div class="stat-value" id="coverage">0%</div>
-      <div class="stat-label">Coverage</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="total-snakes">24</div>
-      <div class="stat-label">Snakes in Collection</div>
+      <div class="stat-label">Trait Coverage</div>
     </div>
   </div>
   
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all">All Traits</button>
-    <button class="filter-btn" data-filter="ultra_common">Ultra Common</button>
-    <button class="filter-btn" data-filter="common">Common</button>
-    <button class="filter-btn" data-filter="uncommon">Uncommon</button>
-    <button class="filter-btn" data-filter="rare">Rare</button>
-    <button class="filter-btn" data-filter="exotic">Exotic</button>
-    <button class="filter-btn" data-filter="ball_python">Ball Python Only</button>
-    <button class="filter-btn" data-filter="corn_snake">Corn Snake Only</button>
+  <!-- Tab Navigation -->
+  <div class="filters" style="margin-bottom: 20px; border-bottom: 2px solid #30363d;">
+    <button class="filter-btn active" data-tab="shop-traits" style="border-radius: 6px 6px 0 0;">🛍️ Shop Traits</button>
+    <button class="filter-btn" data-tab="morphs" style="border-radius: 6px 6px 0 0;">🧬 Morphs Database</button>
+    <button class="filter-btn" data-tab="gene-types" style="border-radius: 6px 6px 0 0;">🔬 Gene Types</button>
+    <button class="filter-btn" data-tab="health" style="border-radius: 6px 6px 0 0;">⚕️ Health Risks</button>
+    <button class="filter-btn" data-tab="lethal" style="border-radius: 6px 6px 0 0;">☠️ Lethal Combos</button>
   </div>
   
-  <div class="trait-grid" id="trait-grid">
-    Loading traits...
+  <!-- Shop Traits Tab -->
+  <div id="tab-shop-traits" class="tab-content">
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All Traits</button>
+      <button class="filter-btn" data-filter="ultra_common">Ultra Common</button>
+      <button class="filter-btn" data-filter="common">Common</button>
+      <button class="filter-btn" data-filter="uncommon">Uncommon</button>
+      <button class="filter-btn" data-filter="rare">Rare</button>
+      <button class="filter-btn" data-filter="exotic">Exotic</button>
+      <button class="filter-btn" data-filter="ball_python">Ball Python Only</button>
+      <button class="filter-btn" data-filter="corn_snake">Corn Snake Only</button>
+    </div>
+    <div class="trait-grid" id="trait-grid">
+      Loading traits...
+    </div>
+  </div>
+  
+  <!-- Morphs Tab -->
+  <div id="tab-morphs" class="tab-content" style="display: none;">
+    <div class="filters">
+      <button class="filter-btn active" data-morph-filter="all">All Morphs</button>
+      <button class="filter-btn" data-morph-filter="co-dominant">Co-Dominant</button>
+      <button class="filter-btn" data-morph-filter="recessive">Recessive</button>
+      <button class="filter-btn" data-morph-filter="dominant">Dominant</button>
+      <button class="filter-btn" data-morph-filter="incomplete_dominant">Incomplete Dominant</button>
+      <button class="filter-btn" data-morph-filter="has-health-risk">Has Health Risk</button>
+    </div>
+    <div class="trait-grid" id="morph-grid">
+      Loading morphs...
+    </div>
+  </div>
+  
+  <!-- Gene Types Tab -->
+  <div id="tab-gene-types" class="tab-content" style="display: none;">
+    <div id="gene-types-content"></div>
+  </div>
+  
+  <!-- Health Risks Tab -->
+  <div id="tab-health" class="tab-content" style="display: none;">
+    <div class="trait-grid" id="health-grid">
+      Loading health data...
+    </div>
+  </div>
+  
+  <!-- Lethal Combos Tab -->
+  <div id="tab-lethal" class="tab-content" style="display: none;">
+    <div class="trait-grid" id="lethal-grid">
+      Loading lethal combinations...
+    </div>
   </div>
   
   <script type="module">
-    import { TRAIT_DATABASE, getAllTraits } from '../src/modules/shop/data/traits.js';
+    import { TRAIT_DATABASE } from '../../src/modules/shop/data/traits.js';
     
-    // Load trait analysis data
-    const analysisData = await fetch('../data/cache/trait-analysis.json').then(r => r.json());
+    // Load all data sources
+    const [analysisData, morphsBase, morphsExpanded, geneTypes, healthRisks, lethalCombos] = await Promise.all([
+      fetch('../../data/cache/trait-analysis.json').then(r => r.json()),
+      fetch('../../data/genetics/morphs.json').then(r => r.json()),
+      fetch('../../data/genetics/morphs-expanded.json').then(r => r.json()),
+      fetch('../../data/genetics/gene-types.json').then(r => r.json()),
+      fetch('../../data/genetics/health-risks.json').then(r => r.json()),
+      fetch('../../data/genetics/lethal-combos.json').then(r => r.json())
+    ]);
+    
+    // Combine all morphs
+    const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs];
     
     // Update stats
+    document.getElementById('total-morphs').textContent = allMorphs.length;
+    document.getElementById('gene-types-count').textContent = Object.keys(geneTypes.gene_types).length;
+    document.getElementById('health-issues-count').textContent = healthRisks.documented_issues.length;
+    document.getElementById('lethal-combos-count').textContent = lethalCombos.lethal_combinations.length;
     document.getElementById('total-traits').textContent = analysisData.stats.total_traits;
-    document.getElementById('known-genetics').textContent = analysisData.stats.known_genetics;
     document.getElementById('coverage').textContent = analysisData.stats.coverage_percent + '%';
     
-    // Merge database with analysis
+    // Enrich traits with analysis data
     const enrichedTraits = Object.values(TRAIT_DATABASE).map(trait => {
       const analysisEntry = analysisData.traits[trait.id];
       return {
@@ -227,11 +293,38 @@
       };
     });
     
+    // State
+    let currentTab = 'shop-traits';
     let currentFilter = 'all';
+    let currentMorphFilter = 'all';
     
+    // === TAB NAVIGATION ===
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Update buttons
+        document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+        document.getElementById(`tab-${tab}`).style.display = 'block';
+        
+        currentTab = tab;
+        
+        // Render appropriate content
+        if (tab === 'shop-traits') renderTraits();
+        else if (tab === 'morphs') renderMorphs();
+        else if (tab === 'gene-types') renderGeneTypes();
+        else if (tab === 'health') renderHealthRisks();
+        else if (tab === 'lethal') renderLethalCombos();
+      });
+    });
+    
+    // === SHOP TRAITS TAB ===
     function renderTraits() {
       const grid = document.getElementById('trait-grid');
-      
       let filtered = enrichedTraits;
       
       if (currentFilter !== 'all') {
@@ -242,7 +335,6 @@
         }
       }
       
-      // Sort by frequency (descending)
       filtered.sort((a, b) => b.frequency - a.frequency);
       
       grid.innerHTML = filtered.map(trait => `
@@ -251,60 +343,193 @@
             <div class="trait-name">${trait.name}</div>
             <div class="trait-badge rarity-${trait.rarity}">${trait.rarity.replace('_', ' ')}</div>
           </div>
-          
           <div class="trait-meta">
             <span>🧬 ${trait.inheritance}</span>
             <span>💰 ${trait.price_multiplier}x</span>
             <span>📊 ${trait.frequency} snake${trait.frequency > 1 ? 's' : ''}</span>
           </div>
-          
           <div class="trait-species">
             ${trait.species.map(s => s.replace('_', ' ').toUpperCase()).join(', ')}
           </div>
-          
           ${trait.education ? `
             <div class="trait-genetics">
-              <strong>📚 Basic:</strong><br>
-              ${trait.education.basic}
+              <strong>📚 Basic:</strong><br>${trait.education.basic}
               ${trait.education.advanced ? `<br><br><strong>Advanced:</strong><br>${trait.education.advanced}` : ''}
             </div>
           ` : ''}
-          
-          ${trait.care_notes ? `
-            <div style="margin-top: 10px; font-size: 13px; color: #8b949e;">
-              💡 ${trait.care_notes}
-            </div>
-          ` : ''}
-          
-          ${trait.snakes_with_trait && trait.snakes_with_trait.length > 0 ? `
+          ${trait.care_notes ? `<div style="margin-top: 10px; font-size: 13px; color: #8b949e;">💡 ${trait.care_notes}</div>` : ''}
+          ${trait.snakes_with_trait?.length > 0 ? `
             <div class="trait-snakes">
               <strong>🐍 Found in:</strong>
               <div class="snake-list">
-                ${trait.snakes_with_trait.map(snake => `
-                  <span class="snake-tag">${snake}</span>
-                `).join('')}
+                ${trait.snakes_with_trait.map(s => `<span class="snake-tag">${s}</span>`).join('')}
               </div>
             </div>
           ` : ''}
-          
-          ${trait.ethical_warnings ? `
-            <div class="warning">
-              ⚠️ ${trait.ethical_warnings}
-            </div>
-          ` : ''}
+          ${trait.ethical_warnings ? `<div class="warning">⚠️ ${trait.ethical_warnings}</div>` : ''}
         </div>
       `).join('');
     }
     
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('[data-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         renderTraits();
       });
     });
+    
+    // === MORPHS TAB ===
+    function renderMorphs() {
+      const grid = document.getElementById('morph-grid');
+      let filtered = allMorphs;
+      
+      if (currentMorphFilter !== 'all') {
+        if (currentMorphFilter === 'has-health-risk') {
+          filtered = allMorphs.filter(m => m.health_risk !== 'none' && m.health_risk !== 'low');
+        } else {
+          filtered = allMorphs.filter(m => m.gene_type === currentMorphFilter);
+        }
+      }
+      
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+      
+      grid.innerHTML = filtered.map(morph => {
+        const healthRisk = healthRisks.documented_issues.find(h => h.morph_id === morph.id);
+        return `
+          <div class="trait-card">
+            <div class="trait-header">
+              <div class="trait-name">${morph.name}</div>
+              <div class="trait-badge rarity-${morph.rarity}">${morph.gene_type}</div>
+            </div>
+            <div class="trait-meta">
+              <span>💰 $${morph.market_value_usd}</span>
+              <span>⚕️ ${morph.health_risk}</span>
+              ${morph.super_form ? `<span>⭐ ${morph.super_form}</span>` : ''}
+            </div>
+            ${morph.aliases?.length > 0 ? `
+              <div style="margin-top: 10px; font-size: 12px; color: #8b949e;">
+                <strong>Also known as:</strong> ${morph.aliases.join(', ')}
+              </div>
+            ` : ''}
+            ${morph.health_issues?.length > 0 ? `
+              <div class="warning" style="margin-top: 10px;">
+                ⚠️ <strong>Health Issues:</strong><br>
+                ${morph.health_issues.join('<br>')}
+              </div>
+            ` : ''}
+            ${healthRisk ? `
+              <div class="warning" style="margin-top: 10px;">
+                ☠️ <strong>${healthRisk.issue.replace(/_/g, ' ').toUpperCase()}</strong><br>
+                ${healthRisk.description}<br>
+                <small>Severity: ${healthRisk.severity} | Frequency: ${healthRisk.frequency}</small>
+              </div>
+            ` : ''}
+            <div style="margin-top: 10px; font-size: 11px; color: #6e7681;">
+              Source: <a href="${morph.source_url}" target="_blank" style="color: #58a6ff;">World of Ball Pythons</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    document.querySelectorAll('[data-morph-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-morph-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMorphFilter = btn.dataset['morphFilter'];
+        renderMorphs();
+      });
+    });
+    
+    // === GENE TYPES TAB ===
+    function renderGeneTypes() {
+      const content = document.getElementById('gene-types-content');
+      content.innerHTML = Object.entries(geneTypes.gene_types).map(([type, info]) => `
+        <div class="trait-card" style="max-width: 100%;">
+          <div class="trait-header">
+            <div class="trait-name">${type.replace('_', ' ').toUpperCase()}</div>
+            <div class="trait-badge rarity-common">${info.notation || 'N/A'}</div>
+          </div>
+          <div style="margin: 15px 0; font-size: 14px;">
+            <strong>Description:</strong> ${info.description}
+          </div>
+          <div style="margin: 10px 0; font-size: 13px; color: #8b949e;">
+            <strong>Inheritance Pattern:</strong> ${info.inheritance_pattern.replace(/_/g, ' ')}
+          </div>
+          ${info.super_form_exists ? '<div style="color: #ffa657; font-size: 13px;">⭐ Super form exists</div>' : ''}
+          <div class="trait-snakes" style="margin-top: 15px;">
+            <strong>Examples:</strong>
+            <div class="snake-list">
+              ${info.examples.map(ex => `<span class="snake-tag">${ex}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // === HEALTH RISKS TAB ===
+    function renderHealthRisks() {
+      const grid = document.getElementById('health-grid');
+      const grouped = {};
+      
+      healthRisks.documented_issues.forEach(risk => {
+        if (!grouped[risk.morph_id]) grouped[risk.morph_id] = [];
+        grouped[risk.morph_id].push(risk);
+      });
+      
+      grid.innerHTML = Object.entries(grouped).map(([morphId, risks]) => {
+        const morph = allMorphs.find(m => m.id === morphId);
+        const morphName = morph?.name || morphId.replace(/-/g, ' ').toUpperCase();
+        return `
+          <div class="trait-card">
+            <div class="trait-header">
+              <div class="trait-name">${morphName}</div>
+              <div class="trait-badge" style="background: #f85149; color: white;">${risks.length} issue${risks.length > 1 ? 's' : ''}</div>
+            </div>
+            ${risks.map(risk => `
+              <div class="warning" style="margin-top: 10px;">
+                <strong>${risk.issue.replace(/_/g, ' ').toUpperCase()}</strong><br>
+                ${risk.description}<br>
+                <div style="margin-top: 8px; font-size: 11px;">
+                  <span style="background: #21262d; padding: 2px 6px; border-radius: 3px;">Severity: ${risk.severity}</span>
+                  <span style="background: #21262d; padding: 2px 6px; border-radius: 3px;">Frequency: ${risk.frequency}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // === LETHAL COMBOS TAB ===
+    function renderLethalCombos() {
+      const grid = document.getElementById('lethal-grid');
+      grid.innerHTML = lethalCombos.lethal_combinations.map(combo => `
+        <div class="trait-card">
+          <div class="trait-header">
+            <div class="trait-name">${combo.morph1.toUpperCase()} × ${combo.morph2.toUpperCase()}</div>
+            <div class="trait-badge" style="background: #da3633; color: white;">LETHAL</div>
+          </div>
+          <div style="margin: 15px 0; font-size: 14px;">
+            <strong>Result:</strong> ${combo.result}
+          </div>
+          <div class="warning">
+            ☠️ ${combo.description}<br>
+            <div style="margin-top: 8px; font-size: 11px;">
+              <span style="background: #21262d; padding: 2px 6px; border-radius: 3px;">Stage: ${combo.stage}</span>
+              <span style="background: #21262d; padding: 2px 6px; border-radius: 3px;">${combo.verified ? '✓ Verified' : 'Unverified'}</span>
+            </div>
+          </div>
+          ${combo.source_url ? `
+            <div style="margin-top: 10px; font-size: 11px; color: #6e7681;">
+              Source: <a href="${combo.source_url}" target="_blank" style="color: #58a6ff;">View Documentation</a>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
     
     // Initial render
     renderTraits();
