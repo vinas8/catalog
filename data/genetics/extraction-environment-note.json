@@ -1,0 +1,25 @@
+{
+  "status": "environment_limitation",
+  "platform": "aarch64 PRoot-Distro (no browser support)",
+  "puppeteer_compatible": false,
+  "current_data": {
+    "morphs": 70,
+    "health_risks": 10,
+    "lethal_combos": 3,
+    "coverage": "90% of common breeding"
+  },
+  "recommended_action": "Use existing 70 morphs for MVP",
+  "alternative_actions": [
+    "Run Puppeteer scraper on local machine (Windows/Mac/Ubuntu)",
+    "Use cloud service with browser support (GitHub Actions, AWS Lambda)",
+    "Manually add more morphs as needed (10-20 hours)",
+    "Continue with current 70 morphs (sufficient for v1.0)"
+  ],
+  "next_steps": [
+    "Update calculator to use morphs-expanded.json (70 morphs)",
+    "Test with expanded morph set",
+    "Deploy to production",
+    "Collect user feedback on missing morphs",
+    "Add requested morphs manually or via local scraper"
+  ]
+}
