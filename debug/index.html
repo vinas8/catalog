@@ -200,135 +200,121 @@
     </div>
   </div>
 
-  <div class="modules-grid" id="modules-grid">
-    Loading modules...
+  <!-- SMRI Scenarios - All Organized & Executable -->
+  <div style="background: #161b22; border: 2px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+    <h2 style="color: #58a6ff; margin-bottom: 15px; font-size: 18px;">🧪 SMRI Test Scenarios - All Executable</h2>
+    <p style="color: #8b949e; font-size: 13px; margin-bottom: 20px;">
+      <strong id="smri-total">69</strong> total scenarios | 
+      <strong id="smri-complete" style="color: #3fb950;">10</strong> complete | 
+      <strong id="smri-progress" style="color: #d29922;">12</strong> in progress | 
+      <strong id="smri-planned" style="color: #8b949e;">47</strong> planned
+    </p>
+    <div id="smri-categories" style="display: flex; flex-direction: column; gap: 15px;">
+      Loading scenarios...
+    </div>
   </div>
 
   <script type="module">
-    import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js?v=20260104';
-
-    console.log('🐛 Debug Hub Loading...');
-    console.log('📦 VERSION:', VERSION);
-    console.log('📦 VERSION_CONFIG.CURRENT:', VERSION_CONFIG.CURRENT);
+    import { VERSION, VERSION_CONFIG, getSMRIStats } from '../src/config/version.js?v=20260107';
 
     const stats = getSMRIStats();
     document.getElementById('app-version').textContent = VERSION.substring(1);
     document.getElementById('smri-count').textContent = stats.total;
     document.getElementById('overall-progress').textContent = `${stats.completed}/${stats.total} done (${stats.avgProgress}%)`;
-    
-    console.log('✅ Version displayed:', VERSION.substring(1));
 
-    const moduleGroups = {};
-    const moduleNames = {
-      'S0': { name: 'Health Checks', icon: '🏥', color: '#238636' },
-      'S1': { name: 'Shop', icon: '🛒', color: '#1f6feb' },
-      'S2': { name: 'Game', icon: '🎮', color: '#8957e5' },
-      'S2-7': { name: 'Tutorial (Game)', icon: '🐍', color: '#f77f00' },
-      'S3': { name: 'Auth', icon: '🔐', color: '#d29922' },
-      'S4': { name: 'Payment', icon: '💳', color: '#f85149' },
-      'S5': { name: 'Worker', icon: '☁️', color: '#58a6ff' }
-    };
-    
-    // Map scenario codes to their proper module groups (prevent S0-1, S0-2, etc. from appearing)
-    const moduleMapping = {
-      'S0-1': 'S0',
-      'S0-2': 'S0', 
-      'S0-3': 'S0',
-      'S0-4': 'S0',
-      'S0-5': 'S0',
-      'S0-11': 'S0',
-      'S0-12': 'S0'
+    // Organize scenarios by category
+    const categories = {
+      'S0': { name: '🏥 Health Checks', icon: '🏥', color: '#238636', scenarios: [] },
+      'S1': { name: '🛒 Shop/Purchase', icon: '🛒', color: '#1f6feb', scenarios: [] },
+      'S2': { name: '🎮 Game Core', icon: '🎮', color: '#8957e5', scenarios: [] },
+      'S2-7': { name: '📚 Tutorial System', icon: '📚', color: '#f77f00', scenarios: [] },
+      'S3': { name: '🔐 Auth/Identity', icon: '🔐', color: '#d29922', scenarios: [] },
+      'S4': { name: '💳 Payment/Stripe', icon: '💳', color: '#f85149', scenarios: [] },
+      'S5': { name: '☁️ Worker/Backend', icon: '☁️', color: '#58a6ff', scenarios: [] },
+      'S6': { name: '🎬 Demo System', icon: '🎬', color: '#a855f7', scenarios: [] }
     };
 
+    // Categorize scenarios
     VERSION_CONFIG.SMRI_SCENARIOS.forEach(scenario => {
-      const match = scenario.code.match(/^(S\d+-?\d*)/);
-      if (match) {
-        let mainModule = match[1];
-        
-        // Map old-style codes (S0-1, S0-2) to their parent module (S0)
-        if (moduleMapping[mainModule]) {
-          mainModule = moduleMapping[mainModule];
-        }
-        
-        if (!moduleGroups[mainModule]) {
-          moduleGroups[mainModule] = { scenarios: [], subcategories: new Set(), totalProgress: 0 };
-        }
-        moduleGroups[mainModule].scenarios.push(scenario);
-        moduleGroups[mainModule].totalProgress += scenario.done;
-        
-        // Extract subcategory for display
-        const subMatch = scenario.code.match(/^S\d+-(\d+)/);
-        if (subMatch) moduleGroups[mainModule].subcategories.add(subMatch[1]);
+      const code = scenario.code;
+      if (code.startsWith('S2-7')) {
+        categories['S2-7'].scenarios.push(scenario);
+      } else if (code.startsWith('S0')) {
+        categories['S0'].scenarios.push(scenario);
+      } else if (code.startsWith('S1')) {
+        categories['S1'].scenarios.push(scenario);
+      } else if (code.startsWith('S2')) {
+        categories['S2'].scenarios.push(scenario);
+      } else if (code.startsWith('S3')) {
+        categories['S3'].scenarios.push(scenario);
+      } else if (code.startsWith('S4')) {
+        categories['S4'].scenarios.push(scenario);
+      } else if (code.startsWith('S5')) {
+        categories['S5'].scenarios.push(scenario);
+      } else if (code.startsWith('S6')) {
+        categories['S6'].scenarios.push(scenario);
       }
     });
 
-    const grid = document.getElementById('modules-grid');
-    grid.innerHTML = '';
+    // Update summary counts
+    const complete = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done === 100).length;
+    const inProgress = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done > 0 && s.done < 100).length;
+    const planned = VERSION_CONFIG.SMRI_SCENARIOS.filter(s => s.done === 0).length;
+    document.getElementById('smri-total').textContent = VERSION_CONFIG.SMRI_SCENARIOS.length;
+    document.getElementById('smri-complete').textContent = complete;
+    document.getElementById('smri-progress').textContent = inProgress;
+    document.getElementById('smri-planned').textContent = planned;
 
-    Object.keys(moduleGroups).sort().forEach(moduleKey => {
-      const group = moduleGroups[moduleKey];
-      const meta = moduleNames[moduleKey] || { name: moduleKey, icon: '📦', color: '#6e7681' };
-      const avgProgress = Math.round(group.totalProgress / group.scenarios.length);
-      const completed = group.scenarios.filter(s => s.done === 100).length;
+    // Render categories
+    const container = document.getElementById('smri-categories');
+    container.innerHTML = '';
 
-      const card = document.createElement('div');
-      card.className = 'module-card';
+    Object.keys(categories).forEach(key => {
+      const cat = categories[key];
+      if (cat.scenarios.length === 0) return;
+
+      const completed = cat.scenarios.filter(s => s.done === 100).length;
+      const avgProgress = Math.round(cat.scenarios.reduce((sum, s) => sum + s.done, 0) / cat.scenarios.length);
+
+      const section = document.createElement('details');
+      section.style.cssText = 'background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 15px;';
       
-      // Check if module has a collection page
-      const hasCollectionPage = ['S0', 'S1', 'S2-7'].includes(moduleKey);
-      const clickHint = hasCollectionPage ? '<div style="font-size: 11px; color: #58a6ff; margin-top: 5px;">👆 Click header to open collection runner</div>' : '';
-      
-      card.innerHTML = `
-        <div class="module-header" style="${hasCollectionPage ? 'background: rgba(88, 166, 255, 0.1); padding: 10px; border-radius: 6px; margin: -5px; margin-bottom: 10px;' : ''}">
-          <div class="module-title">${meta.icon} ${meta.name}</div>
-          <div class="module-badge">${moduleKey}</div>
+      section.innerHTML = `
+        <summary style="cursor: pointer; font-weight: 600; font-size: 15px; color: #c9d1d9; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>${cat.name} <span style="color: #8b949e; font-weight: normal; font-size: 13px;">(${cat.scenarios.length} scenarios)</span></span>
+          <span style="display: flex; gap: 10px; align-items: center;">
+            <span style="font-size: 12px; color: #8b949e;">${completed}/${cat.scenarios.length} done</span>
+            <span style="background: ${cat.color}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px;">${avgProgress}%</span>
+          </span>
+        </summary>
+        <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+          ${cat.scenarios.map(s => {
+            const statusIcon = s.done === 100 ? '✅' : s.done > 0 ? '🔄' : '⬜';
+            const statusColor = s.done === 100 ? '#3fb950' : s.done > 0 ? '#d29922' : '#8b949e';
+            return `
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #161b22; border-radius: 6px; border-left: 3px solid ${statusColor};">
+                <div style="flex: 1;">
+                  <div style="font-size: 12px; font-weight: 600; color: #58a6ff; font-family: monospace;">${s.code}</div>
+                  <div style="font-size: 12px; color: #c9d1d9; margin-top: 2px;">${s.desc}</div>
+                  <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">
+                    ${statusIcon} ${s.done}% complete | Version: ${s.ver}
+                  </div>
+                </div>
+                <button 
+                  onclick="window.location.href='smri-runner.html?scenario=${encodeURIComponent(s.code)}'"
+                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;"
+                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                >
+                  ▶ Run Test
+                </button>
+              </div>
+            `;
+          }).join('')}
         </div>
-        ${clickHint}
-        <div class="module-stats">
-          <div class="stat-item">📊 ${group.scenarios.length} scenarios</div>
-          <div class="stat-item">✅ ${completed} done</div>
-        </div>
-        <div class="progress-bar-mini">
-          <div class="progress-fill-mini" style="width: ${avgProgress}%; background: ${meta.color}"></div>
-        </div>
-        <div style="margin-top: 8px; font-size: 12px; color: #8b949e;">${avgProgress}% average</div>
-        ${group.subcategories.size > 0 ? `<div class="subcategories">${Array.from(group.subcategories).map(sub => `<span class="subcat-badge">${moduleKey}-${sub}</span>`).join('')}</div>` : ''}
-        <details>
-          <summary>📋 View all ${group.scenarios.length} scenarios</summary>
-          <div style="margin-top: 10px; max-height: 300px; overflow-y: auto;">
-            ${group.scenarios.map(s => {
-              const icon = s.done === 100 ? '✅' : s.done > 0 ? '🚧' : '⏳';
-              const color = s.done === 100 ? '#3fb950' : s.done > 0 ? '#d29922' : '#8b949e';
-              return `<div style="padding: 6px; font-size: 11px; border-bottom: 1px solid #30363d;">${icon} <strong style="color: #c9d1d9;">${s.code}</strong> - ${s.desc} <span style="color: ${color}">(${s.done}%)</span></div>`;
-            }).join('')}
-          </div>
-        </details>
       `;
 
-      // Archived - no links needed
-      
-      card.querySelector('.module-header').addEventListener('click', () => {
-        // Module-specific pages
-        const modulePages = {
-          'S0': 'healthcheck.html',
-          'S1': '../catalog.html',  // Live catalog
-          'S2': null,  // No collection page yet
-          'S2-7': null,  // Archived
-          'S3': null,  // Auth - no collection page
-          'S4': null,  // Payment - no collection page  
-          'S5': null   // Worker - no collection page
-        };
-        
-        const page = modulePages[moduleKey];
-        if (page) {
-          window.location.href = page;
-        } else {
-          // Show message if no collection page exists
-          alert(`📋 ${meta.name} scenarios\n\nNo collection runner page yet. Scenarios are listed below.`);
-        }
-      });
-
-      grid.appendChild(card);
+      container.appendChild(section);
     });
   </script>
   </div><!-- .debug-content -->
