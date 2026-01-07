@@ -99,18 +99,17 @@ jobs:
           
           MORPH_COUNT=$(node -e "const d=require('./data/genetics/morphs-complete.json'); console.log(d.morph_count)")
           
-          git commit -m "feat: auto-extracted $MORPH_COUNT morphs from WOBP
-
-- Automated extraction via GitHub Actions
-- Source: World of Ball Pythons
-- Method: Puppeteer browser automation
-- Rate limited: 2.5 sec per morph
-- Run #${{ github.run_number }}
-
-Files:
-- morphs-scraped-raw.json (raw extraction)
-- morphs-complete.json (cleaned & merged)
-- scraper-checkpoint.json (resume capability)" || echo "No changes to commit"
+          git commit -m "feat: auto-extracted $MORPH_COUNT morphs from WOBP" \
+            -m "- Automated extraction via GitHub Actions" \
+            -m "- Source: World of Ball Pythons" \
+            -m "- Method: Puppeteer browser automation" \
+            -m "- Rate limited: 2.5 sec per morph" \
+            -m "- Run #${{ github.run_number }}" \
+            -m "" \
+            -m "Files:" \
+            -m "- morphs-scraped-raw.json (raw extraction)" \
+            -m "- morphs-complete.json (cleaned & merged)" \
+            -m "- scraper-checkpoint.json (resume capability)" || echo "No changes to commit"
           
           git push
       
