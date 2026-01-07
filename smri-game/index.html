@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Serpent Town - SMRI Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a7c59">
+</head>
+<body>
+    <div id="app">
+        <!-- Title Screen -->
+        <div id="screen-title" class="screen active">
+            <div class="title-content">
+                <h1>🐍 Serpent Town</h1>
+                <p class="subtitle">A cozy snake breeding adventure</p>
+                <button id="btn-start" class="btn-primary">Start Game</button>
+                <button id="btn-continue" class="btn-secondary" style="display:none">Continue</button>
+            </div>
+        </div>
+
+        <!-- Shop Screen -->
+        <div id="screen-shop" class="screen">
+            <div class="screen-header">
+                <h2>🏪 Snake Shop</h2>
+                <button class="btn-back" data-back="title">← Back</button>
+            </div>
+            <div class="screen-content">
+                <div class="shop-grid">
+                    <div class="shop-item" id="item-egg">
+                        <div class="item-icon">🥚</div>
+                        <h3>Mystery Egg</h3>
+                        <p>A rare ball python egg waiting to hatch</p>
+                        <div class="item-price">$5.00 <span class="stub">(stub)</span></div>
+                        <button class="btn-buy" data-item="egg">Buy Egg</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Egg View Screen -->
+        <div id="screen-egg" class="screen">
+            <div class="screen-header">
+                <h2>🥚 Your Egg</h2>
+                <button class="btn-back" data-back="shop">← Back to Shop</button>
+            </div>
+            <div class="screen-content center">
+                <div class="egg-container">
+                    <div class="egg-visual" id="egg-visual">🥚</div>
+                    <p class="egg-status" id="egg-status">Click to start hatching...</p>
+                    <div class="progress-bar" id="hatch-progress">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <button id="btn-hatch" class="btn-primary">Begin Hatching</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snake Born Screen -->
+        <div id="screen-born" class="screen">
+            <div class="screen-content center">
+                <div class="celebration">
+                    <h1>🎉 It's a Snake! 🐍</h1>
+                    <div class="snake-preview">
+                        <div class="snake-icon">🐍</div>
+                        <p><strong>Ball Python</strong></p>
+                        <p>Morph: <span id="snake-morph">Normal</span></p>
+                    </div>
+                    <div class="tutorial-hint">
+                        <p>💡 Your home has been unlocked!</p>
+                        <p>Visit your house to care for your new snake.</p>
+                    </div>
+                    <button id="btn-goto-home" class="btn-primary">Go to Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="screen-home" class="screen">
+            <div class="screen-header">
+                <h2>🏠 Your House</h2>
+                <button class="btn-back" data-back="title">← Town</button>
+            </div>
+            <div class="screen-content">
+                <div class="room">
+                    <h3>Living Room</h3>
+                    <div class="room-grid">
+                        <!-- Shelf with snake -->
+                        <div class="interactable" data-module="collection">
+                            <span class="icon">📦</span>
+                            <span class="label">Collection</span>
+                        </div>
+                        <!-- Bed -->
+                        <div class="interactable" data-module="care">
+                            <span class="icon">🛏️</span>
+                            <span class="label">Care Station</span>
+                        </div>
+                        <!-- Board -->
+                        <div class="interactable" data-module="breeding">
+                            <span class="icon">📋</span>
+                            <span class="label">Breeding Board</span>
+                        </div>
+                        <!-- Computer -->
+                        <div class="interactable" data-module="dex">
+                            <span class="icon">💻</span>
+                            <span class="label">Snake Dex</span>
+                        </div>
+                        <!-- Bookshelf -->
+                        <div class="interactable" data-module="tutorial">
+                            <span class="icon">📚</span>
+                            <span class="label">Tutorials</span>
+                        </div>
+                        <!-- Safe -->
+                        <div class="interactable" data-module="admin">
+                            <span class="icon">🔒</span>
+                            <span class="label">Admin</span>
+                        </div>
+                    </div>
+                    <p class="expansion-hint">🔨 Room expansion coming soon...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Panel (Fullscreen Overlay) -->
+        <div id="module-panel" class="screen">
+            <div class="screen-header">
+                <h2 id="module-title">Module</h2>
+                <button class="btn-back" id="btn-close-module">← Back</button>
+            </div>
+            <div class="screen-content">
+                <div id="module-content">
+                    <p>Loading module...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial Overlay -->
+        <div id="tutorial-overlay" class="overlay" style="display:none">
+            <div class="tutorial-box">
+                <h3 id="tutorial-title">Tutorial</h3>
+                <p id="tutorial-text">Welcome to Serpent Town!</p>
+                <button id="btn-tutorial-next" class="btn-primary">Next</button>
+                <button id="btn-tutorial-skip" class="btn-secondary">Skip</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="game.js"></script>
+</body>
+</html>
