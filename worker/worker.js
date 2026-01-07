@@ -67,12 +67,12 @@ const TEST_CATEGORIES = {
 
 // SMRI Scenarios (tutorial flows)
 const SMRI_SCENARIOS = [
-  { id: 'S2-tutorial-happy-path', module: 'S2', name: 'Daily Care Tutorial', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-happy-path.html' },
-  { id: 'S2-tutorial-missed-care', module: 'S2', name: 'Missed Care (2-3 days)', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-missed-care.html' },
-  { id: 'S2-tutorial-education-commerce', module: 'S2', name: 'Education-First Commerce', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-education-commerce.html' },
-  { id: 'S2-tutorial-trust-protection', module: 'S2', name: 'Trust Protection', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-trust-protection.html' },
-  { id: 'S2-tutorial-email-reentry', module: 'S2', name: 'Email-Driven Re-entry', priority: 'P1', url: 'https://vinas8.github.io/catalog/debug/tutorial-email-reentry.html' },
-  { id: 'S2-tutorial-failure-educational', module: 'S2', name: 'Failure Case', priority: 'P1', url: 'https://vinas8.github.io/catalog/debug/tutorial-failure-educational.html' }
+  { id: 'S2.7,5,5-1.01', code: 'S2.7,5,5-1.01', module: 'S2', name: 'Tutorial: Happy path (daily check-in)', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-happy-path.html' },
+  { id: 'S2.7,5,5-1.02', code: 'S2.7,5,5-1.02', module: 'S2', name: 'Tutorial: Missed care (2-3 days)', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-missed-care.html' },
+  { id: 'S2.7,1,5,11.1.03', code: 'S2.7,1,5,11.1.03', module: 'S2', name: 'Tutorial: Education-first commerce', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-education-commerce.html' },
+  { id: 'S2.7,1,5,11.1.04', code: 'S2.7,1,5,11.1.04', module: 'S2', name: 'Tutorial: Trust protection (no purchase)', priority: 'P0', url: 'https://vinas8.github.io/catalog/debug/tutorial-trust-protection.html' },
+  { id: 'S2.7,5,11.1.05', code: 'S2.7,5,11.1.05', module: 'S2', name: 'Tutorial: Email-driven re-entry', priority: 'P1', url: 'https://vinas8.github.io/catalog/debug/tutorial-email-reentry.html' },
+  { id: 'S2.7,5,11.1.06', code: 'S2.7,5,11.1.06', module: 'S2', name: 'Tutorial: Failure case (educational)', priority: 'P1', url: 'https://vinas8.github.io/catalog/debug/tutorial-failure-educational.html' }
 ];
 
 function handleDebugEndpoint(url, corsHeaders) {
