@@ -35,7 +35,7 @@ const SMRI_SCENARIOS = [
     id: 's0-game-mechanics',
     title: 'S0.2.01: Game Mechanics Check',
     smri: 'S0.2.01',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🎮',
     status: '⏳',
     scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
@@ -44,7 +44,7 @@ const SMRI_SCENARIOS = [
     id: 's0-auth-validation',
     title: 'S0.3.01: Auth Validation',
     smri: 'S0.3.01',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '🔐',
     status: '⏳',
     scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
@@ -53,7 +53,7 @@ const SMRI_SCENARIOS = [
     id: 's0-stripe-integration',
     title: 'S0.4.01: Stripe Integration',
     smri: 'S0.4.01',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '💳',
     status: '⏳',
     scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
@@ -72,7 +72,7 @@ const SMRI_SCENARIOS = [
     id: 's0-kv-storage',
     title: 'S0.5-1.01: KV Storage Health',
     smri: 'S0.5-1.01',
-    url: '../admin-kv.html',
+    url: '../../admin-kv.html',
     icon: '💾',
     status: '✅',
     autoRun: true,
@@ -91,7 +91,7 @@ const SMRI_SCENARIOS = [
     id: 's0-demo-mode',
     title: 'S0.0.02: Virtual Snakes Demo',
     smri: 'S0.0.02',
-    url: '../game.html?demo=true',
+    url: '../../game.html?demo=true',
     icon: '🐍',
     status: '⏳',
     scenarioFile: '../.smri/scenarios/S0-all-health-checks.md'
@@ -111,7 +111,7 @@ const SMRI_SCENARIOS = [
     id: 's1-happy-path',
     title: 'S1.1,2,3,4,5.01: Happy Path Purchase',
     smri: 'S1.1,2,3,4,5.01',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🛒',
     status: '📝',
     scenarioFile: '../.smri/scenarios/S1-happy-path-purchase.md'
@@ -120,7 +120,7 @@ const SMRI_SCENARIOS = [
     id: 's1-returning-user',
     title: 'S1: Returning User Purchase',
     smri: 'S1.1,2,3,4.01',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🔄',
     status: '📝',
     scenarioFile: '../.smri/scenarios/S1-returning-user-purchase.md'
@@ -129,7 +129,7 @@ const SMRI_SCENARIOS = [
     id: 's1-product-availability',
     title: 'S1: Product Availability Check',
     smri: 'S1.1.01',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '✅',
     status: '📝',
     scenarioFile: '../.smri/scenarios/S1-product-availability.md'
@@ -138,7 +138,7 @@ const SMRI_SCENARIOS = [
     id: 's1-buy-five',
     title: 'S1: Buy 5 Snakes',
     smri: 'S1.1,2.02',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🛍️',
     status: '📝',
     scenarioFile: '../.smri/scenarios/S1-buy-five-snakes.md'
@@ -147,7 +147,7 @@ const SMRI_SCENARIOS = [
     id: 's1-buy-duplicate',
     title: 'S1: Buy Duplicate Snake',
     smri: 'S1.1,2.03',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🐍🐍',
     status: '📝',
     scenarioFile: '../.smri/scenarios/S1-duplicate-morph.md'
@@ -166,42 +166,42 @@ const SMRI_SCENARIOS = [
     id: 'purchase-flow',
     title: 'S1.1,4,5.02: Purchase Flow',
     smri: 'S1.1,4,5.02',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🛒'
   },
   {
     id: 'catalog-display',
     title: 'S1.1.02: Catalog Product Display',
     smri: 'S1.1.02',
-    url: '../catalog.html',
+    url: '../../catalog.html',
     icon: '🛒'
   },
   {
     id: 'success-page',
     title: 'S1.4.02: Success Page Validation',
     smri: 'S1.4.02',
-    url: '../success.html',
+    url: '../../success.html',
     icon: '✅'
   },
   {
     id: 'collection-view',
     title: 'S2.2.10: Collection View',
     smri: 'S2.2.10',
-    url: '../collection.html',
+    url: '../../collection.html',
     icon: '📚'
   },
   {
     id: 'game-tamagotchi',
     title: 'S2.2.11: Game Tamagotchi Mode',
     smri: 'S2.2.11',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🎮'
   },
   {
     id: 'account-page',
     title: 'S3.3.06: Account Management',
     smri: 'S3.3.06',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '👤'
   },
   // === GAME MODULE (S2) - 10 scenarios ===
@@ -209,56 +209,56 @@ const SMRI_SCENARIOS = [
     id: 's2-stats-display',
     title: 'S2: View Snake Stats',
     smri: 'S2.2.01',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '📊'
   },
   {
     id: 's2-hunger-decay',
     title: 'S2: Hunger/Thirst Decay',
     smri: 'S2.2.02',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '⏱️'
   },
   {
     id: 's2-feed-water',
     title: 'S2: Feed & Water Actions',
     smri: 'S2.2.03',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🍖'
   },
   {
     id: 's2-clean-habitat',
     title: 'S2: Clean Habitat Action',
     smri: 'S2.2.04',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🧹'
   },
   {
     id: 's2-equipment-shop',
     title: 'S2: Equipment Shop Purchase',
     smri: 'S2.2.05',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🛠️'
   },
   {
     id: 's2-auto-save',
     title: 'S2: Auto-Save to KV',
     smri: 'S2.5,5-1.01',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '💾'
   },
   {
     id: 's2-multi-snake',
     title: 'S2: Multi-Snake Management',
     smri: 'S2.2.06',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🐍🐍🐍'
   },
   {
     id: 's2-death-event',
     title: 'S2: Snake Death Event',
     smri: 'S2.2.07',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '💀'
   },
   {
@@ -280,49 +280,49 @@ const SMRI_SCENARIOS = [
     id: 's3-anonymous-user',
     title: 'S3: Anonymous User Creation',
     smri: 'S3.3.01',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '👤'
   },
   {
     id: 's3-hash-validation',
     title: 'S3: Hash Validation',
     smri: 'S3.3.02',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '🔐'
   },
   {
     id: 's3-multi-device',
     title: 'S3: Multi-Device Sync',
     smri: 'S3.3,5-1.01',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '📱💻'
   },
   {
     id: 's3-loyalty-points',
     title: 'S3: Loyalty Points System',
     smri: 'S3.3.03',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '⭐'
   },
   {
     id: 's3-purchase-history',
     title: 'S3: Purchase History View',
     smri: 'S3.3,5-1.02',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '📜'
   },
   {
     id: 's3-data-export',
     title: 'S3: User Data Export',
     smri: 'S3.3.04',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '📦'
   },
   {
     id: 's3-data-wipe',
     title: 'S3: Account Data Wipe',
     smri: 'S3.3.05',
-    url: '../account.html',
+    url: '../../account.html',
     icon: '🗑️'
   },
   // === PAYMENT MODULE (S4) - 6 scenarios ===
@@ -450,7 +450,7 @@ const SMRI_SCENARIOS = [
     id: 's5-game-state-sync',
     title: 'S5: Game State Sync',
     smri: 'S5.2,5-1.04',
-    url: '../game.html',
+    url: '../../game.html',
     icon: '🐍'
   },
   {
@@ -492,7 +492,7 @@ const SMRI_SCENARIOS = [
     id: 'import-page',
     title: 'S1.1.04: CSV Import Page',
     smri: 'S1.1.04',
-    url: '../import.html',
+    url: '../../import.html',
     icon: '📥'
   }
 ];
