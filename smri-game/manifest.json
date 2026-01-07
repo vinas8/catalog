@@ -1,22 +1,27 @@
 {
-  "name": "Serpent Town",
+  "name": "Serpent Town - SMRI Game",
   "short_name": "SMRI Game",
   "description": "A cozy snake breeding adventure game",
-  "start_url": "/smri-game/index.html",
+  "start_url": "/catalog/smri-game/",
+  "scope": "/catalog/smri-game/",
   "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#f4e8d8",
   "theme_color": "#4a7c59",
   "icons": [
     {
-      "src": "../img/icon-192.png",
+      "src": "/catalog/img/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "../img/icon-512.png",
+      "src": "/catalog/img/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["games"],
+  "prefer_related_applications": false
 }
