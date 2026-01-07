@@ -127,6 +127,80 @@
             text-align: center;
             margin-top: 30px;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .subtitle {
+                font-size: 0.9em;
+                margin-bottom: 20px;
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            h3 {
+                font-size: 1.1em;
+            }
+            .section {
+                padding: 15px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .metric {
+                margin: 8px 10px 8px 0;
+                padding: 8px 15px;
+            }
+            .metric strong {
+                font-size: 1.2em;
+            }
+            pre {
+                font-size: 0.85em;
+                padding: 10px;
+            }
+            table {
+                font-size: 0.85em;
+            }
+            table th, table td {
+                padding: 8px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .subtitle {
+                font-size: 0.8em;
+            }
+            h2 {
+                font-size: 1.2em;
+            }
+            h3 {
+                font-size: 1em;
+            }
+            .status {
+                padding: 4px 10px;
+                font-size: 0.85em;
+            }
+            .metric {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+            pre {
+                font-size: 0.75em;
+            }
+        }
     </style>
 </head>
 <body>

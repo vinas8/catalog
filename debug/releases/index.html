@@ -156,6 +156,72 @@
     .back-link:hover {
       background: rgba(255, 255, 255, 0.3);
     }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 10px;
+      }
+      .container {
+        padding: 20px;
+        border-radius: 15px;
+      }
+      h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+      .releases-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .release-card {
+        padding: 20px;
+      }
+      .release-version {
+        font-size: 24px;
+      }
+      .release-date {
+        font-size: 12px;
+      }
+      .release-features {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .release-actions {
+        flex-direction: column;
+      }
+      .btn {
+        padding: 10px 16px;
+        font-size: 12px;
+      }
+      .back-link {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 24px;
+      }
+      .subtitle {
+        font-size: 12px;
+      }
+      .release-card {
+        padding: 15px;
+      }
+      .release-version {
+        font-size: 20px;
+      }
+      .release-badge {
+        font-size: 9px;
+        padding: 4px 8px;
+      }
+    }
   </style>
 </head>
 <body>
