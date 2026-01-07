@@ -33,8 +33,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-game-mechanics',
-    title: 'S0-2.2.01: Game Mechanics Check',
-    smri: 'S0-2.2.01',
+    title: 'S0.2.01: Game Mechanics Check',
+    smri: 'S0.2.01',
     url: '../game.html',
     icon: '🎮',
     status: '⏳',
@@ -42,8 +42,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-auth-validation',
-    title: 'S0-3.3.01: Auth Validation',
-    smri: 'S0-3.3.01',
+    title: 'S0.3.01: Auth Validation',
+    smri: 'S0.3.01',
     url: '../account.html',
     icon: '🔐',
     status: '⏳',
@@ -51,8 +51,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-stripe-integration',
-    title: 'S0-4.4.01: Stripe Integration',
-    smri: 'S0-4.4.01',
+    title: 'S0.4.01: Stripe Integration',
+    smri: 'S0.4.01',
     url: '../catalog.html',
     icon: '💳',
     status: '⏳',
@@ -60,8 +60,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-worker-kv',
-    title: 'S0-5.5,5-1.01: Worker API & KV',
-    smri: 'S0-5.5,5-1.01',
+    title: 'S0.5,5-1.01: Worker API & KV',
+    smri: 'S0.5,5-1.01',
     url: null,
     icon: '⚙️',
     status: '✅',
@@ -70,8 +70,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-kv-storage',
-    title: 'S0-11.5-1.01: KV Storage Health',
-    smri: 'S0-11.5-1.01',
+    title: 'S0.5-1.01: KV Storage Health',
+    smri: 'S0.5-1.01',
     url: '../admin-kv.html',
     icon: '💾',
     status: '✅',
@@ -80,8 +80,8 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 's0-webhooks',
-    title: 'S0-12.5-2.01: Stripe Webhooks',
-    smri: 'S0-12.5-2.01',
+    title: 'S0.5-2.01: Stripe Webhooks',
+    smri: 'S0.5-2.01',
     url: null,
     icon: '🪝',
     status: '⏳',
@@ -164,129 +164,45 @@ const SMRI_SCENARIOS = [
   // === ORIGINAL SCENARIOS ===
   {
     id: 'purchase-flow',
-    title: 'S1: Purchase Flow',
-    smri: 'S1-purchase-flow',
+    title: 'S1.1,4,5.02: Purchase Flow',
+    smri: 'S1.1,4,5.02',
     url: '../catalog.html',
     icon: '🛒'
   },
-  { id: 'catalog', title: '1. Browse Catalog', url: '../catalog.html', icon: '🛒' },
-  { id: 'product', title: '2. Select Product', url: '../catalog.html', icon: '🐍' },
-  { id: 'checkout', title: '3. Stripe Checkout', url: null, icon: '💳' },
-  { id: 'success', title: '4. Success Page', url: '../success.html', icon: '✅' },
-  { id: 'collection', title: '5. View Collection', url: '../collection.html', icon: '📚' },
-  { id: 'game', title: '6. Play Game', url: '../game.html', icon: '🎮' },
   {
     id: 'catalog-display',
-    title: 'Catalog Product Display',
-    smri: 'S1-catalog-display',
+    title: 'S1.1.02: Catalog Product Display',
+    smri: 'S1.1.02',
     url: '../catalog.html',
     icon: '🛒'
   },
   {
     id: 'success-page',
-    title: 'Success Page Validation',
-    smri: 'S1-success-page',
+    title: 'S1.4.02: Success Page Validation',
+    smri: 'S1.4.02',
     url: '../success.html',
     icon: '✅'
   },
   {
     id: 'collection-view',
-    title: 'Collection View',
-    smri: 'S2-collection-view',
+    title: 'S2.2.10: Collection View',
+    smri: 'S2.2.10',
     url: '../collection.html',
     icon: '📚'
   },
   {
     id: 'game-tamagotchi',
-    title: 'Game Tamagotchi Mode',
-    smri: 'S2-game-tamagotchi',
+    title: 'S2.2.11: Game Tamagotchi Mode',
+    smri: 'S2.2.11',
     url: '../game.html',
     icon: '🎮'
   },
   {
     id: 'account-page',
-    title: 'Account Management',
-    smri: 'S3-account-page',
+    title: 'S3.3.06: Account Management',
+    smri: 'S3.3.06',
     url: '../account.html',
     icon: '👤'
-  },
-  // === SYSTEM HEALTH (S0) - 11 scenarios ===
-  {
-    id: 's0-generic-health',
-    title: 'S0: Generic Debug Health',
-    smri: 'S0.0.01',
-    url: 'healthcheck.html',
-    icon: '🏥'
-  },
-  {
-    id: 's0-shop-rendering',
-    title: 'S0: Shop Product Rendering',
-    smri: 'S0-1.1.01',
-    url: '../catalog.html',
-    icon: '🛒'
-  },
-  {
-    id: 's0-game-mechanics',
-    title: 'S0: Game Mechanics Check',
-    smri: 'S0-2.2.01',
-    url: '../game.html',
-    icon: '🎮'
-  },
-  {
-    id: 's0-auth-validation',
-    title: 'S0: Auth User Validation',
-    smri: 'S0-3.3.01',
-    url: '../account.html',
-    icon: '🔐'
-  },
-  {
-    id: 's0-payment-stripe',
-    title: 'S0: Payment Stripe Check',
-    smri: 'S0-4.4.01',
-    url: null,
-    icon: '💳'
-  },
-  {
-    id: 's0-worker-api-check',
-    title: 'S0: Worker API Check',
-    smri: 'S0-5.5,5-1.01',
-    url: null,
-    icon: '☁️'
-  },
-  {
-    id: 's0-kv-health',
-    title: 'S0: KV Storage Health',
-    smri: 'S0-11.5-1.01',
-    url: null,
-    icon: '💾'
-  },
-  {
-    id: 's0-webhooks',
-    title: 'S0: Stripe Webhooks',
-    smri: 'S0-12.5-2.01',
-    url: null,
-    icon: '🔔'
-  },
-  {
-    id: 's0-full-system',
-    title: 'S0: Full System Health',
-    smri: 'S0.1,2,3,4,5,5-1,5-2.03',
-    url: 'healthcheck.html',
-    icon: '✅'
-  },
-  {
-    id: 's0-virtual-demo',
-    title: 'S0: Virtual Snakes Demo',
-    smri: 'S0.0.02',
-    url: '../catalog.html',
-    icon: '👻'
-  },
-  {
-    id: 's0-cleanup',
-    title: 'S0: Storage Cleanup',
-    smri: 'S0.0.03',
-    url: 'data-manager.html',
-    icon: '🗑️'
   },
   // === GAME MODULE (S2) - 10 scenarios ===
   {
@@ -546,36 +462,36 @@ const SMRI_SCENARIOS = [
   },
   {
     id: 'breeding-calculator',
-    title: 'Breeding Calculator',
-    smri: 'S2-breeding-calc',
+    title: 'S2.2.12: Breeding Calculator',
+    smri: 'S2.2.12',
     url: 'calc/index.html',
     icon: '🧬'
   },
   {
     id: 'healthcheck',
-    title: 'System Healthcheck',
-    smri: 'S0-healthcheck',
+    title: 'S0.0.04: System Healthcheck',
+    smri: 'S0.0.04',
     url: 'healthcheck.html',
     icon: '🏥'
   },
   {
     id: 'worker-api',
-    title: 'Worker API Check',
-    smri: 'S5-worker-api',
+    title: 'S5.5.02: Worker API Check',
+    smri: 'S5.5.02',
     url: null,
     icon: '☁️'
   },
   {
     id: 'kv-storage',
-    title: 'KV Storage Test',
-    smri: 'S5-1-kv-storage',
+    title: 'S5.5-1.03: KV Storage Test',
+    smri: 'S5.5-1.03',
     url: null,
     icon: '💾'
   },
   {
     id: 'import-page',
-    title: 'CSV Import Page',
-    smri: 'S1-csv-import',
+    title: 'S1.1.04: CSV Import Page',
+    smri: 'S1.1.04',
     url: '../import.html',
     icon: '📥'
   }
