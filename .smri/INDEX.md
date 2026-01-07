@@ -423,36 +423,12 @@ Original documentation this replaces
 4. Suggest: "Consolidate into .smri/docs/{topic}.md?"
 
 ### When User Types `.smri list`:
-1. **Read scenario config:**
-   - Parse `debug/smri-scenarios.js`
-   - Read `.smri/scenarios/` directory
-2. **Count by status:**
-   - ✅ Complete (status: '✅')
-   - ⏳ In Progress (status: '⏳')
-   - 📝 Planned (status: '📝' or missing)
-3. **Display report:**
+1. **Execute script and show output directly:**
+   ```bash
+   bash scripts/smri-list.sh
    ```
-   📊 SMRI Scenarios: 69 total
-   ✅ Complete: 3 (4%)
-   ⏳ In Progress: 6 (9%)
-   📝 Planned: 60 (87%)
-   
-   🔴 Unfinished Priority (⏳):
-   • S0.2.01 - Game Mechanics Check
-   • S0.3.01 - Auth Validation
-   • S0.4.01 - Stripe Integration
-   
-   📈 Progress by Module:
-   S0 (Health): 3/11 (27%)
-   S1 (Shop): 0/6 (0%)
-   S2 (Game): 0/10 (0%)
-   ```
-4. **Highlight gaps:**
-   - Show which modules need attention
-   - List scenario files vs smri-scenarios.js mismatches
-5. **Suggest next steps:**
-   - "Complete S0 health checks (8 remaining)"
-   - "Start S1 shop scenarios (6 planned)"
+2. **Display the complete output** (no summary, no extra text)
+3. **Just show what the script returns** - nothing else
 
 ### When User Types `.smri consolidate`:
 1. Scan `/docs` and root `*.md` files
