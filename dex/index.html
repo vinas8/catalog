@@ -252,16 +252,43 @@
     </div>
 
     <script type="module">
+        // Snake Pokemon mapping (from PokeRogue)
+        const snakePokemon = {
+            23: { name: 'Ekans', emoji: '🐍' },
+            24: { name: 'Arbok', emoji: '🐍' },
+            95: { name: 'Onix', emoji: '🪨🐍' },
+            208: { name: 'Steelix', emoji: '⚙️🐍' },
+            843: { name: 'Silicobra', emoji: '🏜️🐍' },
+            844: { name: 'Sandaconda', emoji: '🏜️🐍' },
+            336: { name: 'Seviper', emoji: '⚔️🐍' },
+            495: { name: 'Snivy', emoji: '🍃🐍' },
+            496: { name: 'Servine', emoji: '🍃🐍' },
+            497: { name: 'Serperior', emoji: '👑🐍' }
+        };
+        
         // Load genetics data (same as trait-dex)
         const [morphsBase, morphsExpanded] = await Promise.all([
             fetch('../data/genetics/morphs.json').then(r => r.json()),
             fetch('../data/genetics/morphs-expanded.json').then(r => r.json())
         ]);
         
-        const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => ({
-            ...m,
-            index: i + 1
-        }));
+        const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => {
+            // Assign Pokemon sprite based on morph characteristics
+            let pokemonId = 23; // Default: Ekans
+            if (m.super_form) pokemonId = 24; // Arbok for super forms
+            if (m.health_risk === 'high') pokemonId = 336; // Seviper for dangerous
+            if (m.gene_type === 'recessive') pokemonId = 495; // Snivy
+            if (m.gene_type === 'co-dominant') pokemonId = 496; // Servine
+            if (m.market_value_usd > 300) pokemonId = 497; // Serperior for expensive
+            if (m.name.includes('Pied') || m.name.includes('Clown')) pokemonId = 95; // Onix for patterned
+            if (m.name.includes('Desert') || m.name.includes('Sand')) pokemonId = 843; // Silicobra
+            
+            return {
+                ...m,
+                index: i + 1,
+                pokemon: snakePokemon[pokemonId]
+            };
+        });
 
         let ownedMorphs = JSON.parse(localStorage.getItem('owned_morphs') || '[]');
         let currentFilter = 'all';
@@ -294,12 +321,13 @@
 
             grid.innerHTML = filtered.map(morph => {
                 const owned = ownedMorphs.includes(morph.id);
+                const sprite = morph.pokemon ? morph.pokemon.emoji : '🐍';
                 return `
-                    <div class="morph-card ${owned ? 'owned' : ''}" onclick="alert('${morph.name}\\n\\nGene Type: ${morph.gene_type}\\nPrice: $${morph.market_value_usd}\\nRarity: ${morph.rarity}${morph.health_issues?.length ? '\\n\\n⚠️ Health Issues: ' + morph.health_issues.join(', ') : ''}')">
+                    <div class="morph-card ${owned ? 'owned' : ''}" onclick="alert('${morph.name}\\n\\nGene Type: ${morph.gene_type}\\nPrice: $${morph.market_value_usd}\\nRarity: ${morph.rarity}\\nPokemon Spirit: ${morph.pokemon?.name || 'Ekans'}${morph.health_issues?.length ? '\\n\\n⚠️ Health Issues: ' + morph.health_issues.join(', ') : ''}')">
                         ${morph.health_risk === 'high' ? '<div class="health-risk">⚠️</div>' : ''}
                         ${owned ? '<div class="owned-badge">✓</div>' : ''}
                         <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
-                        <div class="morph-icon">🐍</div>
+                        <div class="morph-icon">${sprite}</div>
                         <div class="morph-name">${morph.name}</div>
                         <div class="morph-gene gene-${morph.gene_type?.replace('-', '_') || 'unknown'}">${morph.gene_type || 'Unknown'}</div>
                         <div class="morph-price">$${morph.market_value_usd || 0}</div>
@@ -333,7 +361,7 @@
         });
 
         render();
-        console.log(`✅ Loaded ${allMorphs.length} ball python morphs!`);
+        console.log(`✅ Loaded ${allMorphs.length} ball python morphs with Pokemon sprites!`);
     </script>
 </body>
 </html>
