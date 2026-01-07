@@ -72,15 +72,24 @@ tree -L 3 /root/catalog/.smri/
 ```
 S{M}.{RRR}.{II}
 - S = Scenario prefix
-- M = Primary module (0-6)
+- M = Primary module (0-6) or submodule (e.g., 2-7 = Game Tutorial)
 - RRR = Relations (comma-separated)
 - II = Iteration (01-99)
 
 Separators:
 - DOT (.) = Separates parts
-- COMMA (,) = Separates modules  
-- DASH (-) = External services (5-1=KV, 5-2=Stripe)
+- COMMA (,) = Separates modules in relations
+- DASH (-) = Indicates submodule (e.g., 2-7 = Module 2, Submodule 7)
 ```
+
+**Module Numbers:**
+- 0 = Health
+- 1 = Shop
+- 2 = Game (2-7 = Tutorial, 2-8 = Inventory)
+- 3 = Auth
+- 4 = Payment
+- 5 = Worker (5-1 = KV storage)
+- 6 = Common
 
 **Real Examples:**
 ```
@@ -130,14 +139,19 @@ Complete project briefing:
    ```
    S{M}.{RRR}.{II}
    - S = Scenario prefix
-   - M = Primary module (0-13)
+   - M = Primary module or submodule (e.g., 2-7 = Game Tutorial)
    - RRR = Relations (comma-separated)
    - II = Iteration (01-99)
    
    Separators:
    - DOT (.) = Separates parts
-   - COMMA (,) = Separates modules  
-   - DASH (-) = External services (5-1=KV, 5-2=Stripe)
+   - COMMA (,) = Separates modules in relations
+   - DASH (-) = Indicates submodule (2-7, 5-1, etc.)
+   
+   Examples:
+   - S2.7,5,5-1.01 = Game with Tutorial, Worker, KV (iteration 01)
+   - S1.1,2,3,4,5.01 = Shop with full purchase flow
+   - S0.0,1,2,3,4,5.01 = Health check across all modules
    ```
 2. Check version (`package.json`)
 3. Load `.smri/INDEX.md` (navigation + rules)
