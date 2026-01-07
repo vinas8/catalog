@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 SMRI Runner - Modular v1.0</title>
+  <script src="../../src/utils/debug-loader.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #58a6ff;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .header p {
+      color: #8b949e;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧪 SMRI Test Runner</h1>
+    <p>Modular Architecture v1.0 - Powered by ES6 Modules</p>
+  </div>
+
+  <div id="runner-container"></div>
+
+  <script type="module">
+    import { SMRIRunner } from '../modules/SMRIRunner.js';
+
+    // Define test scenarios
+    const scenarios = [
+      {
+        id: 'catalog',
+        title: 'Shop Catalog',
+        smri: 'S1.1,2,3,4,5.01',
+        url: '../../catalog.html',
+        icon: '🛒'
+      },
+      {
+        id: 'game',
+        title: 'Tamagotchi Game',
+        smri: 'S2.2,5.01',
+        url: '../../game.html',
+        icon: '🎮'
+      },
+      {
+        id: 'collection',
+        title: 'User Collection',
+        smri: 'S1.1,2,5.02',
+        url: '../../collection.html',
+        icon: '🎒'
+      },
+      {
+        id: 'dex',
+        title: 'Snake Dex',
+        smri: 'S2.6,5.01',
+        url: '../../dex.html',
+        icon: '📚'
+      },
+      {
+        id: 'admin',
+        title: 'Admin KV Panel',
+        smri: 'S5.5-1.01',
+        url: '../../admin-kv.html',
+        icon: '⚙️'
+      },
+      {
+        id: 'purchase-flow',
+        title: 'Purchase Flow Demo',
+        smri: 'S1.1,2,3,4,5.01',
+        url: '../purchase-flow-demo.html',
+        icon: '💳'
+      },
+      {
+        id: 'health',
+        title: 'System Health Check',
+        smri: 'S0.0.01',
+        url: '../tools/healthcheck.html',
+        icon: '🏥'
+      },
+      {
+        id: 'kv-manager',
+        title: 'KV Manager',
+        smri: 'S5.5-1.02',
+        url: '../tools/kv-manager.html',
+        icon: '💾'
+      },
+      {
+        id: 'calculator',
+        title: 'Breeding Calculator',
+        smri: 'S3.1.01',
+        url: '../../calc/index.html',
+        icon: '🧮'
+      },
+      {
+        id: 'import',
+        title: 'CSV Import',
+        smri: 'S5.5-1.03',
+        url: '../../import.html',
+        icon: '📊'
+      }
+    ];
+
+    // Initialize runner
+    const runner = new SMRIRunner('runner-container', {
+      scenarios: scenarios,
+      autoLoad: false,
+      showPipeline: true
+    });
+
+    console.log('🧪 SMRI Runner initialized');
+    console.log(`📦 Loaded ${scenarios.length} test scenarios`);
+  </script>
+</body>
+</html>
