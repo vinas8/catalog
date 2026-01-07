@@ -182,6 +182,48 @@ Update today's session log with:
 - Each entry separated by date/time header
 - **Auto-suggest:** "Consolidate this session into .smri/docs/{topic}.md?"
 
+### `.smri list`
+List all SMRI scenarios with status:
+1. **Load scenarios from:**
+   - `debug/smri-scenarios.js` (canonical source)
+   - `.smri/scenarios/*.md` (scenario files)
+2. **Display format:**
+   ```
+   📊 SMRI Scenarios Status (v0.7.7)
+   
+   ✅ Complete (3/69):
+   • S0.0.01 - Generic Debug Health
+   • S0.5,5-1.01 - Worker API & KV
+   • S0.5-1.01 - KV Storage Health
+   
+   ⏳ In Progress (6/69):
+   • S0.2.01 - Game Mechanics Check
+   • S0.3.01 - Auth Validation
+   • S0.4.01 - Stripe Integration
+   • S0.5-2.01 - Stripe Webhooks
+   • S0.0.02 - Virtual Snakes Demo
+   • S0.0.03 - Cleanup Test Data
+   
+   📝 Planned (60/69):
+   • S1.1,2,3,4,5.01 - Happy Path Purchase
+   • S2.7,5,5-1.01 - Tutorial Happy Path
+   • [... remaining scenarios ...]
+   
+   📈 Progress: 4% (3/69 complete)
+   🎯 Next Priority: Complete S0 health checks (11 scenarios)
+   ```
+3. **Group by module:**
+   - S0: Health (11 scenarios)
+   - S1: Shop (6 scenarios)
+   - S2: Game (10 scenarios)
+   - S3: Auth (7 scenarios)
+   - S4: Payment (6 scenarios)
+   - S5: Worker (13 scenarios)
+4. **Highlight unfinished:**
+   - Show ⏳ scenarios at top
+   - Link to scenario file path
+   - Show last updated date
+
 ### `.smri consolidate`
 Consolidate documentation:
 - Scan `/docs` and root `*.md` files
@@ -401,6 +443,38 @@ Original documentation this replaces
 2. Include prompt + answer (summarize if >100 lines)
 3. Add timestamp separator
 4. Suggest: "Consolidate into .smri/docs/{topic}.md?"
+
+### When User Types `.smri list`:
+1. **Read scenario config:**
+   - Parse `debug/smri-scenarios.js`
+   - Read `.smri/scenarios/` directory
+2. **Count by status:**
+   - ✅ Complete (status: '✅')
+   - ⏳ In Progress (status: '⏳')
+   - 📝 Planned (status: '📝' or missing)
+3. **Display report:**
+   ```
+   📊 SMRI Scenarios: 69 total
+   ✅ Complete: 3 (4%)
+   ⏳ In Progress: 6 (9%)
+   📝 Planned: 60 (87%)
+   
+   🔴 Unfinished Priority (⏳):
+   • S0.2.01 - Game Mechanics Check
+   • S0.3.01 - Auth Validation
+   • S0.4.01 - Stripe Integration
+   
+   📈 Progress by Module:
+   S0 (Health): 3/11 (27%)
+   S1 (Shop): 0/6 (0%)
+   S2 (Game): 0/10 (0%)
+   ```
+4. **Highlight gaps:**
+   - Show which modules need attention
+   - List scenario files vs smri-scenarios.js mismatches
+5. **Suggest next steps:**
+   - "Complete S0 health checks (8 remaining)"
+   - "Start S1 shop scenarios (6 planned)"
 
 ### When User Types `.smri consolidate`:
 1. Scan `/docs` and root `*.md` files
