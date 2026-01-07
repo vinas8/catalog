@@ -1,0 +1,35 @@
+<!-- SMRI Game - Back to Town Button (Include in all pages) -->
+<style>
+.smri-back-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, #88c070 0%, #306850 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border: 3px solid #2d1b00;
+    border-radius: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.smri-back-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+
+.smri-back-btn:active {
+    transform: translateY(2px);
+}
+</style>
+
+<a href="/catalog/smri-game/" class="smri-back-btn" title="Back to Serpent Town">
+    <span>🏘️</span>
+    <span>Back to Town</span>
+</a>
