@@ -403,6 +403,9 @@
         <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9em;">
           Enhanced analysis with market values, health risks, and breeding compatibility
         </p>
+        <div style="font-size: 0.85em; color: #718096; margin-top: 8px;">
+          <span id="data-status">Loading genetics database...</span>
+        </div>
       </div>
       <div class="section-body">
         <!-- Morph Selection -->
@@ -444,9 +447,14 @@
           </div>
         </div>
 
-        <button id="calculate-btn" class="calculate-btn">
-          🧬 Calculate Breeding Compatibility & Outcomes
-        </button>
+        <div style="display: flex; gap: 15px;">
+          <button id="calculate-btn" class="calculate-btn" style="flex: 1;">
+            🧬 Calculate Breeding Compatibility & Outcomes
+          </button>
+          <button id="demo-btn" class="calculate-btn" style="flex: 0 0 auto; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            🎬 Load Demo
+          </button>
+        </div>
 
         <!-- Results Section -->
         <div id="results-container" style="display: none; margin-top: 30px;">
@@ -511,11 +519,26 @@
     async function init() {
       console.log('🧬 Initializing integrated calculator...');
       
-      // Load genetics database
-      const loadResult = await loadGeneticsDatabase();
-      if (loadResult) {
-        console.log('✅ Genetics database loaded');
-        morphDatabase = loadResult.morphs || [];
+      const statusEl = document.getElementById('data-status');
+      
+      // Load genetics database - LOAD BOTH BASE (50) + EXPANDED (20) = 70 MORPHS
+      const baseResult = await loadGeneticsDatabase(false); // Load base 50
+      const expandedResult = await loadGeneticsDatabase(true); // Load expanded 20
+      
+      if (baseResult && expandedResult) {
+        // Merge both datasets
+        morphDatabase = [
+          ...(baseResult.morphs || []),
+          ...(expandedResult.morphs || [])
+        ];
+        console.log(`✅ Genetics database loaded: ${morphDatabase.length} morphs`);
+        statusEl.innerHTML = `✅ <strong>${morphDatabase.length} morphs</strong> loaded from <a href="data/genetics/" style="color: #667eea; text-decoration: underline;">data/genetics/</a>`;
+      } else if (baseResult) {
+        morphDatabase = baseResult.morphs || [];
+        console.log(`✅ Base genetics database loaded: ${morphDatabase.length} morphs`);
+        statusEl.innerHTML = `✅ ${morphDatabase.length} morphs loaded`;
+      } else {
+        statusEl.innerHTML = `⚠️ Failed to load genetics database`;
       }
 
       // Setup autocomplete
@@ -524,6 +547,9 @@
 
       // Setup calculate button
       document.getElementById('calculate-btn').addEventListener('click', calculateResults);
+      
+      // Setup demo button
+      document.getElementById('demo-btn').addEventListener('click', loadDemo);
 
       // Try to listen for iframe changes (limited by CORS)
       setupIframeSyncListener();
@@ -840,6 +866,49 @@
 
       // Scroll to results
       resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Demo mode
+    function loadDemo() {
+      console.log('🎬 Loading demo breeding pair...');
+      
+      // Clear existing
+      selectedMaleMorphs = [];
+      selectedFemaleMorphs = [];
+      
+      // Find popular morphs for demo
+      const banana = morphDatabase.find(m => m.name.toLowerCase().includes('banana'));
+      const pastel = morphDatabase.find(m => m.name.toLowerCase().includes('pastel'));
+      const piebald = morphDatabase.find(m => m.name.toLowerCase().includes('piebald'));
+      const fire = morphDatabase.find(m => m.name.toLowerCase().includes('fire'));
+      
+      // Male: Banana Pastel (if available, otherwise just Banana)
+      if (banana) selectedMaleMorphs.push(banana.id);
+      if (pastel) selectedMaleMorphs.push(pastel.id);
+      
+      // Female: Piebald (or Fire if not available)
+      if (piebald) {
+        selectedFemaleMorphs.push(piebald.id);
+      } else if (fire) {
+        selectedFemaleMorphs.push(fire.id);
+      }
+      
+      // Fallback to first available morphs if nothing found
+      if (selectedMaleMorphs.length === 0 && morphDatabase.length > 0) {
+        selectedMaleMorphs.push(morphDatabase[0].id);
+      }
+      if (selectedFemaleMorphs.length === 0 && morphDatabase.length > 1) {
+        selectedFemaleMorphs.push(morphDatabase[1].id);
+      }
+      
+      renderMorphTags('male');
+      renderMorphTags('female');
+      updateSyncStatus();
+      
+      // Auto-calculate
+      setTimeout(() => {
+        calculateResults();
+      }, 500);
     }
 
     // Expose functions to global scope for inline handlers
