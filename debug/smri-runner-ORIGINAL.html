@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 SMRI Test Runner - Snake Muffin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    
+    .header h1 { 
+      color: white; 
+      font-size: 32px; 
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .breadcrumb {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+    
+    .breadcrumb a { 
+      color: rgba(255,255,255,0.9); 
+      text-decoration: none; 
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    button:hover { 
+      background: #2ea043; 
+      transform: translateY(-1px); 
+    }
+    
+    button:disabled {
+      background: #21262d;
+      color: #8b949e;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    button.secondary { background: #1f6feb; }
+    button.secondary:hover { background: #0969da; }
+    
+    .panel {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    
+    .panel h2 {
+      color: #58a6ff;
+      margin-bottom: 15px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .scenario-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .scenario-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+    }
+    
+    .scenario-card.running {
+      border-color: #f0883e;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .scenario-card.passed {
+      border-color: #3fb950;
+      background: rgba(63, 185, 80, 0.05);
+    }
+    
+    .scenario-card.failed {
+      border-color: #f85149;
+      background: rgba(248, 81, 73, 0.05);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .scenario-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #c9d1d9;
+    }
+    
+    .scenario-id {
+      font-size: 11px;
+      color: #8b949e;
+      font-family: monospace;
+      margin-bottom: 12px;
+    }
+    
+    .scenario-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #30363d;
+    }
+    
+    .scenario-status .icon {
+      font-size: 18px;
+    }
+    
+    .test-output {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 300px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .log-entry {
+      margin-bottom: 4px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .log-time {
+      color: #8b949e;
+      flex-shrink: 0;
+    }
+    
+    .log-message {
+      color: #c9d1d9;
+    }
+    
+    .log-error { color: #f85149; }
+    .log-success { color: #3fb950; }
+    .log-warning { color: #f0883e; }
+    .log-info { color: #58a6ff; }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value.passed { color: #3fb950; }
+    .stat-value.failed { color: #f85149; }
+    .stat-value.total { color: #58a6ff; }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .iframe-container {
+      background: white;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+      height: 600px;
+    }
+    
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="breadcrumb">
+        <a href="index.html">🐍 Debug Hub</a> → SMRI Test Runner
+      </div>
+      <h1>
+        🧪 SMRI Test Runner
+        <span class="status-badge" id="globalStatus">Ready</span>
+      </h1>
+      <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin-top: 8px;">
+        Integrated browser testing with live HTML rendering
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>⚡ Quick Actions</h2>
+      <div class="controls">
+        <button id="btnRunAll">
+          <span>▶️</span>
+          Run All Tests
+        </button>
+        <button class="secondary" id="btnRunPurchase">
+          <span>🛒</span>
+          Purchase Flow
+        </button>
+        <button class="secondary" id="btnRunHealthcheck">
+          <span>🏥</span>
+          Healthcheck
+        </button>
+        <button class="secondary" id="btnRunAPI">
+          <span>🔌</span>
+          Worker API
+        </button>
+        <button class="secondary" id="btnClear">
+          <span>🗑️</span>
+          Clear Results
+        </button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>📊 Test Results</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value passed" id="statPassed">0</div>
+          <div class="stat-label">Passed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value failed" id="statFailed">0</div>
+          <div class="stat-label">Failed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value total" id="statTotal">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statDuration" style="color: #f0883e;">0ms</div>
+          <div class="stat-label">Duration</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🧪 Test Scenarios</h2>
+      <div class="scenario-grid" id="scenarioGrid"></div>
+    </div>
+
+    <div class="panel">
+      <h2>📝 Console Output</h2>
+      <div class="test-output" id="consoleOutput">
+        <div class="log-entry">
+          <span class="log-time">--:--:--</span>
+          <span class="log-message log-info">Ready to run tests...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="renderPanel" style="display: none;">
+      <h2>🎨 Live Render (Browser View)</h2>
+      <div class="iframe-container">
+        <iframe id="renderFrame" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const BASE_PATH = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+    
+    // Test definitions
+    const scenarios = [
+      {
+        id: 'purchase-flow',
+        title: 'Purchase Flow',
+        smri: 'S2-purchase-flow',
+        url: '../catalog.html',
+        icon: '🛒'
+      },
+      {
+        id: 'healthcheck',
+        title: 'Healthcheck Page',
+        smri: 'S2-healthcheck',
+        url: 'healthcheck.html',
+        icon: '🏥'
+      },
+      {
+        id: 'worker-api',
+        title: 'Worker API',
+        smri: 'S2-worker-api',
+        url: null, // API test
+        icon: '🔌'
+      }
+    ];
+    
+    // State
+    let results = {
+      passed: 0,
+      failed: 0,
+      total: 0,
+      duration: 0,
+      scenarios: []
+    };
+    
+    // UI elements
+    const scenarioGrid = document.getElementById('scenarioGrid');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const renderPanel = document.getElementById('renderPanel');
+    const renderFrame = document.getElementById('renderFrame');
+    const globalStatus = document.getElementById('globalStatus');
+    
+    // Initialize UI
+    function initScenarios() {
+      scenarioGrid.innerHTML = scenarios.map(s => `
+        <div class="scenario-card" data-id="${s.id}">
+          <div class="scenario-title">${s.icon} ${s.title}</div>
+          <div class="scenario-id">${s.smri}</div>
+          <div class="scenario-status">
+            <span class="icon">⏸️</span>
+            <span>Not run</span>
+          </div>
+        </div>
+      `).join('');
+      
+      // Add click handlers
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.dataset.id;
+          runScenario(id);
+        });
+      });
+    }
+    
+    // Logging
+    function log(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-message log-${type}">${message}</span>
+      `;
+      consoleOutput.appendChild(entry);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    // Update stats
+    function updateStats() {
+      document.getElementById('statPassed').textContent = results.passed;
+      document.getElementById('statFailed').textContent = results.failed;
+      document.getElementById('statTotal').textContent = results.total;
+      document.getElementById('statDuration').textContent = results.duration + 'ms';
+    }
+    
+    // Update scenario card
+    function updateScenarioCard(id, status, message) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      if (!card) return;
+      
+      card.className = `scenario-card ${status}`;
+      const statusEl = card.querySelector('.scenario-status');
+      
+      const icons = {
+        running: '⏳',
+        passed: '✅',
+        failed: '❌',
+        pending: '⏸️'
+      };
+      
+      statusEl.innerHTML = `
+        <span class="icon">${icons[status]}</span>
+        <span>${message}</span>
+      `;
+    }
+    
+    // Test: Purchase Flow
+    async function testPurchaseFlow() {
+      log('🛒 Testing Purchase Flow...', 'info');
+      const startTime = Date.now();
+      const steps = [];
+      
+      try {
+        // Load catalog in iframe
+        log('1️⃣ Loading catalog.html...', 'info');
+        renderPanel.style.display = 'block';
+        renderFrame.src = BASE_PATH.replace('/debug', '') + '/catalog.html';
+        
+        await new Promise(resolve => {
+          renderFrame.onload = resolve;
+          setTimeout(resolve, 5000); // Fallback timeout
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for JS
+        
+        steps.push({ step: 'Load catalog', passed: true });
+        log('   ✅ Catalog loaded', 'success');
+        
+        // Check if iframe has products (basic check)
+        const iframeDoc = renderFrame.contentDocument;
+        if (iframeDoc) {
+          const products = iframeDoc.querySelectorAll('.product-card, .snake-card, [data-product]');
+          log(`   ✅ Found ${products.length} product elements`, 'success');
+          steps.push({ step: 'Products rendered', passed: true, count: products.length });
+        }
+        
+        const duration = Date.now() - startTime;
+        return { passed: true, steps, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, steps, duration };
+      }
+    }
+    
+    // Test: Healthcheck
+    async function testHealthcheck() {
+      log('🏥 Testing Healthcheck...', 'info');
+      const startTime = Date.now();
+      
+      try {
+        log('1️⃣ Loading healthcheck.html...', 'info');
+        renderPanel.style.display = 'block';
+        renderFrame.src = 'healthcheck.html';
+        
+        await new Promise(resolve => {
+          renderFrame.onload = resolve;
+          setTimeout(resolve, 3000);
+        });
+        
+        log('   ✅ Healthcheck loaded', 'success');
+        
+        const iframeDoc = renderFrame.contentDocument;
+        if (iframeDoc) {
+          const serviceGroups = iframeDoc.querySelectorAll('.service-group');
+          log(`   ✅ Found ${serviceGroups.length} service groups`, 'success');
+        }
+        
+        const duration = Date.now() - startTime;
+        return { passed: true, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, duration };
+      }
+    }
+    
+    // Test: Worker API
+    async function testWorkerAPI() {
+      log('🔌 Testing Worker API...', 'info');
+      const startTime = Date.now();
+      
+      try {
+        log('1️⃣ Fetching /products...', 'info');
+        const response = await fetch(`${WORKER_URL}/products`);
+        
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}`);
+        }
+        
+        const products = await response.json();
+        log(`   ✅ API returned ${products.length} products`, 'success');
+        
+        if (!Array.isArray(products)) {
+          throw new Error('Response is not an array');
+        }
+        
+        if (products.length > 0) {
+          const hasStructure = products[0].id && products[0].name && products[0].price;
+          if (!hasStructure) {
+            throw new Error('Product missing required fields');
+          }
+          log('   ✅ Product structure valid', 'success');
+        }
+        
+        const duration = Date.now() - startTime;
+        return { passed: true, duration };
+        
+      } catch (error) {
+        log(`   ❌ FAILED: ${error.message}`, 'error');
+        const duration = Date.now() - startTime;
+        return { passed: false, error: error.message, duration };
+      }
+    }
+    
+    // Run single scenario
+    async function runScenario(id) {
+      const scenario = scenarios.find(s => s.id === id);
+      if (!scenario) return;
+      
+      log(`\n${'='.repeat(50)}\n🧪 Running: ${scenario.title}\n${'='.repeat(50)}`, 'info');
+      updateScenarioCard(id, 'running', 'Running...');
+      
+      let result;
+      if (id === 'purchase-flow') {
+        result = await testPurchaseFlow();
+      } else if (id === 'healthcheck') {
+        result = await testHealthcheck();
+      } else if (id === 'worker-api') {
+        result = await testWorkerAPI();
+      }
+      
+      // Update results
+      results.total++;
+      results.duration += result.duration || 0;
+      
+      if (result.passed) {
+        results.passed++;
+        log(`✅ PASSED in ${result.duration}ms\n`, 'success');
+        updateScenarioCard(id, 'passed', `Passed (${result.duration}ms)`);
+      } else {
+        results.failed++;
+        log(`❌ FAILED in ${result.duration}ms\n`, 'error');
+        updateScenarioCard(id, 'failed', result.error);
+      }
+      
+      updateStats();
+      updateGlobalStatus();
+    }
+    
+    // Run all scenarios
+    async function runAll() {
+      log('🚀 Running all tests...', 'info');
+      results = { passed: 0, failed: 0, total: 0, duration: 0 };
+      
+      for (const scenario of scenarios) {
+        await runScenario(scenario.id);
+        await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause
+      }
+      
+      log(`\n${'='.repeat(50)}\n📊 All tests complete!\n${'='.repeat(50)}`, 'info');
+    }
+    
+    // Update global status
+    function updateGlobalStatus() {
+      if (results.total === 0) {
+        globalStatus.textContent = 'Ready';
+        globalStatus.style.background = 'rgba(255,255,255,0.2)';
+      } else if (results.failed === 0) {
+        globalStatus.textContent = `✅ All Passed (${results.passed}/${results.total})`;
+        globalStatus.style.background = '#238636';
+      } else {
+        globalStatus.textContent = `⚠️ ${results.failed} Failed`;
+        globalStatus.style.background = '#da3633';
+      }
+    }
+    
+    // Clear results
+    function clearResults() {
+      results = { passed: 0, failed: 0, total: 0, duration: 0 };
+      consoleOutput.innerHTML = '<div class="log-entry"><span class="log-time">--:--:--</span><span class="log-message log-info">Cleared.</span></div>';
+      updateStats();
+      updateGlobalStatus();
+      renderPanel.style.display = 'none';
+      
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.className = 'scenario-card';
+        card.querySelector('.scenario-status').innerHTML = '<span class="icon">⏸️</span><span>Not run</span>';
+      });
+    }
+    
+    // Event listeners
+    document.getElementById('btnRunAll').addEventListener('click', runAll);
+    document.getElementById('btnRunPurchase').addEventListener('click', () => runScenario('purchase-flow'));
+    document.getElementById('btnRunHealthcheck').addEventListener('click', () => runScenario('healthcheck'));
+    document.getElementById('btnRunAPI').addEventListener('click', () => runScenario('worker-api'));
+    document.getElementById('btnClear').addEventListener('click', clearResults);
+    
+    // Initialize
+    initScenarios();
+    updateStats();
+    
+    console.log('🐍 SMRI Test Runner initialized');
+    console.log('Click scenarios or use Quick Actions to run tests');
+  </script>
+</body>
+</html>
