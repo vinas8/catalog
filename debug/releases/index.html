@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Release Demos - Serpent Town</title>
+  <script src="../../src/utils/debug-loader.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 50px;
+    }
+    .releases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    .release-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 30px;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .release-card:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .release-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #10b981;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .release-badge.legacy {
+      background: #8b949e;
+    }
+    .release-version {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .release-date {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+    .release-features {
+      list-style: none;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .release-features li {
+      padding-left: 25px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .release-features li:before {
+      content: "✨";
+      position: absolute;
+      left: 0;
+    }
+    .release-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: white;
+      color: #667eea;
+    }
+    .btn-primary:hover {
+      background: #f0f0f0;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .coming-soon {
+      background: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .coming-soon:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .coming-soon-label {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      opacity: 0.5;
+      padding: 40px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Release Demos</h1>
+    <div class="subtitle">Interactive demonstrations for each Serpent Town release</div>
+
+    <div class="releases-grid">
+      <!-- Current Release -->
+      <a href="v0.7.7/demo.html" class="release-card">
+        <div class="release-badge">CURRENT</div>
+        <div class="release-version">v0.7.7</div>
+        <div class="release-date">Released: January 4, 2026</div>
+        <ul class="release-features">
+          <li>70 ball python morphs</li>
+          <li>Breeding calculator with health risks</li>
+          <li>Centralized data hub</li>
+          <li>Clean file organization</li>
+          <li>Global debug console</li>
+        </ul>
+        <div class="release-actions">
+          <div class="btn btn-primary">▶️ Launch Demo</div>
+          <a href="v0.7.7/README.md" class="btn btn-secondary" onclick="event.stopPropagation();">📋 Notes</a>
+        </div>
+      </a>
+
+      <!-- Future Release -->
+      <div class="release-card coming-soon">
+        <div class="release-badge legacy">UPCOMING</div>
+        <div class="release-version">v0.8.0</div>
+        <div class="release-date">Planned: Q1 2026</div>
+        <ul class="release-features">
+          <li>Farm breeding system</li>
+          <li>Advanced genetics engine</li>
+          <li>Root file cleanup</li>
+          <li>Enhanced mobile UX</li>
+          <li>Performance optimizations</li>
+        </ul>
+        <div class="coming-soon-label">Coming Soon</div>
+      </div>
+
+      <!-- Legacy Release -->
+      <div class="release-card coming-soon">
+        <div class="release-badge legacy">LEGACY</div>
+        <div class="release-version">v0.6.x</div>
+        <div class="release-date">Released: December 2025</div>
+        <ul class="release-features">
+          <li>Initial shop system</li>
+          <li>Basic game mechanics</li>
+          <li>Stripe integration</li>
+          <li>KV storage setup</li>
+        </ul>
+        <div class="coming-soon-label">Archived</div>
+      </div>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 20px; margin-top: 30px;">
+      <h3 style="font-size: 18px; margin-bottom: 15px;">💡 About Demos</h3>
+      <p style="font-size: 14px; line-height: 1.6; opacity: 0.9;">
+        Each release has an interactive demo system showcasing key features. Demos include:
+      </p>
+      <ul style="list-style: none; margin: 15px 0; font-size: 14px; line-height: 1.8;">
+        <li>🛒 <strong>Customer Journey</strong> - Browse, purchase, care</li>
+        <li>👔 <strong>Owner Journey</strong> - Setup, manage, analytics</li>
+        <li>🎮 <strong>Gameplay Demo</strong> - Interactive game mechanics</li>
+        <li>📊 <strong>Data Management</strong> - KV sync, Stripe integration</li>
+      </ul>
+    </div>
+
+    <a href="../index.html" class="back-link">← Back to Debug Hub</a>
+  </div>
+</body>
+</html>
