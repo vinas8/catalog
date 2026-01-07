@@ -3,216 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serpent Town</title>
+    <title>🐍 Serpent Town</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(180deg, #87ceeb 0%, #88c070 100%);
-            min-height: 100vh;
-            padding: 2rem;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .container {
-            max-width: 1200px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(180deg, #87ceeb 0%, #88c070 50%, #88c070 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .town-container {
+            max-width: 1400px;
             margin: 0 auto;
         }
         
-        h1 {
+        .header {
             text-align: center;
-            color: #2d1b00;
+            padding: 2rem 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 4px solid #3d2817;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
             font-size: 3rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #2d5a3d;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0 #ffd700;
         }
         
-        .subtitle {
-            text-align: center;
-            color: #5d4a37;
+        .header p {
             font-size: 1.2rem;
-            margin-bottom: 3rem;
+            color: #5d4a37;
         }
         
-        .town-grid {
+        .buildings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
         }
         
         .building {
-            background: white;
-            border: 4px solid #3d2817;
-            border-radius: 16px;
+            background: linear-gradient(135deg, #fff 0%, #f5e6d3 100%);
+            border: 5px solid #3d2817;
+            border-radius: 20px;
             padding: 2rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 0 #3d2817, 0 10px 20px rgba(0,0,0,0.2);
-            min-height: 220px;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 0 #2d1b00, 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            min-height: 240px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
         }
         
         .building:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 14px 0 #3d2817, 0 18px 30px rgba(0,0,0,0.3);
+            transform: translateY(-10px);
+            box-shadow: 0 18px 0 #2d1b00, 0 20px 35px rgba(0,0,0,0.4);
         }
         
         .building:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #3d2817, 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        .building.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
-        
-        .building.locked:hover {
-            transform: none;
-            box-shadow: 0 6px 0 #3d2817, 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #2d1b00, 0 4px 15px rgba(0,0,0,0.3);
         }
         
         .building-icon {
             font-size: 5rem;
             margin-bottom: 1rem;
+            line-height: 1;
         }
         
-        .building-name {
-            font-size: 1.5rem;
+        .building-title {
+            font-size: 1.4rem;
             font-weight: bold;
             color: #2d1b00;
             margin-bottom: 0.5rem;
         }
         
         .building-desc {
-            color: #5d4a37;
             font-size: 0.95rem;
+            color: #5d4a37;
+            line-height: 1.4;
         }
         
-        .status-bar {
-            background: rgba(61, 40, 23, 0.9);
-            border: 3px solid #ffd700;
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin-bottom: 2rem;
+        .locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.8);
         }
         
-        .status-item {
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
+        .locked:hover {
+            transform: none;
+            box-shadow: 0 8px 0 #2d1b00, 0 10px 25px rgba(0,0,0,0.3);
         }
         
-        .lock-icon {
+        .lock-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 2rem;
+            top: 15px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            border: 2px solid #000;
         }
         
-        .building {
-            position: relative;
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .buildings-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .building {
+                min-height: 200px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🐍 Serpent Town</h1>
-        <p class="subtitle">Your Snake Breeding Adventure Hub</p>
-        
-        <div class="status-bar">
-            <div class="status-item">💰 Gold: <span id="gold">0</span></div>
-            <div class="status-item">🐍 Snakes: <span id="snakes">0</span></div>
+    <div class="town-container">
+        <div class="header">
+            <h1>🐍 Serpent Town</h1>
+            <p>Your Snake Breeding & Care Adventure</p>
         </div>
         
-        <div class="town-grid">
+        <div class="buildings-grid">
             <!-- Shop -->
-            <div class="building" onclick="go('/catalog/catalog.html')">
+            <div class="building" onclick="navigate('/catalog/catalog.html')">
                 <div class="building-icon">🏪</div>
-                <div class="building-name">Snake Shop</div>
-                <div class="building-desc">Buy real snakes with Stripe</div>
+                <div class="building-title">Snake Shop</div>
+                <div class="building-desc">Buy real ball pythons with Stripe payments</div>
             </div>
             
-            <!-- Dex -->
-            <div class="building" onclick="go('/catalog/dex.html')">
+            <!-- Snake Dex -->
+            <div class="building" onclick="navigate('/catalog/dex.html')">
                 <div class="building-icon">📖</div>
-                <div class="building-name">Snake Dex</div>
-                <div class="building-desc">Pokédex-style encyclopedia</div>
+                <div class="building-title">Snake Dex</div>
+                <div class="building-desc">Pokédex-style snake encyclopedia</div>
             </div>
             
-            <!-- Collection -->
-            <div class="building" onclick="go('/catalog/collection.html')">
+            <!-- My Collection -->
+            <div class="building" onclick="navigate('/catalog/collection.html')">
                 <div class="building-icon">🎒</div>
-                <div class="building-name">My Collection</div>
-                <div class="building-desc">View your snakes</div>
+                <div class="building-title">My Collection</div>
+                <div class="building-desc">View & manage your purchased snakes</div>
             </div>
             
-            <!-- Game -->
-            <div class="building" onclick="go('/catalog/game.html')">
+            <!-- Care Game -->
+            <div class="building" onclick="navigate('/catalog/game.html')">
                 <div class="building-icon">🎮</div>
-                <div class="building-name">Care Station</div>
-                <div class="building-desc">Feed & care for snakes</div>
+                <div class="building-title">Care Station</div>
+                <div class="building-desc">Tamagotchi-style snake care game</div>
             </div>
             
-            <!-- Calculator -->
-            <div class="building" onclick="go('/catalog/calculator.html')">
+            <!-- Genetics Calculator -->
+            <div class="building" onclick="navigate('/catalog/calculator.html')">
                 <div class="building-icon">🧮</div>
-                <div class="building-name">Genetics Calculator</div>
-                <div class="building-desc">Predict breeding outcomes</div>
+                <div class="building-title">Genetics Calculator</div>
+                <div class="building-desc">Calculate breeding outcomes & morphs</div>
             </div>
             
-            <!-- Breeding -->
-            <div class="building" onclick="go('/catalog/calc/index.html')">
+            <!-- Breeding Center -->
+            <div class="building" onclick="navigate('/catalog/calc/index.html')">
                 <div class="building-icon">🧬</div>
-                <div class="building-name">Breeding Center</div>
-                <div class="building-desc">Advanced genetics</div>
+                <div class="building-title">Breeding Center</div>
+                <div class="building-desc">Advanced genetics & breeding tools</div>
             </div>
             
             <!-- Tutorial -->
-            <div class="building" onclick="go('/catalog/tutorial/index.html')">
+            <div class="building" onclick="navigate('/catalog/tutorial/index.html')">
                 <div class="building-icon">📚</div>
-                <div class="building-name">Tutorial Center</div>
-                <div class="building-desc">Learn the game</div>
+                <div class="building-title">Tutorial Center</div>
+                <div class="building-desc">Learn snake care & game mechanics</div>
             </div>
             
-            <!-- Farm -->
+            <!-- Farm (Locked) -->
             <div class="building locked">
-                <div class="lock-icon">🔒</div>
+                <div class="lock-badge">🔒</div>
                 <div class="building-icon">🌾</div>
-                <div class="building-name">Snake Farm</div>
-                <div class="building-desc">Coming soon</div>
+                <div class="building-title">Snake Farm</div>
+                <div class="building-desc">Outdoor habitats - Coming soon!</div>
             </div>
             
             <!-- Admin -->
-            <div class="building" onclick="go('/catalog/admin-kv.html')">
+            <div class="building" onclick="navigate('/catalog/admin-kv.html')">
                 <div class="building-icon">🔧</div>
-                <div class="building-name">Admin Panel</div>
-                <div class="building-desc">Settings & debug</div>
+                <div class="building-title">Admin Panel</div>
+                <div class="building-desc">Settings, debug tools & KV management</div>
             </div>
         </div>
     </div>
     
     <script>
-        function go(path) {
-            console.log('Navigating to:', path);
+        function navigate(path) {
+            console.log('🐍 Navigating to:', path);
             window.location.href = path;
         }
         
-        // Load saved state
-        const savedGold = localStorage.getItem('player_gold') || 0;
-        const savedSnakes = localStorage.getItem('player_snakes') || 0;
-        document.getElementById('gold').textContent = savedGold;
-        document.getElementById('snakes').textContent = savedSnakes;
-        
-        console.log('🐍 Serpent Town loaded');
+        console.log('🏘️ Serpent Town loaded');
+        console.log('📍 Current URL:', window.location.href);
     </script>
 </body>
 </html>
