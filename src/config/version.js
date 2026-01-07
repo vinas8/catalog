@@ -15,7 +15,7 @@ export const VERSION_CONFIG = {
     { version: 's0.5.0', date: '2024-12', description: 'Production ready' },
     { version: 's0.7.0', date: '2025-12', description: 'Context separation + KV manager' },
     { version: 's0.7.2', date: '2026-01', description: 'Full KV CRUD + User assignment' },
-    { version: 's0.7.7', date: '2026-01-06', description: 'Demo system + Version roadmap' }
+    { version: 's0.7.7', date: '2026-01-07', description: 'Demo system + Version roadmap' }
   ],
   
   MODULES: {
