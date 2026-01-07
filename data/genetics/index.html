@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Genetics Data - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 40px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .files-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .file-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: white;
+    }
+    .file-card:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateX(5px);
+    }
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .file-icon {
+      font-size: 24px;
+    }
+    .file-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .file-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 4px;
+    }
+    .file-size {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Genetics Data</h1>
+    <div class="subtitle">Ball Python Morphs & Genetics Database</div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="morph-count">70</div>
+        <div class="stat-label">Total Morphs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5</div>
+        <div class="stat-label">Gene Types</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Data Files</div>
+      </div>
+    </div>
+
+    <div class="files-grid">
+      <a href="morphs.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">🐍</div>
+          <div>
+            <div class="file-name">morphs.json</div>
+            <div class="file-desc">50 base morphs with genetics data</div>
+          </div>
+        </div>
+        <div class="file-size">19 KB</div>
+      </a>
+
+      <a href="morphs-expanded.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">🧬</div>
+          <div>
+            <div class="file-name">morphs-expanded.json</div>
+            <div class="file-desc">20 expanded morphs with detailed traits</div>
+          </div>
+        </div>
+        <div class="file-size">12 KB</div>
+      </a>
+
+      <a href="gene-types.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">🔬</div>
+          <div>
+            <div class="file-name">gene-types.json</div>
+            <div class="file-desc">Dominant, recessive, co-dom, incomplete, polygenic</div>
+          </div>
+        </div>
+        <div class="file-size">1 KB</div>
+      </a>
+
+      <a href="health-risks.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">⚕️</div>
+          <div>
+            <div class="file-name">health-risks.json</div>
+            <div class="file-desc">Known health issues by morph</div>
+          </div>
+        </div>
+        <div class="file-size">2 KB</div>
+      </a>
+
+      <a href="lethal-combos.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">⚠️</div>
+          <div>
+            <div class="file-name">lethal-combos.json</div>
+            <div class="file-desc">Dangerous genetic combinations</div>
+          </div>
+        </div>
+        <div class="file-size">1 KB</div>
+      </a>
+
+      <a href="sources.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">📚</div>
+          <div>
+            <div class="file-name">sources.json</div>
+            <div class="file-desc">Data sources & extraction metadata</div>
+          </div>
+        </div>
+        <div class="file-size">1 KB</div>
+      </a>
+
+      <a href="morphmarket-parity-checklist.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">✅</div>
+          <div>
+            <div class="file-name">morphmarket-parity-checklist.json</div>
+            <div class="file-desc">Manual testing checklist for calculator accuracy</div>
+          </div>
+        </div>
+        <div class="file-size">7 KB</div>
+      </a>
+
+      <a href="snakedb-enrichment.json" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">🔍</div>
+          <div>
+            <div class="file-name">snakedb-enrichment.json</div>
+            <div class="file-desc">Cross-referenced health & genetic data</div>
+          </div>
+        </div>
+        <div class="file-size">7 KB</div>
+      </a>
+
+      <a href="EXTRACTION-GUIDE.md" class="file-card">
+        <div class="file-info">
+          <div class="file-icon">📖</div>
+          <div>
+            <div class="file-name">EXTRACTION-GUIDE.md</div>
+            <div class="file-desc">Documentation for data extraction process</div>
+          </div>
+        </div>
+        <div class="file-size">5 KB</div>
+      </a>
+    </div>
+
+    <a href="../../debug/" class="back-link">← Back to Debug Hub</a>
+  </div>
+
+  <script>
+    // Load actual morph count
+    fetch('morphs.json')
+      .then(r => r.json())
+      .then(data => {
+        const base = data.morphs.length;
+        fetch('morphs-expanded.json')
+          .then(r => r.json())
+          .then(expanded => {
+            const total = base + expanded.morphs.length;
+            document.getElementById('morph-count').textContent = total;
+          });
+      })
+      .catch(() => console.log('Using default count'));
+  </script>
+</body>
+</html>
