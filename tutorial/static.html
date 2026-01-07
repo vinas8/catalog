@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn Snake Care - Snake Muffin</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/components/Navigation.js"></script>
+  <script src="src/utils/debug-loader.js"></script>
+  <style>
+    body { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      min-height: 100vh;
+      padding-bottom: 80px; /* Space for mobile bottom nav */
+    }
+    
+    .learn-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    .learn-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+    
+    .learn-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .learn-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+    
+    /* Carousel */
+    .carousel-container {
+      position: relative;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .carousel-slides {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      touch-action: pan-y pinch-zoom;
+    }
+    
+    .carousel-slide {
+      min-width: 100%;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    
+    .slide-chapter {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 16px;
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    .slide-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+      line-height: 1.2;
+    }
+    
+    .slide-content {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    
+    .slide-content h3 {
+      font-size: 1.3rem;
+      margin: 1.5rem 0 0.75rem;
+      color: #667eea;
+    }
+    
+    .slide-content ul {
+      margin: 0.75rem 0;
+      padding-left: 1.25rem;
+    }
+    
+    .slide-content li {
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+    
+    .slide-tip,
+    .slide-warning,
+    .slide-success {
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .slide-tip {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+    
+    .slide-warning {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .slide-success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+    
+    /* Navigation */
+    .carousel-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: #f8f9fa;
+      border-top: 2px solid #e9ecef;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .carousel-dots {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #dee2e6;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    
+    .carousel-dot.active {
+      background: #667eea;
+      width: 24px;
+      border-radius: 5px;
+    }
+    
+    .carousel-buttons {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .carousel-btn {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      max-width: 200px;
+    }
+    
+    .carousel-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .carousel-btn.prev {
+      background: #e9ecef;
+      color: #495057;
+    }
+    
+    .carousel-btn.prev:not(:disabled):hover {
+      background: #dee2e6;
+      transform: translateX(-2px);
+    }
+    
+    .carousel-btn.next {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .carousel-btn.next:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Chapter Menu */
+    .chapter-menu {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .chapter-menu h2 {
+      margin-bottom: 1rem;
+      color: #1a1a1a;
+      font-size: 1.5rem;
+    }
+    
+    .chapter-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+    
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .chapter-item:hover {
+      background: #e9ecef;
+      border-color: #667eea;
+      transform: translateX(4px);
+    }
+    
+    .chapter-item.completed {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+    
+    .chapter-icon {
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+    
+    .chapter-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .chapter-title {
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: #1a1a1a;
+      font-size: 0.95rem;
+    }
+    
+    .chapter-desc {
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    
+    .chapter-status {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding-bottom: 100px;
+      }
+      
+      .learn-container {
+        margin: 1rem auto;
+        padding: 0 0.75rem;
+      }
+      
+      .learn-header {
+        margin-bottom: 1.5rem;
+        padding-top: 0.5rem;
+      }
+      
+      .learn-header h1 {
+        font-size: 2rem;
+      }
+      
+      .learn-header p {
+        font-size: 1rem;
+      }
+      
+      .carousel-container {
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+      }
+      
+      .carousel-slide {
+        padding: 1.5rem 1rem;
+      }
+      
+      .slide-title {
+        font-size: 1.5rem;
+      }
+      
+      .slide-content {
+        font-size: 0.95rem;
+      }
+      
+      .slide-content h3 {
+        font-size: 1.2rem;
+      }
+      
+      .carousel-nav {
+        padding: 1rem;
+        flex-direction: column;
+      }
+      
+      .carousel-dots {
+        order: 2;
+        width: 100%;
+        margin-top: 0.75rem;
+      }
+      
+      .carousel-buttons {
+        order: 1;
+        width: 100%;
+        gap: 0.5rem;
+      }
+      
+      .carousel-btn {
+        font-size: 0.9rem;
+        padding: 0.65rem 1rem;
+        max-width: none;
+      }
+      
+      .chapter-menu {
+        padding: 1.25rem;
+        border-radius: 12px;
+      }
+      
+      .chapter-menu h2 {
+        font-size: 1.25rem;
+      }
+      
+      .chapter-item {
+        padding: 0.65rem 0.85rem;
+        gap: 0.65rem;
+      }
+      
+      .chapter-icon {
+        font-size: 1.5rem;
+      }
+      
+      .chapter-title {
+        font-size: 0.9rem;
+      }
+      
+      .chapter-desc {
+        font-size: 0.8rem;
+      }
+      
+      .chapter-status {
+        font-size: 1.1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .learn-header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .carousel-slide {
+        padding: 1.25rem 0.85rem;
+      }
+      
+      .slide-title {
+        font-size: 1.35rem;
+      }
+      
+      .slide-content {
+        font-size: 0.9rem;
+      }
+      
+      .slide-content ul {
+        padding-left: 1rem;
+      }
+      
+      .carousel-btn {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.85rem;
+      }
+      
+      .chapter-item {
+        padding: 0.6rem 0.75rem;
+      }
+    }
+    
+    /* Touch gestures improvement */
+    @media (pointer: coarse) {
+      .carousel-btn,
+      .chapter-item {
+        min-height: 44px; /* iOS touch target size */
+      }
+      
+      .carousel-dot {
+        width: 12px;
+        height: 12px;
+      }
+      
+      .carousel-dot.active {
+        width: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="learn-container">
+    <div class="learn-header">
+      <h1>📚 Learn Snake Care</h1>
+      <p>Master the art of caring for your snakes with our interactive guide</p>
+    </div>
+
+    <!-- Carousel Container -->
+    <div class="carousel-container">
+      <div class="carousel-slides" id="carousel-slides">
+        <!-- Slides will be inserted here -->
+      </div>
+      
+      <div class="carousel-nav">
+        <div class="carousel-dots" id="carousel-dots"></div>
+        <div class="carousel-buttons">
+          <button class="carousel-btn prev" id="prev-btn" onclick="prevSlide()">← Previous</button>
+          <button class="carousel-btn next" id="next-btn" onclick="nextSlide()">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chapter Menu -->
+    <div class="chapter-menu">
+      <h2>📖 Chapters</h2>
+      <div class="chapter-list" id="chapter-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tutorial Chapters
+    const chapters = [
+      {
+        id: 'intro',
+        icon: '👋',
+        title: 'Welcome to Snake Care',
+        description: 'Learn the basics',
+        content: `
+          <h2 class="slide-title">👋 Welcome to Snake Care</h2>
+          <div class="slide-content">
+            <p><strong>Caring for snakes is both rewarding and educational!</strong></p>
+            
+            <p>This interactive guide will teach you everything you need to know about keeping your snakes healthy and happy.</p>
+            
+            <h3>What You'll Learn:</h3>
+            <ul>
+              <li>🍖 <strong>Feeding</strong> - Proper nutrition and feeding schedules</li>
+              <li>💧 <strong>Hydration</strong> - Water needs and enclosure humidity</li>
+              <li>🏠 <strong>Housing</strong> - Temperature, substrate, and enrichment</li>
+              <li>🔄 <strong>Shedding</strong> - Understanding the shed cycle</li>
+              <li>❤️ <strong>Health</strong> - Signs of illness and when to worry</li>
+              <li>🧬 <strong>Genetics</strong> - Morphs and breeding basics</li>
+            </ul>
+            
+            <div class="slide-success">
+              <strong>🎉 Let's get started!</strong> Click "Next" to begin your snake care journey.
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 'feeding',
+        icon: '🍖',
+        title: 'Feeding Your Snakes',
+        description: 'Nutrition and schedules',
+        content: `
+          <span class="slide-chapter">Chapter 1</span>
+          <h2 class="slide-title">🍖 Feeding Your Snakes</h2>
+          <div class="slide-content">
+            <p>Proper nutrition is essential for your snake's health and growth.</p>
+            
+            <h3>Feeding Schedule</h3>
+            <ul>
+              <li><strong>Juveniles:</strong> Every 5-7 days</li>
+              <li><strong>Sub-adults:</strong> Every 7-10 days</li>
+              <li><strong>Adults:</strong> Every 10-14 days</li>
+            </ul>
+            
+            <h3>Prey Size</h3>
+            <p>The prey should be approximately the same width as the widest part of your snake's body.</p>
+            
+            <div class="slide-tip">
+              💡 <strong>Tip:</strong> Feed frozen-thawed rodents for safety. Never leave live prey unattended with your snake!
+            </div>
+            
+            <h3>After Feeding</h3>
+            <ul>
+              <li>Wait 48 hours before handling</li>
+              <li>Keep temperatures stable for digestion</li>
+              <li>Monitor for regurgitation (rare but serious)</li>
+            </ul>
+            
+            <div class="slide-warning">
+              ⚠️ <strong>Warning:</strong> Never feed during shedding - snakes typically refuse food during this time.
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 'hydration',
+        icon: '💧',
+        title: 'Water & Humidity',
+        description: 'Hydration essentials',
+        content: `
+          <span class="slide-chapter">Chapter 2</span>
+          <h2 class="slide-title">💧 Water & Humidity</h2>
+          <div class="slide-content">
+            <p>Proper hydration is crucial for your snake's health and successful shedding.</p>
+            
+            <h3>Water Bowl</h3>
+            <ul>
+              <li>Provide fresh water daily</li>
+              <li>Bowl should be large enough for soaking</li>
+              <li>Clean weekly to prevent bacteria</li>
+              <li>Use dechlorinated or bottled water</li>
+            </ul>
+            
+            <h3>Humidity Levels</h3>
+            <ul>
+              <li><strong>Ball Pythons:</strong> 50-60% (60-70% when shedding)</li>
+              <li><strong>Corn Snakes:</strong> 40-50% (50-60% when shedding)</li>
+              <li><strong>Boas:</strong> 60-70% (70-80% when shedding)</li>
+            </ul>
+            
+            <div class="slide-tip">
+              💡 <strong>Tip:</strong> Mist the enclosure 1-2 times daily during shedding to help your snake shed in one piece!
+            </div>
+            
+            <h3>Signs of Dehydration</h3>
+            <ul>
+              <li>Sunken eyes</li>
+              <li>Wrinkled skin</li>
+              <li>Stuck shed</li>
+              <li>Lethargy</li>
+            </ul>
+          </div>
+        `
+      },
+      {
+        id: 'shedding',
+        icon: '🔄',
+        title: 'The Shedding Process',
+        description: 'Understanding sheds',
+        content: `
+          <span class="slide-chapter">Chapter 3</span>
+          <h2 class="slide-title">🔄 The Shedding Process</h2>
+          <div class="slide-content">
+            <p>Shedding (ecdysis) is a natural process where snakes shed their old skin to allow for growth.</p>
+            
+            <h3>Shed Cycle Stages</h3>
+            <ul>
+              <li><strong>Pre-shed (Blue Phase):</strong> Eyes turn milky blue, colors dull (3-7 days)</li>
+              <li><strong>Clear Phase:</strong> Eyes clear, colors return (1-3 days)</li>
+              <li><strong>Shedding:</strong> Snake rubs against objects to remove old skin (few hours)</li>
+            </ul>
+            
+            <h3>During Shedding</h3>
+            <ul>
+              <li>Increase humidity to 60-70%</li>
+              <li>Provide rough surfaces (rocks, branches)</li>
+              <li>Don't handle unless necessary</li>
+              <li>Don't feed during blue phase</li>
+            </ul>
+            
+            <div class="slide-tip">
+              💡 <strong>Tip:</strong> A healthy shed should come off in one complete piece, including eye caps!
+            </div>
+            
+            <h3>Stuck Shed Problems</h3>
+            <p>If shed doesn't come off completely:</p>
+            <ul>
+              <li>Soak snake in lukewarm water for 20-30 minutes</li>
+              <li>Gently assist with removal</li>
+              <li>Check eye caps carefully</li>
+              <li>Increase humidity for next shed</li>
+            </ul>
+            
+            <div class="slide-warning">
+              ⚠️ <strong>Warning:</strong> Never pull stuck shed forcefully - you can damage the new skin underneath!
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 'health',
+        icon: '❤️',
+        title: 'Health & Wellness',
+        description: 'Keeping snakes healthy',
+        content: `
+          <span class="slide-chapter">Chapter 4</span>
+          <h2 class="slide-title">❤️ Health & Wellness</h2>
+          <div class="slide-content">
+            <p>Regular monitoring helps catch health issues early.</p>
+            
+            <h3>Signs of a Healthy Snake</h3>
+            <ul>
+              <li>Alert and responsive</li>
+              <li>Clear, bright eyes</li>
+              <li>Regular feeding</li>
+              <li>Smooth, complete sheds</li>
+              <li>Active tongue flicking</li>
+              <li>Normal, well-formed feces</li>
+            </ul>
+            
+            <h3>Common Health Issues</h3>
+            <ul>
+              <li><strong>Respiratory Infection:</strong> Wheezing, mucus, open-mouth breathing</li>
+              <li><strong>Mites:</strong> Tiny black/red dots, excessive soaking</li>
+              <li><strong>Scale Rot:</strong> Discolored, soft scales on belly</li>
+              <li><strong>Mouth Rot:</strong> Swelling, discharge around mouth</li>
+            </ul>
+            
+            <div class="slide-warning">
+              ⚠️ <strong>When to See a Vet:</strong> Refusing food for 2+ months, visible parasites, labored breathing, or swelling.
+            </div>
+            
+            <h3>Preventative Care</h3>
+            <ul>
+              <li>Clean enclosure weekly</li>
+              <li>Quarantine new snakes for 90 days</li>
+              <li>Wash hands before and after handling</li>
+              <li>Keep temperature and humidity stable</li>
+              <li>Annual vet check-ups recommended</li>
+            </ul>
+            
+            <div class="slide-success">
+              ✅ <strong>Remember:</strong> Prevention is easier than treatment. Maintain proper husbandry and your snake will thrive!
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 'genetics',
+        icon: '��',
+        title: 'Genetics & Morphs',
+        description: 'Understanding morphs',
+        content: `
+          <span class="slide-chapter">Chapter 5</span>
+          <h2 class="slide-title">🧬 Genetics & Morphs</h2>
+          <div class="slide-content">
+            <p>Snake morphs are genetic variations that create different colors and patterns.</p>
+            
+            <h3>Types of Genes</h3>
+            <ul>
+              <li><strong>Recessive:</strong> Need 2 copies to display (e.g., Albino, Piebald)</li>
+              <li><strong>Dominant:</strong> Need 1 copy to display (e.g., Pinstripe)</li>
+              <li><strong>Co-Dominant:</strong> Show in single and double forms (e.g., Pastel)</li>
+            </ul>
+            
+            <h3>Popular Morphs</h3>
+            <ul>
+              <li><strong>Albino:</strong> No melanin, red eyes</li>
+              <li><strong>Piebald:</strong> White patches with normal colors</li>
+              <li><strong>Banana:</strong> Bright yellow/orange, purple spots</li>
+              <li><strong>Pastel:</strong> Lighter, brighter colors</li>
+            </ul>
+            
+            <div class="slide-tip">
+              💡 <strong>Tip:</strong> Use our Genetics Calculator in the Farm section to predict offspring!
+            </div>
+            
+            <h3>Designer Morphs</h3>
+            <p>Combining multiple morphs creates "designer" morphs:</p>
+            <ul>
+              <li>Banana Pastel = Banana + Pastel</li>
+              <li>Pied Clown = Piebald + Clown</li>
+              <li>Blue Eyed Leucistic = Multiple gene combinations</li>
+            </ul>
+            
+            <div class="slide-success">
+              🎉 <strong>Congratulations!</strong> You've completed the Snake Care Guide. You're now ready to care for your snakes like a pro!
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentSlide = 0;
+    const completedChapters = new Set();
+
+    // Initialize carousel
+    function initCarousel() {
+      const slidesContainer = document.getElementById('carousel-slides');
+      const dotsContainer = document.getElementById('carousel-dots');
+      const chapterList = document.getElementById('chapter-list');
+
+      // Create slides
+      chapters.forEach((chapter, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = chapter.content;
+        slidesContainer.appendChild(slide);
+
+        // Create dot
+        const dot = document.createElement('div');
+        dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(index);
+        dotsContainer.appendChild(dot);
+
+        // Create chapter menu item
+        const item = document.createElement('div');
+        item.className = 'chapter-item';
+        item.onclick = () => goToSlide(index);
+        item.innerHTML = `
+          <div class="chapter-icon">${chapter.icon}</div>
+          <div class="chapter-info">
+            <div class="chapter-title">${chapter.title}</div>
+            <div class="chapter-desc">${chapter.description}</div>
+          </div>
+          <div class="chapter-status"></div>
+        `;
+        chapterList.appendChild(item);
+      });
+
+      updateNav();
+    }
+
+    function goToSlide(index) {
+      currentSlide = Math.max(0, Math.min(index, chapters.length - 1));
+      const slidesContainer = document.getElementById('carousel-slides');
+      slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+      
+      // Mark previous chapters as completed
+      for (let i = 0; i < currentSlide; i++) {
+        completedChapters.add(i);
+      }
+      
+      updateNav();
+    }
+
+    function nextSlide() {
+      if (currentSlide < chapters.length - 1) {
+        completedChapters.add(currentSlide);
+        goToSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        goToSlide(currentSlide - 1);
+      }
+    }
+
+    function updateNav() {
+      // Update dots
+      document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+
+      // Update buttons
+      document.getElementById('prev-btn').disabled = currentSlide === 0;
+      document.getElementById('next-btn').disabled = currentSlide === chapters.length - 1;
+
+      // Update chapter menu
+      document.querySelectorAll('.chapter-item').forEach((item, index) => {
+        item.classList.toggle('completed', completedChapters.has(index));
+        const statusEl = item.querySelector('.chapter-status');
+        statusEl.textContent = completedChapters.has(index) ? '✓' : '';
+      });
+    }
+
+    // Handle keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+
+    // Initialize on load
+    initCarousel();
+  </script>
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
+</body>
+</html>

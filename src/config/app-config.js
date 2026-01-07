@@ -72,22 +72,22 @@ export const APP_CONFIG = {
     // Primary navigation (shows everywhere - optimized for mobile bottom nav)
     // Standard iOS/Android: Icon on top, label below, 4 items is optimal
     primary: [
-      { label: 'Shop', href: 'catalog.html', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
-      { label: 'Farm', href: 'game.html', icon: '🏡', iconSmall: '🏡', description: 'My real snakes' },
-      { label: 'Learn', href: 'learn.html', icon: '📚', iconSmall: '📚', description: 'Tutorials & encyclopedia', 
+      { label: 'Shop', href: 'shop/', icon: '🛒', iconSmall: '🛒', description: 'Buy snakes' },
+      { label: 'Farm', href: 'game/', icon: '🏡', iconSmall: '🏡', description: 'My real snakes' },
+      { label: 'Learn', href: 'tutorial/', icon: '📚', iconSmall: '📚', description: 'Tutorials & encyclopedia', 
         submenu: [
-          { label: 'Tutorials', href: 'learn.html', icon: '🎮', description: 'Practice with virtual snakes' },
-          { label: 'Encyclopedia', href: 'learn-static.html', icon: '📖', description: 'Care guides & reference',
+          { label: 'Tutorials', href: 'tutorial/', icon: '🎮', description: 'Practice with virtual snakes' },
+          { label: 'Encyclopedia', href: 'tutorial/static.html', icon: '📖', description: 'Care guides & reference',
             submenu: [
-              { label: 'Dex', href: 'dex.html', icon: '📚', description: 'Snake species database' },
-              { label: 'Care Guides', href: 'learn-static.html#care', icon: '🩺', description: 'How to care' },
-              { label: 'Genetics', href: 'learn-static.html#genetics', icon: '🧬', description: 'Morph inheritance' }
+              { label: 'Dex', href: 'dex/', icon: '📚', description: 'Snake species database' },
+              { label: 'Care Guides', href: 'tutorial/static.html#care', icon: '🩺', description: 'How to care' },
+              { label: 'Genetics', href: 'tutorial/static.html#genetics', icon: '🧬', description: 'Morph inheritance' }
             ]
           },
-          { label: 'Morph Calculator', href: 'game.html#calculator', icon: '🎨', description: 'Breeding calculator' }
+          { label: 'Morph Calculator', href: 'calc/', icon: '🎨', description: 'Breeding calculator' }
         ]
       },
-      { label: 'Account', href: 'account.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
+      { label: 'Account', href: 'admin/account.html', icon: '👤', iconSmall: '👤', description: 'Profile' }
     ],
     // Secondary links (desktop only - top nav overflow)
     secondary: [

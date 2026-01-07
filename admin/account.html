@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account - Serpent Town</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="src/utils/debug-loader.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .account-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 420px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .logo { font-size: 3rem; margin-bottom: 0.5rem; }
+    .card-header h1 { font-size: 1.75rem; margin-bottom: 0.25rem; font-weight: 700; }
+    .card-header p { opacity: 0.9; font-size: 0.95rem; }
+    .card-body { padding: 2rem; }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: #f5f5f5;
+      padding: 0.25rem;
+      border-radius: 12px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #666;
+    }
+    .tab-btn.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    .btn-secondary { background: #f5f5f5; color: #666; margin-top: 0.75rem; }
+    .btn-secondary:hover { background: #e5e5e5; }
+    .alert {
+      padding: 0.875rem 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .alert-info { background: #eff6ff; color: #1e40af; border: 2px solid #bfdbfe; }
+    .dashboard { text-align: center; }
+    .avatar { font-size: 4rem; margin-bottom: 1rem; }
+    .user-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .user-id {
+      display: inline-block;
+      background: #f5f5f5;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: monospace;
+      margin-bottom: 2rem;
+    }
+    .quick-links { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #1f2937;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .quick-link:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+      transform: translateX(4px);
+    }
+    .quick-link-icon { font-size: 1.5rem; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="account-card">
+    <div class="card-header">
+      <div class="logo">🐍</div>
+      <h1>Snake Muffin</h1>
+      <p>Your Snake Breeding Adventure</p>
+    </div>
+    <div class="card-body">
+      <div id="auth-view">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="login">Login</button>
+          <button class="tab-btn" data-tab="register">Sign Up</button>
+        </div>
+        <div id="login-content">
+          <div class="alert alert-info">💡 Enter your Player ID to continue</div>
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-id">Player ID</label>
+              <input type="text" id="login-id" placeholder="m8x2k9p4" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login to Your Farm</button>
+          </form>
+        </div>
+        <div id="register-content" class="hidden">
+          <div class="alert alert-info">🎉 Create your account and start collecting!</div>
+          <form id="register-form">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" placeholder="SnakeCharmer" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email (Optional)</label>
+              <input type="email" id="email" placeholder="you@example.com">
+            </div>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+          </form>
+        </div>
+      </div>
+      <div id="dashboard-view" class="hidden dashboard">
+        <div class="avatar">👤</div>
+        <div class="user-name" id="user-name">Username</div>
+        <div class="user-id" id="user-id">player_id</div>
+        <div class="quick-links">
+          <a href="game.html" class="quick-link">
+            <span class="quick-link-icon">🏡</span>
+            <span>My Snake Farm</span>
+          </a>
+          <a href="catalog.html" class="quick-link">
+            <span class="quick-link-icon">🛒</span>
+            <span>Shop Snakes</span>
+          </a>
+          <a href="dex.html" class="quick-link">
+            <span class="quick-link-icon">📚</span>
+            <span>Snake Encyclopedia</span>
+          </a>
+        </div>
+        <button onclick="handleLogout()" class="btn btn-secondary">Logout</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const authView = document.getElementById('auth-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const loginContent = document.getElementById('login-content');
+    const registerContent = document.getElementById('register-content');
+    function checkAuth() {
+      const userHash = localStorage.getItem('serpent_user_hash') || localStorage.getItem('userHash');
+      if (userHash) {
+        authView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        const userData = JSON.parse(localStorage.getItem(`user:${userHash}`) || '{}');
+        document.getElementById('user-name').textContent = userData.username || 'User';
+        document.getElementById('user-id').textContent = userHash;
+      }
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.dataset.tab === 'login') {
+          loginContent.classList.remove('hidden');
+          registerContent.classList.add('hidden');
+        } else {
+          loginContent.classList.add('hidden');
+          registerContent.classList.remove('hidden');
+        }
+      });
+    });
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const playerId = document.getElementById('login-id').value.trim();
+      if (playerId) {
+        localStorage.setItem('serpent_user_hash', playerId);
+        localStorage.setItem('userHash', playerId);
+        window.location.href = 'game.html';
+      }
+    });
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('.btn-primary');
+      const originalText = submitBtn.textContent;
+      
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      
+      // Validate inputs
+      if (!username) {
+        alert('Please enter a username');
+        return;
+      }
+      
+      const playerId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+      
+      console.log('📝 Creating user:', { playerId, username, email });
+      submitBtn.textContent = '⏳ Creating account...';
+      submitBtn.disabled = true;
+      
+      try {
+        const workerUrl = 'https://catalog.navickaszilvinas.workers.dev';
+        
+        // Step 1: Create user
+        console.log('📡 Calling /register-user...');
+        const response = await fetch(`${workerUrl}/register-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: playerId,
+            username: username,
+            email: email || `${playerId}@temp.serpenttown.com`
+          })
+        });
+        
+        const userData = await response.json();
+        console.log('📡 Register response:', userData);
+        
+        if (response.ok && userData.success) {
+          console.log('✅ User created in API');
+          
+          // Step 2: Assign starter snake
+          submitBtn.textContent = '🐍 Assigning starter snake...';
+          console.log('📡 Calling /assign-product...');
+          
+          const assignResponse = await fetch(`${workerUrl}/assign-product`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: playerId,
+              product_id: 'starter_banana_python',
+              assignment_id: `assign_${Date.now()}`,
+              name: 'Banana Ball Python',
+              species: 'ball_python',
+              morph: 'banana',
+              product_type: 'real',
+              price: 10000,
+              currency: 'eur',
+              acquired_at: new Date().toISOString()
+            })
+          });
+          
+          const assignData = await assignResponse.json();
+          console.log('📡 Assign response:', assignData);
+          
+          if (assignResponse.ok && assignData.success) {
+            console.log('✅ Starter snake assigned!');
+          } else {
+            console.warn('⚠️ Failed to assign starter snake:', assignData);
+          }
+          
+          // Step 3: Save to localStorage and redirect
+          localStorage.setItem('serpent_user_hash', playerId);
+          localStorage.setItem('userHash', playerId);
+          localStorage.setItem(`user:${playerId}`, JSON.stringify({
+            user_id: playerId,
+            username: username,
+            email: email || `${playerId}@temp.serpenttown.com`
+          }));
+          
+          submitBtn.textContent = '✅ Success! Redirecting...';
+          console.log('✅ Redirecting to game...');
+          
+          setTimeout(() => {
+            window.location.href = `game.html?user=${playerId}`;
+          }, 500);
+        } else {
+          console.error('❌ Failed to create user:', userData);
+          alert(`Failed to create account: ${userData.error || 'Unknown error'}`);
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('❌ Network error:', error);
+        alert('Network error. Using offline mode.');
+        
+        // Fallback to local storage only
+        localStorage.setItem('serpent_user_hash', playerId);
+        localStorage.setItem('userHash', playerId);
+        localStorage.setItem(`user:${playerId}`, JSON.stringify({
+          user_id: playerId,
+          username: username,
+          email: email || `${playerId}@temp.serpenttown.com`
+        }));
+        
+        window.location.href = `game.html?user=${playerId}`;
+      }
+    });
+    function handleLogout() {
+      if (confirm('Logout?')) {
+        localStorage.removeItem('serpent_user_hash');
+        localStorage.removeItem('userHash');
+        location.reload();
+      }
+    }
+    checkAuth();
+  </script>
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
+</body>
+</html>

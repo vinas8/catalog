@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Snakes Online - Snake Muffin</title>
+  <meta name="description" content="Buy ball pythons and corn snakes online. Safe shipping, captive bred, quality guaranteed. Snake Muffin snake shop.">
+  <link rel="stylesheet" href="styles.css">
+  <script src="src/utils/debug-loader.js"></script>
+</head>
+<body>
+  <script type="module" src="src/components/Navigation.js"></script>
+
+  <main style="padding: 2rem; padding-top: 1rem;">
+    <div class="view-header">
+      <h2>Snake Shop</h2>
+      <p class="muted">Browse our collection of captive bred snakes</p>
+    </div>
+
+    <div class="catalog-filters">
+      <select id="species-filter">
+        <option value="all">All Species</option>
+        <option value="ball_python">Ball Python</option>
+        <option value="corn_snake">Corn Snake</option>
+      </select>
+    </div>
+
+    <!-- Available Real Snakes -->
+    <section class="catalog-section">
+      <h3>🐍 Available Snakes (Real Money)</h3>
+      <div id="available-snakes" class="catalog-grid">
+        <div class="loading">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Virtual Snakes -->
+    <section class="catalog-section">
+      <h3>💰 Virtual Snakes (Gold Coins - In-Game)</h3>
+      <p class="muted">Unlimited stock • Buy in game with gold</p>
+      <div id="virtual-snakes" class="catalog-grid">
+        <div class="loading">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Sold Snakes (Collapsed) -->
+    <section class="catalog-section sold-section">
+      <h3 id="sold-header" style="cursor: pointer; user-select: none;">
+        📦 Sold Snakes <span id="sold-count">(0)</span> 
+        <span id="sold-toggle" style="float: right;">▼</span>
+      </h3>
+      <div id="sold-snakes" class="catalog-grid" style="display: none;">
+        <div class="empty-state">No snakes sold yet</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    // Generate or get user hash
+    function getUserHash() {
+      let hash = localStorage.getItem('serpent_user_hash') || 
+                 localStorage.getItem('serpent_last_purchase_hash') ||
+                 localStorage.getItem('serpent_pending_purchase_hash');
+      
+      if (!hash) {
+        const timestamp = Date.now().toString(36);
+        const random = Math.random().toString(36).substring(2, 15);
+        hash = timestamp + random;
+        localStorage.setItem('serpent_pending_purchase_hash', hash);
+        localStorage.setItem('serpent_last_purchase_hash', hash);
+        localStorage.setItem('serpent_user_hash', hash);
+      }
+      return hash;
+    }
+
+    // Render product card
+    function renderProductCard(product, userHash, isSold) {
+      // Handle both Stripe format and legacy format
+      const name = product.name || product.metadata?.nickname || 'Unknown';
+      const morph = product.metadata?.morph || product.morph || 'Unknown';
+      const species = product.metadata?.species || product.species || 'ball_python';
+      const description = product.description || `${morph} ${species.replace('_', ' ')}`;
+      const info = product.metadata ? 
+        `${product.metadata.gender || 'Unknown'} • ${product.metadata.yob || '2024'}` :
+        (product.info || '');
+      
+      // Price handling - use default if not set
+      const price = product.metadata?.price || product.price || 150;
+      const priceFormatted = typeof price === 'number' ? price.toFixed(2) : price;
+      
+      // Checkout URL - use Stripe payment link from product
+      let checkoutUrl = product.stripe_link;
+      
+      if (checkoutUrl && checkoutUrl.includes('stripe.com')) {
+        checkoutUrl += `?client_reference_id=${userHash}`;
+      }
+      
+      const soldClass = isSold ? 'sold' : '';
+      const soldBadge = isSold ? '<span class="sold-badge">SOLD</span>' : '';
+      
+      // Always show buy button if we have a checkout URL (price defaults to 150)
+      const canBuy = checkoutUrl && price;
+      const buyButton = isSold ? 
+        '<button class="primary-btn" disabled style="opacity: 0.5;">Sold Out</button>' :
+        canBuy ? 
+          `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
+            localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
+            localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
+            localStorage.setItem('serpent_user_hash', '${userHash}');
+          ">💳 Buy Now - €${priceFormatted}</a>` :
+          '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
+      
+      return `
+        <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
+          ${soldBadge}
+          <div class="item-image">${product.image || product.images?.[0] || '🐍'}</div>
+          <h3>${name}</h3>
+          <p class="species-info">${species.replace('_', ' ')} - ${morph.replace('_', ' ')}</p>
+          <p>${description}</p>
+          <p class="item-info">${info}</p>
+          <div class="item-price">€${priceFormatted}</div>
+          <button class="secondary-btn btn-view-details" data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>
+            ℹ️ View Details
+          </button>
+          ${buyButton}
+        </div>
+      `;
+    }
+
+    function renderVirtualCard(product) {
+      const price = typeof product.price === 'number' ? product.price : 0;
+      
+      return `
+        <div class="catalog-item virtual">
+          <span class="virtual-badge">VIRTUAL</span>
+          <div class="item-image">${product.image || '🐍'}</div>
+          <h3>${product.name}</h3>
+          <p class="species-info">${(product.species || '').replace('_', ' ')} - ${(product.morph || 'normal').replace('_', ' ')}</p>
+          <p>${product.description || ''}</p>
+          <p class="item-info">${product.info || ''}</p>
+          <div class="item-price">${price} Gold</div>
+          <button class="primary-btn" disabled style="opacity: 0.5;">Available In-Game</button>
+        </div>
+      `;
+    }
+
+    async function loadAndRenderCatalog() {
+      const availableContainer = document.getElementById('available-snakes');
+      const virtualContainer = document.getElementById('virtual-snakes');
+      const soldContainer = document.getElementById('sold-snakes');
+      const soldCount = document.getElementById('sold-count');
+      const speciesFilter = document.getElementById('species-filter').value;
+      
+      console.log('🔄 Loading catalog, species filter:', speciesFilter);
+      
+      availableContainer.innerHTML = '<div class="loading">Loading...</div>';
+      virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
+      
+      try {
+        // Check localStorage cache first (FAST!)
+        console.log('🔍 Checking cache...');
+        const cached = localStorage.getItem('serpent_products_cache');
+        const cacheTime = localStorage.getItem('serpent_products_cache_time');
+        const now = Date.now();
+        const CACHE_TTL = 300000; // 5 minutes
+        
+        let data;
+        
+        // Debug cache status
+        if (!cached) {
+          console.log('❌ No cache found - will fetch fresh data');
+        } else if (!cacheTime) {
+          console.log('⚠️ Cache exists but no timestamp - will fetch fresh');
+        } else {
+          const age = now - parseInt(cacheTime);
+          const ageSeconds = Math.floor(age / 1000);
+          console.log(`📦 Cache found - age: ${ageSeconds}s (TTL: 300s)`);
+          
+          if (age >= CACHE_TTL) {
+            console.log(`⏰ Cache EXPIRED (${ageSeconds}s > 300s) - will fetch fresh`);
+          } else {
+            console.log(`✅ Cache FRESH (${ageSeconds}s < 300s) - using cache!`);
+          }
+        }
+        
+        if (cached && cacheTime && (now - parseInt(cacheTime)) < CACHE_TTL) {
+          console.log('⚡ Using cached products (instant)');
+          data = JSON.parse(cached);
+          console.log(`📊 Loaded ${data.length} products from cache`);
+        } else {
+          // Fetch products from Worker API
+          console.log('📡 Fetching from:', WORKER_URL + '/products');
+          const start = Date.now();
+          const response = await fetch(WORKER_URL + '/products');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          data = await response.json();
+          const duration = Date.now() - start;
+          console.log(`✅ Loaded ${Array.isArray(data) ? data.length : 0} products in ${duration}ms`);
+          
+          // Cache it
+          console.log('💾 Caching products...');
+          localStorage.setItem('serpent_products_cache', JSON.stringify(data));
+          localStorage.setItem('serpent_products_cache_time', now.toString());
+          console.log('✅ Products cached! Next load will be instant.');
+        }
+        
+        console.log('✅ Raw response:', data);
+        
+        // Handle array response
+        const allProducts = Array.isArray(data) ? data : (data.products || []);
+        console.log('✅ Total products:', allProducts.length);
+        
+        // Filter by species (check metadata.species for Stripe products)
+        const filteredProducts = speciesFilter === 'all' 
+          ? allProducts 
+          : allProducts.filter(p => {
+              const species = p.metadata?.species || p.species;
+              return species === speciesFilter;
+            });
+        
+        console.log('✅ After species filter:', filteredProducts.length);
+        
+        // All Stripe products are "real" (not virtual), available (active=true)
+        const realProducts = filteredProducts.filter(p => p.active !== false);
+        const virtualProducts = []; // No virtual products from Stripe
+        
+        console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
+        
+        // Separate by status (Stripe products are all available if active)
+        const available = realProducts;
+        const sold = []; // Track sold separately (would need KV for this)
+        
+        console.log('✅ Available:', available.length, 'Sold:', sold.length);
+        
+        const userHash = getUserHash();
+        
+        // Render available
+        if (available.length === 0) {
+          availableContainer.innerHTML = '<div class="empty-state">No snakes available</div>';
+        } else {
+          availableContainer.innerHTML = available.map(p => renderProductCard(p, userHash, false)).join('');
+        }
+        
+        // Render virtual
+        if (virtualProducts.length === 0) {
+          virtualContainer.innerHTML = '<div class="empty-state">No virtual snakes</div>';
+        } else {
+          virtualContainer.innerHTML = virtualProducts.map(p => renderVirtualCard(p)).join('');
+        }
+        
+        // Render sold
+        soldCount.textContent = `(${sold.length})`;
+        if (sold.length === 0) {
+          soldContainer.innerHTML = '<div class="empty-state">No snakes sold yet</div>';
+        } else {
+          soldContainer.innerHTML = sold.map(p => renderProductCard(p, userHash, true)).join('');
+        }
+        
+        console.log('✅ Catalog rendering complete!');
+        
+      } catch (error) {
+        console.error('❌ Error loading catalog:', error);
+        availableContainer.innerHTML = `
+          <div class="error-state">
+            Failed to load catalog: ${error.message}<br>
+            <a href="debug/catalog-demo.html">Try Debug Demo</a>
+          </div>
+        `;
+        virtualContainer.innerHTML = '<div class="error-state">Error</div>';
+      }
+    }
+
+    // Toggle sold section
+    document.getElementById('sold-header').addEventListener('click', () => {
+      const soldSection = document.getElementById('sold-snakes');
+      const toggle = document.getElementById('sold-toggle');
+      if (soldSection.style.display === 'none') {
+        soldSection.style.display = 'grid';
+        toggle.textContent = '▲';
+      } else {
+        soldSection.style.display = 'none';
+        toggle.textContent = '▼';
+      }
+    });
+
+    // Check for success parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      const notification = document.createElement('div');
+      notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:1.5rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;';
+      notification.innerHTML = '✅ Payment successful! Thank you!';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+        window.history.replaceState({}, '', 'catalog.html');
+      }, 5000);
+    }
+
+    // Initial load
+    loadAndRenderCatalog();
+
+    // Filter change
+    document.getElementById('species-filter').addEventListener('change', loadAndRenderCatalog);
+  </script>
+
+  <!-- Snake Detail Modal -->
+  <script type="module">
+    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
+
+    // Delegate event listener for "View Details" buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-view-details')) {
+        const btn = e.target.closest('.btn-view-details');
+        try {
+          const productData = JSON.parse(btn.dataset.product);
+          openSnakeDetail(productData, 'shop');
+        } catch (err) {
+          console.error('Failed to parse product data:', err);
+        }
+      }
+    });
+  </script>
+
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serpent Town - My Farm</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="src/utils/debug-loader.js"></script>
+</head>
+<body>
+  <script type="module" src="src/components/Navigation.js"></script>
+  
+  <div id="app" data-context="real">
+    <!-- Login/Welcome Screen (shown when no user) -->
+    <div id="welcome-screen" class="welcome-screen" style="display: none;">
+      <div class="welcome-card">
+        <div class="welcome-header">
+          <div class="logo">🐍</div>
+          <h1>Serpent Town</h1>
+          <p>Your Snake Care & Breeding Adventure</p>
+        </div>
+        <div class="welcome-body">
+          <h2>Welcome!</h2>
+          <p>To start playing and see your snakes, please login or create an account.</p>
+          
+          <div class="welcome-actions">
+            <a href="account.html" class="btn btn-primary">
+              <span>🔑</span>
+              <span>Login / Create Account</span>
+            </a>
+            
+            <button id="demo-mode-btn" class="btn btn-secondary">
+              <span>🎮</span>
+              <span>Try Demo Mode</span>
+            </button>
+          </div>
+          
+          <div class="welcome-info">
+            <h3>Why create an account?</h3>
+            <ul>
+              <li>🐍 Own real snakes (purchased via Stripe)</li>
+              <li>💾 Save your progress across devices</li>
+              <li>🎯 Track your snake collection</li>
+              <li>🏆 Unlock achievements</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game UI (shown when user logged in) -->
+    <div id="game-ui" style="display: none;">
+    
+    <!-- Main Content -->
+    <main id="main-content" style="padding: 2rem; padding-top: 1rem;">
+      
+      <!-- Farm View (Default) -->
+      <div id="farm-view" class="view-content active">
+        <div class="view-header">
+          <h2>Your Snake Collection</h2>
+          <button id="buy-virtual-snake-btn" class="primary-btn">➕ Buy Virtual Snake</button>
+        </div>
+        
+        <div id="snake-collection" class="snake-collection">
+          <!-- Snake cards will be rendered here -->
+        </div>
+        
+        <div id="empty-collection" class="empty-state">
+          <div class="empty-icon">🐍</div>
+          <h3>No Snakes Yet!</h3>
+          <p>Buy your first snake to get started</p>
+          <a href="catalog.html" class="primary-btn">Browse Catalog</a>
+        </div>
+      </div>
+
+    </main>
+    </div>
+    <!-- End Game UI -->
+
+  <!-- Settings Modal (Hidden by default) -->
+  <div id="settings-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ Settings</h2>
+        <button class="close-btn" onclick="document.getElementById('settings-modal').style.display='none'">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-group">
+          <label for="speed-slider">Game Speed</label>
+          <div class="speed-controls">
+            <input type="range" id="speed-slider" min="1" max="100" value="1" step="1">
+            <span id="speed-display">1x</span>
+          </div>
+          <small class="muted">1x = Real-time, 100x = Ultra-fast (for testing)</small>
+        </div>
+
+        <div class="setting-group">
+          <label>Game Data</label>
+          <div class="button-group">
+            <button id="save-btn" class="secondary-btn">💾 Save Now</button>
+            <button id="reset-btn" class="danger-btn">🔄 Reset Game</button>
+          </div>
+          <small class="muted">Auto-saves every 30 seconds</small>
+        </div>
+
+        <div class="setting-group" style="display: none;">
+          <label>Debug</label>
+          <div class="button-group">
+            <button id="add-gold-btn" class="secondary-btn">💰 Add 1000 Gold</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label>About</label>
+          <div class="about-info">
+            <p>SnakeMuffin v3.4</p>
+            <p class="muted">Built with plain JavaScript</p>
+            <p class="muted">Data stored locally in browser</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- End #app -->
+
+  <!-- Game Logic -->
+  <script type="module">
+    // Detect environment and set base path
+    window.APP_BASE_PATH = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    console.log('🌍 Environment detected - Base path:', window.APP_BASE_PATH || '(root)');
+    
+    // Check if user is logged in
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get('user');
+    const hashUser = window.location.hash.substring(1);
+    const storedUser = localStorage.getItem('serpent_user_hash');
+    
+    const hasUser = userParam || hashUser || storedUser;
+    
+    console.log('🔍 User check:', {
+      urlParam: userParam,
+      hashUser: hashUser,
+      storedUser: storedUser,
+      hasUser: hasUser
+    });
+    
+    // Show appropriate screen
+    if (hasUser) {
+      console.log('✅ User detected - showing game UI');
+      document.getElementById('game-ui').style.display = 'block';
+      document.getElementById('welcome-screen').style.display = 'none';
+    } else {
+      console.log('⚠️ No user - showing welcome screen');
+      document.getElementById('welcome-screen').style.display = 'flex';
+      document.getElementById('game-ui').style.display = 'none';
+      
+      // Demo mode button
+      document.getElementById('demo-mode-btn').addEventListener('click', () => {
+        console.log('🎮 Demo mode activated');
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('game-ui').style.display = 'block';
+      });
+    }
+  </script>
+  <script type="module" src="src/modules/game/game-controller.js"></script>
+  
+  <style>
+    .welcome-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    
+    .welcome-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+      animation: slideUp 0.4s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .welcome-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .welcome-header .logo {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .welcome-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    
+    .welcome-header p {
+      opacity: 0.9;
+    }
+    
+    .welcome-body {
+      padding: 2rem;
+    }
+    
+    .welcome-body h2 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    
+    .welcome-body > p {
+      color: #666;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .welcome-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .welcome-actions .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .welcome-actions .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+    
+    .welcome-actions .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .welcome-actions .btn-secondary {
+      background: #f5f5f5;
+      color: #666;
+    }
+    
+    .welcome-actions .btn-secondary:hover {
+      background: #e5e5e5;
+    }
+    
+    .welcome-info {
+      background: #f9fafb;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+    }
+    
+    .welcome-info h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    
+    .welcome-info ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .welcome-info li {
+      padding: 0.5rem 0;
+      color: #666;
+      font-size: 0.95rem;
+    }
+  </style>
+  
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
+</body>
+</html>

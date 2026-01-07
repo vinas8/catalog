@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful - Snake Muffin</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="src/utils/debug-loader.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding-top: 80px;
+    }
+    .success-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 80px);
+    }
+    .success-card {
+      background: white;
+      border-radius: 16px;
+      padding: 3rem;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .success-icon {
+      font-size: 5rem;
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    .success-title {
+      font-size: 2rem;
+      color: #28a745;
+      margin: 1rem 0;
+    }
+    .status-text {
+      font-size: 1.2rem;
+      color: #666;
+      margin: 1rem 0;
+    }
+    .loading {
+      margin: 2rem 0;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--pastel-yellow);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .snake-details {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: var(--pastel-yellow-light);
+      border-radius: 12px;
+      text-align: left;
+      display: none;
+    }
+    .snake-details h3 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      font-weight: 600;
+      color: #666;
+    }
+    .actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--pastel-yellow);
+      color: #333;
+      border: 2px solid var(--pastel-yellow-dark);
+    }
+    .btn-primary:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .btn-secondary {
+      background: white;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+    .btn-secondary:hover {
+      border-color: var(--pastel-yellow-dark);
+    }
+    .error-state {
+      color: #dc3545;
+      padding: 1rem;
+      background: #f8d7da;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    .debug-info {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="src/components/Navigation.js"></script>
+  <div class="success-container">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <h1 class="success-title">Payment Successful!</h1>
+    <p class="status-text" id="status-message">Preparing your snake...</p>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p style="color: #999; margin-top: 1rem;">Fetching your purchase...</p>
+    </div>
+
+    <div class="snake-details" id="snake-details">
+      <h3>🐍 Your New Snake</h3>
+      <div class="detail-row">
+        <span class="detail-label">Product ID:</span>
+        <span id="product-id">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Nickname:</span>
+        <span id="nickname">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Acquired:</span>
+        <span id="acquired-time">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Price Paid:</span>
+        <span id="price-paid">-</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Health:</span>
+        <span id="health">100 ❤️</span>
+      </div>
+    </div>
+
+    <div class="error-state" id="error-message" style="display: none;"></div>
+
+    <div class="actions" id="actions" style="display: none;">
+      <a href="#" id="collection-btn" class="btn btn-primary">🐍 View My Collection</a>
+      <a href="#" id="game-btn" class="btn btn-primary">🎮 Go to My Farm</a>
+      <a href="catalog.html" class="btn btn-secondary">🛒 Shop More</a>
+    </div>
+
+    <div class="debug-info" id="debug-info"></div>
+  </div>
+
+  <script type="module">
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const MAX_ATTEMPTS = 30;
+    const POLL_INTERVAL = 1000; // 1 second
+
+    // DOM elements
+    const statusMessage = document.getElementById('status-message');
+    const loading = document.getElementById('loading');
+    const snakeDetails = document.getElementById('snake-details');
+    const errorMessage = document.getElementById('error-message');
+    const actions = document.getElementById('actions');
+    const debugInfo = document.getElementById('debug-info');
+    const gameBtn = document.getElementById('game-btn');
+    const collectionBtn = document.getElementById('collection-btn');
+
+    // Get session ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+
+    let userHash = null;
+    let attempts = 0;
+
+    // Log function
+    function log(message, data = null) {
+      console.log(`[SUCCESS] ${message}`, data || '');
+      const timestamp = new Date().toLocaleTimeString();
+      debugInfo.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+    }
+
+    // Show error
+    function showError(message) {
+      loading.style.display = 'none';
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      statusMessage.textContent = 'Something went wrong';
+      actions.style.display = 'flex';
+      log(`❌ ERROR: ${message}`);
+    }
+
+    // Show success
+    function showSuccess(snake) {
+      loading.style.display = 'none';
+      snakeDetails.style.display = 'block';
+      actions.style.display = 'flex';
+      
+      statusMessage.textContent = 'Your snake is ready!';
+      
+      // Fill in details
+      document.getElementById('product-id').textContent = snake.product_id;
+      document.getElementById('nickname').textContent = snake.nickname || 'New Snake';
+      document.getElementById('acquired-time').textContent = new Date(snake.acquired_at).toLocaleString();
+      document.getElementById('price-paid').textContent = `€${(snake.price_paid / 100).toFixed(2)}`;
+      document.getElementById('health').textContent = `${snake.stats.health} ❤️`;
+      
+      // Set game button link
+      gameBtn.href = `game.html?user=${userHash}`;
+      collectionBtn.href = `collection.html?user=${userHash}`;
+      
+      log('✅ SUCCESS: Snake loaded!', snake);
+    }
+
+    // Get user hash (from localStorage or Stripe session)
+    async function getUserHash() {
+      // Try localStorage first
+      let hash = localStorage.getItem('serpent_user_hash') || 
+                 localStorage.getItem('serpent_last_purchase_hash') || 
+                 localStorage.getItem('serpent_pending_purchase_hash');
+      
+      if (hash) {
+        log('Found user hash in localStorage', hash);
+        return hash;
+      }
+
+      // Fetch from Stripe session
+      if (!sessionId) {
+        throw new Error('No session_id and no localStorage hash');
+      }
+
+      log('Fetching user hash from Stripe session...');
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/session-info?session_id=${sessionId}`);
+        if (!response.ok) {
+          throw new Error(`Session API returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        hash = data.client_reference_id || data.user_hash;
+        
+        if (hash) {
+          log('Got user hash from Stripe', hash);
+          // Save for future
+          localStorage.setItem('serpent_user_hash', hash);
+          localStorage.setItem('serpent_last_purchase_hash', hash);
+          return hash;
+        }
+        
+        throw new Error('No client_reference_id in session');
+        
+      } catch (error) {
+        log('Failed to fetch from Stripe', error.message);
+        throw error;
+      }
+    }
+
+    // Poll for snake
+    async function checkForSnake() {
+      attempts++;
+      log(`Attempt ${attempts}/${MAX_ATTEMPTS} - Checking for snake...`);
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/user-products?user=${userHash}`);
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const products = Array.isArray(data) ? data : (data.products || []);
+        
+        log(`Found ${products.length} product(s)`);
+        
+        if (products.length > 0) {
+          // Success!
+          showSuccess(products[0]);
+          return true;
+        }
+        
+        if (attempts >= MAX_ATTEMPTS) {
+          showError('Timeout: Snake not assigned yet. Please contact support or check game later.');
+          return true;
+        }
+        
+        return false;
+        
+      } catch (error) {
+        log(`Error checking: ${error.message}`);
+        
+        if (attempts >= MAX_ATTEMPTS) {
+          showError(`Failed to load snake: ${error.message}`);
+          return true;
+        }
+        
+        return false;
+      }
+    }
+
+    // Main flow
+    async function init() {
+      log('🚀 Success page initialized');
+      log(`Session ID: ${sessionId || 'none'}`);
+      
+      if (!sessionId) {
+        showError('Invalid access: No session_id. Please complete a purchase first.');
+        return;
+      }
+
+      try {
+        // Step 1: Get user hash
+        statusMessage.textContent = 'Verifying your purchase...';
+        userHash = await getUserHash();
+        log(`User hash: ${userHash}`);
+        
+        // Step 2: Poll for snake
+        statusMessage.textContent = 'Loading your snake...';
+        
+        const pollLoop = async () => {
+          const done = await checkForSnake();
+          if (!done) {
+            setTimeout(pollLoop, POLL_INTERVAL);
+          }
+        };
+        
+        pollLoop();
+        
+      } catch (error) {
+        showError(`Failed to initialize: ${error.message}`);
+      }
+    }
+
+    // Start
+    init();
+  </script>
+  <!-- Debug Panel (auto-loads only in DEBUG mode) -->
+  <script type="module">
+    import { initDebugPanel } from './src/components/DebugPanel.js';
+    initDebugPanel();
+  </script>
+</body>
+</html>
