@@ -3,15 +3,15 @@ const GAME_VERSION = '0.2.0';
 const SAVE_KEY = 'smri_game_save';
 
 const MODULES = {
-    shop: '../catalog.html',
-    collection: '../collection.html',
-    game: '../game.html',
-    dex: '../dex.html',
-    calculator: '../calculator.html',
-    breeding: '../calc/index.html',
-    tutorial: '../tutorial/index.html',
-    farm: '../learn-farm.html',
-    admin: '../admin-kv.html',
+    shop: '/catalog/catalog.html',
+    collection: '/catalog/collection.html',
+    game: '/catalog/game.html',
+    dex: '/catalog/dex.html',
+    calculator: '/catalog/calculator.html',
+    breeding: '/catalog/calc/index.html',
+    tutorial: '/catalog/tutorial/index.html',
+    farm: '/catalog/learn-farm.html',
+    admin: '/catalog/admin-kv.html',
 };
 
 const state = {
