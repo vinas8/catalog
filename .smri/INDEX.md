@@ -184,45 +184,23 @@ Update today's session log with:
 
 ### `.smri list`
 List all SMRI scenarios with status:
-1. **Load scenarios from:**
-   - `debug/smri-scenarios.js` (canonical source)
-   - `.smri/scenarios/*.md` (scenario files)
+1. **Execute:** `bash scripts/smri-list.sh` (instant)
 2. **Display format:**
    ```
-   📊 SMRI Scenarios Status (v0.7.7)
+   📊 SMRI Scenarios (v0.7.7)
    
-   ✅ Complete (3/69):
-   • S0.0.01 - Generic Debug Health
-   • S0.5,5-1.01 - Worker API & KV
-   • S0.5-1.01 - KV Storage Health
+   Total: 63 | ✅ 3 (4%) | ⏳ 6 (9%) | 📝 6
+   Files: 14 scenario docs in .smri/scenarios/
    
-   ⏳ In Progress (6/69):
+   🔴 Unfinished (⏳):
    • S0.2.01 - Game Mechanics Check
    • S0.3.01 - Auth Validation
    • S0.4.01 - Stripe Integration
-   • S0.5-2.01 - Stripe Webhooks
-   • S0.0.02 - Virtual Snakes Demo
-   • S0.0.03 - Cleanup Test Data
    
-   📝 Planned (60/69):
-   • S1.1,2,3,4,5.01 - Happy Path Purchase
-   • S2.7,5,5-1.01 - Tutorial Happy Path
-   • [... remaining scenarios ...]
-   
-   📈 Progress: 4% (3/69 complete)
-   🎯 Next Priority: Complete S0 health checks (11 scenarios)
+   🎯 Next: Complete S0 health checks (3/11 done)
    ```
-3. **Group by module:**
-   - S0: Health (11 scenarios)
-   - S1: Shop (6 scenarios)
-   - S2: Game (10 scenarios)
-   - S3: Auth (7 scenarios)
-   - S4: Payment (6 scenarios)
-   - S5: Worker (13 scenarios)
-4. **Highlight unfinished:**
-   - Show ⏳ scenarios at top
-   - Link to scenario file path
-   - Show last updated date
+3. **Source:** `debug/smri-scenarios.js` (canonical)
+4. **Fast:** <1 second, grep-based, no parsing
 
 ### `.smri consolidate`
 Consolidate documentation:
