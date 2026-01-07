@@ -1,17 +1,21 @@
-// SMRI Game v0.2.0 - Integrates existing modules
-const GAME_VERSION = '0.2.0';
+// SMRI Game v0.2.1 - Fixed paths for GitHub Pages
+const GAME_VERSION = '0.2.1';
 const SAVE_KEY = 'smri_game_save';
 
+// Detect if we're on GitHub Pages or localhost
+const isGitHubPages = window.location.hostname.includes('github.io');
+const basePath = isGitHubPages ? '/catalog' : '';
+
 const MODULES = {
-    shop: '/catalog/catalog.html',
-    collection: '/catalog/collection.html',
-    game: '/catalog/game.html',
-    dex: '/catalog/dex.html',
-    calculator: '/catalog/calculator.html',
-    breeding: '/catalog/calc/index.html',
-    tutorial: '/catalog/tutorial/index.html',
-    farm: '/catalog/learn-farm.html',
-    admin: '/catalog/admin-kv.html',
+    shop: `${basePath}/catalog.html`,
+    collection: `${basePath}/collection.html`,
+    game: `${basePath}/game.html`,
+    dex: `${basePath}/dex.html`,
+    calculator: `${basePath}/calculator.html`,
+    breeding: `${basePath}/calc/index.html`,
+    tutorial: `${basePath}/tutorial/index.html`,
+    farm: `${basePath}/learn-farm.html`,
+    admin: `${basePath}/admin-kv.html`,
 };
 
 const state = {
@@ -37,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     updateUI();
     switchScreen(state.firstTime ? 'title' : 'town');
+    
+    // Log module paths for debugging
+    console.log('🌐 Environment:', isGitHubPages ? 'GitHub Pages' : 'Localhost');
+    console.log('📍 Base path:', basePath);
 });
 
 function setupEventListeners() {
@@ -52,8 +60,11 @@ function setupEventListeners() {
     document.querySelectorAll('.building').forEach(b => {
         b.addEventListener('click', () => {
             const id = b.dataset.module;
-            if (state.unlocked[id]) openModule(id);
-            else alert('🔒 Locked! Complete tasks to unlock.');
+            if (state.unlocked[id]) {
+                openModule(id);
+            } else {
+                alert('🔒 Locked! Complete tasks to unlock.');
+            }
         });
     });
 
@@ -69,7 +80,13 @@ function switchScreen(id) {
 }
 
 function openModule(id) {
-    if (MODULES[id]) window.location.href = MODULES[id];
+    const path = MODULES[id];
+    if (path) {
+        console.log(`📂 Opening module: ${id} → ${path}`);
+        window.location.href = path;
+    } else {
+        console.error(`❌ Module not found: ${id}`);
+    }
 }
 
 function showTutorial() {
