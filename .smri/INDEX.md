@@ -30,6 +30,50 @@ A consolidated documentation system where **ALL** project documentation lives:
 - ✅ Use `.smri/logs/` for notes
 - ✅ Use `.smri/docs/` for documentation
 
+### 0.5. ANTI-SCATTER RULE: Follow Defined Structure
+**WHY WE LOAD .smri: To prevent scattered files everywhere**
+
+**PROBLEM:** Files get scattered across project:
+- ❌ Multiple demo files in different locations
+- ❌ Duplicate test runners (root, debug/, debug/tools/, debug/archive/)
+- ❌ Similar files with slight differences
+- ❌ No clear "source of truth"
+
+**SOLUTION:** Strict structure enforcement
+```
+/debug/
+  ├── index.html              ← Main debug hub (ONLY ONE)
+  ├── tools/
+  │   ├── smri-runner.html    ← Test executor (ONLY ONE)
+  │   ├── kv-manager.html     ← KV management
+  │   └── healthcheck.html    ← Health checks
+  ├── purchase-flow-demo.html ← Purchase demo (ONLY ONE)
+  ├── visual-demo.html        ← Visual demo (ONLY ONE)
+  └── archive/                ← Old versions (NEVER use)
+```
+
+**RULES:**
+1. **Before creating ANY file:** Check if it exists using `find` or `tree`
+2. **If similar file exists:** Update existing, DON'T create new
+3. **If old version exists:** Archive it, then create ONE new version
+4. **Never create duplicates:** smri-runner-v2.html, demo-new.html, test-final.html
+5. **Follow the map:** `.smri/INDEX.md` defines structure - stick to it
+
+**AI ACTION REQUIRED:**
+```bash
+# Before creating any file, ALWAYS run:
+cd /root/catalog && find . -name "*similar-name*" -type f
+tree -L 3 debug/
+
+# If duplicates found:
+# 1. Move old to archive
+# 2. Update/create ONE canonical version
+# 3. Document in .smri/logs/
+```
+
+**This prevents:** "Where's the demo? There are 5 demo files!"  
+**This ensures:** "The demo is at `/debug/visual-demo.html` - that's the only one."
+
 ### 1. Use Git to Verify Structure
 **ALWAYS run before creating files:**
 ```bash
