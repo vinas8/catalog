@@ -93,9 +93,16 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           
-          git add data/genetics/morphs-scraped-raw.json
-          git add data/genetics/morphs-complete.json
-          git add data/genetics/scraper-checkpoint.json
+          # Only add files that actually exist
+          [ -f data/genetics/morphs-scraped-raw.json ] && git add data/genetics/morphs-scraped-raw.json || echo "⚠️  morphs-scraped-raw.json not found"
+          [ -f data/genetics/morphs-complete.json ] && git add data/genetics/morphs-complete.json || echo "⚠️  morphs-complete.json not found"
+          [ -f data/genetics/scraper-checkpoint.json ] && git add data/genetics/scraper-checkpoint.json || echo "⚠️  scraper-checkpoint.json not found"
+          
+          # Check if there are any changes to commit
+          if git diff --cached --quiet; then
+            echo "⚠️  No changes to commit"
+            exit 0
+          fi
           
           MORPH_COUNT=$(node -e "const d=require('./data/genetics/morphs-complete.json'); console.log(d.morph_count)")
           
