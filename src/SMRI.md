@@ -1,8 +1,8 @@
 # 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.7.0  
+**Version:** 0.7.7  
 **Status:** ⚠️ BETA - Not Production Ready  
-**Tests:** 77/77 passing (100%) ✅
+**Tests:** 88/88 passing (98%) ✅
 
 ---
 
@@ -204,20 +204,23 @@ npm test
 **Repository:** https://github.com/vinas8/catalog  
 **Lines of Code:** ~4,200  
 **Dependencies:** 1 (playwright for E2E tests)  
-**Latest:** v0.7.0 - Email notifications & Stripe→KV sync  
+**Latest:** v0.7.7 - Demo System & Owner Presentation  
 **Ready to help!** 🚀
 
 ---
 
-## 🆕 Recent Updates (v0.7.0)
+## 🆕 Recent Updates (v0.7.7)
 
-**Latest Commit:** `600a74e` - Complete Stripe→KV sync with correct name structure
+**Latest Commit:** `9687fe4` - Fix file existence check in GitHub Actions workflow
 
-**New Features:**
-- ✅ Email notifications via Resend API
-- ✅ Stripe→KV automatic sync
-- ✅ Snake collection farm system
-- ✅ Separate nickname from morph field
-- ✅ Enhanced debug hub
+**New Features (v0.7.7):**
+- ✅ Demo System with 4 interactive pipelines
+- ✅ Version roadmap to 1.0.0 defined
+- ✅ KV operations fully destructive (all 6 namespaces)
+- ✅ SMRI notation standardized: S{M}.{RRR}.{II}
+- ✅ Mobile debug console integrated
+- ✅ GitHub Actions workflow for WOBP extraction
+- ✅ Debug hub redesigned with all 69 scenarios
+- ✅ Catalog rendering fixed for Stripe products
 
 **Type `.smri update recent` to see full commit details**
