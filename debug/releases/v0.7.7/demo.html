@@ -120,6 +120,7 @@
     }
     .status-overlay.executing { background: rgba(245, 158, 11, 0.95); }
     .status-overlay.warning { background: rgba(251, 191, 36, 0.95); color: #1e1e1e; }
+    .status-overlay.error { background: rgba(220, 38, 38, 0.95); }
     .log-panel {
       background: #0d1117;
       border-top: 2px solid #30363d;
@@ -134,6 +135,7 @@
     .log-entry.success { color: #3fb950; }
     .log-entry.info { color: #58a6ff; }
     .log-entry.warning { color: #fbbf24; }
+    .log-entry.error { color: #f87171; }
     .initial-view, .pipeline-view { display: flex; flex-direction: column; height: 100%; }
     .pipeline-view { display: none; }
     .back-button { background: #21262d; color: #c9d1d9; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
@@ -212,67 +214,54 @@
     let currentStep=0,autoPlaying=false,autoPlayInterval=null;const baseUrl=window.location.origin;
     const steps=[
       {url:`${baseUrl}/import.html`,action:async()=>{
-        showStatus('📤 Loading import...','executing');
+        showStatus('📤 Starting import...','executing');
         await wait(1000);
-        log('✅ Import page loaded','success');
+        log('✅ Import page loaded (in iframe)','success');
         await wait(500);
         
-        // Try to auto-import
+        // Import directly via Worker API (bypass iframe security)
+        log('🔄 Uploading products to Stripe...','info');
+        
+        const products = [
+          {name:"Pudding",morph:"Banana Het Clown",gender:"Male",yob:"2024",weight:"245g",species:"ball_python",price:350.00},
+          {name:"Taohu",morph:"Super Mojave",gender:"Male",yob:"2023",weight:"380g",species:"ball_python",price:450.00},
+          {name:"Almond",morph:"Hurricane Butter Fire",gender:"Female",yob:"2024",weight:"290g",species:"ball_python",price:650.00},
+          {name:"Mochi",morph:"Salmon Hypo Bloodred",gender:"Male",yob:"2024",weight:"180g",species:"corn_snake",price:180.00},
+          {name:"Lavender",morph:"Lavender Tessera",gender:"Female",yob:"2023",weight:"220g",species:"corn_snake",price:250.00}
+        ];
+        
         try {
-          const iframe = document.getElementById('demo-iframe');
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          const uploadRes = await fetch('https://catalog.navickaszilvinas.workers.dev/upload-products', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({products})
+          });
           
-          if (iframeDoc && iframeDoc.getElementById('csvText')) {
-            log('🔄 Auto-importing test data...','info');
+          const uploadResult = await uploadRes.json();
+          
+          if (uploadRes.ok) {
+            log(`✅ Uploaded ${uploadResult.uploaded}/${uploadResult.total} to Stripe`,'success');
+            await wait(1000);
             
-            // Sample data to import
-            const sampleCSV = `Name,Morph,Gender,YOB,Weight
-Pudding,Banana Het Clown,Male,2024,245g
-Taohu,Super Mojave,Male,2023,380g
-Almond,Hurricane Butter Fire,Female,2024,290g
-Mochi,Salmon Hypo Bloodred,Male,2024,180g
-Lavender,Lavender Tessera,Female,2023,220g`;
+            // Sync to KV
+            log('🔄 Syncing Stripe → KV...','info');
+            const syncRes = await fetch('https://catalog.navickaszilvinas.workers.dev/sync-stripe-to-kv', {method:'POST'});
+            const syncResult = await syncRes.json();
             
-            // Inject CSV and trigger parse
-            iframeDoc.getElementById('csvText').value = sampleCSV;
-            iframeDoc.getElementById('pasteArea').style.display = 'block';
-            
-            await wait(500);
-            
-            // Call iframe's parseText function
-            if (iframe.contentWindow.parseText) {
-              iframe.contentWindow.parseText();
-              log('✅ CSV parsed (5 snakes)','success');
-              await wait(1000);
-              
-              // Try to upload
-              if (iframe.contentWindow.uploadToStripe) {
-                log('⬆️ Uploading to Stripe...','info');
-                await iframe.contentWindow.uploadToStripe();
-                await wait(2000);
-                log('✅ Upload complete!','success');
-                
-                // Try to sync
-                if (iframe.contentWindow.syncToKV) {
-                  log('🔄 Syncing to KV...','info');
-                  await iframe.contentWindow.syncToKV();
-                  await wait(2000);
-                  log('✅ Sync complete! Data ready','success');
-                  showStatus('✅ Import complete!\n\n5 snakes added to catalog','success');
-                }
-              }
+            if (syncRes.ok) {
+              log(`✅ Synced ${syncResult.synced}/${syncResult.total} products to KV`,'success');
+              showStatus('✅ Import complete!\n\n5 snakes ready in catalog','success');
             } else {
-              log('⚠️ Auto-import failed - do manually','warning');
-              showStatus('⚠️ Please import manually\n\nPaste CSV → Parse → Upload → Sync','warning');
+              log(`❌ Sync failed: ${syncResult.error}`,'error');
+              showStatus('❌ Sync failed\n\nCheck logs','error');
             }
           } else {
-            log('⚠️ Cannot access iframe - do manually','warning');
-            showStatus('⚠️ Manual import required','warning');
+            log(`❌ Upload failed: ${uploadResult.error}`,'error');
+            showStatus('❌ Upload failed\n\nCheck logs','error');
           }
         } catch(e) {
-          log('⚠️ Auto-import error: ' + e.message,'warning');
-          log('💡 Manual steps: Paste CSV → Parse → Upload → Sync','info');
-          showStatus('⚠️ Manual import required\n\nSee logs for instructions','warning');
+          log(`❌ Import error: ${e.message}`,'error');
+          showStatus('❌ Import failed\n\nManual import required','error');
         }
       }},
       {url:`${baseUrl}/catalog.html`,action:async()=>{showStatus('🛒 Loading catalog...','executing');await wait(1200);log('✅ Catalog page loaded','success');log('🔍 Fetching products from Worker API...','info');await wait(800);try{const res=await fetch(`${baseUrl.replace('8000','').replace(':','')}/catalog.html`);log('✅ Catalog fetched (check if products appear)','success');log('💡 If empty: products not imported yet!','info');}catch(e){log('⚠️ Check if products are visible in catalog','warning');}showStatus('✅ Catalog loaded!\n\nCheck if products appear','success');}},
