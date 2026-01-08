@@ -10,7 +10,7 @@
 
 ```
 Scenarios: 17 total (10 ✅, 7 ⏳) = 59% pass rate
-Modules: 9 internal (M0-M9) + 2 external abstractions needed
+Modules: 9 internal (S0-S9) + 2 external abstractions needed
 Functions: 50+ documented in public API
 Tests: 88/88 passing (98%)
 ```
@@ -46,24 +46,24 @@ npm start                  # localhost:8000
 
 ## 🏗️ Module Architecture
 
-### Internal Modules (M0-M9) - `src/modules/`
+### Internal Modules (S0-S9) - `src/modules/`
 All have public facades (`index.js`) and documentation:
 
 ```
-M0: common   - Core utilities, constants
-M1: shop     - E-commerce, catalog, pricing
-M2: game     - Tamagotchi mechanics
-M3: auth     - User authentication
-M4: payment  - Stripe integration (external wrapper)
-M6: testing  - Test framework
-M7: breeding - Genetics calculator (needs abstraction)
-M8: smri     - Test runner system
-M9: tutorial - Tutorial system
+0: common   - Core utilities, constants
+1: shop     - E-commerce, catalog, pricing
+2: game     - Tamagotchi mechanics
+3: auth     - User authentication
+4: payment  - Stripe integration (external wrapper)
+6: testing  - Test framework
+7: breeding - Genetics calculator (needs abstraction)
+8: smri     - Test runner system
+9: tutorial - Tutorial system
 ```
 
-### External Modules (M10+)
+### External Modules (S10+)
 Need abstraction before use:
-- **M5: Worker/KV** - Currently `worker/worker.js` (2077 lines)
+- **5: Worker/KV** - Currently `worker/worker.js` (2077 lines)
 - Future: Email, Analytics, etc.
 
 ### Centralized Config (`src/config/smri/`)
@@ -93,7 +93,7 @@ Need abstraction before use:
 
 ## 🎯 Creating New Scenarios
 
-### For M0-M9 (Existing Modules)
+### For S0-S9 (Existing Modules)
 ```bash
 # 1. Add to config
 vim src/config/smri/scenarios.js
@@ -105,7 +105,7 @@ vim .smri/scenarios/S{M}.{RRR}.{II}-name.md
 vim src/modules/{module}/
 ```
 
-### For M10+ (New External Service)
+### For S10+ (New External Service)
 ```bash
 # 1. Create abstraction module FIRST
 mkdir -p src/modules/{service}
@@ -179,7 +179,7 @@ find src/modules -name "*.js" | xargs wc -l | sort -rn | head -10
 | M8 (smri) | ✅ Complete | 4 | - |
 | M9 (tutorial) | ✅ Complete | 3 | - |
 
-**Priority:** Abstract M5 (Worker) - 2077 lines → modular
+**Priority:** Abstract S5 (Worker) - 2077 lines → modular
 
 ---
 
@@ -197,7 +197,7 @@ find src/modules -name "*.js" | xargs wc -l | sort -rn | head -10
 ### Morning
 1. Check progress: `.smri list scenarios`
 2. Review functions: `.smri list functions`
-3. Pick module: M0-M9 or abstract M10+
+3. Pick module: S0-S9 or abstract S10+
 
 ### Afternoon
 4. Implement: Update module or create abstraction
@@ -214,8 +214,8 @@ find src/modules -name "*.js" | xargs wc -l | sort -rn | head -10
 ## 🎯 Success Criteria
 
 **Project Complete When:**
-- ✅ All M0-M9 modules have facades
-- ✅ M10+ abstractions created (M5 worker priority)
+- ✅ All S0-S9 modules have facades
+- ✅ S10+ abstractions created (M5 worker priority)
 - ✅ 60/60 SMRI scenarios implemented
 - ✅ 150+ automated tests passing
 - ✅ All files under 500 lines
@@ -229,7 +229,7 @@ find src/modules -name "*.js" | xargs wc -l | sort -rn | head -10
 
 **Architecture:** ✅ Solid modular foundation  
 **Config:** ✅ Centralized in `src/config/smri/`  
-**Next:** Abstract M5 (Worker) or complete scenarios  
+**Next:** Abstract S5 (Worker) or complete scenarios  
 
 **You got this!** The modules are clean and ready to scale.
 

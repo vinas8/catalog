@@ -184,19 +184,19 @@ Complete project briefing:
    📦 Module System (v0.7.7)
    
    src/modules/ - 9 internal modules with facades
-   ├── common/      (M0) - Core utilities
-   ├── shop/        (M1) - E-commerce
-   ├── game/        (M2) - Tamagotchi mechanics
-   ├── auth/        (M3) - User auth
-   ├── payment/     (M4) - Stripe (external wrapper)
-   ├── testing/     (M6) - Test framework
-   ├── breeding/    (M7) - Genetics
-   ├── smri/        (M8) - Test runner
-   └── tutorial/    (M9) - Tutorial system
+   ├── common/      (S0) - Core utilities, health
+   ├── shop/        (S1) - E-commerce
+   ├── game/        (S2) - Tamagotchi mechanics
+   ├── auth/        (S3) - User auth
+   ├── payment/     (S4) - Stripe (external wrapper)
+   ├── worker/      (S5) - Backend API (external - needs abstraction)
+   ├── testing/     (S6) - Test framework
+   ├── breeding/    (S7) - Genetics (external - needs abstraction)
+   ├── smri/        (S8) - Test runner
+   └── tutorial/    (S9) - Tutorial system
    
-   External Modules (M10+):
-   - Worker/KV (M5) - Currently in worker/worker.js
-   - Will be abstracted to src/modules/worker/ later
+   External Modules (S10+):
+   - Future external services that need abstraction
    - Pattern: Internal abstraction over external service
    
    Each module has:
@@ -205,9 +205,9 @@ Complete project briefing:
    ✅ Documented in src/PUBLIC-API.md
    
    When creating new SMRI scenarios:
-   1. Check module number (S{M}.{RRR}.{II})
-   2. If M0-9: Add to existing module
-   3. If M10+: Create external abstraction first
+   1. Check module number in SMRI format: S{module}.{relations}.{iteration}
+   2. S0-S9: Add to existing module
+   3. S10+: Create external abstraction first
    4. Update src/config/smri/scenarios.js
    ```
    
@@ -215,44 +215,44 @@ Complete project briefing:
    ```
    S{M}.{RRR}.{II}
    - S = Scenario prefix
-   - M = Primary module or submodule (e.g., 2-7 = Game Tutorial)
-   - RRR = Relations (comma-separated modules)
+   - M = Primary module (0-9) or submodule (e.g., 2-7 = Game Tutorial)
+   - RRR = Relations (comma-separated module numbers)
    - II = Iteration (01-99)
    
-   Module Numbers (M):
-   - M0: Health/Common
-   - M1: Shop
-   - M2: Game
-   - M3: Auth
-   - M4: Payment
-   - M5: Worker (external - KV/webhooks)
-   - M6: Common/Testing
-   - M7: Breeding (external - calculator)
-   - M8: SMRI (test system)
-   - M9: Tutorial
-   - M10+: Future external modules
+   Module Numbers in SMRI:
+   - 0: Health/Common
+   - 1: Shop
+   - 2: Game
+   - 3: Auth
+   - 4: Payment
+   - 5: Worker (external - KV/webhooks)
+   - 6: Testing
+   - 7: Breeding (external)
+   - 8: SMRI (test system)
+   - 9: Tutorial
+   - 10+: Future external modules
    
-   Submodules (M-S):
-   - 2-7: Game Tutorial
-   - 5-1: Worker KV storage
-   - 5-2: Worker Webhooks
+   Submodules (using dash):
+   - 2-7: Game Tutorial (module 2, submodule 7)
+   - 5-1: Worker KV storage (module 5, submodule 1)
+   - 5-2: Worker Webhooks (module 5, submodule 2)
    
    Separators:
-   - DOT (.) = Separates parts
-   - COMMA (,) = Separates modules in relations
-   - DASH (-) = Indicates submodule
+   - DOT (.) = Separates parts (S0.1,2,3.01)
+   - COMMA (,) = Separates modules in relations (1,2,3)
+   - DASH (-) = Indicates submodule (2-7, 5-1)
    
    Examples:
-   - S2.7,5,5-1.01 = Game Tutorial + Worker + KV (iteration 01)
-   - S1.1,2,3,4,5.01 = Shop with full purchase flow
-   - S0.0,1,2,3,4,5.01 = Health check across all modules
+   - S2.7,5,5-1.01 = Game (module 2), related to Tutorial (7), Worker (5), KV (5-1), iteration 01
+   - S1.1,2,3,4,5.01 = Shop (module 1) with relations to itself, game, auth, payment, worker
+   - S0.0,1,2,3,4,5.01 = Health (module 0) checking all modules
    
    When Creating New Scenarios:
-   1. Determine module (M0-9 internal, M10+ external)
-   2. Check if module exists in src/modules/
-   3. If M10+: Abstract external service first
+   1. Determine module number (0-9 internal, 10+ external)
+   2. Check if module folder exists in src/modules/
+   3. If 10+: Abstract external service first
    4. Add to src/config/smri/scenarios.js
-   5. Create .smri/scenarios/S{M}.*.md file
+   5. Create .smri/scenarios/S{M}.{RRR}.{II}-name.md file
    ```
    
 3. Check version (`package.json`)
@@ -275,7 +275,7 @@ Complete project briefing:
    - Archive outdated docs
    - Update version references
    - **Split large files**
-   - **Abstract external modules (M10+)**
+   - **Abstract external modules (S10+)**
 13. Ask: "📍 Where did we leave off?"
 
 **Note:** All changes require user approval before execution.
@@ -789,7 +789,7 @@ Shows all modules and their split structure clearly.
 
 ## 🏗️ Module Architecture (v0.7.7)
 
-### Internal Modules (M0-M9)
+### Internal Modules (S0-S9)
 Located in `src/modules/`, each has:
 - **index.js** - Public facade with `ENABLED` flag
 - **README.md** - Module documentation
@@ -797,40 +797,40 @@ Located in `src/modules/`, each has:
 - Documented in `src/PUBLIC-API.md`
 
 ```
-M0: common      - Core utilities, constants
-M1: shop        - E-commerce, catalog, pricing
-M2: game        - Tamagotchi mechanics, care system
-M3: auth        - User authentication, hashing
-M4: payment     - Stripe integration (external wrapper)
-M5: worker      - Backend API (external - to be abstracted)
-M6: testing     - Test framework, assertions
-M7: breeding    - Genetics calculator (external - to be abstracted)
-M8: smri        - Test runner system
-M9: tutorial    - Interactive tutorial system
+0: common      - Core utilities, constants
+1: shop        - E-commerce, catalog, pricing
+2: game        - Tamagotchi mechanics, care system
+3: auth        - User authentication, hashing
+4: payment     - Stripe integration (external wrapper)
+5: worker      - Backend API (external - to be abstracted)
+6: testing     - Test framework, assertions
+7: breeding    - Genetics calculator (external - to be abstracted)
+8: smri        - Test runner system
+9: tutorial    - Interactive tutorial system
 ```
 
-### External Modules (M10+)
+### External Modules (S10+)
 Services that need abstraction layer:
 - **Pattern:** Internal facade wrapping external API
 - **Examples:** 
   - M5 (Worker/KV) - Currently `worker/worker.js`, move to `src/modules/worker/`
-  - M7 (Breeding) - Currently inline, abstract to `src/modules/breeding/`
-  - Future: M10 (Email), M11 (Analytics), etc.
+  - S7 (Breeding) - Currently inline, abstract to `src/modules/breeding/`
+  - Future: 10 (Email), 11 (Analytics), etc.
 
 ### Module Lifecycle
 
-**When Creating M0-M9 Scenario:**
+**When Creating S0-S9 Scenario:**
 1. Module already exists
 2. Add scenario to `src/config/smri/scenarios.js`
 3. Create `.smri/scenarios/S{M}.*.md`
 4. Update module if needed
 
-**When Creating M10+ Scenario:**
+**When Creating S10+ Scenario:**
 1. **First:** Create abstraction module in `src/modules/{name}/`
 2. Create `index.js` facade with `ENABLED` flag
 3. Add to `src/config/smri/module-functions.js`
 4. Document in `src/PUBLIC-API.md`
-5. **Then:** Add scenario like M0-M9
+5. **Then:** Add scenario like S0-S9
 
 **Example: Abstracting Worker (M5)**
 ```
@@ -848,6 +848,6 @@ Future:   src/modules/worker/
 2. **Enable/Disable:** Each has `export const ENABLED = true`
 3. **Self-Contained:** Minimal dependencies between modules
 4. **Documentation:** Function catalog + README
-5. **M10+ Must Abstract:** External services get internal wrapper
+5. **S10+ Must Abstract:** External services get internal wrapper
 
 ---
