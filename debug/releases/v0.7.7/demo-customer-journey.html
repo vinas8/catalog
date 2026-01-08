@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Customer Journey Demo - v0.7.7</title>
+  <script src="../../src/utils/debug-loader.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+      padding: 10px;
+      overflow: hidden;
+    }
+    .demo-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      gap: 10px;
+    }
+    
+    /* Header */
+    .demo-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 15px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .demo-title {
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .demo-controls {
+      display: flex;
+      gap: 10px;
+    }
+    .demo-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .demo-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .demo-btn.primary {
+      background: #10b981;
+    }
+    .demo-btn.primary:hover {
+      background: #059669;
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+      padding: 15px;
+      flex-shrink: 0;
+    }
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #0d1117;
+      margin: 0 3px;
+      transition: all 0.3s;
+    }
+    .step.active {
+      background: #1f6feb;
+      color: white;
+      font-weight: 600;
+    }
+    .step.completed {
+      background: #238636;
+      color: white;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: #8b949e;
+      text-align: center;
+      margin-top: 8px;
+    }
+    
+    /* Browser Frame */
+    .browser-frame {
+      flex: 1;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .browser-controls {
+      background: #0d1117;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid #30363d;
+    }
+    .browser-btn {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .browser-btn:disabled {
+      background: #21262d;
+      color: #6e7681;
+      cursor: not-allowed;
+    }
+    .url-bar {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+    .browser-content {
+      flex: 1;
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .browser-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Instructions Overlay */
+    .instructions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      max-width: 300px;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .instructions h3 {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .instructions p {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .instructions-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Header -->
+    <div class="demo-header">
+      <div class="demo-title">🛒 Customer Journey Demo</div>
+      <div class="demo-controls">
+        <button class="demo-btn" onclick="prevStep()">← Previous</button>
+        <button class="demo-btn primary" onclick="nextStep()">Next →</button>
+        <button class="demo-btn" onclick="resetDemo()">🔄 Reset</button>
+      </div>
+    </div>
+    
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="step active" id="step-0">1. Setup Data</div>
+        <div class="step" id="step-1">2. Browse Shop</div>
+        <div class="step" id="step-2">3. View Snake</div>
+        <div class="step" id="step-3">4. Purchase</div>
+        <div class="step" id="step-4">5. Collection</div>
+      </div>
+      <div class="step-desc" id="step-desc">Step 1: Import test products to KV storage</div>
+    </div>
+    
+    <!-- Browser Frame -->
+    <div class="browser-frame">
+      <div class="browser-controls">
+        <button class="browser-btn" onclick="reloadFrame()">🔄</button>
+        <button class="browser-btn" onclick="goBack()" id="back-btn" disabled>←</button>
+        <button class="browser-btn" onclick="goForward()" id="forward-btn" disabled>→</button>
+        <input type="text" class="url-bar" id="url-bar" readonly>
+      </div>
+      <div class="browser-content">
+        <iframe id="demo-frame" src=""></iframe>
+        <div class="instructions" id="instructions">
+          <button class="instructions-close" onclick="hideInstructions()">✕</button>
+          <h3 id="inst-title">Welcome!</h3>
+          <p id="inst-text">Click "Next" to begin the customer journey demo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 0;
+    const baseUrl = window.location.origin;
+    
+    const steps = [
+      {
+        title: '1. Setup Data',
+        desc: 'Import test products to KV storage',
+        url: `${baseUrl}/import.html`,
+        instruction: {
+          title: '📤 Import Test Data',
+          text: 'This is where you upload snake data. In the real demo, you would:\n\n1. Click the textarea\n2. Paste JSON with 5 test snakes\n3. Click "Import"\n4. Data goes to KV storage\n\nClick "Next" to skip to shop.'
+        }
+      },
+      {
+        title: '2. Browse Shop',
+        desc: 'Customer browses available snakes',
+        url: `${baseUrl}/catalog.html`,
+        instruction: {
+          title: '🛒 Browse Catalog',
+          text: 'Customer sees all available snakes with photos, prices, and morphs. Filter by species (Ball Python, Corn Snake). Click any snake to see details.\n\nClick "Next" to view a specific snake.'
+        }
+      },
+      {
+        title: '3. View Snake Details',
+        desc: 'Customer views specific snake (Pudding - Banana Het Clown)',
+        url: `${baseUrl}/catalog.html#real-bp-001`,
+        instruction: {
+          title: '🐍 Snake Details',
+          text: 'Customer sees:\n• High-res photo\n• Morph genetics\n• Care requirements\n• Price: €350\n• "Buy Now" button\n\nClick "Next" to see checkout.'
+        }
+      },
+      {
+        title: '4. Purchase Flow',
+        desc: 'Stripe Checkout → Webhook → KV Assignment',
+        url: `${baseUrl}/success.html`,
+        instruction: {
+          title: '💳 Payment Complete',
+          text: 'After Stripe payment:\n\n1. Webhook fires to Worker\n2. Product assigned in KV\n3. Email sent (Resend)\n4. User redirected here\n\nClick "Next" to see collection.'
+        }
+      },
+      {
+        title: '5. View Collection',
+        desc: 'Snake appears in collection + game',
+        url: `${baseUrl}/game.html`,
+        instruction: {
+          title: '🎮 Your Collection',
+          text: 'Customer now sees their purchased snake in the game!\n\n• Feed, water, clean\n• Stats decay over time\n• Care = Happy snake\n\n✅ Demo Complete!'
+        }
+      }
+    ];
+    
+    function updateStep() {
+      // Update progress bar
+      document.querySelectorAll('.step').forEach((step, i) => {
+        step.classList.remove('active', 'completed');
+        if (i === currentStep) step.classList.add('active');
+        if (i < currentStep) step.classList.add('completed');
+      });
+      
+      // Update description
+      document.getElementById('step-desc').textContent = steps[currentStep].desc;
+      
+      // Update iframe
+      const frame = document.getElementById('demo-frame');
+      const urlBar = document.getElementById('url-bar');
+      frame.src = steps[currentStep].url;
+      urlBar.value = steps[currentStep].url;
+      
+      // Update instructions
+      const inst = steps[currentStep].instruction;
+      document.getElementById('inst-title').textContent = inst.title;
+      document.getElementById('inst-text').textContent = inst.text;
+      document.getElementById('instructions').style.display = 'block';
+      
+      // Update navigation buttons
+      updateNavButtons();
+    }
+    
+    function nextStep() {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep();
+      }
+    }
+    
+    function prevStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        updateStep();
+      }
+    }
+    
+    function resetDemo() {
+      currentStep = 0;
+      updateStep();
+    }
+    
+    function reloadFrame() {
+      document.getElementById('demo-frame').src = steps[currentStep].url;
+    }
+    
+    function hideInstructions() {
+      document.getElementById('instructions').style.display = 'none';
+    }
+    
+    function updateNavButtons() {
+      // Back/forward are always disabled since we control navigation
+      document.getElementById('back-btn').disabled = true;
+      document.getElementById('forward-btn').disabled = true;
+    }
+    
+    function goBack() {
+      // Not implemented for demo
+    }
+    
+    function goForward() {
+      // Not implemented for demo
+    }
+    
+    // Initialize
+    updateStep();
+  </script>
+</body>
+</html>
