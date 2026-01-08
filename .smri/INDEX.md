@@ -179,43 +179,104 @@ Debug endpoint: /api/debug?run=VCT-1.0
 
 ### `.smri`
 Complete project briefing:
-1. **Load SMRI Format Rule:**
+1. **Explain Module Architecture:**
+   ```
+   📦 Module System (v0.7.7)
+   
+   src/modules/ - 9 internal modules with facades
+   ├── common/      (M0) - Core utilities
+   ├── shop/        (M1) - E-commerce
+   ├── game/        (M2) - Tamagotchi mechanics
+   ├── auth/        (M3) - User auth
+   ├── payment/     (M4) - Stripe (external wrapper)
+   ├── testing/     (M6) - Test framework
+   ├── breeding/    (M7) - Genetics
+   ├── smri/        (M8) - Test runner
+   └── tutorial/    (M9) - Tutorial system
+   
+   External Modules (M10+):
+   - Worker/KV (M5) - Currently in worker/worker.js
+   - Will be abstracted to src/modules/worker/ later
+   - Pattern: Internal abstraction over external service
+   
+   Each module has:
+   ✅ index.js (public facade)
+   ✅ Listed in src/config/smri/module-functions.js
+   ✅ Documented in src/PUBLIC-API.md
+   
+   When creating new SMRI scenarios:
+   1. Check module number (S{M}.{RRR}.{II})
+   2. If M0-9: Add to existing module
+   3. If M10+: Create external abstraction first
+   4. Update src/config/smri/scenarios.js
+   ```
+   
+2. **Load SMRI Format Rule:**
    ```
    S{M}.{RRR}.{II}
    - S = Scenario prefix
    - M = Primary module or submodule (e.g., 2-7 = Game Tutorial)
-   - RRR = Relations (comma-separated)
+   - RRR = Relations (comma-separated modules)
    - II = Iteration (01-99)
+   
+   Module Numbers (M):
+   - M0: Health/Common
+   - M1: Shop
+   - M2: Game
+   - M3: Auth
+   - M4: Payment
+   - M5: Worker (external - KV/webhooks)
+   - M6: Common/Testing
+   - M7: Breeding (external - calculator)
+   - M8: SMRI (test system)
+   - M9: Tutorial
+   - M10+: Future external modules
+   
+   Submodules (M-S):
+   - 2-7: Game Tutorial
+   - 5-1: Worker KV storage
+   - 5-2: Worker Webhooks
    
    Separators:
    - DOT (.) = Separates parts
    - COMMA (,) = Separates modules in relations
-   - DASH (-) = Indicates submodule (2-7, 5-1, etc.)
+   - DASH (-) = Indicates submodule
    
    Examples:
-   - S2.7,5,5-1.01 = Game with Tutorial, Worker, KV (iteration 01)
+   - S2.7,5,5-1.01 = Game Tutorial + Worker + KV (iteration 01)
    - S1.1,2,3,4,5.01 = Shop with full purchase flow
    - S0.0,1,2,3,4,5.01 = Health check across all modules
+   
+   When Creating New Scenarios:
+   1. Determine module (M0-9 internal, M10+ external)
+   2. Check if module exists in src/modules/
+   3. If M10+: Abstract external service first
+   4. Add to src/config/smri/scenarios.js
+   5. Create .smri/scenarios/S{M}.*.md file
    ```
-2. Check version (`package.json`)
-3. Load `.smri/INDEX.md` (navigation + rules)
-4. Load `README.md` (project overview)
-5. Load `src/SMRI.md` (quick reference)
-6. **Show deep directory tree** (4 levels with file sizes)
-7. **Analyze file sizes** (find files >400 lines)
-8. Check for inconsistencies:
+   
+3. Check version (`package.json`)
+4. Load `.smri/INDEX.md` (navigation + rules)
+5. Load `README.md` (project overview)
+6. Load `src/SMRI.md` (quick reference)
+7. Load `src/PUBLIC-API.md` (module functions)
+8. Load `src/config/smri/scenarios.js` (all scenarios)
+9. **Show deep directory tree** (4 levels with file sizes)
+10. **Analyze file sizes** (find files >400 lines)
+11. Check for inconsistencies:
    - Version mismatches (package.json vs docs)
    - Duplicate documentation
    - Outdated files
    - Redundant code/modules
    - **Large files needing split**
-8. **Suggest refactors** (requires user approval):
+12. **Suggest refactors** (requires user approval):
    - Remove duplicate code
    - Consolidate similar modules
    - Archive outdated docs
    - Update version references
    - **Split large files**
-9. Ask: "📍 Where did we leave off?"
+   - **Abstract external modules (M10+)**
+13. Ask: "📍 Where did we leave off?"
 
 **Note:** All changes require user approval before execution.
 
@@ -226,25 +287,86 @@ Update today's session log with:
 - Each entry separated by date/time header
 - **Auto-suggest:** "Consolidate this session into .smri/docs/{topic}.md?"
 
-### `.smri list`
+### `.smri list scenarios` (or `.smri list s`)
 List all SMRI scenarios with status:
-1. **Execute:** `bash scripts/smri-list.sh` (instant)
+1. **Execute:** Import from `src/config/smri/scenarios.js`
 2. **Display format:**
    ```
    📊 SMRI Scenarios (v0.7.7)
    
-   Total: 63 | ✅ 3 (4%) | ⏳ 6 (9%) | 📝 6
-   Files: 14 scenario docs in .smri/scenarios/
+   Total: 17 | ✅ 10 (59%) | ⏳ 7 (41%)
    
-   🔴 Unfinished (⏳):
+   By Module:
+   • health (S0): 5 scenarios (3 ✅, 2 ⏳)
+   • shop (S1): 3 scenarios (3 ✅)
+   • game (S2): 3 scenarios (2 ✅, 1 ⏳)
+   • auth (S3): 1 scenario (⏳)
+   • payment (S4): 1 scenario (✅)
+   • worker (S5): 1 scenario (✅)
+   • common (S6): 1 scenario (✅)
+   
+   🔴 Pending (⏳):
    • S0.2.01 - Game Mechanics Check
    • S0.3.01 - Auth Validation
    • S0.4.01 - Stripe Integration
+   • S3.2,3.01 - Calculator Genetics Data
+   • S2.1,2.01 - Gamified Shop
    
-   🎯 Next: Complete S0 health checks (3/11 done)
+   🎯 Next: Complete S0 health checks
    ```
-3. **Source:** `debug/smri-scenarios.js` (canonical)
-4. **Fast:** <1 second, grep-based, no parsing
+3. **Source:** `src/config/smri/scenarios.js` (centralized config)
+4. **Fast:** <1 second, ES6 module import
+
+### `.smri list functions` (or `.smri list f`)
+List all public module functions:
+1. **Execute:** Import from `src/config/smri/module-functions.js`
+2. **Display format:**
+   ```
+   📚 Module Functions (v0.7.7)
+   
+   Modules: 9 | Functions: 50+ | Exports: 40+
+   
+   Available Modules:
+   • common - Core utilities, constants
+   • game - Tamagotchi mechanics (8 functions)
+   • shop - E-commerce, pricing (9 functions)
+   • auth - User authentication (4 functions)
+   • payment - Stripe integration (3 functions)
+   • testing - Test framework (2 functions)
+   • breeding - Genetics calculator (3 functions)
+   • smri - Test runner (4 functions)
+   • tutorial - Tutorial system (3 functions)
+   
+   💡 Usage:
+   import { Economy } from './modules/shop/index.js';
+   import { SerpentTown } from './modules/game/index.js';
+   
+   📖 Full API: src/PUBLIC-API.md
+   ```
+3. **Source:** `src/config/smri/module-functions.js`
+4. **Helper:** Can search with `.smri search {query}`
+
+### `.smri search {query}`
+Search functions across all modules:
+1. **Execute:** `searchFunctions(query)` from module-functions.js
+2. **Example:**
+   ```
+   > .smri search buy
+   
+   🔍 Found 3 functions matching "buy":
+   
+   shop.EquipmentShop.buy(itemId, qty)
+     → Buy equipment
+     → Returns: boolean
+   
+   game.shopPlugin.buy(itemId)
+     → Purchase item
+     → Returns: boolean
+   
+   shop.Economy.calculatePrice(species, morph)
+     → Calculate product price (for buying)
+     → Returns: number
+   ```
 
 ### `.smri mcp`
 Test MCP (Model Context Protocol) integration:
@@ -485,13 +607,39 @@ Original documentation this replaces
 3. Add timestamp separator
 4. Suggest: "Consolidate into .smri/docs/{topic}.md?"
 
-### When User Types `.smri list`:
-1. **Execute script and show output directly:**
-   ```bash
-   bash scripts/smri-list.sh
+### When User Types `.smri list scenarios`:
+1. **Load and display from central config:**
+   ```javascript
+   import { SMRI_SCENARIOS, getScenarioStats, getScenariosByModule } 
+     from './config/smri/scenarios.js';
+   
+   const stats = getScenarioStats();
+   // Display: total, passed, pending, by module, next actions
    ```
-2. **Display the complete output** (no summary, no extra text)
-3. **Just show what the script returns** - nothing else
+2. **Format output** (grouped by module, status summary)
+3. **Show next recommended scenarios**
+
+### When User Types `.smri list functions`:
+1. **Load and display from function catalog:**
+   ```javascript
+   import { MODULE_FUNCTIONS, getAllModuleNames } 
+     from './config/smri/module-functions.js';
+   
+   // Display: module count, function count, quick reference
+   ```
+2. **Show module list with function counts**
+3. **Link to src/PUBLIC-API.md for details**
+
+### When User Types `.smri search {query}`:
+1. **Search across all functions:**
+   ```javascript
+   import { searchFunctions } from './config/smri/module-functions.js';
+   
+   const results = searchFunctions('buy');
+   // Display: matching functions with signatures
+   ```
+2. **Show relevant modules and functions**
+3. **Include usage examples**
 
 ### When User Types `.smri mcp`:
 1. **Run parallel MCP tests:**
@@ -636,3 +784,70 @@ AI: "breeding-calculator.md is 854 lines (over 500 limit).
 tree -L 4 -I 'node_modules|venv' --filesfirst
 ```
 Shows all modules and their split structure clearly.
+
+---
+
+## 🏗️ Module Architecture (v0.7.7)
+
+### Internal Modules (M0-M9)
+Located in `src/modules/`, each has:
+- **index.js** - Public facade with `ENABLED` flag
+- **README.md** - Module documentation
+- Listed in `src/config/smri/module-functions.js`
+- Documented in `src/PUBLIC-API.md`
+
+```
+M0: common      - Core utilities, constants
+M1: shop        - E-commerce, catalog, pricing
+M2: game        - Tamagotchi mechanics, care system
+M3: auth        - User authentication, hashing
+M4: payment     - Stripe integration (external wrapper)
+M5: worker      - Backend API (external - to be abstracted)
+M6: testing     - Test framework, assertions
+M7: breeding    - Genetics calculator (external - to be abstracted)
+M8: smri        - Test runner system
+M9: tutorial    - Interactive tutorial system
+```
+
+### External Modules (M10+)
+Services that need abstraction layer:
+- **Pattern:** Internal facade wrapping external API
+- **Examples:** 
+  - M5 (Worker/KV) - Currently `worker/worker.js`, move to `src/modules/worker/`
+  - M7 (Breeding) - Currently inline, abstract to `src/modules/breeding/`
+  - Future: M10 (Email), M11 (Analytics), etc.
+
+### Module Lifecycle
+
+**When Creating M0-M9 Scenario:**
+1. Module already exists
+2. Add scenario to `src/config/smri/scenarios.js`
+3. Create `.smri/scenarios/S{M}.*.md`
+4. Update module if needed
+
+**When Creating M10+ Scenario:**
+1. **First:** Create abstraction module in `src/modules/{name}/`
+2. Create `index.js` facade with `ENABLED` flag
+3. Add to `src/config/smri/module-functions.js`
+4. Document in `src/PUBLIC-API.md`
+5. **Then:** Add scenario like M0-M9
+
+**Example: Abstracting Worker (M5)**
+```
+Current:  worker/worker.js (2077 lines, monolithic)
+Future:   src/modules/worker/
+          ├── index.js          # Facade
+          ├── kv-manager.js     # KV operations
+          ├── webhook-handler.js # Stripe webhooks
+          └── api-router.js     # Route handling
+```
+
+### Module Rules
+
+1. **Facade Pattern:** Every module has `index.js` with clean exports
+2. **Enable/Disable:** Each has `export const ENABLED = true`
+3. **Self-Contained:** Minimal dependencies between modules
+4. **Documentation:** Function catalog + README
+5. **M10+ Must Abstract:** External services get internal wrapper
+
+---

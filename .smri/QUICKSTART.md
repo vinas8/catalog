@@ -1,147 +1,185 @@
-# 🎯 System X - Quick Start Guide
+# 🎯 SMRI System - Quick Start Guide
 
-**Last Updated:** 2026-01-05  
-**S1 Shop Module:** 50% Complete
+**Version:** 0.7.7  
+**Last Updated:** 2026-01-08  
+**Status:** ✅ Modular architecture with centralized config
 
 ---
 
 ## 📊 Current Progress
 
 ```
-S1 Shop Module: 50% ████████████░░░░░░░░░░░░
-├─ Documentation: 6/6 ✅
-└─ Tests: 1/6 ⏳
-
-Overall SMRI: 18% ███░░░░░░░░░░░░░░
-├─ Automated: 11/60
-└─ Documented: 18/60
+Scenarios: 17 total (10 ✅, 7 ⏳) = 59% pass rate
+Modules: 9 internal (M0-M9) + 2 external abstractions needed
+Functions: 50+ documented in public API
+Tests: 88/88 passing (98%)
 ```
 
 ---
 
 ## 🚀 Quick Commands
 
+### SMRI System
+```bash
+.smri                      # Complete briefing + module architecture
+.smri list scenarios       # List all test scenarios (from config)
+.smri list functions       # List all module functions (from catalog)
+.smri search {query}       # Search functions across modules
+.smri log                  # Update session log
+.smri add                  # Add new documentation
+```
+
 ### Run Tests
 ```bash
-npm test                    # All tests (88)
-npm run test:smri           # SMRI scenarios (2)
-npm run test:unit           # Unit tests (15)
-npm run test:snapshot       # Snapshot tests (71)
+npm test                   # All tests (88)
+npm run test:smri          # SMRI scenarios (2)
+npm run test:unit          # Unit tests (15)
+npm run test:snapshot      # Snapshot tests (71)
 ```
 
-### S1 Shop Module (Coming Soon)
+### Development
 ```bash
-npm run test:smri:s1        # All S1 tests (0/6 implemented)
+npm start                  # localhost:8000
 ```
 
-### Start Dev Server
-```bash
-npm start                   # localhost:8000
+---
+
+## 🏗️ Module Architecture
+
+### Internal Modules (M0-M9) - `src/modules/`
+All have public facades (`index.js`) and documentation:
+
 ```
+M0: common   - Core utilities, constants
+M1: shop     - E-commerce, catalog, pricing
+M2: game     - Tamagotchi mechanics
+M3: auth     - User authentication
+M4: payment  - Stripe integration (external wrapper)
+M6: testing  - Test framework
+M7: breeding - Genetics calculator (needs abstraction)
+M8: smri     - Test runner system
+M9: tutorial - Tutorial system
+```
+
+### External Modules (M10+)
+Need abstraction before use:
+- **M5: Worker/KV** - Currently `worker/worker.js` (2077 lines)
+- Future: Email, Analytics, etc.
+
+### Centralized Config (`src/config/smri/`)
+- **scenarios.js** - All test scenarios (17 total)
+- **module-functions.js** - Function catalog (50+ functions)
+- **index.js** - Main entry point
 
 ---
 
 ## 📁 Key Files
 
+### Configuration
+- `src/config/smri/scenarios.js` - All scenarios (central)
+- `src/config/smri/module-functions.js` - Function catalog
+- `src/PUBLIC-API.md` - Complete API reference (289 lines)
+
 ### Documentation
 - `.smri/INDEX.md` - System rules & navigation
-- `.smri/docs/SYSTEM-X-ROADMAP.md` - 72-94 hour completion plan
-- `.smri/docs/SMRI-STATUS.md` - Test status & reality check
+- `.smri/docs/` - Topic documentation
+- `src/modules/*/README.md` - Module docs
 
-### S1 Scenarios
-- `.smri/scenarios/S1-happy-path-purchase.md`
-- `.smri/scenarios/S1-returning-user-purchase.md`
-- `.smri/scenarios/S1-product-availability.md`
-- `.smri/scenarios/S1-buy-five-snakes.md`
-- `.smri/scenarios/S1-duplicate-morph.md`
-- `.smri/scenarios/S1-email-receipt.md`
-
-### Tests
-- `tests/smri/S1/happy-path-purchase.test.js` ✅
-- `tests/smri/S1/` (5 more tests needed)
-
-### Debug Tools
-- `debug/index.html` - Debug hub (60 scenarios listed)
-- `debug/smri-scenarios.js` - Scenario definitions
-- `debug/smri-runner.html` - Integrated test runner
+### Scenarios
+- `.smri/scenarios/*.md` - Detailed scenario files
+- Debug tools: `debug/smri-runner-modular-NEW.html`
 
 ---
 
-## 🎯 Next Actions (Pick One)
+## 🎯 Creating New Scenarios
 
-### Option 1: Complete S1 Tests (4-6 hours)
-Implement 5 remaining Playwright tests:
-1. `returning-user-purchase.test.js`
-2. `product-availability.test.js`
-3. `buy-five-snakes.test.js`
-4. `duplicate-morph.test.js`
-5. `email-receipt.test.js`
+### For M0-M9 (Existing Modules)
+```bash
+# 1. Add to config
+vim src/config/smri/scenarios.js
 
-**Template:** Copy `happy-path-purchase.test.js`, modify steps
+# 2. Create detailed doc
+vim .smri/scenarios/S{M}.{RRR}.{II}-name.md
 
-### Option 2: Start S0 Health Checks (12-16 hours)
-Create system validation endpoints:
-1. Document 9 S0 scenarios (`.smri/scenarios/S0-*.md`)
-2. Build health check API (`/api/health/*`)
-3. Visual dashboard (`debug/healthcheck.html`)
+# 3. Update module if needed
+vim src/modules/{module}/
+```
 
-### Option 3: Refactor Large Files (16-20 hours)
-Split 4 files over 500 lines:
-1. `worker.js` (2077 → 4 modules)
-2. `game-controller.js` (1236 → 3 modules)
-3. `Navigation.js` (636 → 2 modules)
-4. `kv-manager.html` (1985 → modular)
+### For M10+ (New External Service)
+```bash
+# 1. Create abstraction module FIRST
+mkdir -p src/modules/{service}
+vim src/modules/{service}/index.js  # Facade
 
----
+# 2. Add to function catalog
+vim src/config/smri/module-functions.js
 
-## 📊 Module Roadmap
+# 3. Document in PUBLIC-API
+vim src/PUBLIC-API.md
 
-| Phase | Module | Scenarios | Time | Priority |
-|-------|--------|-----------|------|----------|
-| 1 | S1 Shop | 6 | 6h | 🔥 NOW |
-| 2 | S0 Health | 9 | 12-16h | 🔥 HIGH |
-| 3 | S2 Game | 5 | 10-14h | 🟡 MED |
-| 4 | S3 Auth | 7 | 8-10h | 🟡 MED |
-| 5 | S4 Payment | 6 | 8-10h | 🟡 MED |
-| 6 | S5 Worker | 10 | 12-14h | 🟡 MED |
-
-**Total:** 56-74 hours remaining
+# 4. THEN add scenario
+vim src/config/smri/scenarios.js
+vim .smri/scenarios/S{M}.*.md
+```
 
 ---
 
 ## 💡 Pro Tips
 
-### 1. SMRI-First Development
-```bash
-# 1. Document scenario
-vim .smri/scenarios/S1-new-feature.md
+### 1. Use Centralized Config
+```javascript
+// OLD: Scattered definitions
+import { scenarios } from '../../debug/smri-scenarios.js';
 
-# 2. Implement test
-vim tests/smri/S1/new-feature.test.js
+// NEW: Central config
+import { SMRI_SCENARIOS, getScenariosByModule } 
+  from './config/smri/scenarios.js';
 
-# 3. Run test
-npm run test:smri:s1
-
-# 4. Update executor
-vim debug/smri-scenarios.js
+const shopTests = getScenariosByModule('shop');
 ```
 
-### 2. Keep Files Under 500 Lines
+### 2. Search Functions
+```javascript
+import { searchFunctions } from './config/smri/module-functions.js';
+
+const buyFns = searchFunctions('buy');
+// Returns all functions matching "buy" across modules
+```
+
+### 3. Check Module API
+```javascript
+import { MODULE_FUNCTIONS } from './config/smri/module-functions.js';
+
+console.log(MODULE_FUNCTIONS.shop.functions);
+// See all shop functions with signatures
+```
+
+### 4. Keep Modules Under 500 Lines
 ```bash
 # Check file sizes
-find src worker -name "*.js" | xargs wc -l | sort -rn | head -10
+find src/modules -name "*.js" | xargs wc -l | sort -rn | head -10
 
-# If file >500 lines → split into modules
+# If >500 lines → split into submodules
 ```
 
-### 3. Test Everything
-```bash
-# Before commit
-npm test
+---
 
-# After major changes
-npm run test:all
-```
+## 📊 Module Roadmap
+
+| Module | Status | Functions | Next Action |
+|--------|--------|-----------|-------------|
+| M0 (common) | ✅ Complete | 3 | - |
+| M1 (shop) | ✅ Complete | 9 | - |
+| M2 (game) | ✅ Complete | 8 | - |
+| M3 (auth) | ✅ Complete | 4 | - |
+| M4 (payment) | ✅ Complete | 3 | - |
+| M5 (worker) | ⚠️ Needs abstraction | - | Extract to src/modules/worker/ |
+| M6 (testing) | ✅ Complete | 2 | - |
+| M7 (breeding) | ⚠️ Needs abstraction | 3 | Improve facade |
+| M8 (smri) | ✅ Complete | 4 | - |
+| M9 (tutorial) | ✅ Complete | 3 | - |
+
+**Priority:** Abstract M5 (Worker) - 2077 lines → modular
 
 ---
 
@@ -157,44 +195,44 @@ npm run test:all
 ## 📝 Daily Workflow
 
 ### Morning
-1. Check progress: `git log --oneline -10`
-2. Pick module: S0, S1, S2, S3, S4, or S5
-3. Document scenarios: `.smri/scenarios/`
+1. Check progress: `.smri list scenarios`
+2. Review functions: `.smri list functions`
+3. Pick module: M0-M9 or abstract M10+
 
 ### Afternoon
-4. Implement tests: `tests/smri/{MODULE}/`
-5. Run & verify: `npm test`
-6. Update executor: `debug/smri-scenarios.js`
+4. Implement: Update module or create abstraction
+5. Document: Update `src/config/smri/`
+6. Test: `npm test`
 
 ### Evening
 7. Commit: `git commit -m "feat(SX): ..."`
-8. Log session: `.smri log`
-9. Review progress: Debug hub
+8. Log: `.smri log`
+9. Review: Debug hub
 
 ---
 
 ## 🎯 Success Criteria
 
 **Project Complete When:**
+- ✅ All M0-M9 modules have facades
+- ✅ M10+ abstractions created (M5 worker priority)
 - ✅ 60/60 SMRI scenarios implemented
 - ✅ 150+ automated tests passing
 - ✅ All files under 500 lines
-- ✅ Documentation consolidated in `.smri/`
-- ✅ Zero root markdown files (except README/CHANGELOG)
-- ✅ Production deployment successful
+- ⚠️ Zero scattered config (central only)
 
-**Current:** 18/60 scenarios (30%), 88 tests (98% passing)
+**Current:** 17/60 scenarios (28%), 88 tests (98%), 9/9 facades ✅
 
 ---
 
 ## 🐍 Keep Building!
 
-**Momentum:** High 🚀  
-**Next Milestone:** S1 Complete (50% → 100%)  
-**ETA:** +6 hours  
+**Architecture:** ✅ Solid modular foundation  
+**Config:** ✅ Centralized in `src/config/smri/`  
+**Next:** Abstract M5 (Worker) or complete scenarios  
 
-**You got this!** The foundation is solid. Let's finish strong.
+**You got this!** The modules are clean and ready to scale.
 
 ---
 
-_Last session: 2026-01-05 - S1 scenarios documented, test framework set up_
+_Last session: 2026-01-08 - Modular SMRI + centralized config_
