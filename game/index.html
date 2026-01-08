@@ -4,11 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Serpent Town - My Farm</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="src/utils/debug-loader.js"></script>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../img/icon-192.png">
+  
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../src/utils/debug-loader.js"></script>
+  <script type="module" src="../src/components/PWAInstallButton.js"></script>
 </head>
 <body>
-  <script type="module" src="src/components/Navigation.js"></script>
+  <script type="module" src="../src/components/Navigation.js"></script>
   
   <div id="app" data-context="real">
     <!-- Login/Welcome Screen (shown when no user) -->
@@ -24,7 +32,7 @@
           <p>To start playing and see your snakes, please login or create an account.</p>
           
           <div class="welcome-actions">
-            <a href="account.html" class="btn btn-primary">
+            <a href="../account.html" class="btn btn-primary">
               <span>🔑</span>
               <span>Login / Create Account</span>
             </a>
@@ -58,7 +66,10 @@
       <div id="farm-view" class="view-content active">
         <div class="view-header">
           <h2>Your Snake Collection</h2>
-          <button id="buy-virtual-snake-btn" class="primary-btn">➕ Buy Virtual Snake</button>
+          <div style="display: flex; gap: 10px;">
+            <button id="buy-virtual-snake-btn" class="primary-btn">➕ Buy Virtual Snake</button>
+            <a href="../dex/" class="secondary-btn" style="text-decoration: none; padding: 8px 16px;">📖 Snake Dex</a>
+          </div>
         </div>
         
         <div id="snake-collection" class="snake-collection">
@@ -69,7 +80,8 @@
           <div class="empty-icon">🐍</div>
           <h3>No Snakes Yet!</h3>
           <p>Buy your first snake to get started</p>
-          <a href="catalog.html" class="primary-btn">Browse Catalog</a>
+          <a href="../catalog.html" class="primary-btn">Browse Catalog</a>
+          <a href="../dex/" class="secondary-btn" style="margin-top: 10px; display: inline-block;">📖 View Snake Dex</a>
         </div>
       </div>
 
@@ -163,7 +175,7 @@
       });
     }
   </script>
-  <script type="module" src="src/modules/game/game-controller.js"></script>
+  <script type="module" src="../src/modules/game/game-controller.js"></script>
   
   <style>
     .welcome-screen {
