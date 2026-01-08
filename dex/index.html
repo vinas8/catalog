@@ -19,22 +19,42 @@
             padding: 2rem;
         }
         
-        /* Grid View */
+        /* Grid View - 2 columns on mobile like Pokemon DB */
         .morphs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr); /* Always 2 columns on mobile */
+            gap: 0.5rem;
             margin-bottom: 2rem;
+        }
+        
+        /* Larger screens: more columns */
+        @media (min-width: 768px) {
+            .morphs-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .morphs-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
         }
         
         .morph-thumb {
             background: white;
-            border: 3px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+        }
+        
+        @media (min-width: 768px) {
+            .morph-thumb {
+                padding: 1rem;
+            }
         }
         
         .morph-thumb:hover {
@@ -302,114 +322,146 @@
                     </div>
                 </div>
 
-                <!-- Dex Data -->
+                <!-- Dex Data (Most Important First - Like Pokemon DB) -->
                 <div class="stats-section">
-                    <h2>Dex Data</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Species</div>
-                            <div class="stat-value">Ball Python</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Scientific Name</div>
-                            <div class="stat-value">Python regius</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Average Length</div>
-                            <div class="stat-value">1.0-1.5 m</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Average Weight</div>
-                            <div class="stat-value">1.2-1.8 kg</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Lifespan</div>
-                            <div class="stat-value">20-30 years</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Market Value</div>
-                            <div class="stat-value">$${morph.market_value_usd}</div>
-                        </div>
-                    </div>
+                    <h2>📊 Morph Data</h2>
+                    <table style="width: 100%; border-collapse: collapse; background: #f7fafc;">
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">National №</td>
+                            <td style="padding: 0.8rem;">${String(morph.index).padStart(4, '0')}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Gene Type</td>
+                            <td style="padding: 0.8rem;"><span class="badge badge-gene">${morph.gene_type}</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Species</td>
+                            <td style="padding: 0.8rem;">Ball Python (Python regius)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Avg Length</td>
+                            <td style="padding: 0.8rem;">1.0-1.5 m (3-5 ft)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Avg Weight</td>
+                            <td style="padding: 0.8rem;">1.2-1.8 kg (2.5-4 lbs)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Lifespan</td>
+                            <td style="padding: 0.8rem;">20-30 years</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Rarity</td>
+                            <td style="padding: 0.8rem;"><span class="badge badge-rarity">${morph.rarity}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.8rem; font-weight: bold;">Market Value</td>
+                            <td style="padding: 0.8rem; font-size: 1.2rem; font-weight: bold; color: #38a169;">$${morph.market_value_usd}</td>
+                        </tr>
+                    </table>
                 </div>
 
-                <!-- Genetics -->
+                <!-- Care Requirements (Most Important!) -->
+                <div class="breeding-section">
+                    <h2>🌡️ Care Requirements</h2>
+                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Temperature (Day)</td>
+                            <td style="padding: 0.8rem;">28-32°C (82-90°F)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Temperature (Night)</td>
+                            <td style="padding: 0.8rem;">24-26°C (75-79°F)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Humidity</td>
+                            <td style="padding: 0.8rem;">50-60%</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Enclosure Size</td>
+                            <td style="padding: 0.8rem;">90x45x45 cm (36x18x18 in) minimum</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Feeding Schedule</td>
+                            <td style="padding: 0.8rem;">Every 7-10 days (adults)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f6ad55;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Substrate</td>
+                            <td style="padding: 0.8rem;">Aspen, cypress mulch, or paper</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.8rem; font-weight: bold;">Care Level</td>
+                            <td style="padding: 0.8rem;"><strong style="color: #38a169;">Beginner Friendly</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Genetics & Breeding -->
                 <div class="genetics-section">
-                    <h3 class="genetics-title">🧬 Genetics & Breeding</h3>
-                    <div class="stat-box" style="margin-bottom: 1rem;">
-                        <div class="stat-label">Gene Type</div>
-                        <div class="stat-value">${morph.gene_type.toUpperCase()}</div>
-                        <p style="margin-top: 0.5rem; color: #4a5568;">${geneInfo.description || 'Genetic inheritance pattern'}</p>
-                    </div>
-                    
-                    ${morph.super_form ? `
-                        <div class="stat-box" style="margin-bottom: 1rem;">
-                            <div class="stat-label">Super Form</div>
-                            <div class="stat-value">${morph.super_form}</div>
-                            <p style="margin-top: 0.5rem; color: #4a5568;">When two copies of this gene are present</p>
-                        </div>
-                    ` : ''}
-                    
+                    <h2>🧬 Genetics & Breeding</h2>
+                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                        <tr style="border-bottom: 1px solid #9ae6b4;">
+                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Inheritance</td>
+                            <td style="padding: 0.8rem;">${morph.gene_type.toUpperCase()}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #9ae6b4;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Description</td>
+                            <td style="padding: 0.8rem;">${geneInfo.description || 'Standard inheritance pattern'}</td>
+                        </tr>
+                        ${morph.super_form ? `
+                        <tr style="border-bottom: 1px solid #9ae6b4;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Super Form</td>
+                            <td style="padding: 0.8rem;"><strong>${morph.super_form}</strong> (homozygous)</td>
+                        </tr>
+                        ` : ''}
+                        <tr style="border-bottom: 1px solid #9ae6b4;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Breeding Age</td>
+                            <td style="padding: 0.8rem;">3-4 years old minimum</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #9ae6b4;">
+                            <td style="padding: 0.8rem; font-weight: bold;">Clutch Size</td>
+                            <td style="padding: 0.8rem;">4-10 eggs average</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.8rem; font-weight: bold;">Incubation</td>
+                            <td style="padding: 0.8rem;">55-60 days at 31°C (88°F)</td>
+                        </tr>
+                    </table>
                     ${morph.breeding_notes ? `
-                        <div class="stat-box">
-                            <div class="stat-label">Breeding Notes</div>
-                            <p style="margin-top: 0.5rem; color: #4a5568;">${morph.breeding_notes}</p>
+                        <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px;">
+                            <strong>⚠️ Breeding Notes:</strong><br>
+                            ${morph.breeding_notes}
                         </div>
                     ` : ''}
                 </div>
 
-                <!-- Health & Care -->
+                <!-- Health & Risks -->
                 ${morph.health_risk !== 'none' || healthIssues.length > 0 ? `
                     <div class="health-section">
-                        <h3 class="health-title">⚕️ Health & Care Requirements</h3>
-                        <div class="stat-box" style="margin-bottom: 1rem;">
-                            <div class="stat-label">Health Risk Level</div>
-                            <div class="stat-value" style="color: ${morph.health_risk === 'high' ? '#e53e3e' : '#48bb78'};">${morph.health_risk.toUpperCase()}</div>
-                        </div>
-                        
-                        ${morph.health_issues?.length ? `
-                            <div>
-                                <strong>Known Issues:</strong>
-                                ${morph.health_issues.map(issue => `
-                                    <div class="health-issue">
-                                        ⚠️ ${issue}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
+                        <h2>⚕️ Health & Safety</h2>
+                        <table style="width: 100%; border-collapse: collapse; background: white;">
+                            <tr style="border-bottom: 1px solid #fc8181;">
+                                <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Health Risk</td>
+                                <td style="padding: 0.8rem;">
+                                    <strong style="color: ${morph.health_risk === 'high' ? '#e53e3e' : morph.health_risk === 'moderate' ? '#dd6b20' : '#38a169'};">
+                                        ${morph.health_risk.toUpperCase()}
+                                    </strong>
+                                </td>
+                            </tr>
+                            ${morph.health_issues?.length ? morph.health_issues.map(issue => `
+                            <tr style="border-bottom: 1px solid #fc8181;">
+                                <td style="padding: 0.8rem; font-weight: bold;">Issue</td>
+                                <td style="padding: 0.8rem;">⚠️ ${issue}</td>
+                            </tr>
+                            `).join('') : ''}
+                            <tr>
+                                <td style="padding: 0.8rem; font-weight: bold;">Vet Checkups</td>
+                                <td style="padding: 0.8rem;">Annual recommended</td>
+                            </tr>
+                        </table>
                     </div>
                 ` : ''}
 
-                <!-- Care Requirements -->
-                <div class="breeding-section">
-                    <h3 class="breeding-title">🌡️ Care Requirements</h3>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Temperature (Day)</div>
-                            <div class="stat-value">28-32°C</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Temperature (Night)</div>
-                            <div class="stat-value">24-26°C</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Humidity</div>
-                            <div class="stat-value">50-60%</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Enclosure Size</div>
-                            <div class="stat-value">90x45x45 cm min</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Feeding</div>
-                            <div class="stat-value">Every 7-10 days</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Care Level</div>
-                            <div class="stat-value">Beginner</div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Source -->
                 <div style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
