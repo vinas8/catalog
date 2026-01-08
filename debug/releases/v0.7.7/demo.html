@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Demo System - v0.7.7</title>
+  <script src="../../src/utils/debug-loader.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0e14;
+      color: #c9d1d9;
+    }
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      height: 100vh;
+    }
+    .control-panel {
+      background: #161b22;
+      border-right: 2px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .panel-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 25px 20px;
+      color: white;
+    }
+    .panel-header h1 { font-size: 24px; margin-bottom: 8px; }
+    .version { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; font-size: 12px; margin-left: 8px; }
+    .scenarios-section { padding: 20px; flex: 1; }
+    .scenarios-section h2 { color: #58a6ff; font-size: 18px; margin-bottom: 15px; }
+    .scenarios-grid { display: grid; gap: 12px; margin-bottom: 20px; }
+    .scenario-card {
+      background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+      border: 2px solid #1f6feb;
+      padding: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .scenario-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(31, 111, 235, 0.4); }
+    .scenario-title { font-size: 15px; font-weight: 600; color: white; margin-bottom: 5px; }
+    .scenario-code { font-size: 12px; color: rgba(255,255,255,0.7); }
+    .scenario-desc { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 5px; }
+    .pipeline-steps { padding: 20px; border-top: 2px solid #30363d; }
+    .step {
+      background: #0d1117;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .step:hover { border-color: #1f6feb; transform: translateX(5px); }
+    .step.active { border-color: #1f6feb; background: linear-gradient(135deg, #1f6feb15, #0969da15); }
+    .step.completed { border-color: #238636; background: linear-gradient(135deg, #23863615, #2ea04315); }
+    .step-number {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #21262d;
+      color: #8b949e;
+      text-align: center;
+      line-height: 24px;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    .step.active .step-number { background: #1f6feb; color: white; }
+    .step.completed .step-number { background: #238636; color: white; }
+    .step-title { font-size: 14px; font-weight: 600; }
+    .step-desc { font-size: 11px; color: #8b949e; margin-top: 4px; margin-left: 32px; }
+    .action-buttons {
+      padding: 15px 20px;
+      border-top: 2px solid #30363d;
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary { background: #238636; color: white; }
+    .btn-secondary { background: #21262d; color: #c9d1d9; }
+    .browser-panel { display: flex; flex-direction: column; background: #0d1117; }
+    .browser-controls {
+      background: #161b22;
+      border-bottom: 2px solid #30363d;
+      padding: 12px 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .browser-btn { background: #21262d; color: #c9d1d9; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .url-bar { flex: 1; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; padding: 8px 12px; border-radius: 6px; font-family: monospace; }
+    .browser-content { flex: 1; position: relative; background: white; overflow: hidden; }
+    .browser-content iframe { width: 100%; height: 100%; border: none; }
+    .status-overlay {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(35, 134, 54, 0.95);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 1000;
+      max-width: 300px;
+      display: none;
+    }
+    .status-overlay.executing { background: rgba(245, 158, 11, 0.95); }
+    .log-panel {
+      background: #0d1117;
+      border-top: 2px solid #30363d;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+      display: none;
+    }
+    .log-entry { padding: 4px 0; color: #8b949e; }
+    .log-entry.success { color: #3fb950; }
+    .log-entry.info { color: #58a6ff; }
+    .initial-view, .pipeline-view { display: flex; flex-direction: column; height: 100%; }
+    .pipeline-view { display: none; }
+    .back-button { background: #21262d; color: #c9d1d9; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <div class="demo-layout">
+    <div class="control-panel">
+      <div class="initial-view" id="initial-view">
+        <div class="panel-header">
+          <h1>🎬 Demo System <span class="version">v0.7.7</span></h1>
+          <p>Interactive demos with live browser</p>
+        </div>
+        <div class="scenarios-section">
+          <h2>Select Demo Scenario</h2>
+          <div class="scenarios-grid">
+            <div class="scenario-card" onclick="loadPipeline()">
+              <div class="scenario-title">🛒 Customer Journey</div>
+              <div class="scenario-code">S6.1,2,3.09</div>
+              <div class="scenario-desc">Import → Browse → Buy → Care (Complete workflow)</div>
+            </div>
+            <div class="scenario-card" onclick="window.location.href='../../admin/'">
+              <div class="scenario-title">👔 Owner Journey</div>
+              <div class="scenario-code">S6.1,4,5.01</div>
+              <div class="scenario-desc">Setup → Manage → Analytics</div>
+            </div>
+            <div class="scenario-card" onclick="window.location.href='../../game/'">
+              <div class="scenario-title">🎮 Gameplay Demo</div>
+              <div class="scenario-code">S6.2,5.03</div>
+              <div class="scenario-desc">Feed → Water → Clean</div>
+            </div>
+            <div class="scenario-card" onclick="window.location.href='../../tools/kv-manager.html'">
+              <div class="scenario-title">📊 Data Management</div>
+              <div class="scenario-code">S6.5.04</div>
+              <div class="scenario-desc">KV → Stripe → Sync</div>
+            </div>
+          </div>
+          <a href="../../index.html" style="display: inline-block; padding: 12px 20px; background: #238636; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">← Back to Debug Hub</a>
+        </div>
+      </div>
+      <div class="pipeline-view" id="pipeline-view">
+        <div class="panel-header">
+          <h1>🛒 Customer Journey <span class="version">v0.7.7</span></h1>
+          <p>Watch actions execute live</p>
+        </div>
+        <div class="pipeline-steps">
+          <button class="back-button" onclick="showScenarios()">← Back</button>
+          <div class="step active" onclick="goToStep(0)"><span class="step-number">1</span><span class="step-title">Import Data</span><div class="step-desc">Upload 5 snakes to KV</div></div>
+          <div class="step" onclick="goToStep(1)"><span class="step-number">2</span><span class="step-title">Browse Catalog</span><div class="step-desc">View available snakes</div></div>
+          <div class="step" onclick="goToStep(2)"><span class="step-number">3</span><span class="step-title">Select Snake</span><div class="step-desc">Pudding - Banana Het Clown</div></div>
+          <div class="step" onclick="goToStep(3)"><span class="step-number">4</span><span class="step-title">Purchase</span><div class="step-desc">Stripe → Webhook → KV</div></div>
+          <div class="step" onclick="goToStep(4)"><span class="step-number">5</span><span class="step-title">Collection</span><div class="step-desc">Snake in game!</div></div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="prevStep()">←</button>
+          <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+          <button class="btn btn-secondary" onclick="resetDemo()">🔄</button>
+          <button class="btn btn-secondary" onclick="autoPlay()" id="autoplay-btn">▶️</button>
+        </div>
+      </div>
+    </div>
+    <div class="browser-panel">
+      <div class="browser-controls">
+        <button class="browser-btn" onclick="reloadPage()">🔄</button>
+        <input type="text" class="url-bar" id="url-display" readonly value="">
+        <button class="browser-btn" onclick="toggleLog()">📋 Logs</button>
+      </div>
+      <div class="browser-content">
+        <iframe id="demo-iframe" src="about:blank"></iframe>
+        <div class="status-overlay" id="status-overlay"><div id="status-text">Ready</div></div>
+      </div>
+      <div class="log-panel" id="log-entries"></div>
+    </div>
+  </div>
+  <script>
+    let currentStep=0,autoPlaying=false,autoPlayInterval=null;const baseUrl=window.location.origin;
+    const steps=[
+      {url:`${baseUrl}/import.html`,action:async()=>{showStatus('📤 Loading...','executing');await wait(1000);log('✅ Import page loaded','success');await wait(500);log('📦 Ready to paste JSON','info');showStatus('✅ Ready to import!','success');}},
+      {url:`${baseUrl}/catalog.html`,action:async()=>{showStatus('🛒 Loading...','executing');await wait(1200);log('✅ Catalog loaded','success');await wait(800);log('✅ 5 snakes available','success');showStatus('✅ Catalog loaded!','success');}},
+      {url:`${baseUrl}/catalog.html#real-bp-001`,action:async()=>{showStatus('🐍 Opening...','executing');await wait(1000);log('✅ Product: Pudding','success');await wait(500);log('💰 Price: €350','info');showStatus('✅ Pudding - €350','success');}},
+      {url:`${baseUrl}/success.html`,action:async()=>{showStatus('💳 Processing...','executing');await wait(1000);log('💳 Stripe initiated','info');await wait(1200);log('✅ Payment: €350','success');await wait(800);log('📡 Webhook received','info');await wait(1000);log('✅ Assigned to KV','success');showStatus('✅ Purchase complete!','success');}},
+      {url:`${baseUrl}/game.html`,action:async()=>{showStatus('🎮 Loading...','executing');await wait(1000);log('🎮 Game initialized','success');await wait(800);log('✅ 1 snake found','success');await wait(500);log('🐍 Pudding appears!','success');showStatus('✅ Demo complete! 🐍','success');}}
+    ];
+    function loadPipeline(){document.getElementById('initial-view').style.display='none';document.getElementById('pipeline-view').style.display='flex';goToStep(0);}
+    function showScenarios(){stopAutoPlay();document.getElementById('pipeline-view').style.display='none';document.getElementById('initial-view').style.display='flex';document.getElementById('demo-iframe').src='about:blank';document.getElementById('status-overlay').style.display='none';}
+    function goToStep(i){if(i<0||i>=steps.length)return;currentStep=i;document.querySelectorAll('.step').forEach((el,idx)=>{el.classList.remove('active','completed');if(idx===i)el.classList.add('active');if(idx<i)el.classList.add('completed');});const step=steps[i],iframe=document.getElementById('demo-iframe');iframe.src=step.url;document.getElementById('url-display').value=step.url;log(`━ Step ${i+1} ━`,'info');iframe.onload=()=>setTimeout(()=>step.action(),300);}
+    function nextStep(){if(currentStep<steps.length-1)goToStep(currentStep+1);}
+    function prevStep(){if(currentStep>0)goToStep(currentStep-1);}
+    function resetDemo(){stopAutoPlay();currentStep=-1;document.getElementById('log-entries').innerHTML='';goToStep(0);}
+    function autoPlay(){if(autoPlaying){stopAutoPlay();return;}autoPlaying=true;document.getElementById('autoplay-btn').textContent='⏸️';autoPlayInterval=setInterval(()=>{if(currentStep<steps.length-1)nextStep();else stopAutoPlay();},4000);}
+    function stopAutoPlay(){if(autoPlayInterval){clearInterval(autoPlayInterval);autoPlayInterval=null;}autoPlaying=false;document.getElementById('autoplay-btn').textContent='▶️';}
+    function reloadPage(){document.getElementById('demo-iframe').src=document.getElementById('demo-iframe').src;}
+    function toggleLog(){const panel=document.getElementById('log-entries');panel.style.display=panel.style.display==='none'?'block':'none';}
+    function showStatus(msg,type='success'){const o=document.getElementById('status-overlay'),t=document.getElementById('status-text');o.className='status-overlay '+type;t.textContent=msg;o.style.display='block';}
+    function log(msg,type='info'){const e=document.createElement('div');e.className='log-entry '+type;e.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;document.getElementById('log-entries').appendChild(e);}
+    function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+    document.addEventListener('keydown',e=>{if(document.getElementById('pipeline-view').style.display==='flex'){if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextStep();}else if(e.key==='ArrowLeft'){e.preventDefault();prevStep();}}});
+  </script>
+</body>
+</html>
