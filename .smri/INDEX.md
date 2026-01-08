@@ -584,9 +584,22 @@ Original documentation this replaces
 ## 🛠️ AI Assistant Rules
 
 ### When User Types `.smri`:
-1. Run complete briefing (tree, README, docs, status)
-2. Show consolidated documentation
-3. **Analyze for issues:**
+1. **Check if function catalog needs update:**
+   ```bash
+   current_hash=$(git log -1 --format="%h")
+   catalog_hash=$(grep "Git Commit:" .smri/docs/FUNCTION-CATALOG.md 2>/dev/null | cut -d'`' -f2 | cut -d' ' -f1)
+   
+   if [ "$current_hash" != "$catalog_hash" ]; then
+     echo "🔄 Updating function catalog (new commit detected)..."
+     node scripts/scan-functions.cjs > .smri/docs/FUNCTION-CATALOG.md
+     echo "✅ Function catalog updated to $current_hash"
+   else
+     echo "✅ Function catalog up to date ($current_hash)"
+   fi
+   ```
+
+2. **Run complete briefing:**
+   - Explain module architecture
    - Scan for version inconsistencies
    - Detect duplicate files/documentation
    - Identify outdated content
