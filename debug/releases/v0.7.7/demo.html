@@ -119,6 +119,7 @@
       display: none;
     }
     .status-overlay.executing { background: rgba(245, 158, 11, 0.95); }
+    .status-overlay.warning { background: rgba(251, 191, 36, 0.95); color: #1e1e1e; }
     .log-panel {
       background: #0d1117;
       border-top: 2px solid #30363d;
@@ -132,6 +133,7 @@
     .log-entry { padding: 4px 0; color: #8b949e; }
     .log-entry.success { color: #3fb950; }
     .log-entry.info { color: #58a6ff; }
+    .log-entry.warning { color: #fbbf24; }
     .initial-view, .pipeline-view { display: flex; flex-direction: column; height: 100%; }
     .pipeline-view { display: none; }
     .back-button { background: #21262d; color: #c9d1d9; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
@@ -209,8 +211,8 @@
   <script>
     let currentStep=0,autoPlaying=false,autoPlayInterval=null;const baseUrl=window.location.origin;
     const steps=[
-      {url:`${baseUrl}/import.html`,action:async()=>{showStatus('📤 Loading...','executing');await wait(1000);log('✅ Import page loaded','success');await wait(500);log('📦 Ready to paste JSON','info');showStatus('✅ Ready to import!','success');}},
-      {url:`${baseUrl}/catalog.html`,action:async()=>{showStatus('🛒 Loading...','executing');await wait(1200);log('✅ Catalog loaded','success');await wait(800);log('✅ 5 snakes available','success');showStatus('✅ Catalog loaded!','success');}},
+      {url:`${baseUrl}/import.html`,action:async()=>{showStatus('📤 Loading import...','executing');await wait(1000);log('✅ Import page loaded','success');log('⚠️ MANUAL STEP: Paste JSON and click "Upload to Stripe" → "Sync to KV"','warning');await wait(800);log('📦 Sample data available in /data/products-real-test.json','info');log('💡 Or use KV Manager to add products directly','info');showStatus('⚠️ Manual import required!\n\nPaste JSON → Upload → Sync\n\nThen click Next','warning');}},
+      {url:`${baseUrl}/catalog.html`,action:async()=>{showStatus('🛒 Loading catalog...','executing');await wait(1200);log('✅ Catalog page loaded','success');log('🔍 Fetching products from Worker API...','info');await wait(800);try{const res=await fetch(`${baseUrl.replace('8000','').replace(':','')}/catalog.html`);log('✅ Catalog fetched (check if products appear)','success');log('💡 If empty: products not imported yet!','info');}catch(e){log('⚠️ Check if products are visible in catalog','warning');}showStatus('✅ Catalog loaded!\n\nCheck if products appear','success');}},
       {url:`${baseUrl}/catalog.html#real-bp-001`,action:async()=>{showStatus('🐍 Opening...','executing');await wait(1000);log('✅ Product: Pudding','success');await wait(500);log('💰 Price: €350','info');showStatus('✅ Pudding - €350','success');}},
       {url:`${baseUrl}/success.html`,action:async()=>{showStatus('💳 Processing...','executing');await wait(1000);log('💳 Stripe initiated','info');await wait(1200);log('✅ Payment: €350','success');await wait(800);log('📡 Webhook received','info');await wait(1000);log('✅ Assigned to KV','success');showStatus('✅ Purchase complete!','success');}},
       {url:`${baseUrl}/game.html`,action:async()=>{showStatus('🎮 Loading...','executing');await wait(1000);log('🎮 Game initialized','success');await wait(800);log('✅ 1 snake found','success');await wait(500);log('🐍 Pudding appears!','success');showStatus('✅ Demo complete! 🐍','success');}}
