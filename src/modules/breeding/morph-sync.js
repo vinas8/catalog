@@ -197,7 +197,7 @@ export function pollIframeURL(iframeId, callback, interval = 2000) {
 
   // Check immediately and then on interval
   checkURL();
-  return setInterval(checkURL, interval);
+  return setInterval(checkURL, interval || UI_CONFIG.URL_CHECK_INTERVAL);
 }
 
 /**

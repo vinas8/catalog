@@ -3,6 +3,7 @@
 
 import { EquipmentShop, formatPrice, getShopCategories } from '../business/equipment.js';
 import { Economy } from '../business/economy.js';
+import { TIMEOUTS } from '../../common/constants.js';
 
 export class ShopView {
   constructor(gameState, onPurchase) {
@@ -312,7 +313,7 @@ export class ShopView {
     notification.textContent = message;
     document.body.appendChild(notification);
     
-    setTimeout(() => notification.remove(), 3000);
+    setTimeout(() => notification.remove(), TIMEOUTS.NOTIFICATION_DURATION);
   }
 }
 

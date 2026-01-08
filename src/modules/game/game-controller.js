@@ -12,6 +12,7 @@ import {
   TIMEOUTS,
   STRING_LIMITS
 } from '../common/constants.js';
+import { UI_CONFIG } from '../../config/ui-config.js';
 
 // Dynamic imports
 let Economy, createInitialGameState, EquipmentShop, openShop;
@@ -700,14 +701,7 @@ class SnakeMuffin {
   }
   
   renderEnclosureBg(tier) {
-    const upgrades = {
-      1: '🪵',
-      2: '🪵🌿',
-      3: '🪵🌿💡',
-      4: '🪵🌿💡🌡️',
-      5: '🪵🌿💡🌡️💦'
-    };
-    return upgrades[tier] || upgrades[1];
+    return UI_CONFIG.getTierEmoji(tier);
   }
   
   getNextFeedingTime(snake) {

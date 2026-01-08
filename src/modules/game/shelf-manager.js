@@ -2,6 +2,7 @@
 // Handles shelf navigation, pagination, and clean all operations
 
 import { getSnakeAvatar } from '../common/snake-avatar.js';
+import { UI_CONFIG } from '../../config/ui-config.js';
 
 export class ShelfManager {
   constructor(gameState, type = 'real') {
@@ -171,14 +172,7 @@ export class ShelfManager {
   }
   
   renderTierDecorations(tier) {
-    const upgrades = {
-      1: '🪵',
-      2: '🪵🌿',
-      3: '🪵🌿💡',
-      4: '🪵🌿💡🌡️',
-      5: '🪵🌿💡🌡️✨'
-    };
-    return upgrades[tier] || '🪵';
+    return UI_CONFIG.getTierEmoji(tier);
   }
   
   attachEventListeners(container) {

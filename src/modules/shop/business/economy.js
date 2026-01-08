@@ -4,18 +4,18 @@
 
 import { SPECIES_PROFILES } from '../data/species-profiles.js';
 import { calculateMorphPrice } from '../data/morphs.js';
+import { ECONOMY_CONFIG } from '../../../config/economy-config.js';
 
 export class Economy {
   
   // Convert real money (USD cents) to in-game gold
   static moneyToCurrency(usdCents) {
-    // $1 USD = 100 gold coins
-    return usdCents;
+    return ECONOMY_CONFIG.usdCentsToGold(usdCents);
   }
   
   // Convert USD dollars to gold
   static dollarsToGold(usdDollars) {
-    return Math.floor(usdDollars * 100);
+    return ECONOMY_CONFIG.usdDollarsToGold(usdDollars);
   }
   
   // When player buys real snake with real money
@@ -34,8 +34,8 @@ export class Economy {
     const bonusGold = this.moneyToCurrency(priceCents);
     gameState.currency.gold += bonusGold;
     
-    // Loyalty points (1 point per dollar)
-    const loyaltyPoints = Math.floor(priceCents / 100);
+    // Loyalty points
+    const loyaltyPoints = ECONOMY_CONFIG.calculateLoyaltyPoints(priceCents);
     gameState.loyalty_points += loyaltyPoints;
     
     // Update loyalty tier
@@ -90,10 +90,7 @@ export class Economy {
   
   // Calculate price for virtual snake
   static getVirtualSnakePrice(species, morphIds = []) {
-    const basePrice = {
-      'ball_python': 1000,  // 1000 gold base
-      'corn_snake': 500     // 500 gold base
-    }[species] || 1000;
+    const basePrice = ECONOMY_CONFIG.getVirtualBasePrice(species);
     
     if (!morphIds || morphIds.length === 0) {
       return basePrice; // Normal morph

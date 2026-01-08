@@ -54,7 +54,14 @@ export const DEFAULT_SNAKE_WEIGHT = 100;
 export const TIMEOUTS = {
   DEBUG_MESSAGE_AUTO_REMOVE: 5000, // 5 seconds
   FETCH_TIMEOUT: 10000, // 10 seconds
-  ANIMATION_DURATION: 300 // 0.3 seconds
+  ANIMATION_DURATION: 300, // 0.3 seconds
+  NOTIFICATION_DURATION: 3000, // 3 seconds - standard notification
+  DEBUG_DIV_DURATION: 8000, // 8 seconds - debug message display
+  NETWORK_TIMEOUT: 5000, // 5 seconds - network request timeout
+  EVENT_CARD_FADE: 300, // 0.3 seconds - event card fade out
+  TEST_TIMEOUT_DEFAULT: 5000, // 5 seconds - default test timeout
+  AUTO_SAVE_INTERVAL: 30000, // 30 seconds - auto-save interval
+  URL_CHECK_INTERVAL: 1000 // 1 second - URL change check
 };
 
 /**

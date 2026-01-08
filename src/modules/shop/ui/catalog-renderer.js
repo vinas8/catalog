@@ -148,7 +148,7 @@ async function checkProductStatus(productId) {
   try {
     // Add 5 second timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.NETWORK_TIMEOUT);
     
     const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/product-status?id=${productId}`, {
       method: 'GET',

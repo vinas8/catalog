@@ -149,10 +149,15 @@
     <div class="section">
       <h2 onclick="this.parentElement.querySelector('.grid').style.display = this.parentElement.querySelector('.grid').style.display === 'none' ? 'grid' : 'none'; this.textContent = this.textContent.includes('▼') ? this.textContent.replace('▼', '▶') : this.textContent.replace('▶', '▼');" style="cursor: pointer;">🛠️ Debug Tools <span style="font-size: 14px; opacity: 0.6;">▶</span></h2>
       <div class="grid" style="display: none;">
+        <a href="smri-runner-modular-NEW.html" class="card tool">
+          <div class="card-icon">🧪</div>
+          <div class="card-title">SMRI Runner (Modular)</div>
+          <div class="card-desc">ES6 module-based test runner with live rendering (NEW)</div>
+        </a>
         <a href="tools/smri-runner.html" class="card tool">
           <div class="card-icon">🧪</div>
-          <div class="card-title">SMRI Test Runner</div>
-          <div class="card-desc">Execute automated test scenarios with live rendering and validation.</div>
+          <div class="card-title">SMRI Runner (Legacy)</div>
+          <div class="card-desc">Original inline version (deprecated)</div>
         </a>
         <a href="tools/healthcheck.html" class="card tool">
           <div class="card-icon">🏥</div>

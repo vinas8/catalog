@@ -146,7 +146,7 @@ export class EventSystem {
     const card = document.querySelector(`[data-event-id="${eventId}"]`);
     if (card) {
       card.style.animation = 'slideOut 0.3s ease-out';
-      setTimeout(() => card.remove(), 300);
+      setTimeout(() => card.remove(), TIMEOUTS.EVENT_CARD_FADE);
     }
   }
 }
