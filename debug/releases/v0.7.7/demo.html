@@ -211,7 +211,70 @@
   <script>
     let currentStep=0,autoPlaying=false,autoPlayInterval=null;const baseUrl=window.location.origin;
     const steps=[
-      {url:`${baseUrl}/import.html`,action:async()=>{showStatus('📤 Loading import...','executing');await wait(1000);log('✅ Import page loaded','success');log('⚠️ MANUAL STEP: Paste JSON and click "Upload to Stripe" → "Sync to KV"','warning');await wait(800);log('📦 Sample data available in /data/products-real-test.json','info');log('💡 Or use KV Manager to add products directly','info');showStatus('⚠️ Manual import required!\n\nPaste JSON → Upload → Sync\n\nThen click Next','warning');}},
+      {url:`${baseUrl}/import.html`,action:async()=>{
+        showStatus('📤 Loading import...','executing');
+        await wait(1000);
+        log('✅ Import page loaded','success');
+        await wait(500);
+        
+        // Try to auto-import
+        try {
+          const iframe = document.getElementById('demo-iframe');
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          
+          if (iframeDoc && iframeDoc.getElementById('csvText')) {
+            log('🔄 Auto-importing test data...','info');
+            
+            // Sample data to import
+            const sampleCSV = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana Het Clown,Male,2024,245g
+Taohu,Super Mojave,Male,2023,380g
+Almond,Hurricane Butter Fire,Female,2024,290g
+Mochi,Salmon Hypo Bloodred,Male,2024,180g
+Lavender,Lavender Tessera,Female,2023,220g`;
+            
+            // Inject CSV and trigger parse
+            iframeDoc.getElementById('csvText').value = sampleCSV;
+            iframeDoc.getElementById('pasteArea').style.display = 'block';
+            
+            await wait(500);
+            
+            // Call iframe's parseText function
+            if (iframe.contentWindow.parseText) {
+              iframe.contentWindow.parseText();
+              log('✅ CSV parsed (5 snakes)','success');
+              await wait(1000);
+              
+              // Try to upload
+              if (iframe.contentWindow.uploadToStripe) {
+                log('⬆️ Uploading to Stripe...','info');
+                await iframe.contentWindow.uploadToStripe();
+                await wait(2000);
+                log('✅ Upload complete!','success');
+                
+                // Try to sync
+                if (iframe.contentWindow.syncToKV) {
+                  log('🔄 Syncing to KV...','info');
+                  await iframe.contentWindow.syncToKV();
+                  await wait(2000);
+                  log('✅ Sync complete! Data ready','success');
+                  showStatus('✅ Import complete!\n\n5 snakes added to catalog','success');
+                }
+              }
+            } else {
+              log('⚠️ Auto-import failed - do manually','warning');
+              showStatus('⚠️ Please import manually\n\nPaste CSV → Parse → Upload → Sync','warning');
+            }
+          } else {
+            log('⚠️ Cannot access iframe - do manually','warning');
+            showStatus('⚠️ Manual import required','warning');
+          }
+        } catch(e) {
+          log('⚠️ Auto-import error: ' + e.message,'warning');
+          log('💡 Manual steps: Paste CSV → Parse → Upload → Sync','info');
+          showStatus('⚠️ Manual import required\n\nSee logs for instructions','warning');
+        }
+      }},
       {url:`${baseUrl}/catalog.html`,action:async()=>{showStatus('🛒 Loading catalog...','executing');await wait(1200);log('✅ Catalog page loaded','success');log('🔍 Fetching products from Worker API...','info');await wait(800);try{const res=await fetch(`${baseUrl.replace('8000','').replace(':','')}/catalog.html`);log('✅ Catalog fetched (check if products appear)','success');log('💡 If empty: products not imported yet!','info');}catch(e){log('⚠️ Check if products are visible in catalog','warning');}showStatus('✅ Catalog loaded!\n\nCheck if products appear','success');}},
       {url:`${baseUrl}/catalog.html#real-bp-001`,action:async()=>{showStatus('🐍 Opening...','executing');await wait(1000);log('✅ Product: Pudding','success');await wait(500);log('💰 Price: €350','info');showStatus('✅ Pudding - €350','success');}},
       {url:`${baseUrl}/success.html`,action:async()=>{showStatus('💳 Processing...','executing');await wait(1000);log('💳 Stripe initiated','info');await wait(1200);log('✅ Payment: €350','success');await wait(800);log('📡 Webhook received','info');await wait(1000);log('✅ Assigned to KV','success');showStatus('✅ Purchase complete!','success');}},
