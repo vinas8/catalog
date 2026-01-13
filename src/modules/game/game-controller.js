@@ -4,14 +4,14 @@
 console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
 
 // Module imports (dynamic loading below)
-import { getSnakeAvatar } from '../common/snake-avatar.js';
-import { SnakeDetailView } from './snake-detail-view.js';
 import { 
+  getSnakeAvatar,
   DEFAULT_SNAKE_STATS, 
   DEFAULT_SNAKE_WEIGHT,
   TIMEOUTS,
   STRING_LIMITS
-} from '../common/constants.js';
+} from '../common/index.js';
+import { SnakeDetailView } from './snake-detail-view.js';
 import { UI_CONFIG } from '../../config/ui-config.js';
 
 // Dynamic imports

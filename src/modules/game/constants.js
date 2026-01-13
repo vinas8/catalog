@@ -1,2 +1,2 @@
 // Re-export common constants for plugins
-export * from '../common/constants.js';
+export * from '../common/index.js';

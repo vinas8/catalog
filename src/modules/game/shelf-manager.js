@@ -1,7 +1,7 @@
 // Shelf Manager - Manages multiple terrarium shelves
 // Handles shelf navigation, pagination, and clean all operations
 
-import { getSnakeAvatar } from '../common/snake-avatar.js';
+import { getSnakeAvatar } from '../common/index.js';
 import { UI_CONFIG } from '../../config/ui-config.js';
 
 export class ShelfManager {

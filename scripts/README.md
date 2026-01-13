@@ -1,60 +1,97 @@
-# Scripts Directory
+# Development Tools
 
-**Clean and organized scripts** - Only essential tools remain!
+Quick project health checkers for Snake Muffin.
 
-## 🔍 Development Tools (NEW in v0.7.7)
+## 📋 Consistency Checker
 
-### `npm run dev:check`
-**Run all project health checks** - consistency + architecture analysis.
+```bash
+npm run dev:consistency
+```
+
+**Checks:**
+- Version sync across package.json and docs
+- Module structure (all modules have index.js)
+- SMRI structure (only INDEX.md in .smri/ root)
+- Duplicate files (backup copies, old versions)
+- File sizes (flags files >500 lines docs, >1000 lines code)
+- Module exports (PUBLIC-API.md + config exist)
+
+## 🏗️ Architecture Analyzer
+
+```bash
+npm run dev:architecture
+```
+
+**Analyzes:**
+- Module dependencies and coupling
+- Facade pattern compliance (ENABLED flags, exports)
+- Circular dependencies detection
+- **SMRI Modularity** - Validates modules only import from facades (index.js)
+- **SMRI Syntax** - Validates scenario relation numbers match module numbers
+- Code complexity metrics
+- File organization by category
+
+### SMRI Modularity Rules
+
+**Rule:** Modules MUST only import from other module facades (index.js), never internal files.
+
+✅ **Correct:**
+```javascript
+import { getSnakeAvatar } from '../common/index.js';
+```
+
+❌ **Violation:**
+```javascript
+import { getSnakeAvatar } from '../common/snake-avatar.js';
+```
+
+**Why?** Facade pattern ensures:
+- Clean module boundaries
+- Easy refactoring (internals can change)
+- Clear public API surface
+- Better testability
+
+### SMRI Syntax Validation
+
+**Format:** `S{M}.{RRR}.{II}`
+- `M` = Primary module (0-9) or submodule (e.g., 2-7)
+- `RRR` = Relations (comma-separated: 1,2,3)
+- `II` = Iteration (01-99)
+
+**Module Numbers:**
+- 0: common/health
+- 1: shop
+- 2: game
+- 3: auth
+- 4: payment
+- 5: worker
+- 6: testing
+- 7: breeding
+- 8: smri
+- 9: tutorial
+- 10+: future external modules
+
+✅ **Valid:** 
+- `S2.7,5,5-1.01` - Game (2) with Tutorial (7), Worker (5), KV (5-1)
+- `S1.1,2,3,4,5.01` - Shop (1) with full stack relations
+- `S5.1,2.01` - Worker (5) with Shop (1) and Game (2)
+
+❌ **Invalid:** 
+- `S1.2,11.1.01` - Module 11 doesn't exist (max is 10)
+- `S2-7-5.01` - Wrong separator (use dots and commas)
+
+## 🚀 Combined Check
 
 ```bash
 npm run dev:check
 ```
 
-### `npm run dev:consistency`
-**Check project consistency** - versions, structure, duplicates, file sizes.
-
-Validates:
-- ✅ Version consistency across package.json, README.md, .smri/INDEX.md
-- ✅ Module structure (all modules have index.js)
-- ✅ SMRI structure (only INDEX.md in root)
-- ✅ Duplicate files (smri-runner-*.html, demo-*.html, etc.)
-- ✅ File sizes (warn if >500 lines for .md, >1000 for .js)
-- ✅ Module exports (PUBLIC-API.md, module-functions.js exist)
-
-### `npm run dev:architecture`
-**Analyze architecture health** - dependencies, coupling, complexity.
-
-Analyzes:
-- 🔗 Module dependencies (shows dependency graph)
-- 🎭 Facade pattern compliance (ENABLED flag, clean exports)
-- 🔄 Circular dependencies (detects cycles)
-- 📂 File organization (counts by category)
-- 🧮 Code complexity (flags complex files >500 lines or high cyclomatic complexity)
+Runs both checkers in sequence for full project health report.
 
 ---
 
-## 📋 Core Workflow (4 scripts)
-1. `1-clear-stripe-products.sh` - Clear all Stripe products
-2. `2-upload-products-to-stripe.sh` - Upload products to Stripe
-3. `3-import-stripe-to-kv.sh` - Sync Stripe → KV
-4. `4-verify-sync.sh` - Verify synchronization
+## 📊 Health Scores
 
-## 🛠️ Utilities (7 scripts)
-- `build-kv-index.sh` - Build product index from KV
-- `clear-all-data.sh` - Nuclear option - clear everything
-- `clear-customers.sh` - Clear customer data
-- `clear-kv-data.sh` - Clear KV storage
-- `fix-kv-products-with-prices.sh` - Add price fields to products
-- `deploy-worker-api.sh` - Deploy Cloudflare Worker
-- `start-server.sh` - Start local development server
-
-## 🔍 Testing & Verification (2 scripts)
-- `test-worker-curl.sh` - Test Worker endpoints
-- `verify-api-connections.sh` - Verify API health
-
-## 📦 Archived Scripts
-See `_archive/` folder for removed duplicates, obsolete scripts, and old test files.
-
-**Total:** 13 scripts (down from 37)
-**Archived:** 24 scripts
+**Consistency:** 4/6 checks (67%)  
+**Architecture:** 5/5 checks (100%) ✅  
+**Overall:** Project is architecturally sound with minor tech debt

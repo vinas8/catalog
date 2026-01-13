@@ -1,6 +1,6 @@
 // Snake Detail View - Mobile-friendly stats table modal
 
-import { getSnakeAvatar } from '../common/snake-avatar.js';
+import { getSnakeAvatar } from '../common/index.js';
 
 export class SnakeDetailView {
   constructor(snake, gameState) {

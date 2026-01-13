@@ -7,3 +7,4 @@ export const ENABLED = true;
 
 export { Core } from './core.js';
 export * from './constants.js';
+export { getSnakeAvatar } from './snake-avatar.js';

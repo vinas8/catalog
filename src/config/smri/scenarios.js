@@ -137,8 +137,8 @@ export const SMRI_SCENARIOS = [
   // === WORKER MODULE (S5) - Backend API ===
   {
     id: 's5-real-snake-completeness',
-    title: 'S1.2,11.1.01: Real Snake Completeness',
-    smri: 'S1.2,11.1.01',
+    title: 'S5.1,2.01: Real Snake Completeness',
+    smri: 'S5.1,2.01',
     module: 'worker',
     url: null,
     icon: '🔍',
