@@ -126,8 +126,8 @@ export const SMRI_SCENARIOS = [
   // === PAYMENT MODULE (S4) - Stripe integration ===
   {
     id: 's4-email-receipt',
-    title: 'S1.1,4.01: Email Receipt',
-    smri: 'S1.1,4.01',
+    title: 'S4.1,4.01: Email Receipt',
+    smri: 'S4.1,4.01',
     module: 'payment',
     url: null,
     icon: '📧',
@@ -145,11 +145,11 @@ export const SMRI_SCENARIOS = [
     status: '✅'
   },
 
-  // === COMMON MODULE (S6) - Shared utilities ===
+  // === COMMON MODULE (S0/S6) - Shared utilities ===
   {
-    id: 's6-fluent-customer-journey',
-    title: 'S6.1,2,3.09: Fluent Customer Journey',
-    smri: 'S6.1,2,3.09',
+    id: 's0-fluent-customer-journey',
+    title: 'S0.1,2,3.09: Fluent Customer Journey',
+    smri: 'S0.1,2,3.09',
     module: 'common',
     url: '../../index.html',
     icon: '🗺️',
@@ -245,4 +245,48 @@ export const getScenarioStats = () => {
     failed,
     passRate: total > 0 ? Math.round((passed / total) * 100) : 0
   };
+};
+
+// Module Coverage: Check which facade methods are tested
+export const getModuleCoverage = () => {
+  const MODULE_MAP = {
+    'health': 0, 'common': 0,
+    'shop': 1,
+    'game': 2,
+    'auth': 3,
+    'payment': 4,
+    'worker': 5,
+    'testing': 6,
+    'breeding': 7,
+    'smri': 8,
+    'tutorial': 9
+  };
+
+  const coverage = {};
+  
+  // Count scenarios per module
+  Object.keys(MODULE_MAP).forEach(mod => {
+    const num = MODULE_MAP[mod];
+    const scenarios = SMRI_SCENARIOS.filter(s => {
+      const smriNum = parseInt(s.smri.match(/^S(\d+)/)?.[1]);
+      return smriNum === num || s.module === mod;
+    });
+    
+    coverage[mod] = {
+      moduleNum: num,
+      scenarios: scenarios.length,
+      passed: scenarios.filter(s => s.status === '✅').length,
+      pending: scenarios.filter(s => s.status === '⏳').length
+    };
+  });
+  
+  return coverage;
+};
+
+// Get untested modules
+export const getUntestedModules = () => {
+  const coverage = getModuleCoverage();
+  return Object.entries(coverage)
+    .filter(([_, data]) => data.scenarios === 0)
+    .map(([mod]) => mod);
 };

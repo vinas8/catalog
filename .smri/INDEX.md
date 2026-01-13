@@ -211,6 +211,21 @@ Complete project briefing:
    4. Update src/config/smri/scenarios.js
    ```
    
+2. **Show Test Coverage:**
+   ```javascript
+   import { getModuleCoverage, getUntestedModules } from './src/config/smri/scenarios.js';
+   
+   const coverage = getModuleCoverage();
+   const untested = getUntestedModules();
+   
+   // Display:
+   // ✅ S0 health: 7 scenarios (3 ✅)
+   // ⚠️ S7 breeding: 0 scenarios (untested!)
+   // 
+   // Function Coverage: 39 total facade functions
+   // Goal: Create scenarios to test all functions
+   ```
+   
 2. **Load SMRI Format Rule:**
    ```
    S{M}.{RRR}.{II}
