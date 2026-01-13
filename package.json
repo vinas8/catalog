@@ -28,7 +28,10 @@
     "test:full": "npm run test:all && npm run test:e2e && npm run test:e2e:security",
     "test:collection:tutorial": "node tests/collections/run-tutorial-collection.js",
     "test:collection:demo": "node tests/collections/run-demo-collection.js",
-    "start": "python3 -m http.server 8000"
+    "start": "python3 -m http.server 8000",
+    "dev:check": "node scripts/check-consistency.cjs && node scripts/check-architecture.cjs",
+    "dev:consistency": "node scripts/check-consistency.cjs",
+    "dev:architecture": "node scripts/check-architecture.cjs"
   },
   "keywords": [
     "game",
