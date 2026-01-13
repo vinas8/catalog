@@ -441,9 +441,11 @@ function main() {
 
   if (percentage >= 80) {
     log(COLORS.green, '\n🎉', 'Architecture is healthy!');
+    console.log(COLORS.cyan + '\nScript: scripts/check-architecture.cjs' + COLORS.reset);
     process.exit(0);
   } else {
     log(COLORS.yellow, '\n⚠️', 'Architecture needs improvement');
+    console.log(COLORS.cyan + '\nScript: scripts/check-architecture.cjs' + COLORS.reset);
     process.exit(0); // Don't fail CI, just warn
   }
 }

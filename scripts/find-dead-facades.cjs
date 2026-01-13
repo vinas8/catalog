@@ -145,6 +145,8 @@ function main() {
     log(COLORS.green, '✅', 'All facade methods are being used!');
   }
 
+  console.log(COLORS.cyan + '\nScript: scripts/find-dead-facades.cjs' + COLORS.reset);
+
   // Exit code
   process.exit(deadMethods.length > 0 ? 1 : 0);
 }

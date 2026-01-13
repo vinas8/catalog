@@ -294,6 +294,7 @@ function main() {
     process.exit(0);
   } else {
     log(COLORS.yellow, '\n⚠️', 'Some checks failed - review above');
+    console.log(COLORS.cyan + '\nScript: scripts/check-consistency.cjs' + COLORS.reset);
     process.exit(1);
   }
 }
