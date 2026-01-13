@@ -31,7 +31,8 @@
     "start": "python3 -m http.server 8000",
     "dev:check": "node scripts/check-consistency.cjs && node scripts/check-architecture.cjs",
     "dev:consistency": "node scripts/check-consistency.cjs",
-    "dev:architecture": "node scripts/check-architecture.cjs"
+    "dev:architecture": "node scripts/check-architecture.cjs",
+    "dev:dead-facades": "node scripts/find-dead-facades.cjs"
   },
   "keywords": [
     "game",

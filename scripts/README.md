@@ -88,10 +88,34 @@ npm run dev:check
 
 Runs both checkers in sequence for full project health report.
 
+## 🔍 Dead Facade Finder
+
+```bash
+npm run dev:dead-facades
+```
+
+**Finds unused facade methods:**
+- Scans all module facades (index.js)
+- Searches entire codebase for usage
+- Reports methods that are exported but never imported
+
+**Current Results:**
+- 40/43 methods used (93%)
+- 3 dead methods found:
+  - `breeding/GeneticsEngine` (doesn't exist!)
+  - `payment/PaymentConfig` (unused)
+  - `payment/createPaymentAdapter` (unused)
+
+**Why this matters:**
+- Dead code clutters API surface
+- False documentation
+- Technical debt accumulation
+
 ---
 
 ## 📊 Health Scores
 
 **Consistency:** 4/6 checks (67%)  
 **Architecture:** 5/5 checks (100%) ✅  
-**Overall:** Project is architecturally sound with minor tech debt
+**Dead Methods:** 3/43 (7% dead code)  
+**Overall:** Project is architecturally sound with minor cleanup needed
