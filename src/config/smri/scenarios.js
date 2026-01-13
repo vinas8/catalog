@@ -290,3 +290,42 @@ export const getUntestedModules = () => {
     .filter(([_, data]) => data.scenarios === 0)
     .map(([mod]) => mod);
 };
+
+// Component Coverage: Track which components are used in scenarios
+export const getComponentCoverage = () => {
+  const ALL_COMPONENTS = [
+    'Navigation',
+    'SnakeDetailModal',
+    'SplitScreenDemo',
+    'TestRenderer',
+    'BrowserFrame',
+    'DebugPanel',
+    'PWAInstallButton'
+  ];
+  
+  const usedComponents = new Set();
+  
+  SMRI_SCENARIOS.forEach(scenario => {
+    // Track explicit component usage
+    if (scenario.component) {
+      usedComponents.add(scenario.component);
+    }
+    
+    // Infer usage from URL patterns
+    if (scenario.url?.includes('catalog.html') || scenario.url?.includes('shop')) {
+      usedComponents.add('Navigation');
+      usedComponents.add('SnakeDetailModal');
+    }
+    if (scenario.url?.includes('game.html')) {
+      usedComponents.add('Navigation');
+    }
+  });
+  
+  return {
+    total: ALL_COMPONENTS.length,
+    used: usedComponents.size,
+    usedList: Array.from(usedComponents).sort(),
+    unusedList: ALL_COMPONENTS.filter(c => !usedComponents.has(c)),
+    coverage: Math.round((usedComponents.size / ALL_COMPONENTS.length) * 100)
+  };
+};

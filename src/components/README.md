@@ -1,4 +1,4 @@
-# UI Components
+# 🎨 UI Components
 
 **Presentational Layer** - Visual widgets and interactive layouts.
 
@@ -6,17 +6,37 @@
 
 UI components handle **presentation and user interaction** only. They render DOM elements, handle events, and create visual layouts.
 
+## 🏗️ SMRI Integration
+
+**Components don't have dedicated SMRI numbers (S0-S9 are for business logic modules).**
+
+Instead, components are tracked via **scenario usage**:
+
+```javascript
+// Scenario using SplitScreenDemo
+{
+  id: 's1-shop-catalog',
+  title: 'S1.1,2.05: Shop Catalog',
+  smri: 'S1.1,2.05',
+  module: 'shop',              // Primary module (S1)
+  component: 'SplitScreenDemo', // UI component used
+  url: '../debug/demo-split-screen.html'
+}
+```
+
+**Check component coverage:** `npm run smri:list:components`
+
 ## 📦 What's Here
 
-| Component | Purpose |
-|-----------|---------|
-| `Navigation.js` | Top/bottom navigation bars (mobile + desktop) |
-| `SnakeDetailModal.js` | Modal popup for snake details |
-| `SplitScreenDemo.js` | Split-screen layout (steps + iframe) |
-| `TestRenderer.js` | Test scenario UI with navigation |
-| `DebugPanel.js` | Debug information display |
-| `BrowserFrame.js` | Iframe wrapper component |
-| `PWAInstallButton.js` | Progressive Web App install button |
+| Component | Purpose | Coverage |
+|-----------|---------|----------|
+| `Navigation.js` | Top/bottom navigation bars | ✅ Used |
+| `SnakeDetailModal.js` | Modal popup for snake details | ✅ Used |
+| `SplitScreenDemo.js` | Split-screen layout (steps + iframe) | ⏳ Planned |
+| `TestRenderer.js` | Test scenario UI with navigation | ⏳ Internal |
+| `DebugPanel.js` | Debug information display | ⏳ Internal |
+| `BrowserFrame.js` | Iframe wrapper component | ⏳ Internal |
+| `PWAInstallButton.js` | Progressive Web App install button | ⏳ Planned |
 
 ## 🔒 Rules
 
@@ -41,10 +61,10 @@ UI components handle **presentation and user interaction** only. They render DOM
 │   Components    │ ← Presentation layer (UI)
 │  (this folder)  │
 └────────┬────────┘
-         │ imports
+         │ imports ✅
          ↓
 ┌─────────────────┐
-│    Modules      │ ← Business logic layer
+│    Modules      │ ← Business logic layer (S0-S9)
 │  /src/modules/  │
 └─────────────────┘
 ```
@@ -83,8 +103,23 @@ export function calculatePrice(species, morph) {
 }
 ```
 
+## 🎯 Generic vs Domain-Specific
+
+### Generic Components (Reusable)
+- `Navigation` - Works across all pages
+- `SplitScreenDemo` - Used for all interactive demos
+- `TestRenderer` - SMRI test runner UI
+- `BrowserFrame` - Generic iframe wrapper
+
+### Domain-Specific Components
+- `SnakeDetailModal` - Uses S1 (shop) + S2 (game) data
+- Still tested via integration scenarios
+
+**Philosophy:** Most components should be **generic** and **reusable**.
+
 ## 🔗 Related
 
 - **Business Logic:** See `/src/modules/README.md`
 - **Configuration:** See `/src/config/`
-- **Utilities:** See `/src/utils/`
+- **Component Coverage:** Run `npm run smri:list:components`
+- **Scenarios:** See `src/config/smri/scenarios.js`

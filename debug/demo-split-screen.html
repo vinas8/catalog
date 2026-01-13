@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Split Screen Demo - Serpent Town</title>
+</head>
+<body>
+  <div id="demo-root" data-split-demo></div>
+
+  <script type="module">
+    import { SplitScreenDemo } from '../src/components/SplitScreenDemo.js';
+    
+    const demo = new SplitScreenDemo({
+      title: '🛒 Complete Purchase Flow',
+      steps: [
+        { title: 'Browse Catalog', desc: 'View available snakes for sale', url: '../catalog.html' },
+        { title: 'Add to Cart', desc: 'Click "Add to Cart" on a snake', url: '../catalog.html' },
+        { title: 'Checkout', desc: 'Enter payment details', url: '../catalog.html#checkout' },
+        { title: 'Confirmation', desc: 'Order complete!', url: '../success.html' }
+      ],
+      container: '#demo-root'
+    });
+    
+    demo.init();
+  </script>
+</body>
+</html>
