@@ -253,6 +253,30 @@ Complete project briefing:
    3. If 10+: Abstract external service first
    4. Add to src/config/smri/scenarios.js
    5. Create .smri/scenarios/S{M}.{RRR}.{II}-name.md file
+   
+   Real-World Scenario Creation Pattern:
+   
+   PATTERN: When implementing new features, create scenarios BEFORE coding:
+   
+   Example: User requests "Test render component for demos"
+   
+   Step 1: Break down into scenarios
+   - S0.0,1,2,6,8.02 - Project Consistency Validation (file sizes, modularity)
+   - S6.6,8.01 - TestRenderer Component Creation (modular component)
+   - S8.6,8.01 - Conditional TestRenderer in SMRI Runner (conditional use)
+   - S8.1,6,8.02 - Demo Scenario Collections with TestRenderer (reuse)
+   - S1.1,6,8.01 - In-Browser Shop Frontend Testing (user interactions)
+   
+   Step 2: For each scenario, identify:
+   - Primary module: What's the main focus? (e.g., 6=Testing, 8=SMRI, 1=Shop)
+   - Relations: What other modules does it touch? (e.g., 6,8 = Testing+SMRI)
+   - Iteration: First version? 01. Enhancement? 02+.
+   
+   Step 3: Write descriptive names:
+   ✅ "TestRenderer Component Creation" - Clear, action-oriented
+   ❌ "Make component" - Too vague
+   ✅ "In-Browser Shop Frontend Testing" - Specific context
+   ❌ "Test shop" - Unclear scope
    ```
    
 3. Check version (`package.json`)

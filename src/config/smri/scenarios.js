@@ -154,6 +154,64 @@ export const SMRI_SCENARIOS = [
     url: '../../index.html',
     icon: '🗺️',
     status: '✅'
+  },
+
+  // === NEW SCENARIOS - Session 2 (2026-01-13) ===
+  
+  // Enhanced consistency checks
+  {
+    id: 's0-consistency-validation',
+    title: 'S0.0,1,2,6,8.02: Project Consistency Validation',
+    smri: 'S0.0,1,2,6,8.02',
+    module: 'health',
+    description: 'Enhanced .smri checks: file sizes (<500 lines), modularity, best practices',
+    url: '../debug/tools/smri-runner.html',
+    icon: '🔍',
+    status: '⏳'
+  },
+  
+  // TestRenderer component system
+  {
+    id: 's6-test-renderer',
+    title: 'S6.6,8.01: TestRenderer Component Creation',
+    smri: 'S6.6,8.01',
+    module: 'testing',
+    description: 'Modular test render component with Next/Prev navigation',
+    url: '../debug/tools/smri-runner.html',
+    icon: '🎬',
+    status: '⏳'
+  },
+  {
+    id: 's8-conditional-renderer',
+    title: 'S8.6,8.01: Conditional TestRenderer in SMRI Runner',
+    smri: 'S8.6,8.01',
+    module: 'smri',
+    description: 'Show TestRenderer only when DOM testing needed',
+    url: '../debug/tools/smri-runner.html',
+    icon: '🔀',
+    status: '⏳'
+  },
+  {
+    id: 's8-demo-collections',
+    title: 'S8.1,6,8.02: Demo Scenario Collections',
+    smri: 'S8.1,6,8.02',
+    module: 'smri',
+    description: 'Reuse TestRenderer for demo presentations',
+    url: '../debug/releases/demo.html',
+    icon: '🎭',
+    status: '⏳'
+  },
+  
+  // In-browser shop testing
+  {
+    id: 's1-shop-frontend-testing',
+    title: 'S1.1,6,8.01: In-Browser Shop Frontend Testing',
+    smri: 'S1.1,6,8.01',
+    module: 'shop',
+    description: 'Test user interactions: click product, add to cart, checkout',
+    url: '../../catalog.html',
+    icon: '🛒',
+    status: '⏳'
   }
 ];
 

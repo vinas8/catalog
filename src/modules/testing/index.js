@@ -6,6 +6,7 @@
  * @version 0.7.0
  */
 
+export const ENABLED = true;
 export { TestRunner } from './test-runner.js';
 export { StripeClient, KVClient, WorkerClient } from './api-clients.js';
 export { generateProduct, generateCustomer, generatePurchase } from './mock-data.js';
