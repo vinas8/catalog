@@ -2,11 +2,36 @@
 
 Quick project health checkers for Snake Muffin.
 
+## 🎯 SMRI Commands (via npm)
+
+All SMRI commands are accessible via `npm run smri:*`:
+
+```bash
+# List scenarios with coverage
+npm run smri:list              # or smri:list:scenarios
+npm run smri:coverage          # same as smri:list
+
+# List module functions  
+npm run smri:list:functions
+
+# Find dead facade methods
+npm run smri:dead
+```
+
+**Scripts:**
+- `scripts/smri-list-scenarios.cjs` - Module coverage + untested modules
+- `scripts/smri-list-functions.cjs` - All facade exports (39 functions)
+- `scripts/find-dead-facades.cjs` - Unused exports (currently 3 dead)
+
+---
+
 ## 📋 Consistency Checker
 
 ```bash
 npm run dev:consistency
 ```
+
+**Script:** `scripts/check-consistency.cjs`
 
 **Checks:**
 - Version sync across package.json and docs
@@ -16,11 +41,15 @@ npm run dev:consistency
 - File sizes (flags files >500 lines docs, >1000 lines code)
 - Module exports (PUBLIC-API.md + config exist)
 
+---
+
 ## 🏗️ Architecture Analyzer
 
 ```bash
 npm run dev:architecture
 ```
+
+**Script:** `scripts/check-architecture.cjs`
 
 **Analyzes:**
 - Module dependencies and coupling
@@ -80,6 +109,8 @@ import { getSnakeAvatar } from '../common/snake-avatar.js';
 - `S1.2,11.1.01` - Module 11 doesn't exist (max is 10)
 - `S2-7-5.01` - Wrong separator (use dots and commas)
 
+---
+
 ## 🚀 Combined Check
 
 ```bash
@@ -88,11 +119,15 @@ npm run dev:check
 
 Runs both checkers in sequence for full project health report.
 
+---
+
 ## 🔍 Dead Facade Finder
 
 ```bash
-npm run dev:dead-facades
+npm run dev:dead-facades  # or npm run smri:dead
 ```
+
+**Script:** `scripts/find-dead-facades.cjs`
 
 **Finds unused facade methods:**
 - Scans all module facades (index.js)
@@ -118,4 +153,25 @@ npm run dev:dead-facades
 **Consistency:** 4/6 checks (67%)  
 **Architecture:** 5/5 checks (100%) ✅  
 **Dead Methods:** 3/43 (7% dead code)  
+**Module Coverage:** 9/11 modules (82%)  
 **Overall:** Project is architecturally sound with minor cleanup needed
+
+---
+
+## 🛠️ All Scripts
+
+**SMRI Commands:**
+- `smri:list` → `scripts/smri-list-scenarios.cjs`
+- `smri:list:functions` → `scripts/smri-list-functions.cjs`
+- `smri:dead` → `scripts/find-dead-facades.cjs`
+
+**Dev Tools:**
+- `dev:check` → Run both consistency + architecture
+- `dev:consistency` → `scripts/check-consistency.cjs`
+- `dev:architecture` → `scripts/check-architecture.cjs`
+- `dev:dead-facades` → `scripts/find-dead-facades.cjs`
+
+**Convention:** All scripts log their path at the end:
+```
+Script: scripts/{script-name}.cjs
+```
