@@ -133,7 +133,31 @@
               url: '/admin/import.html',
               action: async (demo) => {
                 demo.log('📤 Select CSV file or paste data', 'info');
+                demo.log('💡 Note: Import requires Stripe secret key (backend only)', 'info');
                 await demo.wait(2000);
+              }
+            },
+            {
+              title: 'View Catalog',
+              description: 'See imported products',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🔄 Clearing cache to show fresh products...', 'info');
+                // Clear cache via iframe
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe && iframe.contentWindow) {
+                  try {
+                    iframe.contentWindow.localStorage.removeItem('serpent_products_cache');
+                    iframe.contentWindow.localStorage.removeItem('serpent_products_cache_time');
+                    demo.log('✅ Cache cleared!', 'success');
+                  } catch (e) {
+                    demo.log('⚠️ Could not clear cache (CORS)', 'info');
+                  }
+                }
+                await demo.wait(1500);
+                // Reload to show products
+                demo.reloadIframe();
+                demo.log('📦 Products should now be visible', 'success');
               }
             },
             {

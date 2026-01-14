@@ -1,3 +1,7 @@
+73b10a1 fix: Remove duplicate test-cache file
+76a758d refactor: Enforce proper endpoint structure
+787a3e4 docs: Add config module documentation
+ba1a1fd chore: Update SMRI context cache after deduplication fix
 f98dca0 feat: Add product deduplication by name
 f5ff601 fix: Allow products to show without Stripe payment links
 13ef918 fix: Show all products in catalog and add cache clear button
@@ -14,7 +18,3 @@ f1ae2a6 fix: Remove time-based cache expiration
 ea90e3b fix: Add explicit instruction to run startup script first
 2922e34 feat: Create unified smri-startup.sh script
 c49bca9 docs: Add AI-START-HERE.md with explicit .smri load instructions
-e19c920 fix: Add directory tree check to hybrid protocol
-e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks)
-0421734 docs: Add session context and smart start instructions
-9d6c643 feat: Add UI component coverage tracking

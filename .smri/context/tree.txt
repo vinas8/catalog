@@ -27,16 +27,16 @@
 │   ├── README.md
 │   ├── csv-import-manager.js
 │   ├── debug-guard.js
-│   ├── demo-split-screen.html
 │   ├── index.html
 │   ├── mcp-test-report.html
 │   ├── mobile-console.js
-│   ├── purchase-flow-demo.html
+│   ├── redirect.html
 │   ├── smri-runner.html
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
-│   ├── test-runner-simple.html
-│   └── visual-demo.html
+│   └── test-runner-simple.html
+├── demo
+│   └── index.html
 ├── dex
 │   ├── modules
 │   ├── archive-index-old.html
@@ -158,8 +158,6 @@
 ├── calculator.html
 ├── catalog.html
 ├── collection.html
-├── debug-redirect.html
-├── demo.html
 ├── dex.html
 ├── game.html
 ├── import.html
@@ -175,7 +173,6 @@
 ├── styles.css
 ├── success.html
 ├── sw.js
-├── test-browser.cjs
-└── test-cache-inline.html
+└── test-browser.cjs
 
-55 directories, 124 files
+56 directories, 120 files
