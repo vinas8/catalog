@@ -141,6 +141,10 @@ export class SnakeDetailModal {
 - **Facade Pattern:** Run `npm run dev:architecture`
 - **Module Functions:** Run `npm run smri:list:functions`
 
+## config
+Configuration management and feature flags.
+- `FEATURE_FLAGS` - Toggle features on/off globally
+
 ## demo
 Interactive demo system with mobile-first split-screen layout.
 - `Demo` - Main demo component with scenario execution
