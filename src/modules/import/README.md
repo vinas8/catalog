@@ -109,9 +109,9 @@ KV → CSV                       (Export backup)
 
 ## Usage
 
-### Primary Workflow: CSV → Stripe → KV
+### Primary Workflow: CSV → KV → Stripe → KV → LocalStorage
 
-**Step 1: Prepare CSV (source of truth)**
+**Step 1: Prepare CSV (data entry)**
 ```csv
 Name,Morph,Gender,YOB,Weight,Price
 Pudding,Banana Het Clown,Male,2024,,299
@@ -119,29 +119,43 @@ Mochi,Albino Pied,Female,2023,450g,450
 Taohu,Super Mojave,Male,2024,,350
 ```
 
-**Step 2: Import to Stripe (creates products + prices + payment links)**
+**Step 2: Import CSV to KV (source of truth)**
 ```javascript
-import { ImportManager, CSVSource, StripeDestination } from '/src/modules/import/index.js';
+import { ImportManager, CSVSource, KVDestination } from '/src/modules/import/index.js';
 
 const manager = new ImportManager();
 manager.setSource(new CSVSource());
-manager.setDestination(new StripeDestination());
+manager.setDestination(new KVDestination());
 
-const result = await manager.runPipeline(csvFile, {
-  cleanup: true  // Clear old products first
-});
-// ✅ Products in Stripe with payment links automatically created
+await manager.runPipeline(csvFile, { cleanup: true });
+// ✅ Products now in KV (source of truth)
 ```
 
-**Step 3: Sync to KV (for fast frontend access)**
+**Step 3: Export KV to Stripe (create payment products)**
+```javascript
+manager.setSource(new KVSource());
+manager.setDestination(new StripeDestination());
+await manager.import();
+// ✅ Stripe products created with payment links
+```
+
+**Step 4: Sync payment links back to KV**
 ```javascript
 manager.setSource(new StripeSource());
 manager.setDestination(new KVDestination());
 await manager.import();
-// ✅ Products now in Stripe AND KV with payment links
+// ✅ KV now has products WITH payment links
 ```
 
-**Result:** CSV → Stripe (with checkout links) → KV (fast API) → Catalog displays "Buy Now" buttons ✅
+**Step 5: Cache KV to LocalStorage (automatic in frontend)**
+```javascript
+// Frontend: catalog.html
+const products = await fetch('/products'); // From KV
+localStorage.setItem('products_cache', JSON.stringify(products));
+// ✅ LocalStorage mirrors KV for fast access
+```
+
+**Result:** CSV → KV (source) → Stripe (payments) → KV (updated) → LocalStorage (cache)
 
 ### Example 1: CSV → Stripe (with payment links)
 

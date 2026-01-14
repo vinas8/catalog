@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📤 Modular Import - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #333; margin-bottom: 10px; }
+    .subtitle { color: #666; margin-bottom: 30px; }
+    .section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #5568d3; transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-success { background: #28a745; }
+    .btn-danger { background: #dc3545; }
+    .output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    .output .success { color: #4ade80; }
+    .output .error { color: #f87171; }
+    .output .warning { color: #fbbf24; }
+    .output .info { color: #60a5fa; }
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .step {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 2px solid #e5e7eb;
+    }
+    .step.active { border-color: #667eea; background: #f0f4ff; }
+    .step.complete { border-color: #28a745; background: #f0fff4; }
+    .step-icon { font-size: 32px; margin-bottom: 10px; }
+    .step-title { font-weight: 600; margin-bottom: 5px; }
+    .step-desc { font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📤 Modular Import System</h1>
+    <p class="subtitle">Cleanup → Validate → Import → Assign</p>
+
+    <!-- Pipeline Visualization -->
+    <div class="section">
+      <h2 style="margin-bottom: 15px;">Import Pipeline</h2>
+      <div class="pipeline-steps">
+        <div class="step" id="step-cleanup">
+          <div class="step-icon">🧹</div>
+          <div class="step-title">Cleanup</div>
+          <div class="step-desc">Clear existing</div>
+        </div>
+        <div class="step" id="step-validate">
+          <div class="step-icon">🔍</div>
+          <div class="step-title">Validate</div>
+          <div class="step-desc">Parse & check</div>
+        </div>
+        <div class="step" id="step-import">
+          <div class="step-icon">📥</div>
+          <div class="step-title">Import</div>
+          <div class="step-desc">Write to dest</div>
+        </div>
+        <div class="step" id="step-assign">
+          <div class="step-icon">👤</div>
+          <div class="step-title">Assign</div>
+          <div class="step-desc">Link to users</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSV Input -->
+    <div class="section">
+      <h2 style="margin-bottom: 20px;">Step 1: Provide CSV Data</h2>
+      <input type="file" id="csvFile" accept=".csv" style="display: none;" onchange="handleFile(event)">
+      <button class="btn" onclick="document.getElementById('csvFile').click()">📁 Choose CSV File</button>
+      <button class="btn" onclick="useSampleData()">📋 Use Sample Data</button>
+      <textarea id="csvText" placeholder="Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,"></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="section">
+      <h2 style="margin-bottom: 20px;">Step 2: Run Pipeline</h2>
+      <button class="btn btn-success" onclick="runFullPipeline()" id="pipelineBtn">🚀 Run Full Pipeline</button>
+      <button class="btn" onclick="runStep('validate')">🔍 Validate Only</button>
+      <button class="btn" onclick="runStep('import')">📥 Import Only</button>
+      <button class="btn btn-danger" onclick="runCleanup()">🧹 Cleanup Only</button>
+      
+      <div id="output" class="output"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { 
+      ImportManager, 
+      CSVSource, 
+      StripeDestination,
+      KVDestination 
+    } from '/src/modules/import/index.js';
+
+    let manager = null;
+    let csvSource = null;
+
+    function log(msg, type = 'info') {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      const time = new Date().toLocaleTimeString();
+      output.innerHTML += `<div class="${type}">[${time}] ${msg}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('output').innerHTML = '';
+    }
+
+    function setStepStatus(step, status) {
+      const el = document.getElementById(`step-${step}`);
+      el.classList.remove('active', 'complete');
+      if (status === 'active') el.classList.add('active');
+      if (status === 'complete') el.classList.add('complete');
+    }
+
+    window.handleFile = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('csvText').value = e.target.result;
+        log(`📁 Loaded file: ${file.name}`, 'success');
+      };
+      reader.readAsText(file);
+    };
+
+    window.useSampleData = () => {
+      const sample = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,
+Chocolate Chip,Pastel DG,Male,2021,`;
+      document.getElementById('csvText').value = sample;
+      log('📋 Sample data loaded', 'info');
+    };
+
+    window.runFullPipeline = async () => {
+      clearLog();
+      const csvText = document.getElementById('csvText').value.trim();
+      
+      if (!csvText) {
+        alert('Please provide CSV data');
+        return;
+      }
+
+      document.getElementById('pipelineBtn').disabled = true;
+      
+      try {
+        // Initialize
+        manager = new ImportManager();
+        csvSource = new CSVSource();
+        const stripeDestination = new StripeDestination();
+        const kvDestination = new KVDestination();
+
+        manager.setSource(csvSource);
+        manager.setDestination(stripeDestination);
+
+        // Step 1: Cleanup
+        setStepStatus('cleanup', 'active');
+        log('🧹 Starting cleanup...', 'info');
+        await manager.cleanup();
+        setStepStatus('cleanup', 'complete');
+        await sleep(500);
+
+        // Step 2: Validate
+        setStepStatus('validate', 'active');
+        log('🔍 Validating CSV...', 'info');
+        const validation = await manager.validate(csvText);
+        if (!validation.valid) {
+          validation.errors.forEach(err => log(err, 'error'));
+          setStepStatus('validate', 'error');
+          return;
+        }
+        setStepStatus('validate', 'complete');
+        await sleep(500);
+
+        // Step 3: Import to Stripe
+        setStepStatus('import', 'active');
+        log('📥 Importing to Stripe...', 'info');
+        const importResult = await manager.import();
+        setStepStatus('import', 'complete');
+        await sleep(500);
+
+        // Step 4: Sync to KV
+        log('🔄 Syncing to KV...', 'info');
+        manager.setDestination(kvDestination);
+        const kvData = await csvSource.read(); // Reuse validated data
+        await manager.import();
+        
+        // Step 5: Assignment (manual for now)
+        setStepStatus('assign', 'active');
+        log('👤 Assignment step ready (manual)', 'info');
+        log('💡 Use assignSnakes(snakeIds, userId) to assign', 'info');
+        setStepStatus('assign', 'complete');
+
+        // Display logs
+        manager.getLogs().forEach(logEntry => {
+          log(logEntry.message, logEntry.type);
+        });
+
+        log('🎉 Pipeline complete!', 'success');
+        
+      } catch (err) {
+        log(`💥 Error: ${err.message}`, 'error');
+      } finally {
+        document.getElementById('pipelineBtn').disabled = false;
+      }
+    };
+
+    window.runStep = async (step) => {
+      clearLog();
+      const csvText = document.getElementById('csvText').value.trim();
+      
+      if (!csvText && step !== 'cleanup') {
+        alert('Please provide CSV data');
+        return;
+      }
+
+      try {
+        manager = manager || new ImportManager();
+        csvSource = csvSource || new CSVSource();
+        manager.setSource(csvSource);
+        manager.setDestination(new StripeDestination());
+
+        if (step === 'validate') {
+          setStepStatus('validate', 'active');
+          const result = await manager.validate(csvText);
+          if (result.valid) {
+            log(`✅ Validation passed: ${result.data.length} snakes`, 'success');
+            setStepStatus('validate', 'complete');
+          } else {
+            result.errors.forEach(err => log(err, 'error'));
+          }
+        } else if (step === 'import') {
+          await manager.validate(csvText);
+          setStepStatus('import', 'active');
+          await manager.import();
+          setStepStatus('import', 'complete');
+        }
+
+        manager.getLogs().forEach(logEntry => {
+          log(logEntry.message, logEntry.type);
+        });
+        
+      } catch (err) {
+        log(`💥 Error: ${err.message}`, 'error');
+      }
+    };
+
+    window.runCleanup = async () => {
+      clearLog();
+      if (!confirm('⚠️ Clear all Stripe products?')) return;
+      
+      try {
+        manager = new ImportManager();
+        manager.setDestination(new StripeDestination());
+        
+        setStepStatus('cleanup', 'active');
+        await manager.cleanup();
+        setStepStatus('cleanup', 'complete');
+        
+        manager.getLogs().forEach(logEntry => {
+          log(logEntry.message, logEntry.type);
+        });
+        
+      } catch (err) {
+        log(`💥 Error: ${err.message}`, 'error');
+      }
+    };
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    log('📦 Import system ready', 'success');
+  </script>
+</body>
+</html>
