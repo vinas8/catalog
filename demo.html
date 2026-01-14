@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Interactive Demo - Snake Muffin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="demo-root"></div>
+
+  <script type="module">
+    import { Demo } from '../src/modules/demo/index.js';
+
+    const demo = new Demo({
+      containerId: 'demo-root',
+      scenarios: [
+        {
+          icon: '🛒',
+          title: 'Complete Purchase Flow',
+          smri: 'S1.1,2,3,4,5.01',
+          description: 'Import → Browse → Purchase → Game',
+          steps: [
+            {
+              title: 'Import Products',
+              description: 'Upload 5 snakes to Stripe & KV',
+              api: {
+                method: 'POST',
+                url: '/upload-products',
+                body: {
+                  products: [
+                    { name: 'Pudding', morph: 'Banana Het Clown', gender: 'Male', yob: '2024', weight: '245g', species: 'ball_python', price: 350.00 },
+                    { name: 'Taohu', morph: 'Super Mojave', gender: 'Male', yob: '2023', weight: '380g', species: 'ball_python', price: 450.00 },
+                    { name: 'Almond', morph: 'Hurricane Butter Fire', gender: 'Female', yob: '2024', weight: '290g', species: 'ball_python', price: 650.00 },
+                    { name: 'Mochi', morph: 'Salmon Hypo Bloodred', gender: 'Male', yob: '2024', weight: '180g', species: 'corn_snake', price: 180.00 },
+                    { name: 'Lavender', morph: 'Lavender Tessera', gender: 'Female', yob: '2023', weight: '220g', species: 'corn_snake', price: 250.00 }
+                  ]
+                }
+              }
+            },
+            {
+              title: 'Browse Catalog',
+              description: 'View available snakes',
+              url: '/catalog.html'
+            },
+            {
+              title: 'View Snake Details',
+              description: 'Select Pudding - Banana Het Clown',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('💡 Click on "Pudding" to see details', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Add to Cart',
+              description: 'Add snake to shopping cart',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('💡 Click "Add to Cart" button', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Checkout',
+              description: 'Complete Stripe payment',
+              url: '/catalog.html#checkout',
+              action: async (demo) => {
+                demo.log('💳 Use test card: 4242 4242 4242 4242', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'View in Game',
+              description: 'Snake appears in collection',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🎉 Snake purchased successfully!', 'success');
+                await demo.wait(1000);
+              }
+            }
+          ]
+        },
+        {
+          icon: '🎮',
+          title: 'Game Tutorial',
+          smri: 'S2.7,5,5-1.01',
+          description: 'Learn to care for your snake',
+          steps: [
+            {
+              title: 'Open Game',
+              description: 'Load game page',
+              url: '/game.html'
+            },
+            {
+              title: 'Feed Snake',
+              description: 'Click feed button',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🍖 Click the "Feed" button', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Give Water',
+              description: 'Click water button',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('💧 Click the "Water" button', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Clean Enclosure',
+              description: 'Click clean button',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🧹 Click the "Clean" button', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Check Stats',
+              description: 'View snake health metrics',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('📊 All stats should be 100%', 'success');
+                await demo.wait(1000);
+              }
+            }
+          ]
+        },
+        {
+          icon: '👔',
+          title: 'Owner Dashboard',
+          smri: 'S6.1,4,5.01',
+          description: 'Manage inventory & view analytics',
+          steps: [
+            {
+              title: 'Open Admin',
+              description: 'Load admin dashboard',
+              url: '/admin/index.html'
+            },
+            {
+              title: 'Import CSV',
+              description: 'Upload product catalog',
+              url: '/admin/import.html',
+              action: async (demo) => {
+                demo.log('📤 Select CSV file or paste data', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Manage KV',
+              description: 'View storage data',
+              url: '/admin-kv.html'
+            },
+            {
+              title: 'View Orders',
+              description: 'Check purchase history',
+              url: '/admin/index.html',
+              action: async (demo) => {
+                demo.log('📋 Recent orders and revenue', 'info');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    demo.init();
+    console.log('🎬 Demo system initialized');
+  </script>
+</body>
+</html>

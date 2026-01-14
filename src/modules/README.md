@@ -140,3 +140,7 @@ export class SnakeDetailModal {
 - **SMRI System:** See `.smri/INDEX.md`
 - **Facade Pattern:** Run `npm run dev:architecture`
 - **Module Functions:** Run `npm run smri:list:functions`
+
+## demo
+Interactive demo system with mobile-first split-screen layout.
+- `Demo` - Main demo component with scenario execution

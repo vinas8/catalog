@@ -12,14 +12,20 @@
     import { SplitScreenDemo } from '../src/components/SplitScreenDemo.js';
     
     const demo = new SplitScreenDemo({
-      title: '🛒 Complete Purchase Flow',
-      steps: [
-        { title: 'Browse Catalog', desc: 'View available snakes for sale', url: '../catalog.html' },
-        { title: 'Add to Cart', desc: 'Click "Add to Cart" on a snake', url: '../catalog.html' },
-        { title: 'Checkout', desc: 'Enter payment details', url: '../catalog.html#checkout' },
-        { title: 'Confirmation', desc: 'Order complete!', url: '../success.html' }
-      ],
-      container: '#demo-root'
+      containerId: 'demo-root',
+      scenarios: [
+        { 
+          title: '🛒 Complete Purchase Flow',
+          smri: 'Demo',
+          url: '../catalog.html',
+          steps: [
+            { text: 'Browse Catalog - View available snakes for sale' },
+            { text: 'Add to Cart - Click "Add to Cart" on a snake' },
+            { text: 'Checkout - Enter payment details' },
+            { text: 'Confirmation - Order complete!' }
+          ]
+        }
+      ]
     });
     
     demo.init();
