@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-14 03:17:41 UTC  
-**Commit:** 82d37e8  
+**Generated:** 2026-01-14 13:44:46 UTC  
+**Commit:** eb58826  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,10 @@
 
 ### Git Log (Last 20 commits)
 ```
+eb58826 feat: Add demo module with split-screen scenario system
+e349009 feat: Enhance critical rules display in startup output
+f1ae2a6 fix: Remove time-based cache expiration
+676fb7a feat: Add smart context caching system
 82d37e8 fix: Update Claude instructions to match simplified format
 20190f9 refactor: Simplify AI instructions to reference startup script
 33fe173 fix: Update AI instructions to run startup script
@@ -25,20 +29,20 @@ e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks
 a5c3d46 feat: Add SplitScreenDemo component and update debug hub stats
 0613f3e docs: Update scripts README with SMRI command structure
 175522f feat: Add SMRI command aliases to npm scripts
-b4f9ca5 feat: Add dead facade method finder
-b23c092 feat: Add SMRI module coverage tracking and fix notation issues
-a1aaa61 feat: Enhance architecture checks with SMRI modularity validation
-b1d5859 docs: Add PROJECT-STATUS.md for quick reference
 ```
 
 ### Git Status
 ```
- M .claude-instructions.md
- M .clinerules
- M .github/copilot-instructions.md
- M scripts/smri-startup.sh
-?? .smri/context/
-?? scripts/smri-update-context.sh
+ D .smri/AI-START-HERE.md
+ D .smri/SESSION-START.md
+ D .smri/SMRI-COMMAND.md
+ D .smri/SMRI-COMMANDS.md
+ M .smri/context/git-log.txt
+ M .smri/context/health.txt
+ M .smri/context/modules.txt
+ M .smri/context/session.md
+ M .smri/context/tree.txt
+ M demo.html
 ```
 
 ---
@@ -361,6 +365,7 @@ auth
 breeding
 common
 config
+demo
 game
 payment
 shop
@@ -405,12 +410,12 @@ TestRenderer.js
 📊 Summary:[0m 
 [32m✅[0m Version Consistency
 [32m✅[0m Module Structure
-[31m❌[0m SMRI Structure
+[32m✅[0m SMRI Structure
 [31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 3/6 (50%)[0m
+[36mScore: 4/6 (67%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -433,5 +438,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-14 03:17:42 UTC  
-**Valid until:** 2026-01-15 03:17:42 UTC
+**Context cached at:** 2026-01-14 13:44:47 UTC  
+**To update:** Run `bash scripts/smri-update-context.sh`

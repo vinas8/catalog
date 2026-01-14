@@ -2,6 +2,7 @@ auth
 breeding
 common
 config
+demo
 game
 payment
 shop

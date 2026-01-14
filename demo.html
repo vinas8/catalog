@@ -25,23 +25,6 @@
           description: 'Import → Browse → Purchase → Game',
           steps: [
             {
-              title: 'Import Products',
-              description: 'Upload 5 snakes to Stripe & KV',
-              api: {
-                method: 'POST',
-                url: '/upload-products',
-                body: {
-                  products: [
-                    { name: 'Pudding', morph: 'Banana Het Clown', gender: 'Male', yob: '2024', weight: '245g', species: 'ball_python', price: 350.00 },
-                    { name: 'Taohu', morph: 'Super Mojave', gender: 'Male', yob: '2023', weight: '380g', species: 'ball_python', price: 450.00 },
-                    { name: 'Almond', morph: 'Hurricane Butter Fire', gender: 'Female', yob: '2024', weight: '290g', species: 'ball_python', price: 650.00 },
-                    { name: 'Mochi', morph: 'Salmon Hypo Bloodred', gender: 'Male', yob: '2024', weight: '180g', species: 'corn_snake', price: 180.00 },
-                    { name: 'Lavender', morph: 'Lavender Tessera', gender: 'Female', yob: '2023', weight: '220g', species: 'corn_snake', price: 250.00 }
-                  ]
-                }
-              }
-            },
-            {
               title: 'Browse Catalog',
               description: 'View available snakes',
               url: '/catalog.html'

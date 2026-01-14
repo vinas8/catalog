@@ -159,6 +159,7 @@
 ├── catalog.html
 ├── collection.html
 ├── debug-redirect.html
+├── demo.html
 ├── dex.html
 ├── game.html
 ├── import.html
@@ -177,4 +178,4 @@
 ├── test-browser.cjs
 └── test-cache-inline.html
 
-55 directories, 123 files
+55 directories, 124 files

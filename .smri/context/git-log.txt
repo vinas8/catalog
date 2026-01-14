@@ -1,3 +1,7 @@
+eb58826 feat: Add demo module with split-screen scenario system
+e349009 feat: Enhance critical rules display in startup output
+f1ae2a6 fix: Remove time-based cache expiration
+676fb7a feat: Add smart context caching system
 82d37e8 fix: Update Claude instructions to match simplified format
 20190f9 refactor: Simplify AI instructions to reference startup script
 33fe173 fix: Update AI instructions to run startup script
@@ -14,7 +18,3 @@ e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks
 a5c3d46 feat: Add SplitScreenDemo component and update debug hub stats
 0613f3e docs: Update scripts README with SMRI command structure
 175522f feat: Add SMRI command aliases to npm scripts
-b4f9ca5 feat: Add dead facade method finder
-b23c092 feat: Add SMRI module coverage tracking and fix notation issues
-a1aaa61 feat: Enhance architecture checks with SMRI modularity validation
-b1d5859 docs: Add PROJECT-STATUS.md for quick reference
