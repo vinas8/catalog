@@ -70,9 +70,27 @@
           description: 'Learn to care for your snake',
           steps: [
             {
-              title: 'Open Game',
-              description: 'Load game page',
-              url: '/game.html'
+              title: 'Check Your Snakes',
+              description: 'Ensure you have snakes assigned',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🔍 Checking if you have snakes...', 'info');
+                await demo.wait(1500);
+                demo.log('⚠️ If no snakes appear:', 'info');
+                demo.log('   1. Import CSV data (Owner Dashboard)', 'info');
+                demo.log('   2. Purchase from catalog', 'info');
+                demo.log('   3. Snakes must be assigned to your user', 'info');
+                await demo.wait(3000);
+              }
+            },
+            {
+              title: 'Select a Snake',
+              description: 'Click on snake card',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('👆 Click on any snake card to select it', 'info');
+                await demo.wait(2000);
+              }
             },
             {
               title: 'Feed Snake',
@@ -128,9 +146,14 @@
               description: 'Upload product catalog',
               url: '/admin/import.html',
               action: async (demo) => {
-                demo.log('📤 Select CSV file or paste data', 'info');
-                demo.log('💡 Note: Import requires Stripe secret key (backend only)', 'info');
-                await demo.wait(2000);
+                demo.log('📤 Import Pipeline Steps:', 'info');
+                demo.log('   1. 🧹 Cleanup - Clear existing data', 'info');
+                demo.log('   2. 🔍 Validate - Check CSV format', 'info');
+                demo.log('   3. ⬆️ Import - Upload to Stripe', 'info');
+                demo.log('   4. 🔄 Sync - Copy to KV storage', 'info');
+                demo.log('   5. 👤 Assign - Link snakes to users', 'info');
+                demo.log('💡 Modular system: CSV → Stripe → KV', 'info');
+                await demo.wait(4000);
               }
             },
             {
