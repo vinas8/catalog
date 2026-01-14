@@ -1,8 +1,23 @@
 # 🐍 Serpent Town - Index & Rules
 
 **Version:** 0.7.7  
-**Last Updated:** 2026-01-07  
+**Last Updated:** 2026-01-14  
 **Purpose:** SMRI system index and operating rules
+
+---
+
+## 🚨 AI: STOP! READ THIS FIRST
+
+**When user types `.smri`, DO THIS FIRST:**
+
+```bash
+bash scripts/smri-startup.sh
+```
+
+**DO NOT manually load INDEX.md, README.md, etc.**  
+**The script handles EVERYTHING automatically.**
+
+After script completes, you can read this INDEX.md if needed for additional context.
 
 ---
 
