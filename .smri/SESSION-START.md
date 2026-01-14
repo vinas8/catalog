@@ -113,12 +113,14 @@ if (user_runs_smri) {
     // Phase 2: ALWAYS run dynamic checks
     const currentGit = runGitLog(5);
     const uncommitted = checkGitStatus();
+    const tree = checkDirectoryTree();
     const health = runQuickHealth();
     
     // Phase 3: Compare & alert
     const newCommits = currentGit.length - ctx.commits.length;
     if (newCommits > 0) console.warn(`⚠️ ${newCommits} new commits since context`);
     if (uncommitted.length > 0) console.warn('⚠️ Uncommitted changes detected');
+    if (tree.newFiles.length > 0) console.warn(`⚠️ ${tree.newFiles.length} new files/folders`);
     if (health.changed) console.log('⚠️ Health scores changed');
     else console.log('✅ Health unchanged');
     
@@ -207,3 +209,69 @@ git log --oneline -20      # Recent work
 **Benefit:** Saves tokens, faster onboarding, maintains continuity
 
 **Next agent: Check `.smri/logs/` for latest context first!** 🚀
+
+---
+
+## 🔄 Context vs Dynamic Checks
+
+### What Context Log Provides (Historical)
+- ✅ What was done last session
+- ✅ Decisions made and why
+- ✅ File references with line numbers
+- ✅ Commit hashes at time of save
+- ✅ Health scores at time of save
+- ✅ Known issues and next steps
+
+### What Dynamic Checks Provide (Current)
+- ✅ Latest git log (new commits?)
+- ✅ Git status (uncommitted changes?)
+- ✅ Current health scores (changed?)
+- ✅ Test results (still passing?)
+- ✅ Architecture validation (violations?)
+- ✅ Directory tree (new files/folders?)
+
+### Why Both Are Needed
+```
+Context Log     → "Here's what we accomplished"
+Dynamic Checks  → "Here's current reality"
+Combined        → "Continue from X, but Y changed"
+```
+
+**Example Output:**
+```
+📍 Loaded session from 2026-01-13 - Dev Tools + UI
+   Last commit: 0421734 (Session context system)
+   
+⚠️ 3 new commits since context:
+   - abc1234 feat: New feature added
+   - def5678 fix: Bug fix
+   - ghi9012 docs: Updated docs
+   
+✅ No uncommitted changes
+✅ Health scores unchanged (Tests 100%, Architecture 100%)
+
+Continue where we left off or new task?
+```
+
+---
+
+## 📋 Checklist for AI Agent
+
+**When user types `.smri`:**
+
+- [ ] 1. Check for recent context log
+- [ ] 2. If found < 24hr:
+  - [ ] Load context (historical)
+  - [ ] Run `git log --oneline -5`
+  - [ ] Run `git status --short`
+  - [ ] Run `tree -L 2 -I 'node_modules'`
+  - [ ] Run `npm run dev:check | tail -20`
+  - [ ] Compare current vs context
+  - [ ] Alert on differences
+- [ ] 3. If not found or > 24hr:
+  - [ ] Run full `.smri` briefing
+  - [ ] Load INDEX.md, README.md
+  - [ ] Show directory tree
+  - [ ] Check git log (20 commits)
+
+**Never skip git/health checks - they show current reality!**
