@@ -5,11 +5,28 @@ Modular import system for Serpent Town catalog management.
 ## Architecture
 
 ```
-Sources (read from)     Pipeline          Destinations (write to)
+Sources (READ)          Pipeline          Destinations (WRITE)
 ├── CSVSource          ┌─────────────┐    ├── StripeDestination
-├── StripeSource   ──► │ImportManager│ ──►├── KVDestination  
-└── KVSource           └─────────────┘    └── (Future: FileSystem)
+├── StripeSource   ──► │ImportManager│ ──►├── KVDestination
+├── KVSource           └─────────────┘    ├── FileSystemDestination
+└── APISource                             └── DatabaseDestination
 ```
+
+### Flow Examples
+
+```
+CSV → Stripe → KV           (Import & sync)
+CSV → KV                    (Direct import)
+CSV → FileSystem            (Export to JSON)
+Stripe → KV                 (Sync existing)
+KV → Stripe                 (Restore from backup)
+Stripe → CSV                (Export catalog)
+```
+
+**Key Concept:** Sources and Destinations are **independent**  
+- CSV can be a **SOURCE** (read from file)
+- Stripe can be a **SOURCE** (read from API) AND **DESTINATION** (write to API)
+- Mix and match any source with any destination!
 
 ## Pipeline Steps
 
@@ -20,33 +37,54 @@ Sources (read from)     Pipeline          Destinations (write to)
 
 ## Usage
 
-### Basic Import (CSV → Stripe → KV)
+### Example 1: CSV → Stripe (with payment links)
 
 ```javascript
-import { 
-  ImportManager, 
-  CSVSource, 
-  StripeDestination,
-  KVDestination 
-} from '/src/modules/import/index.js';
+import { ImportManager, CSVSource, StripeDestination } from '/src/modules/import/index.js';
 
-// Setup
 const manager = new ImportManager();
-const csvSource = new CSVSource();
-const stripeDestination = new StripeDestination();
+manager.setSource(new CSVSource());
+manager.setDestination(new StripeDestination());
 
-manager.setSource(csvSource);
-manager.setDestination(stripeDestination);
-
-// Run pipeline
+// Import creates products + prices + payment links automatically
 const result = await manager.runPipeline(csvFile, {
-  cleanup: true,     // Clear Stripe first
-  assign: false      // Don't assign yet
+  cleanup: true      // Clear old products first
 });
+// ✅ Products now in Stripe with payment links
+```
 
-// Sync to KV
+### Example 2: CSV → Stripe → KV (full pipeline)
+
+```javascript
+// Step 1: CSV to Stripe
+manager.setSource(new CSVSource());
+manager.setDestination(new StripeDestination());
+await manager.runPipeline(csvFile, { cleanup: true });
+
+// Step 2: Stripe to KV (sync)
+manager.setSource(new StripeSource());
 manager.setDestination(new KVDestination());
 await manager.import();
+// ✅ Products in Stripe AND KV with payment links
+```
+
+### Example 3: Stripe → CSV (export catalog)
+
+```javascript
+manager.setSource(new StripeSource());
+manager.setDestination(new CSVDestination());
+
+const result = await manager.import();
+// ✅ result.data = CSV string ready to download
+```
+
+### Example 4: KV → Stripe (restore from backup)
+
+```javascript
+manager.setSource(new KVSource());
+manager.setDestination(new StripeDestination());
+await manager.import();
+// ✅ Restored products to Stripe from KV backup
 ```
 
 ### Import with Snake Assignment
@@ -125,12 +163,22 @@ All destinations must implement:
 ## Destinations
 
 ### StripeDestination
-- Writes: Creates Stripe products
-- Clears: Deletes all products
+- **Writes:** Creates Stripe products + prices + payment links
+- **Clears:** Deletes all products from Stripe
+- **Use for:** Uploading new inventory, restoring from backup
 
 ### KVDestination
-- Writes: Syncs from Stripe to KV
-- Clears: Not implemented (manual)
+- **Writes:** Stores products in Cloudflare KV
+- **Clears:** Clears KV namespace
+- **Use for:** Fast product lookup, caching
+
+### CSVDestination (Future)
+- **Writes:** Generates CSV file from products
+- **Use for:** Export catalog, backups, reports
+
+### FileSystemDestination (Future)
+- **Writes:** Saves to JSON file
+- **Use for:** Local backups, development
 
 ## Rules
 
