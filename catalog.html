@@ -234,8 +234,25 @@
         
         console.log('✅ After species filter:', filteredProducts.length);
         
+        // Deduplicate by name (keep newest based on ID)
+        const uniqueProducts = [];
+        const seenNames = new Set();
+        
+        // Sort by ID descending (newer products have higher IDs typically)
+        const sorted = [...filteredProducts].sort((a, b) => b.id.localeCompare(a.id));
+        
+        for (const product of sorted) {
+          const name = product.name?.toLowerCase();
+          if (name && !seenNames.has(name)) {
+            seenNames.add(name);
+            uniqueProducts.push(product);
+          }
+        }
+        
+        console.log('✅ After deduplication:', uniqueProducts.length, '(removed', filteredProducts.length - uniqueProducts.length, 'duplicates)');
+        
         // All Stripe products are "real" (not virtual), available (active=true)
-        const realProducts = filteredProducts.filter(p => p.active !== false);
+        const realProducts = uniqueProducts.filter(p => p.active !== false);
         const virtualProducts = []; // No virtual products from Stripe
         
         console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
