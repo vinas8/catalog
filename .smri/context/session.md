@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-14 13:44:46 UTC  
-**Commit:** eb58826  
+**Generated:** 2026-01-14 13:56:57 UTC  
+**Commit:** f98dca0  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,10 @@
 
 ### Git Log (Last 20 commits)
 ```
+f98dca0 feat: Add product deduplication by name
+f5ff601 fix: Allow products to show without Stripe payment links
+13ef918 fix: Show all products in catalog and add cache clear button
+2a8de19 fix: SMRI cleanup - remove violation files and fix demo flow
 eb58826 feat: Add demo module with split-screen scenario system
 e349009 feat: Enhance critical rules display in startup output
 f1ae2a6 fix: Remove time-based cache expiration
@@ -25,24 +29,12 @@ e19c920 fix: Add directory tree check to hybrid protocol
 e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks)
 0421734 docs: Add session context and smart start instructions
 9d6c643 feat: Add UI component coverage tracking
-945c33d docs: Add README files to clarify components vs modules
-a5c3d46 feat: Add SplitScreenDemo component and update debug hub stats
-0613f3e docs: Update scripts README with SMRI command structure
-175522f feat: Add SMRI command aliases to npm scripts
 ```
 
 ### Git Status
 ```
- D .smri/AI-START-HERE.md
- D .smri/SESSION-START.md
- D .smri/SMRI-COMMAND.md
- D .smri/SMRI-COMMANDS.md
  M .smri/context/git-log.txt
- M .smri/context/health.txt
- M .smri/context/modules.txt
  M .smri/context/session.md
- M .smri/context/tree.txt
- M demo.html
 ```
 
 ---
@@ -438,5 +430,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-14 13:44:47 UTC  
+**Context cached at:** 2026-01-14 13:56:58 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`
