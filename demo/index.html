@@ -20,9 +20,9 @@
       scenarios: [
         {
           icon: '🛒',
-          title: 'Complete Purchase Flow',
-          smri: 'S1.1,2,3,4,5.01',
-          description: 'Import → Browse → Purchase → Game',
+          title: 'Shop & Browse Products',
+          smri: 'S1.1,2,3.01',
+          description: 'Browse catalog → View details → See pricing',
           steps: [
             {
               title: 'Browse Catalog',
@@ -31,46 +31,34 @@
               action: async (demo) => {
                 demo.log('📦 Loading product catalog...', 'info');
                 await demo.wait(2000);
-                demo.log('✅ Catalog loaded! Browse available snakes below', 'success');
+                demo.log('✅ Products loaded! You should see snakes below', 'success');
+                demo.log('💰 Prices: €180-€650 depending on morph', 'info');
               }
             },
             {
               title: 'View Snake Details',
-              description: 'Click any snake to see details modal',
+              description: 'Click "View Details" button',
               url: '/catalog.html',
               action: async (demo) => {
-                demo.log('⏳ Waiting for products to load...', 'info');
+                demo.log('⏳ Waiting for products to render...', 'info');
                 await demo.wait(2000);
-                demo.log('💡 Click on any snake card to see details', 'info');
-                demo.log('ℹ️ Look for "View Details" button on any product', 'info');
-                await demo.wait(1500);
+                demo.log('👉 Click "ℹ️ View Details" button on any snake', 'info');
+                demo.log('📋 Modal should open with full info:', 'info');
+                demo.log('   • Species & morph details', 'info');
+                demo.log('   • Physical stats (size, weight)', 'info');
+                demo.log('   • Genetics information', 'info');
+                await demo.wait(3000);
               }
             },
             {
-              title: 'Add to Cart',
-              description: 'Add snake to shopping cart',
+              title: 'Check Pricing',
+              description: 'View product prices',
               url: '/catalog.html',
               action: async (demo) => {
-                demo.log('💡 Click "Add to Cart" button', 'info');
+                demo.log('💶 All products show prices', 'success');
+                demo.log('⚠️ Note: Stripe checkout requires payment links', 'info');
+                demo.log('   (Products need Stripe links for live checkout)', 'info');
                 await demo.wait(2000);
-              }
-            },
-            {
-              title: 'Checkout',
-              description: 'Complete Stripe payment',
-              url: '/catalog.html#checkout',
-              action: async (demo) => {
-                demo.log('💳 Use test card: 4242 4242 4242 4242', 'info');
-                await demo.wait(2000);
-              }
-            },
-            {
-              title: 'View in Game',
-              description: 'Snake appears in collection',
-              url: '/game.html',
-              action: async (demo) => {
-                demo.log('🎉 Snake purchased successfully!', 'success');
-                await demo.wait(1000);
               }
             }
           ]
