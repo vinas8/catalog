@@ -108,17 +108,17 @@
       const soldClass = isSold ? 'sold' : '';
       const soldBadge = isSold ? '<span class="sold-badge">SOLD</span>' : '';
       
-      // Always show buy button if we have a checkout URL (price defaults to 150)
-      const canBuy = checkoutUrl && price;
+      // Always show buy button if we have price (even without Stripe link for demo)
+      const canBuy = price && (checkoutUrl || !isSold);
       const buyButton = isSold ? 
         '<button class="primary-btn" disabled style="opacity: 0.5;">Sold Out</button>' :
-        canBuy ? 
+        checkoutUrl ? 
           `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
             localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
             localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
             localStorage.setItem('serpent_user_hash', '${userHash}');
           ">💳 Buy Now - €${priceFormatted}</a>` :
-          '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
+          `<button class="primary-btn" disabled style="opacity: 0.7;">€${priceFormatted} (Demo - Link Needed)</button>`;
       
       return `
         <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
