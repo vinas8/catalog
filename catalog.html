@@ -31,6 +31,7 @@
         <option value="ball_python">Ball Python</option>
         <option value="corn_snake">Corn Snake</option>
       </select>
+      <button onclick="localStorage.removeItem('serpent_products_cache'); localStorage.removeItem('serpent_products_cache_time'); location.reload();" style="margin-left: 10px;">🔄 Clear Cache</button>
     </div>
 
     <!-- Available Real Snakes -->
@@ -244,6 +245,9 @@
         const sold = []; // Track sold separately (would need KV for this)
         
         console.log('✅ Available:', available.length, 'Sold:', sold.length);
+        
+        // Debug: Show all product names
+        console.log('📦 Product names:', available.map(p => p.name).join(', '));
         
         const userHash = getUserHash();
         
