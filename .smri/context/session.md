@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-14 13:56:57 UTC  
-**Commit:** f98dca0  
+**Generated:** 2026-01-14 14:11:55 UTC  
+**Commit:** 08e0a98  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,11 @@
 
 ### Git Log (Last 20 commits)
 ```
+08e0a98 fix: Add catalog view step after import in demo
+73b10a1 fix: Remove duplicate test-cache file
+76a758d refactor: Enforce proper endpoint structure
+787a3e4 docs: Add config module documentation
+ba1a1fd chore: Update SMRI context cache after deduplication fix
 f98dca0 feat: Add product deduplication by name
 f5ff601 fix: Allow products to show without Stripe payment links
 13ef918 fix: Show all products in catalog and add cache clear button
@@ -24,16 +29,12 @@ f1ae2a6 fix: Remove time-based cache expiration
 58c6481 feat: Add context flag system for fast .smri loads
 ea90e3b fix: Add explicit instruction to run startup script first
 2922e34 feat: Create unified smri-startup.sh script
-c49bca9 docs: Add AI-START-HERE.md with explicit .smri load instructions
-e19c920 fix: Add directory tree check to hybrid protocol
-e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks)
-0421734 docs: Add session context and smart start instructions
-9d6c643 feat: Add UI component coverage tracking
 ```
 
 ### Git Status
 ```
  M .smri/context/git-log.txt
+ M .smri/context/health.txt
  M .smri/context/session.md
 ```
 
@@ -71,16 +72,16 @@ e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks
 │   ├── README.md
 │   ├── csv-import-manager.js
 │   ├── debug-guard.js
-│   ├── demo-split-screen.html
 │   ├── index.html
 │   ├── mcp-test-report.html
 │   ├── mobile-console.js
-│   ├── purchase-flow-demo.html
+│   ├── redirect.html
 │   ├── smri-runner.html
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
-│   ├── test-runner-simple.html
-│   └── visual-demo.html
+│   └── test-runner-simple.html
+├── demo
+│   └── index.html
 ├── dex
 │   ├── modules
 │   ├── archive-index-old.html
@@ -403,11 +404,11 @@ TestRenderer.js
 [32m✅[0m Version Consistency
 [32m✅[0m Module Structure
 [32m✅[0m SMRI Structure
-[31m❌[0m Duplicate Files
+[32m✅[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 4/6 (67%)[0m
+[36mScore: 5/6 (83%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -430,5 +431,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-14 13:56:58 UTC  
+**Context cached at:** 2026-01-14 14:11:56 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

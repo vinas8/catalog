@@ -1,3 +1,4 @@
+08e0a98 fix: Add catalog view step after import in demo
 73b10a1 fix: Remove duplicate test-cache file
 76a758d refactor: Enforce proper endpoint structure
 787a3e4 docs: Add config module documentation
@@ -17,4 +18,3 @@ f1ae2a6 fix: Remove time-based cache expiration
 58c6481 feat: Add context flag system for fast .smri loads
 ea90e3b fix: Add explicit instruction to run startup script first
 2922e34 feat: Create unified smri-startup.sh script
-c49bca9 docs: Add AI-START-HERE.md with explicit .smri load instructions
