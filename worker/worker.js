@@ -1734,11 +1734,54 @@ async function handleUploadProducts(request, env, corsHeaders) {
 
         const price = await priceResponse.json();
 
+        // Create payment link
+        const linkData = new URLSearchParams({
+          'line_items[0][price]': price.id,
+          'line_items[0][quantity]': '1',
+          'after_completion[type]': 'redirect',
+          'after_completion[redirect][url]': 'https://vinas8.github.io/catalog/success.html'
+        });
+
+        const linkResponse = await fetch('https://api.stripe.com/v1/payment_links', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: linkData
+        });
+
+        if (!linkResponse.ok) {
+          results.push({ 
+            name: product.name, 
+            success: false, 
+            error: 'Payment link creation failed' 
+          });
+          continue;
+        }
+
+        const paymentLink = await linkResponse.json();
+
+        // Update product metadata with payment link
+        const metadataUpdate = new URLSearchParams({
+          'metadata[stripe_link]': paymentLink.url
+        });
+
+        await fetch(`https://api.stripe.com/v1/products/${stripeProduct.id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: metadataUpdate
+        });
+
         results.push({ 
           name: product.name, 
           success: true, 
           product_id: stripeProduct.id,
-          price_id: price.id 
+          price_id: price.id,
+          stripe_link: paymentLink.url
         });
       } catch (err) {
         results.push({ name: product.name, success: false, error: err.message });
@@ -1796,7 +1839,13 @@ async function handleSyncStripeToKV(env, corsHeaders) {
     const results = [];
     for (const product of products) {
       try {
-        await env.PRODUCTS.put(`product:${product.id}`, JSON.stringify(product));
+        // Enrich product with stripe_link from metadata
+        const enrichedProduct = {
+          ...product,
+          stripe_link: product.metadata?.stripe_link || null
+        };
+        
+        await env.PRODUCTS.put(`product:${product.id}`, JSON.stringify(enrichedProduct));
         results.push({ id: product.id, name: product.name, success: true });
       } catch (err) {
         results.push({ id: product.id, name: product.name, success: false, error: err.message });
