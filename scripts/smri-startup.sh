@@ -1,44 +1,60 @@
 #!/bin/bash
-# SMRI Startup Script - Complete Session Load
+# SMRI Startup Script - Smart Context Loading
 # Auto-runs when user types .smri
-# Combines: context check + git + tree + health + briefing
+# Uses cached context from .smri/context/ for fast loads
 
 set -e
 
 PROJECT_ROOT="/root/catalog"
 cd "$PROJECT_ROOT"
 
+CONTEXT_DIR=".smri/context"
+UPDATE_SCRIPT="scripts/smri-update-context.sh"
+
 echo "🐍 Serpent Town - SMRI Startup"
 echo "================================"
 echo ""
 
 # ============================================
-# PHASE 1: Check for Recent Context
+# PHASE 1: Check Context Cache
 # ============================================
-echo "📋 Phase 1: Checking for recent session context..."
+echo "📋 Phase 1: Checking context cache..."
 echo ""
 
-CONTEXT_FILE=$(ls -t .smri/logs/*context.md 2>/dev/null | head -1)
-CONTEXT_AGE=""
-LOAD_MODE="full"
+NEED_UPDATE=false
 
-if [ -n "$CONTEXT_FILE" ]; then
-    CONTEXT_DATE=$(stat -c %Y "$CONTEXT_FILE" 2>/dev/null || stat -f %m "$CONTEXT_FILE" 2>/dev/null)
-    CURRENT_DATE=$(date +%s)
-    CONTEXT_AGE=$(( (CURRENT_DATE - CONTEXT_DATE) / 3600 ))
+# Check if context directory exists
+if [ ! -d "$CONTEXT_DIR" ]; then
+    echo "ℹ️  No context cache found"
+    NEED_UPDATE=true
+# Check if LAST_UPDATE exists
+elif [ ! -f "$CONTEXT_DIR/LAST_UPDATE.txt" ]; then
+    echo "ℹ️  Context cache incomplete"
+    NEED_UPDATE=true
+else
+    # Check cache age
+    source "$CONTEXT_DIR/LAST_UPDATE.txt"
+    CURRENT_TIME=$(date +%s)
+    CONTEXT_AGE=$(( (CURRENT_TIME - TIMESTAMP) / 3600 ))
     
     if [ "$CONTEXT_AGE" -lt 24 ]; then
-        LOAD_MODE="hybrid"
-        echo "✅ Found recent context: $(basename $CONTEXT_FILE)"
-        echo "   Age: ${CONTEXT_AGE} hours (< 24 hours)"
-        echo "   Mode: HYBRID (context + dynamic checks)"
+        echo "✅ Context cache fresh (${CONTEXT_AGE}h old)"
+        echo "   Last update: $DATE $TIME UTC"
+        echo "   Commit: $COMMIT_SHORT"
+        NEED_UPDATE=false
     else
-        echo "⚠️  Found context but > 24 hours old (${CONTEXT_AGE}h)"
-        echo "   Mode: FULL briefing"
+        echo "⚠️  Context cache stale (${CONTEXT_AGE}h old)"
+        NEED_UPDATE=true
     fi
+fi
+
+# Update cache if needed
+if [ "$NEED_UPDATE" = true ]; then
+    echo "   Regenerating context cache..."
+    echo ""
+    bash "$UPDATE_SCRIPT"
 else
-    echo "ℹ️  No recent context found"
-    echo "   Mode: FULL briefing"
+    echo "   Using cached context"
 fi
 
 echo ""
@@ -46,163 +62,55 @@ echo "================================"
 echo ""
 
 # ============================================
-# PHASE 2: Dynamic Checks (ALWAYS RUN)
+# PHASE 2: Load Session Context
 # ============================================
-echo "📊 Phase 2: Current State Checks"
-echo "================================"
+echo "📄 Phase 2: Loading session context..."
 echo ""
 
-# Git Log
-echo "🔍 Git Log (last 5 commits):"
-git log --oneline -5 --color=always 2>/dev/null || echo "  ⚠️  Git not available"
+# Display the combined session context
+cat "$CONTEXT_DIR/session.md"
+
 echo ""
-
-# Git Status
-echo "🔍 Git Status:"
-if git status --short 2>/dev/null | grep -q .; then
-    git status --short
-    echo ""
-else
-    echo "  ✅ No uncommitted changes"
-    echo ""
-fi
-
-# Directory Tree
-echo "🔍 Directory Structure:"
-if command -v tree >/dev/null 2>&1; then
-    tree -L 2 -I 'node_modules' | head -30
-    echo "  ... (truncated)"
-else
-    ls -la | head -20
-    echo "  ... (tree not available, showing ls)"
-fi
-echo ""
-
-# Quick Health Check
-echo "🔍 Health Check:"
-if [ -f "package.json" ]; then
-    echo "  Running quick health check..."
-    npm run dev:check 2>&1 | tail -20 || echo "  ⚠️  Health check unavailable"
-else
-    echo "  ⚠️  package.json not found"
-fi
-echo ""
-
 echo "================================"
 echo ""
 
 # ============================================
-# PHASE 3: Load Context or Full Briefing
+# PHASE 3: Quick Reference
 # ============================================
-
-if [ "$LOAD_MODE" = "hybrid" ]; then
-    # HYBRID MODE: Load context + compare
-    echo "📍 Phase 3: Loading Session Context"
-    echo "================================"
-    echo ""
-    
-    CONTEXT_BASENAME=$(basename $CONTEXT_FILE)
-    CONTEXT_DATE=$(echo $CONTEXT_BASENAME | cut -d'-' -f1-3)
-    
-    echo "📄 Context File: $CONTEXT_BASENAME"
-    echo "📅 Saved On: $CONTEXT_DATE"
-    echo ""
-    cat "$CONTEXT_FILE"
-    echo ""
-    echo "================================"
-    echo ""
-    
-    # Compare notice
-    echo "⚡ Dynamic checks completed above"
-    echo "   Compare current state with context to see changes"
-    echo ""
-    
-else
-    # FULL MODE: Complete briefing
-    echo "📍 Phase 3: Full SMRI Briefing"
-    echo "================================"
-    echo ""
-    
-    # Version
-    echo "📦 Project Version:"
-    cat package.json | grep -A 2 '"version"' || echo "  ⚠️  Version not found"
-    echo ""
-    
-    # SMRI Directory
-    echo "📁 .smri Directory:"
-    ls -la .smri/ | grep -v "^total" | wc -l | xargs echo "  Files:"
-    ls -la .smri/*.md 2>/dev/null | awk '{print "  - " $9}' || echo "  (no files)"
-    echo ""
-    
-    # Load Key Docs
-    echo "📖 Loading Documentation..."
-    echo ""
-    
-    if [ -f ".smri/INDEX.md" ]; then
-        echo "  ✅ .smri/INDEX.md ($(wc -l < .smri/INDEX.md) lines)"
-        echo "     Loading first 50 lines..."
-        head -50 .smri/INDEX.md
-        echo "     ... (truncated, $(wc -l < .smri/INDEX.md) lines total)"
-        echo ""
-    fi
-    
-    if [ -f "README.md" ]; then
-        echo "  ✅ README.md ($(wc -l < README.md) lines)"
-        echo "     Loading first 50 lines..."
-        head -50 README.md
-        echo "     ... (truncated)"
-        echo ""
-    fi
-    
-    if [ -f "src/SMRI.md" ]; then
-        echo "  ✅ src/SMRI.md ($(wc -l < src/SMRI.md) lines)"
-        echo ""
-    fi
-    
-    # Module Overview
-    echo "📦 Modules:"
-    if [ -d "src/modules" ]; then
-        ls -d src/modules/*/ 2>/dev/null | wc -l | xargs echo "  Found modules:"
-        ls -d src/modules/*/ 2>/dev/null | xargs -n 1 basename | sed 's/^/  - /'
-    fi
-    echo ""
-    
-    # Components Overview  
-    echo "🎨 Components:"
-    if [ -d "src/components" ]; then
-        ls src/components/*.js 2>/dev/null | wc -l | xargs echo "  Found components:"
-        ls src/components/*.js 2>/dev/null | xargs -n 1 basename | sed 's/^/  - /'
-    fi
-    echo ""
-    
-    echo "================================"
-    echo ""
-fi
-
 # ============================================
-# PHASE 4: Summary & Prompt
+# PHASE 3: Quick Reference
 # ============================================
 echo "✅ SMRI Startup Complete"
 echo "================================"
 echo ""
-
-if [ "$LOAD_MODE" = "hybrid" ]; then
-    echo "📍 Loaded from: $(basename $CONTEXT_FILE)"
-    echo "   Age: ${CONTEXT_AGE} hours"
-    echo "   Dynamic checks: ✅ Complete"
-    echo ""
-    echo "🎯 Continue where we left off or start new task?"
-else
-    echo "📍 Full briefing loaded"
-    echo "   Version: $(cat package.json | grep '"version"' | cut -d'"' -f4)"
-    echo "   Documentation: ✅ Loaded"
-    echo "   Project state: ✅ Checked"
-    echo ""
-    echo "🎯 Where did we leave off?"
-fi
-
+echo "📚 Quick Reference"
+echo "================================"
+echo ""
+echo "🎯 Commands:"
+echo "  .smri         - Reload (regenerates if > 24h old)"
+echo "  .smri update  - Force regenerate context cache"
+echo "  .smri save    - Save session notes to logs/"
+echo ""
+echo "📐 SMRI Format: S{M}.{RRR}.{II}"
+echo "  M   = Module (0-9 internal, 10+ external)"
+echo "  RRR = Relations (comma: 1,2,3)"
+echo "  II  = Iteration (01-99)"
+echo "  Example: S2.0,6.01 = Game module, uses common+testing"
+echo ""
+echo "🚨 Critical Rules:"
+echo "  ❌ NEVER touch: webhook-server.py, upload-server.py"
+echo "  ✅ Check first: git log, .smri/logs/YYYY-MM-DD.md"
+echo "  ✅ Deploy worker: cd worker && bash cloudflare-deploy.sh"
+echo "  ✅ Only facades: Modules import ONLY from index.js"
+echo ""
+echo "📁 Context Cache:"
+echo "  All loaded docs cached in .smri/context/"
+echo "  Read full files: cat .smri/context/{INDEX.md,README.md,SMRI.md,etc}"
 echo ""
 echo "================================"
+echo ""
+echo "🎯 Ready to work! What should we do?"
+echo ""
 
 # Return to allow AI to take over
 exit 0

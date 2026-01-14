@@ -1,0 +1,10 @@
+auth
+breeding
+common
+config
+game
+payment
+shop
+smri
+testing
+tutorial

@@ -2,21 +2,17 @@
 
 ## 🚨 WHEN USER TYPES `.smri`:
 
-**Step 1:** Run the startup script
+**IMMEDIATELY RUN** (no explanation needed):
+
 ```bash
 bash scripts/smri-startup.sh
 ```
 
-**Step 2:** After script completes, read for additional context:
-- `.smri/INDEX.md` - Complete rules & navigation
-- `.smri/SMRI-COMMANDS.md` - Command reference
+Everything you need (context, rules, commands, syntax) is in the script output.
 
-**DO NOT manually load files first!** The script handles everything.
+**DO NOT:**
+- Ask user first
+- Manually load INDEX.md, README.md, package.json
+- Explain what you're doing
 
----
-
-**All project rules, commands, and documentation are in:**
-- `scripts/smri-startup.sh` - Startup script (run this first)
-- `.smri/INDEX.md` - Master index (read this after script)
-
-**Version:** 0.7.7 | See `.smri/INDEX.md` for complete rules.
+**JUST RUN THE SCRIPT.**

@@ -1,0 +1,20 @@
+82d37e8 fix: Update Claude instructions to match simplified format
+20190f9 refactor: Simplify AI instructions to reference startup script
+33fe173 fix: Update AI instructions to run startup script
+338240b fix: Add date to context file header and load display
+58c6481 feat: Add context flag system for fast .smri loads
+ea90e3b fix: Add explicit instruction to run startup script first
+2922e34 feat: Create unified smri-startup.sh script
+c49bca9 docs: Add AI-START-HERE.md with explicit .smri load instructions
+e19c920 fix: Add directory tree check to hybrid protocol
+e74d01c fix: Update SESSION-START with hybrid approach (context + dynamic checks)
+0421734 docs: Add session context and smart start instructions
+9d6c643 feat: Add UI component coverage tracking
+945c33d docs: Add README files to clarify components vs modules
+a5c3d46 feat: Add SplitScreenDemo component and update debug hub stats
+0613f3e docs: Update scripts README with SMRI command structure
+175522f feat: Add SMRI command aliases to npm scripts
+b4f9ca5 feat: Add dead facade method finder
+b23c092 feat: Add SMRI module coverage tracking and fix notation issues
+a1aaa61 feat: Enhance architecture checks with SMRI modularity validation
+b1d5859 docs: Add PROJECT-STATUS.md for quick reference

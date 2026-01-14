@@ -1,0 +1,180 @@
+.
+├── admin
+│   ├── account.html
+│   ├── import.html
+│   └── index.html
+├── calc
+│   ├── calculator.html
+│   └── index.html
+├── cloudflare
+├── data
+│   ├── backup-20260102-192725
+│   ├── cache
+│   ├── genetics
+│   ├── index.html
+│   ├── products-real-test.json
+│   └── snakes-collection.csv
+├── debug
+│   ├── archive
+│   ├── archive-pre-executor-focus
+│   ├── archive-pre-v0.8.0
+│   ├── breeding-calculator
+│   ├── calc
+│   ├── modules
+│   ├── releases
+│   ├── templates
+│   ├── tools
+│   ├── README.md
+│   ├── csv-import-manager.js
+│   ├── debug-guard.js
+│   ├── demo-split-screen.html
+│   ├── index.html
+│   ├── mcp-test-report.html
+│   ├── mobile-console.js
+│   ├── purchase-flow-demo.html
+│   ├── smri-runner.html
+│   ├── smri-scenarios.js
+│   ├── smri-tests.js
+│   ├── test-runner-simple.html
+│   └── visual-demo.html
+├── dex
+│   ├── modules
+│   ├── archive-index-old.html
+│   ├── index.html
+│   ├── pokedex-style.html
+│   ├── simple-grid.html
+│   └── trait-style.html
+├── docs
+│   ├── archive
+│   ├── customer
+│   ├── owner
+│   ├── DEBUG-CONSOLE.md
+│   ├── DEBUG-PANEL.md
+│   ├── GENETICS-MODULE-MAP.md
+│   └── USER-SYSTEM.md
+├── game
+│   └── index.html
+├── img
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   ├── icon-collection.png
+│   ├── icon-game.png
+│   ├── icon-gen.html
+│   ├── icon-shop.png
+│   └── super-banana.jpg
+├── prompts
+│   ├── README.md
+│   ├── ai-avatar-pipeline.md
+│   ├── api-documentation-for-copilot.md
+│   ├── evaluate-worker-deployment.md
+│   ├── extract_wisdom.md
+│   └── system_context.md
+├── scripts
+│   ├── _archive
+│   ├── data-extraction
+│   ├── MIGRATION-GUIDE.md
+│   ├── README.md
+│   ├── check-architecture.cjs
+│   ├── check-consistency.cjs
+│   ├── deploy-worker-api.sh
+│   ├── find-dead-facades.cjs
+│   ├── kv-namespace-ids.txt
+│   ├── scan-functions.cjs
+│   ├── smri-list-components.cjs
+│   ├── smri-list-functions.cjs
+│   ├── smri-list-scenarios.cjs
+│   ├── smri-list.sh
+│   ├── smri-save-context.sh
+│   ├── smri-startup.sh
+│   ├── smri-update-context.sh
+│   ├── upload-test-products.sh
+│   └── validate-test-data.cjs
+├── shop
+│   ├── collection.html
+│   ├── index.html
+│   └── success.html
+├── smri-game
+│   ├── README.md
+│   └── index.html
+├── src
+│   ├── components
+│   ├── config
+│   ├── data
+│   ├── modules
+│   ├── styles
+│   ├── utils
+│   ├── PUBLIC-API.md
+│   └── SMRI.md
+├── tests
+│   ├── api
+│   ├── collections
+│   ├── e2e
+│   ├── external
+│   ├── integration
+│   ├── modules
+│   ├── slow
+│   ├── smri
+│   ├── snapshot
+│   ├── snapshots
+│   ├── unit
+│   ├── CONSTANTS-REFACTOR-COMPLETE.md
+│   ├── TEST-CONSTANTS-GUIDE.md
+│   ├── breeding-calculator-curl.sh
+│   ├── breeding-calculator.test.js
+│   ├── run-all.js
+│   ├── test-constants.js
+│   └── test-runner.js
+├── tutorial
+│   ├── farm.html
+│   ├── index.html
+│   └── static.html
+├── worker
+│   ├── handlers
+│   ├── utils
+│   ├── README.md
+│   ├── SETUP.md
+│   ├── api-deploy.sh
+│   ├── cloudflare-deploy.sh
+│   ├── config.js
+│   ├── create-product-status-kv.sh
+│   ├── deploy-with-kv.sh
+│   ├── deploy.sh
+│   ├── email-service.js
+│   ├── metadata.json
+│   ├── package.json
+│   ├── test-worker.js
+│   ├── worker.js
+│   └── wrangler.toml
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── CREDITS.md
+├── GENETICS-MODULE-MAP.md
+├── PROJECT-STATUS.md
+├── README.md
+├── STRUCTURE.md
+├── account.html
+├── admin-kv.html
+├── calculator-integrated.html
+├── calculator.html
+├── catalog.html
+├── collection.html
+├── debug-redirect.html
+├── dex.html
+├── game.html
+├── import.html
+├── index.html
+├── learn-farm.html
+├── learn-static.html
+├── learn.html
+├── manifest.json
+├── offline.html
+├── package-lock.json
+├── package.json
+├── src-structure.txt
+├── styles.css
+├── success.html
+├── sw.js
+├── test-browser.cjs
+└── test-cache-inline.html
+
+55 directories, 123 files
