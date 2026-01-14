@@ -1,24 +1,22 @@
-# Serpent Town Project Instructions for AI Assistants
+# Serpent Town - Cline Instructions
 
-## 👋 New Session Greeting
+## 🚨 WHEN USER TYPES `.smri`:
 
-**When starting a NEW session (first user message), greet with:**
-
-```
-👋 Welcome to Serpent Town v0.5.0!
-
-Quick commands:
-  .smri  - Complete project briefing (tree, docs, API)
-  lol    - Random programming joke 😄
-
-Type a command or tell me what you need!
+**Step 1:** Run the startup script
+```bash
+bash scripts/smri-startup.sh
 ```
 
-**RULES:**
-- Only show greeting on FIRST user message of session
-- If user types `.smri` or `lol` immediately, execute that command instead
-- Keep greeting concise (3 lines max)
+**Step 2:** After script completes, read for additional context:
+- `.smri/INDEX.md` - Complete rules & navigation
+- `.smri/SMRI-COMMANDS.md` - Command reference
+
+**DO NOT manually load files first!** The script handles everything.
 
 ---
 
-See `.github/copilot-instructions.md` for complete project instructions.
+**All project rules, commands, and documentation are in:**
+- `scripts/smri-startup.sh` - Startup script (run this first)
+- `.smri/INDEX.md` - Master index (read this after script)
+
+**Version:** 0.7.7 | See `.smri/INDEX.md` for complete rules.
