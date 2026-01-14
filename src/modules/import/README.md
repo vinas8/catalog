@@ -4,64 +4,96 @@ Modular import system for Serpent Town catalog management.
 
 ## Primary Workflow
 
-**CSV is the source of truth** - reliable, version-controlled, easy to edit.
+**KV is the source of truth** - all website data lives here.  
+**Stripe is payment processor** - handles checkout only.  
+**LocalStorage is cache** - mirrors KV for fast access.
 
 ```
 ┌──────────────────────────────────────────────┐
-│  CSV File (Source of Truth)                 │
-│  - Easy to edit in Excel/Google Sheets      │
+│  CSV File (Data Entry)                       │
+│  - Easy to edit in Excel/Google Sheets       │
 │  - Version controlled in Git                 │
-│  - Reliable backup format                   │
 └──────────────┬───────────────────────────────┘
                │
                ▼
        ┌───────────────┐
-       │ ImportManager │
+       │      KV       │ ★ SOURCE OF TRUTH
+       │  (CloudFlare) │    All website data
        └───┬───────┬───┘
            │       │
            ▼       ▼
-    ┌─────────┐ ┌────┐
-    │ Stripe  │ │ KV │
-    │ +Links  │ │    │
-    └─────────┘ └────┘
+    ┌─────────┐ ┌──────────────┐
+    │ Stripe  │ │LocalStorage  │
+    │ Payment │ │   (Cache)    │
+    │  Links  │ │              │
+    └────┬────┘ └──────────────┘
+         │
+         ▼
+    Stripe Webhook
+         │
+         ▼
+    KV (update ownership)
 ```
 
-**Main Flow:** CSV → Stripe (creates products + prices + payment links) → KV
+**Main Flow:**  
+1. CSV → KV (import data)
+2. KV → Stripe (create payment products + links)
+3. Stripe → KV (save payment links back)
+4. KV → LocalStorage (cache for fast frontend)
+5. Purchase → Stripe webhook → KV (update ownership)
 
 ## Architecture
 
 ```
 Sources (READ)          Pipeline          Destinations (WRITE)
-├── CSVSource ★        ┌─────────────┐    ├── StripeDestination ★
-├── StripeSource   ──► │ImportManager│ ──►├── KVDestination ★
-├── KVSource           └─────────────┘    ├── FileSystemDestination
-└── APISource                             └── DatabaseDestination
+├── CSVSource ★        ┌─────────────┐    ├── KVDestination ★
+├── StripeSource   ──► │ImportManager│ ──►├── StripeDestination
+├── KVSource           └─────────────┘    ├── LocalStorageDestination
+└── APISource                             └── FileSystemDestination
 
 ★ = Primary workflow
 ```
+
+**Data Flow:**
+```
+CSV → KV → Stripe → KV (with links) → LocalStorage
+```
+
+**Responsibilities:**
+- **KV**: Source of truth for all website data
+- **Stripe**: Payment processing + checkout links
+- **LocalStorage**: Fast cache (mirrors KV)
 
 ### Flow Examples
 
 **Primary (Recommended):**
 ```
-CSV → Stripe → KV              (Main workflow: import & sync)
+CSV → KV → Stripe → KV (with payment links) → LocalStorage
+  1      2      3              4                    5
 ```
+
+**Step-by-step:**
+1. Import CSV to KV (source of truth)
+2. Export KV to Stripe (create payment products)
+3. Stripe creates payment links
+4. Sync payment links back to KV
+5. Cache KV to LocalStorage
 
 **Alternative Flows:**
 ```
-CSV → KV                       (Direct import, skip Stripe)
-CSV → FileSystem               (Export to JSON backup)
-Stripe → KV                    (Sync existing products)
-KV → Stripe                    (Restore from backup)
-Stripe → CSV                   (Export catalog for editing)
+CSV → KV                       (Direct import, no Stripe needed)
+KV → Stripe                    (Create payment products)
+Stripe → KV                    (Sync payment links/status)
+KV → LocalStorage              (Update cache)
+KV → CSV                       (Export backup)
 ```
 
-**Why CSV First?**
-- ✅ Easy to edit (Excel, Google Sheets, etc.)
-- ✅ Version controlled (Git tracks changes)
-- ✅ Reliable backup format
-- ✅ No API rate limits or dependencies
-- ✅ Human-readable and auditable
+**Why KV is Source of Truth?**
+- ✅ All website data in one place
+- ✅ Fast global access (CloudFlare CDN)
+- ✅ Survives Stripe rate limits
+- ✅ Can work without Stripe (testing, demos)
+- ✅ LocalStorage mirrors KV (not Stripe)
 
 **Key Concept:** Sources and Destinations are **independent**  
 - CSV can be a **SOURCE** (read from file)
