@@ -177,7 +177,7 @@ To read any file: \`cat .smri/context/{filename}\`
 ---
 
 **Context cached at:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")  
-**Valid until:** $(date -u -d "+24 hours" +"%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || date -u -v +24H +"%Y-%m-%d %H:%M:%S UTC" 2>/dev/null || echo "24 hours from now")
+**To update:** Run \`bash scripts/smri-update-context.sh\`
 EOFSESSION
 
 # ============================================

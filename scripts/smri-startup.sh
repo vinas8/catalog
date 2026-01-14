@@ -1,7 +1,7 @@
 #!/bin/bash
 # SMRI Startup Script - Smart Context Loading
 # Auto-runs when user types .smri
-# Uses cached context from .smri/context/ for fast loads
+# Uses cached context from .smri/context/ if available
 
 set -e
 
@@ -21,40 +21,20 @@ echo ""
 echo "📋 Phase 1: Checking context cache..."
 echo ""
 
-NEED_UPDATE=false
-
-# Check if context directory exists
-if [ ! -d "$CONTEXT_DIR" ]; then
-    echo "ℹ️  No context cache found"
-    NEED_UPDATE=true
-# Check if LAST_UPDATE exists
-elif [ ! -f "$CONTEXT_DIR/LAST_UPDATE.txt" ]; then
-    echo "ℹ️  Context cache incomplete"
-    NEED_UPDATE=true
-else
-    # Check cache age
-    source "$CONTEXT_DIR/LAST_UPDATE.txt"
-    CURRENT_TIME=$(date +%s)
-    CONTEXT_AGE=$(( (CURRENT_TIME - TIMESTAMP) / 3600 ))
-    
-    if [ "$CONTEXT_AGE" -lt 24 ]; then
-        echo "✅ Context cache fresh (${CONTEXT_AGE}h old)"
+# Check if context exists and has session.md
+if [ -f "$CONTEXT_DIR/session.md" ]; then
+    echo "✅ Context cache found"
+    if [ -f "$CONTEXT_DIR/LAST_UPDATE.txt" ]; then
+        source "$CONTEXT_DIR/LAST_UPDATE.txt"
         echo "   Last update: $DATE $TIME UTC"
         echo "   Commit: $COMMIT_SHORT"
-        NEED_UPDATE=false
-    else
-        echo "⚠️  Context cache stale (${CONTEXT_AGE}h old)"
-        NEED_UPDATE=true
     fi
-fi
-
-# Update cache if needed
-if [ "$NEED_UPDATE" = true ]; then
-    echo "   Regenerating context cache..."
+    echo "   Using cached context"
+else
+    echo "ℹ️  No context cache found"
+    echo "   Generating fresh context..."
     echo ""
     bash "$UPDATE_SCRIPT"
-else
-    echo "   Using cached context"
 fi
 
 echo ""
@@ -87,8 +67,8 @@ echo "📚 Quick Reference"
 echo "================================"
 echo ""
 echo "🎯 Commands:"
-echo "  .smri         - Reload (regenerates if > 24h old)"
-echo "  .smri update  - Force regenerate context cache"
+echo "  .smri         - Reload (uses cache if exists)"
+echo "  .smri update  - Regenerate context cache"
 echo "  .smri save    - Save session notes to logs/"
 echo ""
 echo "📐 SMRI Format: S{M}.{RRR}.{II}"
@@ -106,6 +86,7 @@ echo ""
 echo "📁 Context Cache:"
 echo "  All loaded docs cached in .smri/context/"
 echo "  Read full files: cat .smri/context/{INDEX.md,README.md,SMRI.md,etc}"
+echo "  Update cache: bash scripts/smri-update-context.sh"
 echo ""
 echo "================================"
 echo ""
