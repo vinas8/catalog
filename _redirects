@@ -1,0 +1,13 @@
+# Clean URL routing for /en/catalog/species/morph/name
+
+# Product pages
+/*/catalog/*/*/*  /product.html  200
+
+# Morph browsing
+/*/catalog/*/*    /catalog.html  200
+
+# Species browsing  
+/*/catalog/*      /catalog.html  200
+
+# Catalog home
+/*/catalog        /catalog.html  200

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    /**
+     * 404 Handler - Acts as client-side router
+     * Redirects catalog URLs to appropriate pages
+     */
+    
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(p => p);
+    
+    // Check if this is a catalog URL
+    if (parts.length >= 2 && parts[1] === 'catalog') {
+      // /[locale]/catalog/[species]/[morph]/[name] → product page
+      if (parts.length === 5) {
+        window.location.replace('/product.html?url=' + encodeURIComponent(path));
+      }
+      // /[locale]/catalog/... → catalog with filters
+      else {
+        let query = '';
+        if (parts[2]) query += '?species=' + parts[2];
+        if (parts[3]) query += (query ? '&' : '?') + 'morph=' + parts[3];
+        window.location.replace('/catalog.html' + query);
+      }
+    }
+  </script>
+</head>
+<body>
+  <div style="max-width: 600px; margin: 4rem auto; text-align: center; padding: 2rem;">
+    <h1>404 - Page Not Found</h1>
+    <p>Redirecting to catalog...</p>
+    <p><a href="/">Go Home</a></p>
+  </div>
+</body>
+</html>

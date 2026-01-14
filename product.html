@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Loading...</title>
+  <meta name="description" id="page-description" content="">
+  
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-description" content="">
+  <meta property="og:image" id="og-image" content="">
+  <meta property="og:url" id="og-url" content="">
+  
+  <link rel="canonical" id="canonical-url" href="">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/src/utils/debug-loader.js"></script>
+  
+  <style>
+    .product-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 768px) {
+      .product-layout { grid-template-columns: 1fr; }
+    }
+    .product-image {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 120px;
+    }
+    .product-info h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .product-meta {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    .product-price {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+      margin: 1.5rem 0;
+    }
+    .product-details {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .breadcrumb {
+      margin-bottom: 1rem;
+      color: #666;
+    }
+    .breadcrumb a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .btn-buy {
+      background: #28a745;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .btn-buy:hover { background: #218838; }
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .status-available { background: #d4edda; color: #155724; }
+    .status-sold { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <script type="module" src="/src/components/Navigation.js"></script>
+  
+  <div class="product-container">
+    <div class="breadcrumb" id="breadcrumb">
+      <a href="/">Home</a> / 
+      <a href="#" id="locale-link">en</a> / 
+      <a href="#" id="catalog-link">catalog</a> / 
+      <a href="#" id="species-link">...</a> / 
+      <a href="#" id="morph-link">...</a> / 
+      <span id="name-breadcrumb">...</span>
+    </div>
+    
+    <div id="product-content">
+      <div class="loading" style="text-align: center; padding: 4rem;">
+        Loading product...
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    /**
+     * Product Page Router
+     * Handles URLs: /[locale]/catalog/[species]/[morph]/[name]
+     */
+    
+    const WORKER_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    
+    function parseProductURL() {
+      // Check URL parameter first (from 404 redirect)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlParam = urlParams.get('url');
+      const path = urlParam || window.location.pathname;
+      
+      const parts = path.split('/').filter(p => p);
+      
+      // Expected: ['en', 'catalog', 'ball-pythons', 'banana-clown', 'pudding']
+      if (parts.length < 5 || parts[1] !== 'catalog') {
+        return null;
+      }
+      
+      return {
+        locale: parts[0] || 'en',
+        species: parts[2],
+        morph: parts[3],
+        name: parts[4]
+      };
+    }
+    
+    function slugToTitle(slug) {
+      return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+    
+    async function loadProduct() {
+      const parsed = parseProductURL();
+      
+      if (!parsed) {
+        document.getElementById('product-content').innerHTML = `
+          <div style="text-align: center; padding: 4rem;">
+            <h1>404 - Product Not Found</h1>
+            <p>Invalid URL format</p>
+            <p>Expected: /[locale]/catalog/[species]/[morph]/[name]</p>
+            <a href="/">Go Home</a>
+          </div>
+        `;
+        return;
+      }
+      
+      const { locale, species, morph, name } = parsed;
+      
+      // Update breadcrumb
+      document.getElementById('locale-link').textContent = locale;
+      document.getElementById('locale-link').href = `/${locale}/catalog`;
+      document.getElementById('catalog-link').href = `/${locale}/catalog`;
+      document.getElementById('species-link').textContent = slugToTitle(species);
+      document.getElementById('species-link').href = `/${locale}/catalog/${species}`;
+      document.getElementById('morph-link').textContent = slugToTitle(morph);
+      document.getElementById('morph-link').href = `/${locale}/catalog/${species}/${morph}`;
+      document.getElementById('name-breadcrumb').textContent = slugToTitle(name);
+      
+      // Fetch products from KV
+      try {
+        const res = await fetch(`${WORKER_URL}/products`);
+        const products = await res.json();
+        
+        // Find matching product
+        const product = products.find(p => {
+          const pSpecies = (p.species || '').replace('_', '-');
+          const pMorph = (p.morph || '').toLowerCase().replace(/\s+/g, '-');
+          const pName = (p.name || '').toLowerCase().replace(/\s+/g, '-');
+          
+          return pSpecies === species && pMorph === morph && pName === name;
+        });
+        
+        if (!product) {
+          renderNotFound(parsed);
+          return;
+        }
+        
+        renderProduct(product, parsed);
+        
+      } catch (err) {
+        document.getElementById('product-content').innerHTML = `
+          <div style="text-align: center; padding: 4rem;">
+            <h1>Error Loading Product</h1>
+            <p>${err.message}</p>
+          </div>
+        `;
+      }
+    }
+    
+    function renderProduct(product, parsed) {
+      const { locale, species, morph, name } = parsed;
+      const title = `${product.name} - ${product.morph} ${slugToTitle(species)}`;
+      
+      // Update page metadata
+      document.getElementById('page-title').textContent = title;
+      document.getElementById('page-description').content = 
+        `Buy ${product.name}, a ${product.morph} ${slugToTitle(species)}. ${product.gender}, born ${product.yob}.`;
+      
+      document.getElementById('og-title').content = title;
+      document.getElementById('og-description').content = 
+        `${product.morph} ${slugToTitle(species)} - ${product.gender}, ${product.yob}`;
+      document.getElementById('og-url').content = window.location.href;
+      document.getElementById('canonical-url').href = window.location.href;
+      
+      const price = product.price || 150;
+      const status = product.status || 'available';
+      const statusBadge = status === 'available' 
+        ? '<span class="status-badge status-available">✅ Available</span>'
+        : '<span class="status-badge status-sold">❌ Sold</span>';
+      
+      const buyButton = product.stripePaymentLink 
+        ? `<button class="btn-buy" onclick="window.location.href='${product.stripePaymentLink}'">💳 Buy Now - €${price}</button>`
+        : `<button class="btn-buy" disabled style="opacity: 0.5;">Contact for Price</button>`;
+      
+      document.getElementById('product-content').innerHTML = `
+        <div class="product-layout">
+          <div>
+            <div class="product-image">🐍</div>
+          </div>
+          
+          <div class="product-info">
+            <h1>${product.name}</h1>
+            <div class="product-meta">
+              ${product.morph} • ${slugToTitle(species)} • ${statusBadge}
+            </div>
+            
+            <div class="product-price">€${price}</div>
+            
+            <div class="product-details">
+              <div class="detail-row">
+                <strong>Species:</strong>
+                <span>${slugToTitle(species)}</span>
+              </div>
+              <div class="detail-row">
+                <strong>Morph:</strong>
+                <span>${product.morph}</span>
+              </div>
+              <div class="detail-row">
+                <strong>Gender:</strong>
+                <span>${product.gender || 'Unknown'}</span>
+              </div>
+              <div class="detail-row">
+                <strong>Year of Birth:</strong>
+                <span>${product.yob || 'Unknown'}</span>
+              </div>
+              <div class="detail-row">
+                <strong>Weight:</strong>
+                <span>${product.weight ? product.weight + 'g' : 'TBD'}</span>
+              </div>
+            </div>
+            
+            ${status === 'available' ? buyButton : ''}
+            
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+              <p style="color: #666; font-size: 0.9rem;">
+                🔒 Secure checkout via Stripe<br>
+                📦 Safe shipping available<br>
+                ✅ Captive bred, quality guaranteed
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderNotFound(parsed) {
+      const { locale, species, morph } = parsed;
+      document.getElementById('product-content').innerHTML = `
+        <div style="text-align: center; padding: 4rem;">
+          <h1>🔍 Product Not Found</h1>
+          <p>We couldn't find this snake in our catalog.</p>
+          <p><a href="/${locale}/catalog/${species}/${morph}">Browse all ${slugToTitle(morph)} snakes</a></p>
+          <p><a href="/${locale}/catalog">View all products</a></p>
+        </div>
+      `;
+    }
+    
+    // Load product on page load
+    loadProduct();
+  </script>
+</body>
+</html>

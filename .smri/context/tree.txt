@@ -1,6 +1,7 @@
 .
 ├── admin
 │   ├── account.html
+│   ├── import-modular.html
 │   ├── import.html
 │   └── index.html
 ├── calc
@@ -11,6 +12,7 @@
 │   ├── backup-20260102-192725
 │   ├── cache
 │   ├── genetics
+│   ├── demo-products.json
 │   ├── index.html
 │   ├── products-real-test.json
 │   └── snakes-collection.csv
@@ -76,6 +78,7 @@
 │   ├── README.md
 │   ├── check-architecture.cjs
 │   ├── check-consistency.cjs
+│   ├── create-stripe-payment-links.js
 │   ├── deploy-worker-api.sh
 │   ├── find-dead-facades.cjs
 │   ├── kv-namespace-ids.txt
@@ -87,6 +90,7 @@
 │   ├── smri-save-context.sh
 │   ├── smri-startup.sh
 │   ├── smri-update-context.sh
+│   ├── update-products-with-links.js
 │   ├── upload-test-products.sh
 │   └── validate-test-data.cjs
 ├── shop
@@ -175,4 +179,4 @@
 ├── sw.js
 └── test-browser.cjs
 
-56 directories, 120 files
+56 directories, 124 files

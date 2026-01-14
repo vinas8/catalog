@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-14 14:11:55 UTC  
-**Commit:** 08e0a98  
+**Generated:** 2026-01-14 17:53:12 UTC  
+**Commit:** b2364d6  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,17 @@
 
 ### Git Log (Last 20 commits)
 ```
+b2364d6 feat: Update Owner Dashboard demo with complete import architecture
+aa78ab4 feat: Complete import module with modular architecture
+cefe34f refactor: Make KV the source of truth, not Stripe
+64ba386 feat: Auto-create payment links during product import
+446f5f5 docs: Establish CSV as source of truth for imports
+65f6a71 docs: Update import architecture - sources and destinations are independent
+bdad650 docs: Add payment links integration guide for import module
+ae83c97 feat: Add Stripe payment link creation scripts
+73ab2c4 fix: Update demo to match actual functionality
+d325f26 fix: Improve demo product browsing guidance
+ecf6148 chore: Update SMRI context cache after demo fix
 08e0a98 fix: Add catalog view step after import in demo
 73b10a1 fix: Remove duplicate test-cache file
 76a758d refactor: Enforce proper endpoint structure
@@ -18,24 +29,15 @@ f98dca0 feat: Add product deduplication by name
 f5ff601 fix: Allow products to show without Stripe payment links
 13ef918 fix: Show all products in catalog and add cache clear button
 2a8de19 fix: SMRI cleanup - remove violation files and fix demo flow
-eb58826 feat: Add demo module with split-screen scenario system
-e349009 feat: Enhance critical rules display in startup output
-f1ae2a6 fix: Remove time-based cache expiration
-676fb7a feat: Add smart context caching system
-82d37e8 fix: Update Claude instructions to match simplified format
-20190f9 refactor: Simplify AI instructions to reference startup script
-33fe173 fix: Update AI instructions to run startup script
-338240b fix: Add date to context file header and load display
-58c6481 feat: Add context flag system for fast .smri loads
-ea90e3b fix: Add explicit instruction to run startup script first
-2922e34 feat: Create unified smri-startup.sh script
 ```
 
 ### Git Status
 ```
  M .smri/context/git-log.txt
  M .smri/context/health.txt
+ M .smri/context/modules.txt
  M .smri/context/session.md
+ M .smri/context/tree.txt
 ```
 
 ---
@@ -46,6 +48,7 @@ ea90e3b fix: Add explicit instruction to run startup script first
 .
 ├── admin
 │   ├── account.html
+│   ├── import-modular.html
 │   ├── import.html
 │   └── index.html
 ├── calc
@@ -56,6 +59,7 @@ ea90e3b fix: Add explicit instruction to run startup script first
 │   ├── backup-20260102-192725
 │   ├── cache
 │   ├── genetics
+│   ├── demo-products.json
 │   ├── index.html
 │   ├── products-real-test.json
 │   └── snakes-collection.csv
@@ -91,8 +95,6 @@ ea90e3b fix: Add explicit instruction to run startup script first
 │   └── trait-style.html
 ├── docs
 │   ├── archive
-│   ├── customer
-│   ├── owner
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -360,6 +362,7 @@ common
 config
 demo
 game
+import
 payment
 shop
 smri
@@ -394,7 +397,7 @@ TestRenderer.js
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
 [33m⚠️[0m src/modules/game/game-controller.js: 1210 lines (max: 1000)
-[33m⚠️[0m worker/worker.js: 2153 lines (max: 1000)
+[33m⚠️[0m worker/worker.js: 2202 lines (max: 1000)
 [34m
 📦 Checking Module Exports...[0m 
 [32m✅[0m PUBLIC-API.md exists
@@ -431,5 +434,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-14 14:11:56 UTC  
+**Context cached at:** 2026-01-14 17:53:14 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catalog Router</title>
+  <script>
+    /**
+     * Client-side router for catalog URLs
+     * Redirects /en/catalog/... to appropriate pages
+     */
+    
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(p => p);
+    
+    // /[locale]/catalog → catalog.html
+    if (parts.length === 2 && parts[1] === 'catalog') {
+      window.location.replace('/catalog.html');
+    }
+    // /[locale]/catalog/[species] → catalog.html with filter
+    else if (parts.length === 3 && parts[1] === 'catalog') {
+      window.location.replace('/catalog.html?species=' + parts[2]);
+    }
+    // /[locale]/catalog/[species]/[morph] → catalog.html with filters
+    else if (parts.length === 4 && parts[1] === 'catalog') {
+      window.location.replace('/catalog.html?species=' + parts[2] + '&morph=' + parts[3]);
+    }
+    // /[locale]/catalog/[species]/[morph]/[name] → product page
+    else if (parts.length === 5 && parts[1] === 'catalog') {
+      window.location.replace('/product.html#' + path);
+    }
+    else {
+      window.location.replace('/catalog.html');
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
