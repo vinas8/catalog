@@ -16,7 +16,17 @@ cat .smri/logs/YYYY-MM-DD-context.md
 ```
 
 ### 2. If Recent Context Exists (< 24 hours)
-- **Read context log instead of full briefing**
+- **Load context log** (historical snapshot)
+- **BUT STILL RUN DYNAMIC CHECKS:**
+  ```bash
+  git log --oneline -5          # Latest commits
+  git status --short            # Uncommitted changes
+  npm run dev:check | tail -20  # Quick health
+  ```
+- **Compare & Alert:**
+  - "⚠️ X new commits since context"
+  - "⚠️ Uncommitted changes detected"
+  - "✅ Health scores unchanged"
 - Show summary: "📍 Loaded session from [date] - [focus]"
 - Ask: "Continue where we left off or new task?"
 
@@ -87,7 +97,7 @@ npm run smri:list:scenarios # All scenarios
 
 ---
 
-## 🎯 Smart Session Start
+## 🎯 Smart Session Start (HYBRID APPROACH)
 
 ```javascript
 // Pseudo-code for AI agent
@@ -96,11 +106,22 @@ if (user_runs_smri) {
   const age = Date.now() - latestContext.timestamp;
   
   if (age < 24_HOURS && latestContext.exists) {
-    // Quick load from context
-    loadContext(latestContext);
-    console.log(`📍 Loaded session from ${latestContext.date}`);
-    console.log(`   Focus: ${latestContext.focus}`);
-    console.log(`   Commits: ${latestContext.commits.length}`);
+    // Phase 1: Load historical context
+    const ctx = loadContext(latestContext);
+    console.log(`📍 Loaded session from ${ctx.date} - ${ctx.focus}`);
+    
+    // Phase 2: ALWAYS run dynamic checks
+    const currentGit = runGitLog(5);
+    const uncommitted = checkGitStatus();
+    const health = runQuickHealth();
+    
+    // Phase 3: Compare & alert
+    const newCommits = currentGit.length - ctx.commits.length;
+    if (newCommits > 0) console.warn(`⚠️ ${newCommits} new commits since context`);
+    if (uncommitted.length > 0) console.warn('⚠️ Uncommitted changes detected');
+    if (health.changed) console.log('⚠️ Health scores changed');
+    else console.log('✅ Health unchanged');
+    
     console.log('\nContinue where we left off or new task?');
   } else {
     // Full briefing
@@ -108,6 +129,8 @@ if (user_runs_smri) {
   }
 }
 ```
+
+**Key Insight:** Context = historical snapshot, Git/health = current reality. BOTH needed!
 
 ---
 
