@@ -21,14 +21,15 @@ echo ""
 echo "📋 Phase 1: Checking context cache..."
 echo ""
 
-# Check if context exists and has session.md
-if [ -f "$CONTEXT_DIR/session.md" ]; then
+# Check if context directory exists and has any files
+if [ -d "$CONTEXT_DIR" ] && [ "$(ls -A $CONTEXT_DIR 2>/dev/null)" ]; then
     echo "✅ Context cache found"
     if [ -f "$CONTEXT_DIR/LAST_UPDATE.txt" ]; then
-        source "$CONTEXT_DIR/LAST_UPDATE.txt"
-        echo "   Last update: $DATE $TIME UTC"
-        echo "   Commit: $COMMIT_SHORT"
+        source "$CONTEXT_DIR/LAST_UPDATE.txt" 2>/dev/null
+        echo "   Last update: ${DATE:-unknown} ${TIME:-unknown} UTC"
+        echo "   Commit: ${COMMIT_SHORT:-unknown}"
     fi
+    echo "   Files cached: $(ls -1 $CONTEXT_DIR | wc -l)"
     echo "   Using cached context"
 else
     echo "ℹ️  No context cache found"
@@ -47,8 +48,16 @@ echo ""
 echo "📄 Phase 2: Loading session context..."
 echo ""
 
-# Display the combined session context
-cat "$CONTEXT_DIR/session.md"
+# Display the combined session context if available
+if [ -f "$CONTEXT_DIR/session.md" ]; then
+    cat "$CONTEXT_DIR/session.md"
+else
+    echo "⚠️  session.md not found, showing available files:"
+    echo ""
+    ls -la "$CONTEXT_DIR/" 2>/dev/null || echo "No files in context cache"
+    echo ""
+    echo "Note: Run 'bash scripts/smri-update-context.sh' to generate complete context"
+fi
 
 echo ""
 echo "================================"
@@ -77,11 +86,29 @@ echo "  RRR = Relations (comma: 1,2,3)"
 echo "  II  = Iteration (01-99)"
 echo "  Example: S2.0,6.01 = Game module, uses common+testing"
 echo ""
-echo "🚨 Critical Rules:"
-echo "  ❌ NEVER touch: webhook-server.py, upload-server.py"
-echo "  ✅ Check first: git log, .smri/logs/YYYY-MM-DD.md"
-echo "  ✅ Deploy worker: cd worker && bash cloudflare-deploy.sh"
-echo "  ✅ Only facades: Modules import ONLY from index.js"
+echo "🚨 CRITICAL RULES (READ EVERY SESSION!):"
+echo "================================"
+echo ""
+echo "❌ NEVER DO:"
+echo "  - Touch webhook-server.py or upload-server.py (user manages)"
+echo "  - Start/stop/restart any servers or processes"
+echo "  - Delete working files without explicit permission"
+echo "  - Change production configs without approval"
+echo ""
+echo "✅ ALWAYS DO FIRST:"
+echo "  - Check: git log --oneline -20"
+echo "  - Check: .smri/logs/YYYY-MM-DD.md (for previous solutions)"
+echo "  - Read relevant .smri/docs/ before big changes"
+echo ""
+echo "✅ ARCHITECTURE RULES:"
+echo "  - Modules import ONLY from index.js (facade pattern)"
+echo "  - Components can use full module APIs"
+echo "  - Deploy worker: cd worker && bash cloudflare-deploy.sh"
+echo "  - Run tests before committing: npm test"
+echo ""
+echo "📖 For complete rules: cat .smri/context/INDEX.md"
+echo ""
+echo "================================"
 echo ""
 echo "📁 Context Cache:"
 echo "  All loaded docs cached in .smri/context/"
