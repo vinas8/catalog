@@ -57,8 +57,9 @@ echo "📝 Phase 3: Creating Context File..."
 echo ""
 
 cat > "$CONTEXT_FILE" << EOFCONTEXT
-# Session Context - $DATE
-**Version:** $VERSION | **Time:** $(date +%H:%M) UTC | **Focus:** $SESSION_FOCUS
+# Session Context - $DATE $TIME UTC
+**Date:** $DATE | **Version:** $VERSION | **Time:** $TIME UTC | **Focus:** $SESSION_FOCUS  
+**Commit:** $LAST_COMMIT_SHORT - $LAST_COMMIT_MSG
 
 ---
 
@@ -130,9 +131,12 @@ npm run smri:list:components # Component usage
 
 ---
 
-**Created:** $DATE $TIME UTC  
-**Commit:** $LAST_COMMIT_SHORT  
-**Status:** Ready for next session
+---
+
+**💾 Session Saved:** $DATE $TIME UTC  
+**📦 Context File:** $CONTEXT_FILE  
+**🔖 Last Commit:** $LAST_COMMIT_SHORT  
+**✅ Status:** Ready for next .smri load
 
 EOFCONTEXT
 

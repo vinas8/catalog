@@ -101,7 +101,11 @@ if [ "$LOAD_MODE" = "hybrid" ]; then
     echo "================================"
     echo ""
     
-    echo "📄 Context from: $(basename $CONTEXT_FILE)"
+    CONTEXT_BASENAME=$(basename $CONTEXT_FILE)
+    CONTEXT_DATE=$(echo $CONTEXT_BASENAME | cut -d'-' -f1-3)
+    
+    echo "📄 Context File: $CONTEXT_BASENAME"
+    echo "📅 Saved On: $CONTEXT_DATE"
     echo ""
     cat "$CONTEXT_FILE"
     echo ""
