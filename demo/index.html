@@ -132,37 +132,52 @@
         },
         {
           icon: '👔',
-          title: 'Owner Dashboard',
+          title: 'Owner Dashboard - Complete Import Flow',
           smri: 'S6.1,4,5.01',
-          description: 'Manage inventory & view analytics',
+          description: 'CSV → KV → Stripe → KV → Catalog',
           steps: [
             {
-              title: 'Open Admin',
-              description: 'Load admin dashboard',
-              url: '/admin/index.html'
-            },
-            {
-              title: 'Import CSV',
-              description: 'Upload product catalog',
+              title: 'Step 1: CSV to KV',
+              description: 'Import catalog data to KV (source of truth)',
               url: '/admin/import.html',
               action: async (demo) => {
-                demo.log('📤 Import Pipeline Steps:', 'info');
-                demo.log('   1. 🧹 Cleanup - Clear existing data', 'info');
-                demo.log('   2. 🔍 Validate - Check CSV format', 'info');
-                demo.log('   3. ⬆️ Import - Upload to Stripe', 'info');
-                demo.log('   4. 🔄 Sync - Copy to KV storage', 'info');
-                demo.log('   5. 👤 Assign - Link snakes to users', 'info');
-                demo.log('💡 Modular system: CSV → Stripe → KV', 'info');
-                await demo.wait(4000);
+                demo.log('📤 CSV → KV Flow:', 'info');
+                demo.log('1. Upload CSV or paste data', 'info');
+                demo.log('2. Data stored in KV (source of truth)', 'info');
+                demo.log('💡 KV = All website data lives here', 'success');
+                await demo.wait(3000);
               }
             },
             {
-              title: 'View Catalog',
-              description: 'See imported products',
+              title: 'Step 2: KV to Stripe',
+              description: 'Create payment products in Stripe',
+              url: '/admin/import.html',
+              action: async (demo) => {
+                demo.log('⬆️ KV → Stripe:', 'info');
+                demo.log('1. Export from KV to Stripe', 'info');
+                demo.log('2. Creates products + prices + payment links', 'info');
+                demo.log('💳 Stripe = Payment processor only', 'success');
+                await demo.wait(3000);
+              }
+            },
+            {
+              title: 'Step 3: Sync Links to KV',
+              description: 'Save payment links back to KV',
+              url: '/admin/import.html',
+              action: async (demo) => {
+                demo.log('🔄 Stripe → KV (sync):', 'info');
+                demo.log('1. Stripe created payment links', 'info');
+                demo.log('2. Save links back to KV', 'info');
+                demo.log('✅ KV now has products WITH payment links', 'success');
+                await demo.wait(3000);
+              }
+            },
+            {
+              title: 'Step 4: View in Catalog',
+              description: 'See products with working Buy buttons',
               url: '/catalog.html',
               action: async (demo) => {
                 demo.log('🔄 Clearing cache to show fresh products...', 'info');
-                // Clear cache via iframe
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe && iframe.contentWindow) {
                   try {
@@ -174,23 +189,31 @@
                   }
                 }
                 await demo.wait(1500);
-                // Reload to show products
                 demo.reloadIframe();
-                demo.log('📦 Products should now be visible', 'success');
+                demo.log('📦 Products visible with "Buy Now" buttons!', 'success');
+                demo.log('🎯 Flow: CSV → KV → Stripe → KV → Catalog', 'info');
               }
             },
             {
-              title: 'Manage KV',
-              description: 'View storage data',
-              url: '/admin-kv.html'
-            },
-            {
-              title: 'View Orders',
-              description: 'Check purchase history',
-              url: '/admin/index.html',
+              title: 'Architecture Summary',
+              description: 'Understanding the data flow',
+              url: '/admin/import.html',
               action: async (demo) => {
-                demo.log('📋 Recent orders and revenue', 'info');
-                await demo.wait(2000);
+                demo.log('📊 ARCHITECTURE:', 'info');
+                demo.log('━'.repeat(50), 'info');
+                demo.log('KV (Cloudflare)     = SOURCE OF TRUTH', 'success');
+                demo.log('  ✓ All product data', 'info');
+                demo.log('  ✓ Ownership records', 'info');
+                demo.log('  ✓ Payment status', 'info');
+                demo.log('', 'info');
+                demo.log('Stripe              = Payment processor', 'success');
+                demo.log('  ✓ Checkout links', 'info');
+                demo.log('  ✓ Payment processing', 'info');
+                demo.log('', 'info');
+                demo.log('LocalStorage        = Cache', 'success');
+                demo.log('  ✓ Mirrors KV', 'info');
+                demo.log('  ✓ Fast access', 'info');
+                await demo.wait(5000);
               }
             }
           ]
