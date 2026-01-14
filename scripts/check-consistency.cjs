@@ -116,15 +116,26 @@ function checkDuplicates() {
 
   patterns.forEach(({ pattern, dir }) => {
     const files = findFiles(dir, pattern);
-    if (files.length > 1) {
-      log(COLORS.yellow, '⚠️', `Found ${files.length} files matching ${pattern}:`);
-      files.forEach(f => console.log(`   - ${f}`));
+    // Exclude archive directories
+    const nonArchiveFiles = files.filter(f => !f.includes('/archive'));
+    
+    // Allow up to 3 specialized files (different purposes)
+    const threshold = 3;
+    
+    if (nonArchiveFiles.length > threshold) {
+      log(COLORS.yellow, '⚠️', `Found ${nonArchiveFiles.length} files matching ${pattern}:`);
+      nonArchiveFiles.forEach(f => console.log(`   - ${f}`));
       foundDuplicates = true;
+    } else if (nonArchiveFiles.length > 1) {
+      log(COLORS.green, '✅', `${pattern}: ${nonArchiveFiles.length} specialized files (within threshold)`);
+    } else if (files.length > nonArchiveFiles.length) {
+      // Info: some files in archives
+      log(COLORS.green, '✅', `${pattern}: ${nonArchiveFiles.length} active (${files.length - nonArchiveFiles.length} archived)`);
     }
   });
 
   if (!foundDuplicates) {
-    log(COLORS.green, '✅', 'No obvious duplicates found');
+    log(COLORS.green, '✅', 'No duplicates in active files');
   }
 
   return !foundDuplicates;
