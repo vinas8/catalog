@@ -2,26 +2,66 @@
 
 Modular import system for Serpent Town catalog management.
 
+## Primary Workflow
+
+**CSV is the source of truth** - reliable, version-controlled, easy to edit.
+
+```
+┌──────────────────────────────────────────────┐
+│  CSV File (Source of Truth)                 │
+│  - Easy to edit in Excel/Google Sheets      │
+│  - Version controlled in Git                 │
+│  - Reliable backup format                   │
+└──────────────┬───────────────────────────────┘
+               │
+               ▼
+       ┌───────────────┐
+       │ ImportManager │
+       └───┬───────┬───┘
+           │       │
+           ▼       ▼
+    ┌─────────┐ ┌────┐
+    │ Stripe  │ │ KV │
+    │ +Links  │ │    │
+    └─────────┘ └────┘
+```
+
+**Main Flow:** CSV → Stripe (creates products + prices + payment links) → KV
+
 ## Architecture
 
 ```
 Sources (READ)          Pipeline          Destinations (WRITE)
-├── CSVSource          ┌─────────────┐    ├── StripeDestination
-├── StripeSource   ──► │ImportManager│ ──►├── KVDestination
+├── CSVSource ★        ┌─────────────┐    ├── StripeDestination ★
+├── StripeSource   ──► │ImportManager│ ──►├── KVDestination ★
 ├── KVSource           └─────────────┘    ├── FileSystemDestination
 └── APISource                             └── DatabaseDestination
+
+★ = Primary workflow
 ```
 
 ### Flow Examples
 
+**Primary (Recommended):**
 ```
-CSV → Stripe → KV           (Import & sync)
-CSV → KV                    (Direct import)
-CSV → FileSystem            (Export to JSON)
-Stripe → KV                 (Sync existing)
-KV → Stripe                 (Restore from backup)
-Stripe → CSV                (Export catalog)
+CSV → Stripe → KV              (Main workflow: import & sync)
 ```
+
+**Alternative Flows:**
+```
+CSV → KV                       (Direct import, skip Stripe)
+CSV → FileSystem               (Export to JSON backup)
+Stripe → KV                    (Sync existing products)
+KV → Stripe                    (Restore from backup)
+Stripe → CSV                   (Export catalog for editing)
+```
+
+**Why CSV First?**
+- ✅ Easy to edit (Excel, Google Sheets, etc.)
+- ✅ Version controlled (Git tracks changes)
+- ✅ Reliable backup format
+- ✅ No API rate limits or dependencies
+- ✅ Human-readable and auditable
 
 **Key Concept:** Sources and Destinations are **independent**  
 - CSV can be a **SOURCE** (read from file)
@@ -36,6 +76,40 @@ Stripe → CSV                (Export catalog)
 4. **Assign** - Link snakes to users (ensures 1 snake = 1 owner)
 
 ## Usage
+
+### Primary Workflow: CSV → Stripe → KV
+
+**Step 1: Prepare CSV (source of truth)**
+```csv
+Name,Morph,Gender,YOB,Weight,Price
+Pudding,Banana Het Clown,Male,2024,,299
+Mochi,Albino Pied,Female,2023,450g,450
+Taohu,Super Mojave,Male,2024,,350
+```
+
+**Step 2: Import to Stripe (creates products + prices + payment links)**
+```javascript
+import { ImportManager, CSVSource, StripeDestination } from '/src/modules/import/index.js';
+
+const manager = new ImportManager();
+manager.setSource(new CSVSource());
+manager.setDestination(new StripeDestination());
+
+const result = await manager.runPipeline(csvFile, {
+  cleanup: true  // Clear old products first
+});
+// ✅ Products in Stripe with payment links automatically created
+```
+
+**Step 3: Sync to KV (for fast frontend access)**
+```javascript
+manager.setSource(new StripeSource());
+manager.setDestination(new KVDestination());
+await manager.import();
+// ✅ Products now in Stripe AND KV with payment links
+```
+
+**Result:** CSV → Stripe (with checkout links) → KV (fast API) → Catalog displays "Buy Now" buttons ✅
 
 ### Example 1: CSV → Stripe (with payment links)
 
