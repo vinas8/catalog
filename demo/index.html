@@ -27,15 +27,23 @@
             {
               title: 'Browse Catalog',
               description: 'View available snakes',
-              url: '/catalog.html'
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('📦 Loading product catalog...', 'info');
+                await demo.wait(2000);
+                demo.log('✅ Catalog loaded! Browse available snakes below', 'success');
+              }
             },
             {
               title: 'View Snake Details',
-              description: 'Select Pudding - Banana Het Clown',
+              description: 'Click any snake to see details modal',
               url: '/catalog.html',
               action: async (demo) => {
-                demo.log('💡 Click on "Pudding" to see details', 'info');
+                demo.log('⏳ Waiting for products to load...', 'info');
                 await demo.wait(2000);
+                demo.log('💡 Click on any snake card to see details', 'info');
+                demo.log('ℹ️ Look for "View Details" button on any product', 'info');
+                await demo.wait(1500);
               }
             },
             {
