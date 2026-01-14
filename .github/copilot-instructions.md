@@ -1,14 +1,16 @@
 # Serpent Town - AI Assistant Instructions
 
 ## 🔄 Session Start (AUTOMATIC)
-When user sends first message, **automatically run `.smri` pipeline**:
-1. Check version (`package.json`)
-2. Load `.smri/INDEX.md` (navigation + rules)
-3. Load `README.md` (project overview)
-4. Load `src/SMRI.md` (quick reference)
-5. Show directory tree
-6. Check for inconsistencies (version mismatches, duplicates)
-7. Ask: "📍 Where did we leave off?"
+When user types `.smri`, **run the startup script**:
+
+```bash
+bash scripts/smri-startup.sh
+```
+
+**DO NOT manually load files!** The script does everything:
+- Checks for CONTEXT-READY flag (fast load < 48h old)
+- OR runs full briefing (tree, git, health, docs)
+- Automatically detects which mode to use
 
 ## 🧠 During Session
 **Before debugging anything:**
