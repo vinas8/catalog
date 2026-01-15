@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test LocalStorageDestination</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 2rem;
+      background: #0a0e14;
+      color: #c9d1d9;
+    }
+    .log { 
+      background: #161b22;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 4px;
+      border-left: 3px solid #30363d;
+    }
+    .success { border-left-color: #3fb950; }
+    .error { border-left-color: #f85149; }
+    .info { border-left-color: #58a6ff; }
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #2ea043; }
+    pre { background: #0d1117; padding: 1rem; border-radius: 6px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>🧪 LocalStorageDestination Test</h1>
+  
+  <button onclick="testImport()">1. Import Demo Data</button>
+  <button onclick="showStorage()">2. Show localStorage</button>
+  <button onclick="testClear()">3. Clear Demo Data</button>
+  <button onclick="clearLogs()">Clear Logs</button>
+  
+  <div id="logs"></div>
+  <div id="storage"></div>
+
+  <script type="module">
+    window.testModule = async () => {
+      const { ImportManager, CSVSource, LocalStorageDestination } = 
+        await import('/src/modules/import/index.js');
+      
+      return { ImportManager, CSVSource, LocalStorageDestination };
+    };
+
+    window.log = (message, type = 'info') => {
+      const div = document.createElement('div');
+      div.className = `log ${type}`;
+      div.textContent = message;
+      document.getElementById('logs').appendChild(div);
+    };
+
+    window.clearLogs = () => {
+      document.getElementById('logs').innerHTML = '';
+    };
+
+    window.testImport = async () => {
+      try {
+        log('🔄 Loading import module...', 'info');
+        const { ImportManager, CSVSource, LocalStorageDestination } = await testModule();
+        
+        log('✅ Module loaded', 'success');
+        
+        const demoCSV = `Name,Morph,Gender,YOB,Weight,Price
+Demo Snake 1,Banana Clown,Male,2024,150,350
+Demo Snake 2,Super Mojave,Female,2023,200,450
+Demo Snake 3,Pastel Enchi,Male,2024,180,280`;
+
+        log('📝 Sample CSV:', 'info');
+        log(demoCSV, 'info');
+        
+        const manager = new ImportManager();
+        manager.setSource(new CSVSource());
+        manager.setDestination(new LocalStorageDestination('demo_test'));
+        
+        log('🔍 Validating CSV...', 'info');
+        const validation = await manager.validate(demoCSV);
+        
+        if (!validation.valid) {
+          validation.errors.forEach(err => log(err, 'error'));
+          return;
+        }
+        
+        log(`✅ Validated ${validation.data.length} snakes`, 'success');
+        
+        log('⬆️ Importing to localStorage...', 'info');
+        const result = await manager.import();
+        
+        if (result.success) {
+          log(`✅ Imported ${result.written} products to localStorage`, 'success');
+          log(`📦 Storage key: demo_test_products`, 'info');
+        } else {
+          log(`❌ Import failed: ${result.errors?.join(', ')}`, 'error');
+        }
+        
+      } catch (err) {
+        log(`💥 Error: ${err.message}`, 'error');
+        console.error(err);
+      }
+    };
+
+    window.showStorage = () => {
+      const storageDiv = document.getElementById('storage');
+      const demoKeys = Object.keys(localStorage).filter(k => k.startsWith('demo_'));
+      
+      if (demoKeys.length === 0) {
+        storageDiv.innerHTML = '<div class="log error">No demo data in localStorage</div>';
+        return;
+      }
+      
+      storageDiv.innerHTML = '<h3>📦 localStorage Contents:</h3>';
+      
+      demoKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        const pre = document.createElement('pre');
+        
+        try {
+          const parsed = JSON.parse(value);
+          pre.textContent = `${key}:\n${JSON.stringify(parsed, null, 2)}`;
+        } catch {
+          pre.textContent = `${key}: ${value}`;
+        }
+        
+        storageDiv.appendChild(pre);
+      });
+      
+      log(`✅ Found ${demoKeys.length} demo keys in localStorage`, 'success');
+    };
+
+    window.testClear = async () => {
+      try {
+        log('🗑️ Clearing demo data...', 'info');
+        const { ImportManager, LocalStorageDestination } = await testModule();
+        
+        const manager = new ImportManager();
+        manager.setDestination(new LocalStorageDestination('demo_test'));
+        
+        const result = await manager.clear();
+        
+        if (result.success) {
+          log('✅ Demo data cleared from localStorage', 'success');
+          document.getElementById('storage').innerHTML = '';
+        } else {
+          log(`❌ Clear failed: ${result.error}`, 'error');
+        }
+        
+      } catch (err) {
+        log(`💥 Error: ${err.message}`, 'error');
+      }
+    };
+
+    log('✅ Test page ready', 'success');
+    log('Click "1. Import Demo Data" to start', 'info');
+  </script>
+</body>
+</html>
