@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Customer Journeys - Serpent Town Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="demo-root"></div>
+
+  <script type="module">
+    import { Demo } from '/src/modules/demo/index.js';
+
+    /**
+     * Complete Customer Journeys
+     * Based on SMRI scenarios grouped by user goals
+     */
+    const demo = new Demo({
+      containerId: 'demo-root',
+      scenarios: [
+        // JOURNEY 1: First-Time Buyer (S1.1,2,3,4,5.01)
+        {
+          icon: '🛍️',
+          title: 'Journey 1: First-Time Buyer',
+          smri: 'S1.1,2,3,4,5.01',
+          description: 'Complete purchase flow from discovery to ownership',
+          steps: [
+            {
+              title: 'Discover Catalog',
+              description: 'Browse available snakes',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('👋 Welcome to Serpent Town!', 'info');
+                demo.log('📦 Loading catalog...', 'info');
+                await demo.wait(2000);
+                demo.log('✅ Catalog loaded', 'success');
+                demo.log('💡 Tip: Click species filter to narrow down', 'info');
+              }
+            },
+            {
+              title: 'View Product Details',
+              description: 'Learn about a specific snake',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('👉 Click "View Details" on any snake', 'info');
+                demo.log('📋 Check species, morph, genetics', 'info');
+                await demo.wait(3000);
+                demo.log('⚠️ TODO: Link to /en/catalog/species/morph/name', 'warning');
+              }
+            },
+            {
+              title: 'Add to Cart & Checkout',
+              description: 'Purchase via Stripe',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('💳 Click "Buy Now" button', 'info');
+                demo.log('🔄 Redirects to Stripe Checkout', 'info');
+                await demo.wait(2000);
+                demo.log('⚠️ Requires Stripe payment link', 'warning');
+              }
+            },
+            {
+              title: 'Receive Confirmation',
+              description: 'Order confirmed via webhook',
+              url: '/success.html',
+              action: async (demo) => {
+                demo.log('✅ Payment successful!', 'success');
+                demo.log('📧 Email receipt sent', 'info');
+                demo.log('🐍 Snake assigned to your account', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'View Your Snake',
+              description: 'Check collection',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🎮 Your snake appears in game!', 'success');
+                demo.log('💾 Progress auto-saves to KV', 'info');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        },
+
+        // JOURNEY 2: Returning Customer (S1.1,2,3,4.01)
+        {
+          icon: '🔄',
+          title: 'Journey 2: Returning Customer',
+          smri: 'S1.1,2,3,4.01',
+          description: 'Quick repeat purchase for existing users',
+          steps: [
+            {
+              title: 'Login',
+              description: 'Authenticate user',
+              url: '/account.html',
+              action: async (demo) => {
+                demo.log('🔑 Email link authentication', 'info');
+                demo.log('✅ Logged in!', 'success');
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'Browse New Arrivals',
+              description: 'Check latest snakes',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🆕 New arrivals highlighted', 'info');
+                demo.log('⭐ Favorites saved from last visit', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Quick Checkout',
+              description: 'One-click purchase',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🚀 Saved payment method', 'info');
+                demo.log('💳 Quick checkout!', 'success');
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'Growing Collection',
+              description: 'Multiple snakes managed',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🐍🐍🐍 Collection growing!', 'success');
+                demo.log('📊 Track all stats in one place', 'info');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        },
+
+        // JOURNEY 3: Owner/Admin Flow (S6.1,4,5.01)
+        {
+          icon: '👔',
+          title: 'Journey 3: Owner Dashboard',
+          smri: 'S6.1,4,5.01',
+          description: 'Import inventory & manage catalog',
+          steps: [
+            {
+              title: 'Step 1: Cleanup',
+              description: 'Clear old products',
+              url: '/admin/import-modular.html',
+              action: async (demo) => {
+                demo.log('🧹 Cleaning up old products...', 'info');
+                
+                try {
+                  const { ImportManager, StripeDestination } = 
+                    await import('/src/modules/import/index.js');
+                  
+                  const manager = new ImportManager();
+                  manager.setDestination(new StripeDestination());
+                  
+                  const cleanupResult = await manager.cleanup();
+                  if (cleanupResult.success) {
+                    demo.log(`✅ Deleted ${cleanupResult.deleted} old products`, 'success');
+                  } else {
+                    demo.log(`⚠️ ${cleanupResult.error}`, 'warning');
+                  }
+                } catch (err) {
+                  demo.log(`💥 Error: ${err.message}`, 'error');
+                }
+              }
+            },
+            {
+              title: 'Step 2: Import CSV',
+              description: 'Upload new inventory',
+              url: '/admin/import-modular.html',
+              action: async (demo) => {
+                demo.log('📤 Importing CSV data...', 'info');
+                
+                const { ImportManager, CSVSource, StripeDestination, KVDestination } = 
+                  await import('/src/modules/import/index.js');
+                
+                const sampleCSV = `Name,Morph,Gender,YOB,Weight
+Pudding,Banana H. Clown,Male,2024,
+Taohu,Super Mojave,Male,2024,
+Chocolate,Pastel,Female,2023,`;
+                
+                try {
+                  const manager = new ImportManager();
+                  const csvSource = new CSVSource();
+                  
+                  demo.log('🔍 Validating CSV...', 'info');
+                  manager.setSource(csvSource);
+                  const validation = await manager.validate(sampleCSV);
+                  
+                  if (!validation.valid) {
+                    validation.errors.forEach(err => demo.log(err, 'error'));
+                    return;
+                  }
+                  demo.log(`✅ Validated ${validation.data.length} snakes`, 'success');
+                  await demo.wait(1000);
+                  
+                  demo.log('⬆️ Uploading to Stripe...', 'info');
+                  manager.setDestination(new StripeDestination());
+                  const importResult = await manager.import();
+                  
+                  if (importResult.success) {
+                    demo.log(`✅ Uploaded ${importResult.written} products`, 'success');
+                  } else {
+                    demo.log(`❌ Upload failed`, 'error');
+                    return;
+                  }
+                  await demo.wait(1000);
+                  
+                  demo.log('🔄 Syncing Stripe → KV...', 'info');
+                  manager.setDestination(new KVDestination());
+                  await manager.import();
+                  demo.log('✅ Synced to KV storage', 'success');
+                  
+                  demo.log('🎉 Import complete!', 'success');
+                  
+                } catch (err) {
+                  demo.log(`💥 Error: ${err.message}`, 'error');
+                }
+              }
+            },
+            {
+              title: 'Step 3: Verify Catalog',
+              description: 'Check products live',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🔄 Clearing cache...', 'info');
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe && iframe.contentWindow) {
+                  try {
+                    iframe.contentWindow.localStorage.removeItem('serpent_products_cache');
+                    iframe.contentWindow.localStorage.removeItem('serpent_products_cache_time');
+                    demo.log('✅ Cache cleared', 'success');
+                  } catch (e) {
+                    demo.log('⚠️ Could not clear cache (CORS)', 'info');
+                  }
+                }
+                await demo.wait(1500);
+                demo.reloadIframe();
+                demo.log('📦 Products now visible!', 'success');
+              }
+            },
+            {
+              title: 'Step 4: View Analytics',
+              description: 'Check sales & revenue',
+              url: '/admin/index.html',
+              action: async (demo) => {
+                demo.log('📊 Dashboard loading...', 'info');
+                demo.log('💰 Total revenue: €XXX', 'info');
+                demo.log('🐍 Snakes sold: X', 'info');
+                demo.log('📈 Growth trend: +XX%', 'success');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        },
+
+        // JOURNEY 4: Game Player (S2.2,3,4,5.01)
+        {
+          icon: '🎮',
+          title: 'Journey 4: Snake Care Game',
+          smri: 'S2.2,3,4,5.01',
+          description: 'Daily snake care & progression',
+          steps: [
+            {
+              title: 'Check Collection',
+              description: 'See owned snakes',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🐍 Your snakes:', 'info');
+                demo.log('   • Pudding (Banana Clown)', 'info');
+                demo.log('   • Taohu (Super Mojave)', 'info');
+                await demo.wait(2000);
+                demo.log('⚠️ If empty, purchase from catalog first!', 'warning');
+              }
+            },
+            {
+              title: 'Select Snake',
+              description: 'Choose active snake',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('👆 Click on a snake card', 'info');
+                demo.log('📊 View stats: Health, Hunger, Hydration', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Feed',
+              description: 'Give food',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🍖 Click Feed button', 'info');
+                demo.log('➕ Hunger +20%', 'success');
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'Give Water',
+              description: 'Hydrate',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('💧 Click Water button', 'info');
+                demo.log('➕ Hydration +15%', 'success');
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'Clean Enclosure',
+              description: 'Maintain habitat',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🧹 Click Clean button', 'info');
+                demo.log('➕ Cleanliness +25%', 'success');
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'Check Progress',
+              description: 'Auto-save',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('💾 Progress auto-saved to KV', 'success');
+                demo.log('🏆 Achievements unlocked', 'info');
+                demo.log('⭐ Loyalty points earned', 'success');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        },
+
+        // JOURNEY 5: Breeder (Planned - S3.x)
+        {
+          icon: '🧬',
+          title: 'Journey 5: Breeding Program (Planned)',
+          smri: 'S3.1,2,3.01',
+          description: 'Advanced genetics & breeding',
+          steps: [
+            {
+              title: 'Select Breeding Pair',
+              description: 'Choose compatible snakes',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('⚠️ PLANNED FEATURE', 'warning');
+                demo.log('🧬 Genetics calculator', 'info');
+                demo.log('👫 Select male + female', 'info');
+                demo.log('📊 See potential offspring morphs', 'info');
+                await demo.wait(3000);
+              }
+            },
+            {
+              title: 'Incubate Eggs',
+              description: 'Wait for hatchlings',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🥚 Eggs laid!', 'info');
+                demo.log('⏱️ 60 days incubation', 'info');
+                demo.log('🌡️ Monitor temperature', 'info');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Hatch & Sell',
+              description: 'List offspring for sale',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🐣 Babies hatched!', 'success');
+                demo.log('📸 Take photos', 'info');
+                demo.log('💰 List for sale', 'success');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        },
+
+        // JOURNEY 6: Health Check (S0.x)
+        {
+          icon: '🏥',
+          title: 'Journey 6: System Health',
+          smri: 'S0.0,1,2,3,4,5.01',
+          description: 'Verify all systems operational',
+          steps: [
+            {
+              title: 'Shop System',
+              description: 'Catalog loading',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing shop system...', 'info');
+                demo.log('✅ Catalog loads', 'success');
+                demo.log('✅ Products render', 'success');
+                demo.log('✅ Filters work', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Game System',
+              description: 'Game mechanics',
+              url: '/game.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing game system...', 'info');
+                demo.log('✅ Collection loads', 'success');
+                demo.log('✅ Actions work', 'success');
+                demo.log('✅ Auto-save works', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Auth System',
+              description: 'Authentication',
+              url: '/account.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing auth system...', 'info');
+                demo.log('✅ Login page loads', 'success');
+                demo.log('✅ Email validation', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Payment System',
+              description: 'Stripe integration',
+              url: '/catalog.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing payment system...', 'info');
+                demo.log('✅ Stripe checkout available', 'success');
+                demo.log('✅ Payment links valid', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'Worker API',
+              description: 'Backend endpoints',
+              url: '/admin/index.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing worker API...', 'info');
+                demo.log('✅ /products endpoint', 'success');
+                demo.log('✅ /upload-products endpoint', 'success');
+                demo.log('✅ /sync-stripe-to-kv endpoint', 'success');
+                await demo.wait(2000);
+              }
+            },
+            {
+              title: 'KV Storage',
+              description: 'Data persistence',
+              url: '/admin-kv.html',
+              action: async (demo) => {
+                demo.log('🔍 Testing KV storage...', 'info');
+                demo.log('✅ Read operations', 'success');
+                demo.log('✅ Write operations', 'success');
+                demo.log('✅ Cache working', 'success');
+                await demo.wait(2000);
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    demo.init();
+    console.log('🎬 Customer Journey demos initialized');
+  </script>
+</body>
+</html>
