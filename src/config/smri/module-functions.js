@@ -156,6 +156,27 @@ export const MODULE_FUNCTIONS = {
       { name: 'TutorialSystem.nextStep()', returns: 'boolean', description: 'Advance to next step' },
       { name: 'EventSystem.trigger(eventName, data)', returns: 'void', description: 'Trigger tutorial event' }
     ]
+  },
+
+  // === CART MODULE ===
+  cart: {
+    module: 'src/modules/cart',
+    exports: [
+      { name: 'Cart', type: 'class', description: 'Shopping cart manager' },
+      { name: 'CartUI', type: 'class', description: 'Cart UI component' }
+    ],
+    functions: [
+      { name: 'Cart.add(product)', returns: 'boolean', description: 'Add product to cart' },
+      { name: 'Cart.remove(productId)', returns: 'boolean', description: 'Remove product from cart' },
+      { name: 'Cart.clear()', returns: 'void', description: 'Clear all items' },
+      { name: 'Cart.getItems()', returns: 'Array', description: 'Get cart items' },
+      { name: 'Cart.getTotal()', returns: 'number', description: 'Get cart total price' },
+      { name: 'Cart.getCount()', returns: 'number', description: 'Get item count' },
+      { name: 'Cart.has(productId)', returns: 'boolean', description: 'Check if product in cart' },
+      { name: 'CartUI.render()', returns: 'void', description: 'Render cart UI' },
+      { name: 'CartUI.addItem(product)', returns: 'boolean', description: 'Add item with UI update' },
+      { name: 'CartUI.removeItem(productId)', returns: 'boolean', description: 'Remove item with UI update' }
+    ]
   }
 };
 
