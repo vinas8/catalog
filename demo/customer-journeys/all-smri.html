@@ -13,7 +13,9 @@
   <div id="demo-root"></div>
 
   <script type="module">
-    import { Demo } from '/src/modules/demo/index.js';
+    // Fix path for GitHub Pages
+    const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    const { Demo } = await import(`${basePath}/src/modules/demo/index.js`);
 
     /**
      * Complete Customer Journeys

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Demo Hub - Serpent Town</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #333; margin-bottom: 1rem; }
+    .subtitle { color: #666; margin-bottom: 2rem; }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .demo-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 2rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .demo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-color: #667eea;
+    }
+    .demo-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .demo-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem; }
+    .demo-desc { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
+    .demo-smri { 
+      background: #667eea; 
+      color: white; 
+      padding: 0.3rem 0.8rem; 
+      border-radius: 20px; 
+      font-size: 0.75rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Interactive Demo Hub</h1>
+    <p class="subtitle">Choose a customer journey to explore</p>
+
+    <div class="demo-grid">
+      
+      <!-- All SMRI Journeys -->
+      <a href="./all-smri.html" class="demo-card">
+        <div class="demo-icon">🗺️</div>
+        <div class="demo-title">All Customer Journeys</div>
+        <div class="demo-desc">
+          Complete collection of 6 SMRI customer journeys
+        </div>
+        <span class="demo-smri">S0, S1, S2, S3, S6</span>
+      </a>
+
+      <!-- Simple Product Browse -->
+      <a href="../index.html" class="demo-card">
+        <div class="demo-icon">🛒</div>
+        <div class="demo-title">Simple Product Demo</div>
+        <div class="demo-desc">
+          Basic shop & browse functionality
+        </div>
+        <span class="demo-smri">S1.1,2,3.01</span>
+      </a>
+
+    </div>
+
+    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+      <h3 style="margin-bottom: 1rem;">🔗 Live Pages</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 0.5rem;">
+          <a href="../../catalog.html" style="color: #667eea; text-decoration: none;">
+            📦 Catalog
+          </a>
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+          <a href="../../game.html" style="color: #667eea; text-decoration: none;">
+            🎮 Game
+          </a>
+        </li>
+        <li style="margin-bottom: 0.5rem;">
+          <a href="../../admin/import-modular.html" style="color: #667eea; text-decoration: none;">
+            📤 Import Tool
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
