@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🔍 Demo Debug Test</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; background: #0a0e14; color: #c9d1d9; }
+    .log { background: #161b22; padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; }
+    .success { color: #3fb950; }
+    .error { color: #f85149; }
+    .info { color: #58a6ff; }
+    button { background: #238636; color: white; border: none; padding: 0.75rem 1.5rem; margin: 0.5rem; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    button:hover { background: #2ea043; }
+    pre { background: #0d1117; padding: 1rem; border-radius: 6px; overflow: auto; }
+    h2 { color: #58a6ff; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Demo System Debug</h1>
+  
+  <h2>Step 1: Import Demo Data</h2>
+  <button onclick="testImport()">1. Import Demo Data</button>
+  
+  <h2>Step 2: Check Storage</h2>
+  <button onclick="checkStorage()">2. Check localStorage</button>
+  
+  <h2>Step 3: Test Catalog Load</h2>
+  <button onclick="testCatalog()">3. Test Catalog Module</button>
+  
+  <h2>Step 4: Open Catalog Page</h2>
+  <button onclick="openCatalog()">4. Open /catalog.html?source=demo_first_purchase</button>
+  
+  <div id="output"></div>
+
+  <script type="module">
+    const basePath = '';
+    let log = (msg, type = 'info') => {
+      const div = document.createElement('div');
+      div.className = `log ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      document.getElementById('output').appendChild(div);
+      console.log(msg);
+    };
+
+    window.testImport = async () => {
+      try {
+        log('🔄 Starting import test...', 'info');
+        
+        const { ImportManager, CSVSource, LocalStorageDestination } = 
+          await import(`${basePath}/src/modules/import/index.js`);
+        
+        log('✅ Modules loaded', 'success');
+        
+        const demoCSV = `Name,Morph,Gender,YOB,Weight,Price,Species
+Demo Banana,Banana Clown,Male,2024,150,350,ball_python
+Demo Mojave,Super Mojave,Female,2023,200,450,ball_python
+Demo Pastel,Pastel Enchi,Male,2024,180,280,ball_python`;
+
+        const manager = new ImportManager();
+        manager.setSource(new CSVSource());
+        manager.setDestination(new LocalStorageDestination('demo_first_purchase'));
+        
+        log('🔍 Validating...', 'info');
+        const validation = await manager.validate(demoCSV);
+        
+        if (!validation.valid) {
+          validation.errors.forEach(err => log(err, 'error'));
+          return;
+        }
+        
+        log(`✅ Validated ${validation.data.length} snakes`, 'success');
+        log('Sample data:', 'info');
+        log(JSON.stringify(validation.data[0], null, 2), 'info');
+        
+        log('📤 Importing...', 'info');
+        const result = await manager.import();
+        
+        if (result.success) {
+          log(`✅ SUCCESS! Imported ${result.written} products`, 'success');
+          log('📦 Storage key: demo_first_purchase_products', 'success');
+        } else {
+          log('❌ Import failed', 'error');
+        }
+        
+      } catch (err) {
+        log(`❌ Error: ${err.message}`, 'error');
+        console.error(err);
+      }
+    };
+
+    window.checkStorage = () => {
+      log('🔍 Checking localStorage...', 'info');
+      
+      const demoKeys = Object.keys(localStorage).filter(k => k.startsWith('demo_'));
+      
+      if (demoKeys.length === 0) {
+        log('❌ No demo keys found!', 'error');
+        log('💡 Run "1. Import Demo Data" first', 'info');
+        return;
+      }
+      
+      log(`✅ Found ${demoKeys.length} demo keys:`, 'success');
+      demoKeys.forEach(key => {
+        const value = localStorage.getItem(key);
+        log(`  📦 ${key}`, 'info');
+        
+        if (key.endsWith('_products')) {
+          try {
+            const data = JSON.parse(value);
+            log(`     → ${data.length} products`, 'success');
+            data.forEach((p, i) => {
+              log(`     ${i + 1}. ${p.name} - €${p.price} - ID: ${p.id?.substring(0, 20)}...`, 'info');
+            });
+          } catch (err) {
+            log(`     → Parse error: ${err.message}`, 'error');
+          }
+        }
+      });
+    };
+
+    window.testCatalog = async () => {
+      try {
+        log('🔄 Testing catalog module...', 'info');
+        
+        // Set URL parameter simulation
+        const url = new URL(window.location.href);
+        url.searchParams.set('source', 'demo_first_purchase');
+        window.history.replaceState({}, '', url);
+        
+        log('✅ URL parameter set: ?source=demo_first_purchase', 'success');
+        
+        const { loadCatalog } = await import(`${basePath}/src/modules/shop/data/catalog.js`);
+        
+        log('📦 Loading catalog...', 'info');
+        const products = await loadCatalog();
+        
+        log(`✅ Loaded ${products.length} products`, 'success');
+        
+        if (products.length > 0) {
+          products.forEach((p, i) => {
+            log(`  ${i + 1}. ${p.name} - €${p.price} (${p.species})`, 'info');
+          });
+        } else {
+          log('❌ No products loaded!', 'error');
+        }
+        
+      } catch (err) {
+        log(`❌ Error: ${err.message}`, 'error');
+        console.error(err);
+      }
+    };
+
+    window.openCatalog = () => {
+      log('🔗 Opening catalog page...', 'info');
+      window.open('/catalog.html?source=demo_first_purchase', '_blank');
+    };
+
+    log('✅ Debug tool ready', 'success');
+    log('Click buttons in order: 1 → 2 → 3 → 4', 'info');
+  </script>
+</body>
+</html>
