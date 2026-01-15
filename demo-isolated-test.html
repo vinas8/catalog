@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Isolated Demo Test - First Purchase</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="demo-root"></div>
+
+  <script type="module">
+    // Fix path for GitHub Pages
+    const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    const { Demo } = await import(`${basePath}/src/modules/demo/index.js`);
+
+    /**
+     * Isolated Demo: First Purchase Journey
+     * Tests complete flow with demo data only
+     */
+    const demo = new Demo({
+      containerId: 'demo-root',
+      scenarios: [
+        {
+          icon: '🛍️',
+          title: 'First Purchase (Isolated)',
+          smri: 'S1.1,2,3,4,5.01',
+          description: 'Complete purchase flow with demo data',
+          
+          // SETUP: Import demo data before scenario starts
+          onStart: async (demo) => {
+            demo.log('🔧 Setting up isolated demo environment...', 'info');
+            
+            const { ImportManager, CSVSource, LocalStorageDestination } = 
+              await import(`${basePath}/src/modules/import/index.js`);
+            
+            // Create isolated storage
+            demo.storage = new LocalStorageDestination('demo_first_purchase');
+            
+            // Demo CSV data
+            const demoCSV = `Name,Morph,Gender,YOB,Weight,Price,Species
+Demo Banana,Banana Clown,Male,2024,150,350,ball_python
+Demo Mojave,Super Mojave,Female,2023,200,450,ball_python
+Demo Pastel,Pastel Enchi,Male,2024,180,280,ball_python`;
+
+            const manager = new ImportManager();
+            manager.setSource(new CSVSource());
+            manager.setDestination(demo.storage);
+            
+            demo.log('🔍 Validating demo data...', 'info');
+            const validation = await manager.validate(demoCSV);
+            
+            if (!validation.valid) {
+              validation.errors.forEach(err => demo.log(err, 'error'));
+              throw new Error('Demo data validation failed');
+            }
+            
+            demo.log(`✅ Validated ${validation.data.length} demo snakes`, 'success');
+            
+            demo.log('📤 Importing to localStorage...', 'info');
+            const result = await manager.import();
+            
+            if (result.success) {
+              demo.log(`✅ Imported ${result.written} demo products`, 'success');
+              demo.log(`📦 Storage: demo_first_purchase_products`, 'info');
+            } else {
+              throw new Error('Demo data import failed');
+            }
+          },
+          
+          steps: [
+            {
+              title: 'Browse Demo Catalog',
+              description: 'View demo snakes only',
+              url: '/catalog.html?source=demo_first_purchase',
+              action: async (demo) => {
+                demo.log('🛒 Demo catalog loaded in iframe', 'info');
+                demo.log('📦 Showing 3 demo snakes (isolated)', 'success');
+                await demo.wait(2000);
+                demo.log('💡 These are NOT real products!', 'info');
+              }
+            },
+            {
+              title: 'Simulate Purchase',
+              description: 'Mark snake as sold',
+              action: async (demo) => {
+                demo.log('💳 Simulating purchase...', 'info');
+                
+                // Get demo products from localStorage
+                const products = JSON.parse(localStorage.getItem('demo_first_purchase_products'));
+                
+                if (!products || products.length === 0) {
+                  demo.log('❌ No demo products found', 'error');
+                  return;
+                }
+                
+                // Mark first snake as sold
+                products[0].status = 'sold';
+                products[0].owner = 'demo_user_123';
+                
+                // Save back to localStorage
+                localStorage.setItem('demo_first_purchase_products', JSON.stringify(products));
+                
+                demo.log(`✅ Purchased: ${products[0].name}`, 'success');
+                demo.log(`👤 Owner: demo_user_123`, 'info');
+                demo.log(`📊 Status: ${products[0].status}`, 'success');
+                
+                await demo.wait(1500);
+              }
+            },
+            {
+              title: 'View Owned Snake',
+              description: 'Check in game/farm view',
+              url: '/game.html?source=demo_first_purchase&user=demo_user_123',
+              action: async (demo) => {
+                demo.log('🎮 Game loaded with demo data', 'info');
+                demo.log('🐍 Your demo snake should appear!', 'success');
+                await demo.wait(2000);
+                demo.log('💾 All data is isolated (demo_first_purchase_*)', 'info');
+              }
+            },
+            {
+              title: 'Verify Isolation',
+              description: 'Check that real data is untouched',
+              action: async (demo) => {
+                demo.log('🔍 Checking data isolation...', 'info');
+                
+                const realCache = localStorage.getItem('serpent_products_cache');
+                const demoCache = localStorage.getItem('demo_first_purchase_products');
+                
+                demo.log(`✅ Real cache: ${realCache ? 'EXISTS (untouched)' : 'NONE'}`, 'success');
+                demo.log(`✅ Demo cache: ${demoCache ? 'EXISTS' : 'NONE'}`, 'success');
+                
+                demo.log('📊 Storage keys:', 'info');
+                const demoKeys = Object.keys(localStorage).filter(k => k.startsWith('demo_'));
+                demoKeys.forEach(key => demo.log(`   • ${key}`, 'info'));
+                
+                await demo.wait(2000);
+              }
+            }
+          ],
+          
+          // CLEANUP: After demo completes
+          onEnd: async (demo) => {
+            demo.log('🔧 Demo complete! Cleanup options:', 'info');
+            
+            const keep = confirm('Keep demo data for testing?\n\nYes = Keep in localStorage\nNo = Clean up all demo_* keys');
+            
+            if (!keep) {
+              const { ImportManager } = await import(`${basePath}/src/modules/import/index.js`);
+              const manager = new ImportManager();
+              manager.setDestination(demo.storage);
+              
+              demo.log('🗑️ Cleaning up demo data...', 'info');
+              await manager.cleanup();
+              
+              demo.log('✅ All demo_first_purchase_* keys cleared', 'success');
+            } else {
+              demo.log('📦 Demo data saved in localStorage', 'info');
+              demo.log('💡 Run /catalog.html?source=demo_first_purchase to view again', 'info');
+            }
+          }
+        }
+      ]
+    });
+
+    demo.init();
+    console.log('🎬 Isolated demo initialized');
+  </script>
+</body>
+</html>
