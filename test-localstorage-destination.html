@@ -150,7 +150,7 @@ Demo Snake 3,Pastel Enchi,Male,2024,180,280`;
         const manager = new ImportManager();
         manager.setDestination(new LocalStorageDestination('demo_test'));
         
-        const result = await manager.clear();
+        const result = await manager.cleanup();
         
         if (result.success) {
           log('✅ Demo data cleared from localStorage', 'success');
