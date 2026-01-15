@@ -450,10 +450,9 @@ export class Demo {
     this.currentStep = 0;
     this.logs = [];
 
-    this.renderStepsView();
     this.log(`🎬 Loaded: ${this.currentScenario.title}`, 'info');
     
-    // Execute onStart lifecycle hook
+    // Execute onStart lifecycle hook BEFORE rendering steps
     if (this.currentScenario.onStart) {
       this.log('🔧 Setting up demo environment...', 'info');
       try {
@@ -461,8 +460,12 @@ export class Demo {
         this.log('✅ Demo environment ready', 'success');
       } catch (err) {
         this.log(`❌ Setup failed: ${err.message}`, 'error');
+        return; // Don't proceed if setup fails
       }
     }
+    
+    // Now render steps after setup is complete
+    this.renderStepsView();
   }
 
   /**
