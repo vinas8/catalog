@@ -11,6 +11,7 @@ export { KVSource } from './sources/KVSource.js';
 
 export { StripeDestination } from './destinations/StripeDestination.js';
 export { KVDestination } from './destinations/KVDestination.js';
+export { LocalStorageDestination } from './destinations/LocalStorageDestination.js';
 
 export { IImportSource } from './IImportSource.js';
 export { IImportDestination } from './IImportDestination.js';
