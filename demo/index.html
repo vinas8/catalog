@@ -172,7 +172,7 @@
                 
                 // Import the modular system
                 const { ImportManager, CSVSource, StripeDestination, KVDestination } = 
-                  await import('/src/modules/import/index.js');
+                  await import(`${basePath}/src/modules/import/index.js`);
                 
                 const sampleCSV = `Name,Morph,Gender,YOB,Weight
 Pudding,Banana H. Clown,Male,2024,
