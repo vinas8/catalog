@@ -7,6 +7,7 @@ let catalogCache = null;
 
 /**
  * Load catalog from Worker API (production) or fallback to JSON (tests)
+ * Supports demo mode via ?source= parameter
  * @returns {Promise<Array>} Array of product items
  */
 export async function loadCatalog() {
@@ -15,6 +16,26 @@ export async function loadCatalog() {
   }
   
   try {
+    // Check for demo source parameter (e.g., ?source=demo_purchase)
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoSource = urlParams.get('source');
+    
+    if (demoSource) {
+      // Demo mode - load from localStorage
+      console.log(`🎬 DEMO MODE: Loading from "${demoSource}"`);
+      const storageKey = `${demoSource}_products`;
+      const demoData = localStorage.getItem(storageKey);
+      
+      if (demoData) {
+        catalogCache = JSON.parse(demoData);
+        console.log('✅ Loaded from demo storage:', catalogCache.length, 'products');
+        return catalogCache;
+      } else {
+        console.error(`❌ Demo data not found for source: ${demoSource}`);
+        return [];
+      }
+    }
+    
     // Import worker config
     const { WORKER_CONFIG } = await import('../../../config/worker-config.js');
     

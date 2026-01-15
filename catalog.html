@@ -167,12 +167,25 @@
       virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
       
       try {
+        // Check for demo source parameter (e.g., ?source=demo_purchase)
+        const urlParams = new URLSearchParams(window.location.search);
+        const demoSource = urlParams.get('source');
+        
+        // Determine storage key based on source
+        const storageKey = demoSource ? `${demoSource}_products` : 'serpent_products_cache';
+        const storageTimeKey = demoSource ? `${demoSource}_products_timestamp` : 'serpent_products_cache_time';
+        
+        if (demoSource) {
+          console.log(`🎬 DEMO MODE: Using source "${demoSource}"`);
+          console.log(`📦 Storage key: ${storageKey}`);
+        }
+        
         // Check localStorage cache first (FAST!)
         console.log('🔍 Checking cache...');
-        const cached = localStorage.getItem('serpent_products_cache');
-        const cacheTime = localStorage.getItem('serpent_products_cache_time');
+        const cached = localStorage.getItem(storageKey);
+        const cacheTime = localStorage.getItem(storageTimeKey);
         const now = Date.now();
-        const CACHE_TTL = 300000; // 5 minutes
+        const CACHE_TTL = demoSource ? 999999999 : 300000; // Demo cache never expires
         
         let data;
         
@@ -197,6 +210,12 @@
           console.log('⚡ Using cached products (instant)');
           data = JSON.parse(cached);
           console.log(`📊 Loaded ${data.length} products from cache`);
+        } else if (demoSource) {
+          // Demo mode but no data - show error
+          console.error(`❌ Demo data not found for source: ${demoSource}`);
+          availableContainer.innerHTML = `<div class="error">Demo data not loaded. Run demo setup first.</div>`;
+          virtualContainer.innerHTML = '';
+          return;
         } else {
           // Fetch products from Worker API
           console.log('📡 Fetching from:', WORKER_URL + '/products');
@@ -213,8 +232,8 @@
           
           // Cache it
           console.log('💾 Caching products...');
-          localStorage.setItem('serpent_products_cache', JSON.stringify(data));
-          localStorage.setItem('serpent_products_cache_time', now.toString());
+          localStorage.setItem(storageKey, JSON.stringify(data));
+          localStorage.setItem(storageTimeKey, now.toString());
           console.log('✅ Products cached! Next load will be instant.');
         }
         

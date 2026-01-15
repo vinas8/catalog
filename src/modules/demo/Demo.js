@@ -443,7 +443,7 @@ export class Demo {
   /**
    * Load and display scenario
    */
-  loadScenario(index) {
+  async loadScenario(index) {
     if (index < 0 || index >= this.scenarios.length) return;
 
     this.currentScenario = this.scenarios[index];
@@ -452,6 +452,17 @@ export class Demo {
 
     this.renderStepsView();
     this.log(`🎬 Loaded: ${this.currentScenario.title}`, 'info');
+    
+    // Execute onStart lifecycle hook
+    if (this.currentScenario.onStart) {
+      this.log('🔧 Setting up demo environment...', 'info');
+      try {
+        await this.currentScenario.onStart(this);
+        this.log('✅ Demo environment ready', 'success');
+      } catch (err) {
+        this.log(`❌ Setup failed: ${err.message}`, 'error');
+      }
+    }
   }
 
   /**
@@ -573,6 +584,21 @@ export class Demo {
     } else {
       this.log('🎉 Scenario completed!', 'success');
       this.showStatus('✓ All steps completed', 'success');
+      
+      // Execute onEnd lifecycle hook
+      if (this.currentScenario.onEnd) {
+        this.executeScenarioEnd();
+      }
+    }
+  }
+
+  async executeScenarioEnd() {
+    this.log('🔧 Cleaning up demo...', 'info');
+    try {
+      await this.currentScenario.onEnd(this);
+      this.log('✅ Demo cleanup complete', 'success');
+    } catch (err) {
+      this.log(`❌ Cleanup failed: ${err.message}`, 'error');
     }
   }
 
