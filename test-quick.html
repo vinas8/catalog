@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Quick Test</title></head>
+<body>
+  <h1>Module Test</h1>
+  <pre id="output"></pre>
+  <script type="module">
+    const output = document.getElementById('output');
+    
+    try {
+      output.textContent += 'Loading module...\n';
+      
+      const module = await import('/src/modules/import/index.js');
+      output.textContent += 'Module loaded!\n';
+      output.textContent += 'Exports: ' + Object.keys(module).join(', ') + '\n';
+      
+      const { LocalStorageDestination } = module;
+      output.textContent += 'LocalStorageDestination: ' + typeof LocalStorageDestination + '\n';
+      
+      if (LocalStorageDestination) {
+        const dest = new LocalStorageDestination('test');
+        output.textContent += 'Instance created: ' + dest.constructor.name + '\n';
+        output.textContent += 'Namespace: ' + dest.namespace + '\n';
+      }
+      
+    } catch (err) {
+      output.textContent += 'ERROR: ' + err.message + '\n';
+      output.textContent += err.stack;
+    }
+  </script>
+</body>
+</html>

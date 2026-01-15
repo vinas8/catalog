@@ -67,9 +67,14 @@
     window.testImport = async () => {
       try {
         log('🔄 Loading import module...', 'info');
-        const { ImportManager, CSVSource, LocalStorageDestination } = await testModule();
+        const module = await testModule();
+        console.log('Full module:', module);
+        console.log('LocalStorageDestination type:', typeof module.LocalStorageDestination);
+        
+        const { ImportManager, CSVSource, LocalStorageDestination } = module;
         
         log('✅ Module loaded', 'success');
+        log(`LocalStorageDestination: ${typeof LocalStorageDestination}`, 'info');
         
         const demoCSV = `Name,Morph,Gender,YOB,Weight,Price
 Demo Snake 1,Banana Clown,Male,2024,150,350
