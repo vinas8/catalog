@@ -258,7 +258,12 @@
         const seenNames = new Set();
         
         // Sort by ID descending (newer products have higher IDs typically)
-        const sorted = [...filteredProducts].sort((a, b) => b.id.localeCompare(a.id));
+        // Handle missing IDs gracefully
+        const sorted = [...filteredProducts].sort((a, b) => {
+          const idA = a.id || '';
+          const idB = b.id || '';
+          return idB.localeCompare(idA);
+        });
         
         for (const product of sorted) {
           const name = product.name?.toLowerCase();
