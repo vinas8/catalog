@@ -101,14 +101,17 @@ export class CSVSource extends IImportSource {
       : 'ball_python';
 
     return {
+      id: `demo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID for demo
       name: row.Name.trim(),
       morph: row.Morph.trim(),
       gender: row.Gender,
       yob: parseInt(row.YOB),
       weight: row.Weight ? parseFloat(row.Weight) : null,
-      species,
+      price: row.Price ? parseFloat(row.Price) : null,
+      species: row.Species?.trim() || species,
       owner: null,
-      status: 'available'
+      status: 'available',
+      active: true // Match Stripe product format
     };
   }
 
