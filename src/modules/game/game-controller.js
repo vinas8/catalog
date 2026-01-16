@@ -1,4 +1,4 @@
-// Main Game Logic - Serpent Town v3.4
+// Main Game Logic - Serpent Town v0.7.7
 // User authentication via URL hash + user-specific data loading
 
 console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
