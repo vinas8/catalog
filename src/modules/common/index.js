@@ -5,6 +5,6 @@
 
 export const ENABLED = true;
 
-export { Core } from './core.js';
+export * from './core.js';  // Export all functions from core
 export * from './constants.js';
 export { getSnakeAvatar } from './snake-avatar.js';
