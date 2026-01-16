@@ -215,41 +215,6 @@
       debugInfo.innerHTML += `<div>[${timestamp}] ${message}</div>`;
     }
 
-    // Demo mode handler
-    if (isDemo && demoSource) {
-      log('🎬 DEMO MODE detected');
-      
-      const demoPurchase = localStorage.getItem('demo_last_purchase');
-      
-      if (demoPurchase) {
-        const purchase = JSON.parse(demoPurchase);
-        
-        log('✅ Demo purchase found', purchase);
-        
-        loading.style.display = 'none';
-        snakeDetails.style.display = 'block';
-        actions.style.display = 'flex';
-        statusMessage.textContent = '🎬 Demo Purchase Successful!';
-        
-        // Fill in details
-        document.getElementById('product-id').textContent = purchase.product.id;
-        document.getElementById('nickname').textContent = purchase.product.name;
-        document.getElementById('acquired-time').textContent = new Date(purchase.timestamp).toLocaleString();
-        document.getElementById('price-paid').textContent = `€${purchase.product.price}`;
-        document.getElementById('health').textContent = '100 ❤️';
-        
-        // Set game button link with demo parameters
-        gameBtn.href = `game.html?source=${demoSource}&user=demo_user_123`;
-        collectionBtn.href = `game.html?source=${demoSource}&user=demo_user_123`;
-        
-      } else {
-        showError('Demo purchase data not found');
-      }
-      
-      // Stop here - don't run real purchase flow
-    } else {
-      // Real purchase flow continues below...
-
     // Show error
     function showError(message) {
       loading.style.display = 'none';
@@ -281,6 +246,39 @@
       
       log('✅ SUCCESS: Snake loaded!', snake);
     }
+
+    // Demo mode handler
+    if (isDemo && demoSource) {
+      log('🎬 DEMO MODE detected');
+      
+      const demoPurchase = localStorage.getItem('demo_last_purchase');
+      
+      if (demoPurchase) {
+        const purchase = JSON.parse(demoPurchase);
+        
+        log('✅ Demo purchase found', purchase);
+        
+        loading.style.display = 'none';
+        snakeDetails.style.display = 'block';
+        actions.style.display = 'flex';
+        statusMessage.textContent = '🎬 Demo Purchase Successful!';
+        
+        // Fill in details
+        document.getElementById('product-id').textContent = purchase.product.id;
+        document.getElementById('nickname').textContent = purchase.product.name;
+        document.getElementById('acquired-time').textContent = new Date(purchase.timestamp).toLocaleString();
+        document.getElementById('price-paid').textContent = `€${purchase.product.price}`;
+        document.getElementById('health').textContent = '100 ❤️';
+        
+        // Set game button link with demo parameters
+        gameBtn.href = `game.html?source=${demoSource}&user=demo_user_123`;
+        collectionBtn.href = `game.html?source=${demoSource}&user=demo_user_123`;
+        
+      } else {
+        showError('Demo purchase data not found');
+      }
+    } else {
+      // Real purchase flow
 
     // Get user hash (from localStorage or Stripe session)
     async function getUserHash() {
