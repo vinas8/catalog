@@ -1121,7 +1121,7 @@ class SnakeMuffin {
     notification.textContent = message;
     document.body.appendChild(notification);
     
-    setTimeout(() => notification.remove(), TIMEOUTS.NOTIFICATION_AUTO_REMOVE);
+    setTimeout(() => notification.remove(), TIMEOUTS.NOTIFICATION_DURATION);
   }
   
   saveGame() {
