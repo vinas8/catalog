@@ -98,7 +98,7 @@ class SnakeMuffin {
   }
   
   async init() {
-    console.log('🐍 Snake Muffin v3.4 - Starting...');
+    console.log('🐍 Snake Muffin v0.7.7 - Starting...');
     
     // Load user from URL
     this.currentUser = await initializeUser();

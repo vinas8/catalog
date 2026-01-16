@@ -125,8 +125,16 @@
               products[idx].status = 'sold';
               products[idx].owner = 'demo_user_123';
               localStorage.setItem(storageKey, JSON.stringify(products));
-              alert('✅ Demo Purchase: ' + product.name + '\\n\\nGo to game.html?source=${demoSource}&user=demo_user_123 to see your snake!');
-              location.reload();
+              
+              // Store purchase info for success page
+              localStorage.setItem('demo_last_purchase', JSON.stringify({
+                product: products[idx],
+                source: '${demoSource}',
+                timestamp: Date.now()
+              }));
+              
+              // Redirect to success page (same flow as real purchase)
+              window.location.href = '/success.html?demo=true&source=${demoSource}';
             }
           " data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>🎬 Demo Buy - €${priceFormatted}</button>` :
           checkoutUrl ? 
