@@ -4,6 +4,7 @@
  */
 
 let catalogCache = null;
+let catalogCacheSource = null; // Track which source was cached
 
 /**
  * Load catalog from Worker API (production) or fallback to JSON (tests)
@@ -11,7 +12,17 @@ let catalogCache = null;
  * @returns {Promise<Array>} Array of product items
  */
 export async function loadCatalog() {
-  if (catalogCache) {
+  // Check for demo source parameter (e.g., ?source=demo_purchase)
+  const urlParams = new URLSearchParams(window.location.search);
+  const demoSource = urlParams.get('source');
+  
+  // Clear cache if source changed
+  if (catalogCacheSource && catalogCacheSource !== demoSource) {
+    catalogCache = null;
+    catalogCacheSource = null;
+  }
+  
+  if (catalogCache && catalogCacheSource === demoSource) {
     return catalogCache;
   }
   
@@ -28,6 +39,7 @@ export async function loadCatalog() {
       
       if (demoData) {
         catalogCache = JSON.parse(demoData);
+        catalogCacheSource = demoSource; // Track source
         console.log('✅ Loaded from demo storage:', catalogCache.length, 'products');
         return catalogCache;
       } else {
@@ -49,6 +61,7 @@ export async function loadCatalog() {
       
       // Handle different response formats
       catalogCache = Array.isArray(data) ? data : (data.products || []);
+      catalogCacheSource = null; // No demo source for API
       console.log('✅ Loaded from Worker API:', catalogCache.length, 'products');
       return catalogCache;
     }
