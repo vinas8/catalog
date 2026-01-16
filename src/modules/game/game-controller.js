@@ -10,7 +10,7 @@ import {
   DEFAULT_SNAKE_WEIGHT,
   TIMEOUTS,
   STRING_LIMITS
-} from '../common/index.js';
+} from '../common/index.js?v=0.7.7';
 import { SnakeDetailView } from './snake-detail-view.js';
 import { UI_CONFIG } from '../../config/ui-config.js';
 
