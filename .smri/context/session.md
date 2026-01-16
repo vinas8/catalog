@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-14 17:53:12 UTC  
-**Commit:** b2364d6  
+**Generated:** 2026-01-16 09:38:12 UTC  
+**Commit:** cb7deab  
 **Version:** 0.7.7
 
 ---
@@ -9,26 +9,26 @@
 
 ### Git Log (Last 20 commits)
 ```
-b2364d6 feat: Update Owner Dashboard demo with complete import architecture
-aa78ab4 feat: Complete import module with modular architecture
-cefe34f refactor: Make KV the source of truth, not Stripe
-64ba386 feat: Auto-create payment links during product import
-446f5f5 docs: Establish CSV as source of truth for imports
-65f6a71 docs: Update import architecture - sources and destinations are independent
-bdad650 docs: Add payment links integration guide for import module
-ae83c97 feat: Add Stripe payment link creation scripts
-73ab2c4 fix: Update demo to match actual functionality
-d325f26 fix: Improve demo product browsing guidance
-ecf6148 chore: Update SMRI context cache after demo fix
-08e0a98 fix: Add catalog view step after import in demo
-73b10a1 fix: Remove duplicate test-cache file
-76a758d refactor: Enforce proper endpoint structure
-787a3e4 docs: Add config module documentation
-ba1a1fd chore: Update SMRI context cache after deduplication fix
-f98dca0 feat: Add product deduplication by name
-f5ff601 fix: Allow products to show without Stripe payment links
-13ef918 fix: Show all products in catalog and add cache clear button
-2a8de19 fix: SMRI cleanup - remove violation files and fix demo flow
+cb7deab fix: Add cache busters to common module sub-imports
+10fae8f fix: Game loads demo snakes from localStorage when source param present
+410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
+f4ba50c fix: Add cache buster to common module import
+b7c15a3 fix: Update test to handle versioned script tags
+724de27 fix: Correct JavaScript structure in success.html
+6b2fd26 feat: Demo purchase follows real purchase flow with success page redirect
+c595d1e fix: Update version to 0.7.7 and improve cache busting
+19ab6f1 fix: Add cache buster to game-controller import
+fe3da39 fix: Add demo purchase buttons and fix Core export
+d60034c fix: Add source-aware caching to catalog module to support demo isolation
+3edc09c Add demo debug test tool for step-by-step verification
+1084320 feat: Add Cart module with SMRI facade pattern and registration
+8fe3f48 fix: Wait for onStart to complete before rendering steps
+357f647 fix: Handle missing id in product sort
+83c58a2 fix: Add id, price, and active fields to CSV imported products for catalog compatibility
+bbef0b9 Add isolated demo test with full purchase flow
+1abd60b feat: Add isolated demo system with lifecycle hooks and source parameter support
+bf57167 Fix: Use cleanup() instead of clear()
+2fd0f1b Add debug logging to test page
 ```
 
 ### Git Status
@@ -38,6 +38,16 @@ f5ff601 fix: Allow products to show without Stripe payment links
  M .smri/context/modules.txt
  M .smri/context/session.md
  M .smri/context/tree.txt
+ M scripts/smri-startup.sh
+ M scripts/smri-update-context.sh
+ M src/modules/cart/Cart.js
+ M src/modules/cart/index.js
+ M src/modules/game/game-controller.js
+?? .smri/context/test-full.txt
+?? .smri/context/test-summary.txt
+?? docs/CART-IMPLEMENTATION.md
+?? scripts/smri-check.sh
+?? scripts/smri-diff.sh
 ```
 
 ---
@@ -55,6 +65,7 @@ f5ff601 fix: Allow products to show without Stripe payment links
 │   ├── calculator.html
 │   └── index.html
 ├── cloudflare
+│   └── product-router.js
 ├── data
 │   ├── backup-20260102-192725
 │   ├── cache
@@ -85,6 +96,7 @@ f5ff601 fix: Allow products to show without Stripe payment links
 │   ├── smri-tests.js
 │   └── test-runner-simple.html
 ├── demo
+│   ├── customer-journeys
 │   └── index.html
 ├── dex
 │   ├── modules
@@ -93,8 +105,6 @@ f5ff601 fix: Allow products to show without Stripe payment links
 │   ├── pokedex-style.html
 │   ├── simple-grid.html
 │   └── trait-style.html
-├── docs
-│   ├── archive
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -358,6 +368,7 @@ Stripe (Payments & Webhooks)
 ```
 auth
 breeding
+cart
 common
 config
 demo
@@ -396,7 +407,7 @@ TestRenderer.js
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/game/game-controller.js: 1210 lines (max: 1000)
+[33m⚠️[0m src/modules/game/game-controller.js: 1240 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2202 lines (max: 1000)
 [34m
 📦 Checking Module Exports...[0m 
@@ -420,6 +431,16 @@ Script: scripts/check-consistency.cjs[0m
 
 ---
 
+## 🧪 Test Summary
+
+```
+🎉 All tests passed!
+🎉 All tests passed!
+🎉 All scenario tests passed!
+```
+
+---
+
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
@@ -429,10 +450,12 @@ All complete files are cached in `.smri/context/`:
 - `tree.txt` - Full directory tree
 - `git-log.txt` - Full git history
 - `health.txt` - Complete health check output
+- `test-summary.txt` - Test results summary
+- `test-full.txt` - Complete test output
 
 To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-14 17:53:14 UTC  
+**Context cached at:** 2026-01-16 09:38:13 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

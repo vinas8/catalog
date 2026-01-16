@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Demo Flow</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #0f0; }
+    .log { margin: 5px 0; padding: 5px; background: #000; }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .info { color: #0af; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Demo Flow Test</h1>
+  <div id="logs"></div>
+  
+  <script type="module">
+    const logsDiv = document.getElementById('logs');
+    const log = (msg, type = 'info') => {
+      console.log(msg);
+      const div = document.createElement('div');
+      div.className = `log ${type}`;
+      div.textContent = msg;
+      logsDiv.appendChild(div);
+    };
+    
+    async function testFlow() {
+      try {
+        log('━━━ Step 1: Import Demo Data ━━━', 'info');
+        
+        const { ImportManager, CSVSource, LocalStorageDestination } = 
+          await import('/src/modules/import/index.js');
+        
+        const storage = new LocalStorageDestination('test_flow');
+        const manager = new ImportManager();
+        manager.setSource(new CSVSource());
+        manager.setDestination(storage);
+        
+        const csvData = `Name,Morph,Gender,YOB,Weight,Price,Species
+Test Banana,Banana Clown,Male,2024,150,350,ball_python`;
+        
+        const validation = await manager.validate(csvData);
+        log(`✅ Validation: ${validation.valid}`, 'success');
+        
+        const result = await manager.import();
+        log(`✅ Import: ${result.written} products`, 'success');
+        
+        // Check what was created
+        const imported = JSON.parse(localStorage.getItem('test_flow_products'));
+        log(`📦 Created product:`, 'info');
+        log(`   - id: ${imported[0].id}`, 'info');
+        log(`   - name: ${imported[0].name}`, 'info');
+        log(`   - owner: ${imported[0].owner}`, 'info');
+        log(`   - status: ${imported[0].status}`, 'info');
+        
+        log('━━━ Step 2: Simulate Purchase ━━━', 'info');
+        
+        imported[0].status = 'sold';
+        imported[0].owner = 'demo_user_123';
+        localStorage.setItem('test_flow_products', JSON.stringify(imported));
+        
+        log(`✅ Updated: owner=${imported[0].owner}, status=${imported[0].status}`, 'success');
+        
+        log('━━━ Step 3: Test Game Loading ━━━', 'info');
+        
+        // Simulate what game-controller does
+        const products = JSON.parse(localStorage.getItem('test_flow_products'));
+        const ownedProducts = products.filter(p => p.owner === 'demo_user_123' && p.status === 'sold');
+        
+        log(`🔍 Filtered products: ${ownedProducts.length}`, ownedProducts.length > 0 ? 'success' : 'error');
+        
+        if (ownedProducts.length === 0) {
+          log('❌ NO PRODUCTS FOUND - Game would show empty!', 'error');
+          throw new Error('Filter returned no products');
+        }
+        
+        log(`✅ Found owned product: ${ownedProducts[0].name}`, 'success');
+        
+        // Test conversion (what game does)
+        const snake = {
+          id: ownedProducts[0].id,
+          product_id: ownedProducts[0].id,
+          nickname: ownedProducts[0].name,
+          species: ownedProducts[0].species,
+          morph: ownedProducts[0].morph
+        };
+        
+        log(`🐍 Converted to snake:`, 'info');
+        log(`   - id: ${snake.id}`, 'info');
+        log(`   - nickname: ${snake.nickname}`, 'info');
+        log(`   - species: ${snake.species}`, 'info');
+        
+        log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+        log('✅ ALL TESTS PASSED!', 'success');
+        log('Demo flow should work in game.html', 'success');
+        
+        // Cleanup
+        localStorage.removeItem('test_flow_products');
+        log('🧹 Cleaned up test data', 'info');
+        
+      } catch (err) {
+        log(`❌ TEST FAILED: ${err.message}`, 'error');
+        log(err.stack, 'error');
+      }
+    }
+    
+    testFlow();
+  </script>
+</body>
+</html>

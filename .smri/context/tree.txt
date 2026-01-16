@@ -8,6 +8,7 @@
 │   ├── calculator.html
 │   └── index.html
 ├── cloudflare
+│   └── product-router.js
 ├── data
 │   ├── backup-20260102-192725
 │   ├── cache
@@ -38,6 +39,7 @@
 │   ├── smri-tests.js
 │   └── test-runner-simple.html
 ├── demo
+│   ├── customer-journeys
 │   └── index.html
 ├── dex
 │   ├── modules
@@ -50,9 +52,12 @@
 │   ├── archive
 │   ├── customer
 │   ├── owner
+│   ├── CART-IMPLEMENTATION.md
 │   ├── DEBUG-CONSOLE.md
 │   ├── DEBUG-PANEL.md
+│   ├── DEMO-COMPLETE.md
 │   ├── GENETICS-MODULE-MAP.md
+│   ├── PRODUCT-URLS.md
 │   └── USER-SYSTEM.md
 ├── game
 │   └── index.html
@@ -83,6 +88,8 @@
 │   ├── find-dead-facades.cjs
 │   ├── kv-namespace-ids.txt
 │   ├── scan-functions.cjs
+│   ├── smri-check.sh
+│   ├── smri-diff.sh
 │   ├── smri-list-components.cjs
 │   ├── smri-list-functions.cjs
 │   ├── smri-list-scenarios.cjs
@@ -90,6 +97,8 @@
 │   ├── smri-save-context.sh
 │   ├── smri-startup.sh
 │   ├── smri-update-context.sh
+│   ├── test-demo-logic.sh
+│   ├── test-demo.sh
 │   ├── update-products-with-links.js
 │   ├── upload-test-products.sh
 │   └── validate-test-data.cjs
@@ -149,6 +158,7 @@
 │   ├── test-worker.js
 │   ├── worker.js
 │   └── wrangler.toml
+├── 404.html
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── CREDITS.md
@@ -156,12 +166,16 @@
 ├── PROJECT-STATUS.md
 ├── README.md
 ├── STRUCTURE.md
+├── _redirects
 ├── account.html
 ├── admin-kv.html
 ├── calculator-integrated.html
 ├── calculator.html
+├── catalog-router.html
 ├── catalog.html
+├── clear-cache.html
 ├── collection.html
+├── demo-isolated-test.html
 ├── dex.html
 ├── game.html
 ├── import.html
@@ -173,10 +187,14 @@
 ├── offline.html
 ├── package-lock.json
 ├── package.json
+├── product.html
 ├── src-structure.txt
 ├── styles.css
 ├── success.html
 ├── sw.js
-└── test-browser.cjs
+├── test-browser.cjs
+├── test-demo-debug.html
+├── test-localstorage-destination.html
+└── test-quick.html
 
-56 directories, 124 files
+57 directories, 141 files

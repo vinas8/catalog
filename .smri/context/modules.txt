@@ -1,5 +1,6 @@
 auth
 breeding
+cart
 common
 config
 demo

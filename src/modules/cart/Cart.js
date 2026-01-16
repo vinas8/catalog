@@ -134,6 +134,49 @@ export class Cart {
   }
 
   /**
+   * Create Stripe checkout session for cart items
+   * @param {string} userHash - User identifier
+   * @returns {Promise<string>} Stripe checkout URL
+   */
+  async checkout(userHash) {
+    if (this.items.length === 0) {
+      throw new Error('Cart is empty');
+    }
+
+    console.log('🛒 Creating checkout session for cart...');
+    
+    // Import worker config
+    const { WORKER_CONFIG } = await import('../../config/worker-config.js');
+    
+    // Create checkout with cart items
+    const response = await fetch(`${WORKER_CONFIG.WORKER_URL}/create-checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: this.items.map(item => ({
+          product_id: item.id,
+          name: item.name,
+          price: item.price
+        })),
+        user_hash: userHash
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Checkout failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Checkout URL created:', data.url);
+    
+    // Save user hash for success page
+    localStorage.setItem('serpent_pending_purchase_hash', userHash);
+    localStorage.setItem('serpent_user_hash', userHash);
+    
+    return data.url;
+  }
+
+  /**
    * Get cart metadata
    * @returns {Object}
    */

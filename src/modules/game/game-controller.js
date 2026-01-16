@@ -182,7 +182,7 @@ class SnakeMuffin {
         debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:#000;color:#0f0;padding:5px;z-index:99999;font-size:10px;';
         debugDiv.textContent = msg;
         document.body.appendChild(debugDiv);
-        setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
+        setTimeout(() => debugDiv.remove(), 5000); // 5 seconds
       }
     };
 
@@ -269,7 +269,7 @@ class SnakeMuffin {
       debugDiv.style.cssText = 'position:fixed;top:200px;left:10px;background:#f0f;color:#fff;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
       debugDiv.textContent = msg;
       document.body.appendChild(debugDiv);
-      setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
+      setTimeout(() => debugDiv.remove(), 5000);
     };
     
     debug(`🔄 Converting ${userProducts.length} products...`);
@@ -287,8 +287,8 @@ class SnakeMuffin {
         debug('⚠️ Worker catalog not available, using product data from purchase');
         // Convert using only the data from user products
         return userProducts.map((up, index) => ({
-          id: up.assignment_id || up.product_id,
-          product_id: up.product_id,
+          id: up.assignment_id || up.product_id || up.id, // Support demo products with just 'id'
+          product_id: up.product_id || up.id,
           nickname: up.nickname || up.name || `Snake ${index + 1}`,
           species: up.species || 'ball_python',
           morph: up.morph || 'normal',
@@ -319,11 +319,11 @@ class SnakeMuffin {
       debug(`✅ Loaded ${products.length} products from worker`);
       
       return userProducts.map(up => {
-      const product = products.find(p => p.id === up.product_id);
+      const product = products.find(p => p.id === (up.product_id || up.id));
       
       return {
-        id: up.assignment_id,
-        product_id: up.product_id,
+        id: up.assignment_id || up.id, // Support demo products
+        product_id: up.product_id || up.id,
         user_id: up.user_id,
         nickname: up.nickname || up.name || product?.name || `Snake ${products.indexOf(product) + 1}`,
         species: product?.species || up.species || 'ball_python',
@@ -577,7 +577,7 @@ class SnakeMuffin {
       debugDiv.style.cssText = 'position:fixed;bottom:10px;left:10px;background:#ff0;color:#000;padding:5px;z-index:99999;font-size:10px;max-width:300px;';
       debugDiv.textContent = msg;
       document.body.appendChild(debugDiv);
-      setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_MESSAGE_AUTO_REMOVE);
+      setTimeout(() => debugDiv.remove(), 5000);
     };
     
     debug(`🎯 Context: ${this.context}`);
