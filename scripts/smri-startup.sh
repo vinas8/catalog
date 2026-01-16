@@ -21,16 +21,47 @@ echo ""
 echo "📋 Phase 1: Checking context cache..."
 echo ""
 
+CURRENT_COMMIT=$(git log -1 --format="%h" 2>/dev/null || echo "unknown")
+NEEDS_UPDATE=false
+
 # Check if context directory exists and has any files
 if [ -d "$CONTEXT_DIR" ] && [ "$(ls -A $CONTEXT_DIR 2>/dev/null)" ]; then
     echo "✅ Context cache found"
+    
+    # Load cache metadata
     if [ -f "$CONTEXT_DIR/LAST_UPDATE.txt" ]; then
         source "$CONTEXT_DIR/LAST_UPDATE.txt" 2>/dev/null
         echo "   Last update: ${DATE:-unknown} ${TIME:-unknown} UTC"
         echo "   Commit: ${COMMIT_SHORT:-unknown}"
+        
+        # Track usage count
+        USAGE_COUNT=${USAGE_COUNT:-0}
+        USAGE_COUNT=$((USAGE_COUNT + 1))
+        
+        # Update usage count in cache
+        sed -i "s/^USAGE_COUNT=.*/USAGE_COUNT=$USAGE_COUNT/" "$CONTEXT_DIR/LAST_UPDATE.txt" 2>/dev/null || \
+            echo "USAGE_COUNT=$USAGE_COUNT" >> "$CONTEXT_DIR/LAST_UPDATE.txt"
+        
+        # Check if HEAD changed
+        if [ "$COMMIT_SHORT" != "$CURRENT_COMMIT" ]; then
+            echo "   ⚠️  HEAD changed: $COMMIT_SHORT → $CURRENT_COMMIT"
+            echo "   🔄 Auto-updating cache..."
+            NEEDS_UPDATE=true
+        elif [ "$USAGE_COUNT" -ge 10 ]; then
+            echo "   ⚠️  Cache used $USAGE_COUNT times since last update"
+            echo "   💡 Consider running: .smri update"
+        else
+            echo "   📊 Cache usage: $USAGE_COUNT/10 (auto-refresh at 10)"
+        fi
     fi
     echo "   Files cached: $(ls -1 $CONTEXT_DIR | wc -l)"
-    echo "   Using cached context"
+    
+    if [ "$NEEDS_UPDATE" = true ]; then
+        echo ""
+        bash "$UPDATE_SCRIPT"
+    else
+        echo "   Using cached context"
+    fi
 else
     echo "ℹ️  No context cache found"
     echo "   Generating fresh context..."
@@ -78,6 +109,8 @@ echo ""
 echo "🎯 Commands:"
 echo "  .smri         - Reload (uses cache if exists)"
 echo "  .smri update  - Regenerate context cache"
+echo "  .smri check   - Validate structure without full reload"
+echo "  .smri diff    - Show changes since last cache"
 echo "  .smri save    - Save session notes to logs/"
 echo ""
 echo "📐 SMRI Format: S{M}.{RRR}.{II}"

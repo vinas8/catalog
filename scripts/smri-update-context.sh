@@ -70,13 +70,25 @@ else
 fi
 
 # ============================================
-# 5. Health Check
+# 5. Health Check & Tests
 # ============================================
 echo "  🏥 Health check..."
 if [ -f "package.json" ]; then
     npm run dev:check 2>&1 | tail -30 > "$CONTEXT_DIR/health.txt" || echo "Health check failed" > "$CONTEXT_DIR/health.txt"
 else
     echo "No package.json" > "$CONTEXT_DIR/health.txt"
+fi
+
+echo "  🧪 Test summary..."
+if [ -f "package.json" ]; then
+    # Run tests and extract summary
+    TEST_OUTPUT=$(npm test 2>&1 || true)
+    echo "$TEST_OUTPUT" > "$CONTEXT_DIR/test-full.txt"
+    
+    # Extract just the summary line
+    echo "$TEST_OUTPUT" | grep -E "(passing|failing|tests pass)" | tail -5 > "$CONTEXT_DIR/test-summary.txt" || echo "No test results" > "$CONTEXT_DIR/test-summary.txt"
+else
+    echo "No tests available" > "$CONTEXT_DIR/test-summary.txt"
 fi
 
 # ============================================
@@ -162,6 +174,14 @@ $(cat "$CONTEXT_DIR/health.txt")
 
 ---
 
+## 🧪 Test Summary
+
+\`\`\`
+$(cat "$CONTEXT_DIR/test-summary.txt")
+\`\`\`
+
+---
+
 ## 📖 Full Documentation Available
 
 All complete files are cached in \`.smri/context/\`:
@@ -171,6 +191,8 @@ All complete files are cached in \`.smri/context/\`:
 - \`tree.txt\` - Full directory tree
 - \`git-log.txt\` - Full git history
 - \`health.txt\` - Complete health check output
+- \`test-summary.txt\` - Test results summary
+- \`test-full.txt\` - Complete test output
 
 To read any file: \`cat .smri/context/{filename}\`
 
@@ -190,6 +212,7 @@ TIME=$(date -u +"%H:%M:%S")
 COMMIT=$LAST_COMMIT
 COMMIT_SHORT=$LAST_COMMIT_SHORT
 VERSION=$(cat package.json | grep '"version"' | cut -d'"' -f4 2>/dev/null || echo "unknown")
+USAGE_COUNT=0
 EOFUPDATE
 
 echo ""
