@@ -54,7 +54,7 @@ test('Links to styles.css', () => {
 
 test('Links to game controller as module', () => {
   assert(html.includes('type="module"'), 'Missing ES6 module type');
-  assert(html.includes('src="src/modules/game/game-controller.js"'), 'Missing game-controller.js script');
+  assert(html.includes('src/modules/game/game-controller.js'), 'Missing game-controller.js script');
 });
 
 test('Has viewport meta tag', () => {
