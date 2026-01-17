@@ -113,11 +113,13 @@
                         species: 'ball_python',
                         gender: 'Male',
                         yob: '2024',
-                        price: '299'
+                        price: '299',
+                        stripe_link: 'https://buy.stripe.com/test_demo_link_00000000000028g4gg'
                       },
                       price: 299,
                       status: 'available',
-                      type: 'real'
+                      type: 'real',
+                      stripe_link: 'https://buy.stripe.com/test_demo_link_00000000000028g4gg' // Demo Stripe link
                     };
                     
                     // Save to demo-isolated localStorage
@@ -226,7 +228,7 @@
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const buyBtn = doc.querySelector('.cta-button');
+                    const buyBtn = doc.querySelector('.btn-buy');
                     
                     if (!buyBtn) {
                       demo.log('❌ ERROR: No buy button found', 'error');
@@ -236,10 +238,10 @@
                     const btnText = buyBtn.textContent.trim();
                     demo.log(`🔎 Button text: "${btnText}"`, 'info');
                     
-                    if (btnText.includes('€') && !btnText.includes('Link Needed')) {
+                    if (btnText.includes('€') && btnText.includes('Buy Now')) {
                       demo.log('✅ SUCCESS: Snake is buyable with Stripe link', 'success');
                       demo.log(`💰 Price: ${btnText}`, 'info');
-                    } else if (btnText.includes('Link Needed')) {
+                    } else if (btnText.includes('Contact')) {
                       demo.log('❌ ERROR: Snake NOT buyable (no Stripe payment link)', 'error');
                       demo.log('💡 Fix: Add payment link in Stripe product metadata', 'info');
                       throw new Error('Snake not buyable - missing Stripe payment link');
@@ -266,9 +268,9 @@
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const buyBtn = doc.querySelector('.cta-button:not(.disabled)');
+                    const buyBtn = doc.querySelector('.btn-buy:not([disabled])');
                     
-                    if (buyBtn && !buyBtn.textContent.includes('Link Needed')) {
+                    if (buyBtn && !buyBtn.textContent.includes('Contact')) {
                       demo.log('💳 Stripe checkout available', 'success');
                       demo.log('💡 Click button to open Stripe payment page', 'info');
                       demo.log('⚠️ Test mode: Use card 4242 4242 4242 4242', 'info');
@@ -421,6 +423,13 @@ Chocolate,Pastel,Female,2023,`;
                   
                   if (importResult.success) {
                     demo.log(`✅ Uploaded ${importResult.written} products`, 'success');
+                    // Check if payment links were created
+                    const withLinks = importResult.results?.filter(r => r.stripe_link)?.length || 0;
+                    if (withLinks > 0) {
+                      demo.log(`💳 Created ${withLinks} Stripe payment links`, 'success');
+                    } else {
+                      demo.log('⚠️ No payment links created - products may not be buyable', 'warning');
+                    }
                   } else {
                     demo.log(`❌ Upload failed`, 'error');
                     return;
