@@ -359,23 +359,32 @@
         `;
       } else {
         // Catalog product - show purchase info
+        // Handle Stripe metadata format
+        const displayName = product.name || product.metadata?.nickname || 'Unknown';
+        const displayMorph = product.metadata?.morph || product.morph || 'Unknown';
+        const displayGender = product.metadata?.gender || product.gender || 'Unknown';
+        const displayYob = product.metadata?.yob || product.yob || 'Unknown';
+        const displayWeight = product.metadata?.weight || product.weight || null;
+        const displayPrice = product.metadata?.price || product.price || 150;
+        
         document.getElementById('page-description').content = 
-          `Buy ${product.name}, a ${product.morph} ${slugToTitle(species)}. ${product.gender}, born ${product.yob}.`;
+          `Buy ${displayName}, a ${displayMorph} ${slugToTitle(species)}. ${displayGender}, born ${displayYob}.`;
         
         document.getElementById('og-title').content = title;
         document.getElementById('og-description').content = 
-          `${product.morph} ${slugToTitle(species)} - ${product.gender}, ${product.yob}`;
+          `${displayMorph} ${slugToTitle(species)} - ${displayGender}, ${displayYob}`;
         document.getElementById('og-url').content = window.location.href;
         document.getElementById('canonical-url').href = window.location.href;
         
-        const price = product.price || 150;
-        const status = product.status || 'available';
+        const price = typeof displayPrice === 'number' ? displayPrice : parseFloat(displayPrice) || 150;
+        const status = product.status || (product.active !== false ? 'available' : 'sold');
         const statusBadge = status === 'available' 
           ? '<span class="status-badge status-available">✅ Available</span>'
           : '<span class="status-badge status-sold">❌ Sold</span>';
         
-        const buyButton = product.stripePaymentLink 
-          ? `<button class="btn-buy" onclick="window.location.href='${product.stripePaymentLink}'">💳 Buy Now - €${price}</button>`
+        // Use stripe_link (not stripePaymentLink)
+        const buyButton = product.stripe_link 
+          ? `<button class="btn-buy" onclick="window.location.href='${product.stripe_link}'">💳 Buy Now - €${price}</button>`
           : `<button class="btn-buy" disabled style="opacity: 0.5;">Contact for Price</button>`;
         
         document.getElementById('product-content').innerHTML = `
@@ -385,9 +394,9 @@
             </div>
             
             <div class="product-info">
-              <h1>${product.name}</h1>
+              <h1>${displayName}</h1>
               <div class="product-meta">
-                ${product.morph} • ${slugToTitle(species)} • ${statusBadge}
+                ${displayMorph} • ${slugToTitle(species)} • ${statusBadge}
               </div>
               
               <div class="product-price">€${price}</div>
@@ -399,19 +408,19 @@
                 </div>
                 <div class="detail-row">
                   <strong>Morph:</strong>
-                  <span>${product.morph}</span>
+                  <span>${displayMorph}</span>
                 </div>
                 <div class="detail-row">
                   <strong>Gender:</strong>
-                  <span>${product.gender || 'Unknown'}</span>
+                  <span>${displayGender}</span>
                 </div>
                 <div class="detail-row">
                   <strong>Year of Birth:</strong>
-                  <span>${product.yob || 'Unknown'}</span>
+                  <span>${displayYob}</span>
                 </div>
                 <div class="detail-row">
                   <strong>Weight:</strong>
-                  <span>${product.weight ? product.weight + 'g' : 'TBD'}</span>
+                  <span>${displayWeight ? displayWeight + 'g' : 'TBD'}</span>
                 </div>
               </div>
               

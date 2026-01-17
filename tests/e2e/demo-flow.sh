@@ -7,7 +7,7 @@
 set -e
 
 # Test configuration
-WORKER_URL="https://serpent-town-catalog.smij151.workers.dev"
+WORKER_URL="https://catalog.navickaszilvinas.workers.dev"
 API_KEY="smij151-catalog-admin-2024"
 
 # Colors
