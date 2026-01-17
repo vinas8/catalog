@@ -1065,8 +1065,44 @@ export async function handleStripeProductWebhook(eventOrRequest, env, corsHeader
 /**
  * Convert Stripe product to our schema and save to KV
  */
+/**
+ * Parse morph and other details from product description
+ * Expected format: "Banana Het Clown - Male, 2024"
+ */
+function parseProductDescription(description, name) {
+  if (!description) return { morph: 'normal', sex: 'unknown', birth_year: 2024 };
+  
+  // Split on " - " to separate morph from other details
+  const parts = description.split(' - ');
+  const morph = parts[0]?.trim() || 'normal';
+  
+  // Parse sex and year from second part (e.g., "Male, 2024")
+  let sex = 'unknown';
+  let birth_year = 2024;
+  
+  if (parts[1]) {
+    const details = parts[1].split(',').map(s => s.trim());
+    // First part is usually sex
+    if (details[0] && (details[0].toLowerCase() === 'male' || details[0].toLowerCase() === 'female')) {
+      sex = details[0].toLowerCase();
+    }
+    // Second part is usually year
+    if (details[1]) {
+      const year = parseInt(details[1]);
+      if (!isNaN(year) && year >= 2000 && year <= 2030) {
+        birth_year = year;
+      }
+    }
+  }
+  
+  return { morph, sex, birth_year };
+}
+
 async function updateProductInKV(stripeProduct, env) {
   console.log('📝 Updating product:', stripeProduct.id);
+  
+  // Parse morph and details from description
+  const parsed = parseProductDescription(stripeProduct.description, stripeProduct.name);
   
   // Convert Stripe format to our format
   const product = {
@@ -1075,10 +1111,11 @@ async function updateProductInKV(stripeProduct, env) {
     description: stripeProduct.description || '',
     images: stripeProduct.images || [],
     species: stripeProduct.metadata?.species || 'ball_python',
-    morph: stripeProduct.metadata?.morph || 'normal',
-    sex: stripeProduct.metadata?.sex || 'unknown',
-    birth_year: parseInt(stripeProduct.metadata?.birth_year || '2024'),
+    morph: parsed.morph,
+    sex: stripeProduct.metadata?.sex || parsed.sex,
+    birth_year: parseInt(stripeProduct.metadata?.birth_year || parsed.birth_year),
     weight_grams: parseInt(stripeProduct.metadata?.weight_grams || '100'),
+    stripe_link: stripeProduct.metadata?.stripe_link || null,
     type: 'real',
     status: 'available',
     source: 'stripe'
@@ -1839,11 +1876,40 @@ async function handleSyncStripeToKV(env, corsHeaders) {
     const results = [];
     for (const product of products) {
       try {
-        // Enrich product with stripe_link from metadata
+        // Parse morph and details from description
+        const parsed = parseProductDescription(product.description, product.name);
+        
+        // Transform to our format
         const enrichedProduct = {
-          ...product,
-          stripe_link: product.metadata?.stripe_link || null
+          id: product.id,
+          name: product.name,
+          description: product.description || '',
+          images: product.images || [],
+          species: product.metadata?.species || 'ball_python',
+          morph: parsed.morph,
+          sex: product.metadata?.sex || parsed.sex,
+          birth_year: parseInt(product.metadata?.birth_year || parsed.birth_year),
+          weight_grams: parseInt(product.metadata?.weight_grams || '100'),
+          stripe_link: product.metadata?.stripe_link || null,
+          type: 'real',
+          status: 'available',
+          source: 'stripe'
         };
+        
+        // Also need to get price from Stripe
+        const pricesResponse = await fetch(`https://api.stripe.com/v1/prices?product=${product.id}&active=true&limit=1`, {
+          headers: {
+            'Authorization': `Bearer ${stripeKey}`
+          }
+        });
+        
+        if (pricesResponse.ok) {
+          const { data: prices } = await pricesResponse.json();
+          if (prices.length > 0) {
+            enrichedProduct.price = prices[0].unit_amount / 100;
+            enrichedProduct.currency = prices[0].currency;
+          }
+        }
         
         await env.PRODUCTS.put(`product:${product.id}`, JSON.stringify(enrichedProduct));
         results.push({ id: product.id, name: product.name, success: true });
@@ -1851,6 +1917,9 @@ async function handleSyncStripeToKV(env, corsHeaders) {
         results.push({ id: product.id, name: product.name, success: false, error: err.message });
       }
     }
+    
+    // Rebuild product index
+    await rebuildProductIndex(env);
 
     const successCount = results.filter(r => r.success).length;
 

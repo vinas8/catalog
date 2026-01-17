@@ -199,7 +199,7 @@
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const btn = doc.querySelector('.view-details-btn');
+                    const btn = doc.querySelector('.btn-view-details');
                     
                     if (btn) {
                       demo.log('🖱️ Clicking View Details...', 'info');
@@ -218,7 +218,6 @@
             {
               title: 'Step 6: Check Buyable',
               description: 'Verify purchase button exists',
-              url: '/product.html',
               action: async (demo) => {
                 demo.log('🔍 Checking if snake is buyable...', 'info');
                 await demo.wait(3000); // Wait for product page to load
@@ -259,7 +258,6 @@
             {
               title: 'Step 7: Purchase (if buyable)',
               description: 'Attempt Stripe checkout',
-              url: '/product.html',
               action: async (demo) => {
                 demo.log('🛒 Checking purchase option...', 'info');
                 await demo.wait(1000);

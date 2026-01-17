@@ -1,3 +1,6 @@
+c839793 archive: Move broken demo lifecycle files to archive
+1237de6 docs: Add comprehensive demo lifecycle implementation documentation
+99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
 cb7deab fix: Add cache busters to common module sub-imports
 10fae8f fix: Game loads demo snakes from localStorage when source param present
 410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
@@ -15,6 +18,3 @@ d60034c fix: Add source-aware caching to catalog module to support demo isolatio
 357f647 fix: Handle missing id in product sort
 83c58a2 fix: Add id, price, and active fields to CSV imported products for catalog compatibility
 bbef0b9 Add isolated demo test with full purchase flow
-1abd60b feat: Add isolated demo system with lifecycle hooks and source parameter support
-bf57167 Fix: Use cleanup() instead of clear()
-2fd0f1b Add debug logging to test page

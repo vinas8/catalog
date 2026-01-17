@@ -8,10 +8,8 @@ import {
   getSnakeAvatar,
   DEFAULT_SNAKE_STATS, 
   DEFAULT_SNAKE_WEIGHT,
-  TIMEOUTS,
   STRING_LIMITS
 } from '../common/index.js?v=0.7.7';
-import { SnakeDetailView } from './snake-detail-view.js';
 import { UI_CONFIG } from '../../config/ui-config.js';
 
 // Dynamic imports
@@ -792,7 +790,7 @@ class SnakeMuffin {
       });
     });
     
-    // Click terrarium container to open/view details
+    // Click terrarium container to navigate to product page
     document.querySelectorAll('.terrarium-container, .terrarium-glass, .enclosure-display').forEach(container => {
       container.style.cursor = 'pointer';
       container.addEventListener('click', (e) => {
@@ -802,17 +800,7 @@ class SnakeMuffin {
         const card = e.target.closest('.snake-card');
         if (card) {
           const snakeId = card.dataset.snakeId;
-          // Add opening animation
-          const terrarium = card.querySelector('.terrarium-container');
-          if (terrarium) {
-            terrarium.classList.add('opening');
-            setTimeout(() => {
-              this.showSnakeDetailModal(snakeId);
-              terrarium.classList.remove('opening');
-            }, 300);
-          } else {
-            this.showSnakeDetailModal(snakeId);
-          }
+          this.showSnakeDetailModal(snakeId); // This now navigates to product page
         }
       });
     });
@@ -1019,31 +1007,18 @@ class SnakeMuffin {
     const snake = this.gameState.snakes.find(s => s.id === snakeId);
     if (!snake) return;
     
-    const detailView = new SnakeDetailView(snake);
-    const modal = document.createElement('div');
-    modal.className = 'modal snake-detail-modal';
-    modal.style.display = 'flex';
+    // Navigate to product page instead of modal
+    const species = (snake.species || 'ball-pythons').toLowerCase().replace('_', '-');
+    const morph = (snake.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+    const name = (snake.nickname || snake.id).toLowerCase().replace(/\s+/g, '-');
     
-    modal.innerHTML = `
-      <div class="modal-content large">
-        <div class="modal-header">
-          <h2>🐍 ${snake.nickname}</h2>
-          <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
-        </div>
-        <div class="modal-body">
-          ${detailView.render()}
-        </div>
-      </div>
-    `;
+    // Use query param for dev, clean URL for production
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const productUrl = isDev 
+      ? `/product.html?url=/en/catalog/${species}/${morph}/${name}`
+      : `/en/catalog/${species}/${morph}/${name}`;
     
-    document.body.appendChild(modal);
-    
-    // Close on backdrop click
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
+    window.location.href = productUrl;
   }
   
   async renderCatalogView() {
@@ -1151,7 +1126,7 @@ class SnakeMuffin {
     notification.textContent = message;
     document.body.appendChild(notification);
     
-    setTimeout(() => notification.remove(), TIMEOUTS.NOTIFICATION_DURATION);
+    notification.addEventListener('animationend', () => notification.remove());
   }
   
   saveGame() {

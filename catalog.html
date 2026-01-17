@@ -393,14 +393,20 @@
         const btn = e.target.closest('.btn-view-details');
         try {
           const productData = JSON.parse(btn.dataset.product);
-          const species = (productData.species || 'ball-pythons').toLowerCase().replace('_', '-');
-          const morph = (productData.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+          // Handle both Stripe format (metadata.*) and legacy format
+          const species = (productData.metadata?.species || productData.species || 'ball_python').toLowerCase().replace('_', '-');
+          const morph = (productData.metadata?.morph || productData.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
           const name = (productData.name || productData.id).toLowerCase().replace(/\s+/g, '-');
+          
+          // Check if we're in demo mode
+          const urlParams = new URLSearchParams(window.location.search);
+          const demoSource = urlParams.get('source');
+          const sourceParam = demoSource ? `&source=${demoSource}` : '';
           
           // Use query param for dev, clean URL for production
           const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
           const productUrl = isDev 
-            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}`
+            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`
             : `/en/catalog/${species}/${morph}/${name}`;
           
           window.location.href = productUrl;

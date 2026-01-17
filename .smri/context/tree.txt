@@ -175,7 +175,6 @@
 ├── catalog.html
 ├── clear-cache.html
 ├── collection.html
-├── demo-isolated-test.html
 ├── dex.html
 ├── game.html
 ├── import.html
@@ -193,8 +192,7 @@
 ├── success.html
 ├── sw.js
 ├── test-browser.cjs
-├── test-demo-debug.html
 ├── test-localstorage-destination.html
 └── test-quick.html
 
-57 directories, 141 files
+57 directories, 139 files

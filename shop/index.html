@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buy Snakes Online - Snake Muffin</title>
   <meta name="description" content="Buy ball pythons and corn snakes online. Safe shipping, captive bred, quality guaranteed. Snake Muffin snake shop.">
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/img/icon-192.png">
+  
   <link rel="stylesheet" href="styles.css">
   <script src="src/utils/debug-loader.js"></script>
+  <script type="module" src="src/components/PWAInstallButton.js"></script>
 </head>
 <body>
   <script type="module" src="src/components/Navigation.js"></script>
@@ -23,6 +31,7 @@
         <option value="ball_python">Ball Python</option>
         <option value="corn_snake">Corn Snake</option>
       </select>
+      <button onclick="localStorage.removeItem('serpent_products_cache'); localStorage.removeItem('serpent_products_cache_time'); location.reload();" style="margin-left: 10px;">🔄 Clear Cache</button>
     </div>
 
     <!-- Available Real Snakes -->
@@ -89,6 +98,10 @@
       const price = product.metadata?.price || product.price || 150;
       const priceFormatted = typeof price === 'number' ? price.toFixed(2) : price;
       
+      // Check if in demo mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const demoSource = urlParams.get('source');
+      
       // Checkout URL - use Stripe payment link from product
       let checkoutUrl = product.stripe_link;
       
@@ -99,17 +112,38 @@
       const soldClass = isSold ? 'sold' : '';
       const soldBadge = isSold ? '<span class="sold-badge">SOLD</span>' : '';
       
-      // Always show buy button if we have a checkout URL (price defaults to 150)
-      const canBuy = checkoutUrl && price;
+      // Demo mode: Use demo purchase button
       const buyButton = isSold ? 
         '<button class="primary-btn" disabled style="opacity: 0.5;">Sold Out</button>' :
-        canBuy ? 
-          `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
-            localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
-            localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
-            localStorage.setItem('serpent_user_hash', '${userHash}');
-          ">💳 Buy Now - €${priceFormatted}</a>` :
-          '<button class="primary-btn" disabled style="opacity: 0.5;">Price Not Set</button>';
+        demoSource ? 
+          `<button class="primary-btn" onclick="
+            const product = JSON.parse(this.getAttribute('data-product'));
+            const storageKey = '${demoSource}_products';
+            const products = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const idx = products.findIndex(p => p.id === product.id);
+            if (idx >= 0) {
+              products[idx].status = 'sold';
+              products[idx].owner = 'demo_user_123';
+              localStorage.setItem(storageKey, JSON.stringify(products));
+              
+              // Store purchase info for success page
+              localStorage.setItem('demo_last_purchase', JSON.stringify({
+                product: products[idx],
+                source: '${demoSource}',
+                timestamp: Date.now()
+              }));
+              
+              // Redirect to success page (same flow as real purchase)
+              window.location.href = '/success.html?demo=true&source=${demoSource}';
+            }
+          " data-product='${JSON.stringify(product).replace(/'/g, "&apos;")}'>🎬 Demo Buy - €${priceFormatted}</button>` :
+          checkoutUrl ? 
+            `<a href="${checkoutUrl}" target="_blank" class="primary-btn" onclick="
+              localStorage.setItem('serpent_pending_purchase_hash', '${userHash}');
+              localStorage.setItem('serpent_last_purchase_hash', '${userHash}');
+              localStorage.setItem('serpent_user_hash', '${userHash}');
+            ">💳 Buy Now - €${priceFormatted}</a>` :
+            `<button class="primary-btn" disabled style="opacity: 0.7;">€${priceFormatted} (Link Needed)</button>`;
       
       return `
         <div class="catalog-item ${soldClass}" data-product-id="${product.id}">
@@ -158,12 +192,25 @@
       virtualContainer.innerHTML = '<div class="loading">Loading...</div>';
       
       try {
+        // Check for demo source parameter (e.g., ?source=demo_purchase)
+        const urlParams = new URLSearchParams(window.location.search);
+        const demoSource = urlParams.get('source');
+        
+        // Determine storage key based on source
+        const storageKey = demoSource ? `${demoSource}_products` : 'serpent_products_cache';
+        const storageTimeKey = demoSource ? `${demoSource}_products_timestamp` : 'serpent_products_cache_time';
+        
+        if (demoSource) {
+          console.log(`🎬 DEMO MODE: Using source "${demoSource}"`);
+          console.log(`📦 Storage key: ${storageKey}`);
+        }
+        
         // Check localStorage cache first (FAST!)
         console.log('🔍 Checking cache...');
-        const cached = localStorage.getItem('serpent_products_cache');
-        const cacheTime = localStorage.getItem('serpent_products_cache_time');
+        const cached = localStorage.getItem(storageKey);
+        const cacheTime = localStorage.getItem(storageTimeKey);
         const now = Date.now();
-        const CACHE_TTL = 300000; // 5 minutes
+        const CACHE_TTL = demoSource ? 999999999 : 300000; // Demo cache never expires
         
         let data;
         
@@ -188,6 +235,10 @@
           console.log('⚡ Using cached products (instant)');
           data = JSON.parse(cached);
           console.log(`📊 Loaded ${data.length} products from cache`);
+        } else if (demoSource) {
+          // Demo mode but no data - treat as empty (not error)
+          console.log(`🎬 Demo mode: No data yet for source "${demoSource}" - showing empty state`);
+          data = []; // Empty array = valid state for demo start
         } else {
           // Fetch products from Worker API
           console.log('📡 Fetching from:', WORKER_URL + '/products');
@@ -204,8 +255,8 @@
           
           // Cache it
           console.log('💾 Caching products...');
-          localStorage.setItem('serpent_products_cache', JSON.stringify(data));
-          localStorage.setItem('serpent_products_cache_time', now.toString());
+          localStorage.setItem(storageKey, JSON.stringify(data));
+          localStorage.setItem(storageTimeKey, now.toString());
           console.log('✅ Products cached! Next load will be instant.');
         }
         
@@ -225,8 +276,30 @@
         
         console.log('✅ After species filter:', filteredProducts.length);
         
+        // Deduplicate by name (keep newest based on ID)
+        const uniqueProducts = [];
+        const seenNames = new Set();
+        
+        // Sort by ID descending (newer products have higher IDs typically)
+        // Handle missing IDs gracefully
+        const sorted = [...filteredProducts].sort((a, b) => {
+          const idA = a.id || '';
+          const idB = b.id || '';
+          return idB.localeCompare(idA);
+        });
+        
+        for (const product of sorted) {
+          const name = product.name?.toLowerCase();
+          if (name && !seenNames.has(name)) {
+            seenNames.add(name);
+            uniqueProducts.push(product);
+          }
+        }
+        
+        console.log('✅ After deduplication:', uniqueProducts.length, '(removed', filteredProducts.length - uniqueProducts.length, 'duplicates)');
+        
         // All Stripe products are "real" (not virtual), available (active=true)
-        const realProducts = filteredProducts.filter(p => p.active !== false);
+        const realProducts = uniqueProducts.filter(p => p.active !== false);
         const virtualProducts = []; // No virtual products from Stripe
         
         console.log('✅ Real:', realProducts.length, 'Virtual:', virtualProducts.length);
@@ -236,6 +309,9 @@
         const sold = []; // Track sold separately (would need KV for this)
         
         console.log('✅ Available:', available.length, 'Sold:', sold.length);
+        
+        // Debug: Show all product names
+        console.log('📦 Product names:', available.map(p => p.name).join(', '));
         
         const userHash = getUserHash();
         
@@ -309,17 +385,31 @@
     document.getElementById('species-filter').addEventListener('change', loadAndRenderCatalog);
   </script>
 
-  <!-- Snake Detail Modal -->
+  <!-- Navigate to product page -->
   <script type="module">
-    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
-
-    // Delegate event listener for "View Details" buttons
+    // Delegate event listener for "View Details" buttons - navigate to product page
     document.addEventListener('click', (e) => {
       if (e.target.closest('.btn-view-details')) {
         const btn = e.target.closest('.btn-view-details');
         try {
           const productData = JSON.parse(btn.dataset.product);
-          openSnakeDetail(productData, 'shop');
+          // Handle both Stripe format (metadata.*) and legacy format
+          const species = (productData.metadata?.species || productData.species || 'ball_python').toLowerCase().replace('_', '-');
+          const morph = (productData.metadata?.morph || productData.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+          const name = (productData.name || productData.id).toLowerCase().replace(/\s+/g, '-');
+          
+          // Check if we're in demo mode
+          const urlParams = new URLSearchParams(window.location.search);
+          const demoSource = urlParams.get('source');
+          const sourceParam = demoSource ? `&source=${demoSource}` : '';
+          
+          // Use query param for dev, clean URL for production
+          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const productUrl = isDev 
+            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`
+            : `/en/catalog/${species}/${morph}/${name}`;
+          
+          window.location.href = productUrl;
         } catch (err) {
           console.error('Failed to parse product data:', err);
         }

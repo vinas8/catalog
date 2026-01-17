@@ -32,7 +32,7 @@ export class UserAuth {
       debugDiv.style.cssText = 'position:fixed;top:50px;left:10px;background:#0f0;color:#000;padding:10px;z-index:99999;font-size:12px;';
       debugDiv.innerHTML = `URL: ${window.location.href}<br>User Hash: ${hash || 'NONE'}`;
       document.body.appendChild(debugDiv);
-      setTimeout(() => debugDiv.remove(), TIMEOUTS.DEBUG_DIV_DURATION);
+      debugDiv.addEventListener('click', () => debugDiv.remove());
     }
     
     console.log('🔑 Hash from URL:', hash);

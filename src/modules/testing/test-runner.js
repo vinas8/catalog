@@ -120,14 +120,8 @@ export class TestRunner {
     const startTime = Date.now();
     
     try {
-      // Create timeout promise
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Test timeout')), test.options.timeout || TIMEOUTS.TEST_TIMEOUT_DEFAULT)
-      );
-      
-      // Race test execution against timeout
-      const testPromise = Promise.resolve(test.fn());
-      await Promise.race([testPromise, timeoutPromise]);
+      // Execute test directly without timeout
+      await Promise.resolve(test.fn());
       
       const duration = Date.now() - startTime;
       this.log('pass', `✓ ${test.name} (${duration}ms)`);

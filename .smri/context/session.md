@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-16 09:38:12 UTC  
-**Commit:** cb7deab  
+**Generated:** 2026-01-16 14:39:59 UTC  
+**Commit:** c839793  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,9 @@
 
 ### Git Log (Last 20 commits)
 ```
+c839793 archive: Move broken demo lifecycle files to archive
+1237de6 docs: Add comprehensive demo lifecycle implementation documentation
+99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
 cb7deab fix: Add cache busters to common module sub-imports
 10fae8f fix: Game loads demo snakes from localStorage when source param present
 410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
@@ -26,28 +29,31 @@ d60034c fix: Add source-aware caching to catalog module to support demo isolatio
 357f647 fix: Handle missing id in product sort
 83c58a2 fix: Add id, price, and active fields to CSV imported products for catalog compatibility
 bbef0b9 Add isolated demo test with full purchase flow
-1abd60b feat: Add isolated demo system with lifecycle hooks and source parameter support
-bf57167 Fix: Use cleanup() instead of clear()
-2fd0f1b Add debug logging to test page
 ```
 
 ### Git Status
 ```
+ M .smri/context/LAST_UPDATE.txt
  M .smri/context/git-log.txt
  M .smri/context/health.txt
- M .smri/context/modules.txt
  M .smri/context/session.md
  M .smri/context/tree.txt
- M scripts/smri-startup.sh
- M scripts/smri-update-context.sh
- M src/modules/cart/Cart.js
- M src/modules/cart/index.js
+ M catalog.html
+ M collection.html
+ M debug/archive-pre-executor-focus/manual-debug-tools/aquarium-shelf-demo.html
+ M debug/archive-pre-executor-focus/manual-debug-tools/test-context-separation.html
+ M debug/index.html
+ M debug/releases/index.html
+ M demo/index.html
+ M product.html
+ M shop/collection.html
+ M shop/index.html
+ M src/modules/auth/user-auth.js
  M src/modules/game/game-controller.js
-?? .smri/context/test-full.txt
-?? .smri/context/test-summary.txt
-?? docs/CART-IMPLEMENTATION.md
-?? scripts/smri-check.sh
-?? scripts/smri-diff.sh
+ M src/modules/shop/ui/catalog-renderer.js
+ M src/modules/shop/ui/shop-view.js
+ M src/modules/testing/test-runner.js
+ M src/modules/tutorial/event-system.js
 ```
 
 ---
@@ -407,7 +413,7 @@ TestRenderer.js
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/game/game-controller.js: 1240 lines (max: 1000)
+[33m⚠️[0m src/modules/game/game-controller.js: 1215 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2202 lines (max: 1000)
 [34m
 📦 Checking Module Exports...[0m 
@@ -457,5 +463,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-16 09:38:13 UTC  
+**Context cached at:** 2026-01-16 14:40:00 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

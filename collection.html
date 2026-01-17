@@ -335,11 +335,9 @@
     loadUserCollection();
   </script>
   
-  <!-- Snake Detail Modal -->
+  <!-- Navigate to product page -->
   <script type="module">
-    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
-
-    // Delegate event listener for "View Details" buttons
+    // Delegate event listener for "View Details" buttons - navigate to product page
     document.addEventListener('click', (e) => {
       if (e.target.closest('.btn-view-details')) {
         const btn = e.target.closest('.btn-view-details');
@@ -347,7 +345,17 @@
         const product = window.userProducts?.[index];
         
         if (product) {
-          openSnakeDetail(product, 'farm');
+          const species = (product.species || 'ball-pythons').toLowerCase().replace('_', '-');
+          const morph = (product.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+          const name = (product.name || product.id).toLowerCase().replace(/\s+/g, '-');
+          
+          // Use query param for dev, clean URL for production
+          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const productUrl = isDev 
+            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}`
+            : `/en/catalog/${species}/${morph}/${name}`;
+          
+          window.location.href = productUrl;
         }
       }
     });

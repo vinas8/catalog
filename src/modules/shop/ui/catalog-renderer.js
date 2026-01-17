@@ -146,17 +146,10 @@ export async function renderStandaloneCatalog(selectedSpecies = 'all', getUserHa
  */
 async function checkProductStatus(productId) {
   try {
-    // Add 5 second timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.NETWORK_TIMEOUT);
-    
     const response = await fetch(`https://catalog.navickaszilvinas.workers.dev/product-status?id=${productId}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal
+      headers: { 'Content-Type': 'application/json' }
     });
-    
-    clearTimeout(timeoutId);
     
     if (response.ok) {
       return await response.json();

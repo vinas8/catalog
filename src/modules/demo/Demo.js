@@ -543,6 +543,14 @@ export class Demo {
 
       this.log(`✅ Step ${stepIndex + 1} completed`, 'success');
       this.showStatus(`✓ ${step.title}`, 'success');
+      
+      // Auto-advance to next step
+      await this.wait(2000);
+      if (this.currentStep < (this.currentScenario.steps?.length || 0) - 1) {
+        this.nextStep();
+      } else {
+        this.log('🎉 All steps completed!', 'success');
+      }
 
     } catch (error) {
       this.log(`❌ Step ${stepIndex + 1} failed: ${error.message}`, 'error');
