@@ -236,11 +236,9 @@
           data = JSON.parse(cached);
           console.log(`📊 Loaded ${data.length} products from cache`);
         } else if (demoSource) {
-          // Demo mode but no data - show error
-          console.error(`❌ Demo data not found for source: ${demoSource}`);
-          availableContainer.innerHTML = `<div class="error">Demo data not loaded. Run demo setup first.</div>`;
-          virtualContainer.innerHTML = '';
-          return;
+          // Demo mode but no data - treat as empty (not error)
+          console.log(`🎬 Demo mode: No data yet for source "${demoSource}" - showing empty state`);
+          data = []; // Empty array = valid state for demo start
         } else {
           // Fetch products from Worker API
           console.log('📡 Fetching from:', WORKER_URL + '/products');
@@ -387,17 +385,25 @@
     document.getElementById('species-filter').addEventListener('change', loadAndRenderCatalog);
   </script>
 
-  <!-- Snake Detail Modal -->
+  <!-- Navigate to product page -->
   <script type="module">
-    import { openSnakeDetail } from './src/components/SnakeDetailModal.js';
-
-    // Delegate event listener for "View Details" buttons
+    // Delegate event listener for "View Details" buttons - navigate to product page
     document.addEventListener('click', (e) => {
       if (e.target.closest('.btn-view-details')) {
         const btn = e.target.closest('.btn-view-details');
         try {
           const productData = JSON.parse(btn.dataset.product);
-          openSnakeDetail(productData, 'shop');
+          const species = (productData.species || 'ball-pythons').toLowerCase().replace('_', '-');
+          const morph = (productData.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+          const name = (productData.name || productData.id).toLowerCase().replace(/\s+/g, '-');
+          
+          // Use query param for dev, clean URL for production
+          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const productUrl = isDev 
+            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}`
+            : `/en/catalog/${species}/${morph}/${name}`;
+          
+          window.location.href = productUrl;
         } catch (err) {
           console.error('Failed to parse product data:', err);
         }

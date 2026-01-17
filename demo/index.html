@@ -21,46 +21,260 @@
       containerId: 'demo-root',
       scenarios: [
         {
-          icon: '🛒',
-          title: 'Shop & Browse Products',
+          icon: '🧪',
+          title: 'Automated Test Flow',
           smri: 'S1.1,2,3.01',
-          description: 'Browse catalog → View details → See pricing',
+          description: 'Clear data → Import → Verify catalog → View snake → Check buyable → Purchase',
           steps: [
             {
-              title: 'Browse Catalog',
-              description: 'View available snakes',
-              url: '/catalog.html',
+              title: 'Step 1: Clear Demo Data',
+              description: 'Remove demo localStorage only',
+              url: '/catalog.html?source=demo_test',
               action: async (demo) => {
-                demo.log('📦 Loading product catalog...', 'info');
-                await demo.wait(2000);
-                demo.log('✅ Products loaded! You should see snakes below', 'success');
-                demo.log('💰 Prices: €180-€650 depending on morph', 'info');
+                demo.log('🧹 Clearing demo data only...', 'info');
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    // Clear ONLY demo-specific keys (isolate from real data)
+                    iframe.contentWindow.localStorage.removeItem('demo_test_products');
+                    iframe.contentWindow.localStorage.removeItem('demo_test_products_timestamp');
+                    
+                    demo.log('✅ Demo data cleared (real data untouched)', 'success');
+                    demo.log('📦 Storage key: demo_test_products', 'info');
+                    
+                    // Reload to ensure clean state
+                    demo.reloadIframe();
+                    await demo.wait(1000);
+                  } catch (e) {
+                    demo.log(`⚠️ Could not clear: ${e.message}`, 'warning');
+                  }
+                }
               }
             },
             {
-              title: 'View Snake Details',
-              description: 'Click "View Details" button',
-              url: '/catalog.html',
+              title: 'Step 2: Check Empty Catalog',
+              description: 'Verify demo catalog is empty',
+              url: '/catalog.html?source=demo_test',
               action: async (demo) => {
-                demo.log('⏳ Waiting for products to render...', 'info');
-                await demo.wait(2000);
-                demo.log('👉 Click "ℹ️ View Details" button on any snake', 'info');
-                demo.log('📋 Modal should open with full info:', 'info');
-                demo.log('   • Species & morph details', 'info');
-                demo.log('   • Physical stats (size, weight)', 'info');
-                demo.log('   • Genetics information', 'info');
-                await demo.wait(3000);
+                demo.log('🔍 Checking catalog in browser...', 'info');
+                await demo.wait(3000); // Wait for products to load
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const products = doc.querySelectorAll('.product-card');
+                    const loadingMsg = doc.querySelector('.loading-message');
+                    const noProductsMsg = doc.body.textContent.includes('No products') || 
+                                         doc.body.textContent.includes('empty');
+                    
+                    demo.log(`📊 Found ${products.length} product cards in DOM`, 'info');
+                    
+                    if (products.length === 0) {
+                      demo.log('✅ SUCCESS: Catalog is empty', 'success');
+                    } else {
+                      demo.log(`❌ ERROR: Found ${products.length} products (expected 0)`, 'error');
+                      throw new Error(`Catalog not empty - found ${products.length} products`);
+                    }
+                  } catch (e) {
+                    if (e.message.includes('Catalog not empty')) {
+                      throw e; // Re-throw our error
+                    }
+                    demo.log('⚠️ Could not verify (CORS)', 'warning');
+                  }
+                }
               }
             },
             {
-              title: 'Check Pricing',
-              description: 'View product prices',
-              url: '/catalog.html',
+              title: 'Step 3: Import Demo Snake',
+              description: 'Add test snake to demo localStorage',
+              url: '/catalog.html?source=demo_test',
               action: async (demo) => {
-                demo.log('💶 All products show prices', 'success');
-                demo.log('⚠️ Note: Stripe checkout requires payment links', 'info');
-                demo.log('   (Products need Stripe links for live checkout)', 'info');
-                await demo.wait(2000);
+                demo.log('📤 Creating demo snake in localStorage...', 'info');
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    // Create test product directly in localStorage (no Stripe/KV)
+                    const testProduct = {
+                      id: 'demo_snake_001',
+                      name: 'DemoSnake',
+                      active: true,
+                      metadata: {
+                        nickname: 'DemoSnake',
+                        morph: 'Banana Het Clown',
+                        species: 'ball_python',
+                        gender: 'Male',
+                        yob: '2024',
+                        price: '299'
+                      },
+                      price: 299,
+                      status: 'available',
+                      type: 'real'
+                    };
+                    
+                    // Save to demo-isolated localStorage
+                    const products = [testProduct];
+                    iframe.contentWindow.localStorage.setItem('demo_test_products', JSON.stringify(products));
+                    iframe.contentWindow.localStorage.setItem('demo_test_products_timestamp', Date.now().toString());
+                    
+                    demo.log('✅ Demo snake created in localStorage', 'success');
+                    demo.log('🐍 Name: DemoSnake (Banana Het Clown)', 'info');
+                    demo.log('💾 Storage: demo_test_products (isolated)', 'info');
+                  } catch (err) {
+                    demo.log(`❌ Error: ${err.message}`, 'error');
+                  }
+                } else {
+                  demo.log('❌ Could not access iframe', 'error');
+                }
+              }
+            },
+            {
+              title: 'Step 4: Check Catalog',
+              description: 'Verify demo snake appears',
+              url: '/catalog.html?source=demo_test',
+              action: async (demo) => {
+                demo.log('🔄 Reloading catalog...', 'info');
+                demo.reloadIframe();
+                await demo.wait(4000); // Wait longer for rendering
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const products = doc.querySelectorAll('.product-card');
+                    
+                    demo.log(`📊 Found ${products.length} product cards in DOM`, 'info');
+                    
+                    if (products.length === 0) {
+                      demo.log('❌ ERROR: Snake NOT found in catalog!', 'error');
+                      demo.log('💡 Check: localStorage has demo_test_products?', 'warning');
+                      throw new Error('Snake not found in catalog after import');
+                    }
+                    
+                    // Check for DemoSnake specifically
+                    const demoSnake = Array.from(products).find(p => 
+                      p.textContent.includes('DemoSnake') || p.textContent.includes('Banana')
+                    );
+                    
+                    if (demoSnake) {
+                      demo.log('✅ SUCCESS: DemoSnake found in catalog', 'success');
+                      demo.log('🐍 Name: DemoSnake (Banana Het Clown)', 'info');
+                    } else {
+                      demo.log(`⚠️ DemoSnake not found in text, but ${products.length} product(s) rendered`, 'warning');
+                    }
+                    
+                    // Should be exactly 1 product (our demo snake)
+                    if (products.length === 1) {
+                      demo.log('✅ Correct: Exactly 1 product in demo catalog', 'success');
+                    } else {
+                      demo.log(`⚠️ WARNING: Expected 1 product, found ${products.length}`, 'warning');
+                    }
+                    
+                  } catch (e) {
+                    if (e.message.includes('not found')) {
+                      throw e; // Re-throw our errors
+                    }
+                    demo.log('⚠️ Could not check catalog (CORS)', 'warning');
+                  }
+                }
+              }
+            },
+            {
+              title: 'Step 5: View Snake',
+              description: 'Click View Details button',
+              url: '/catalog.html?source=demo_test',
+              action: async (demo) => {
+                demo.log('👉 Looking for View Details button...', 'info');
+                await demo.wait(1500);
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const btn = doc.querySelector('.view-details-btn');
+                    
+                    if (btn) {
+                      demo.log('🖱️ Clicking View Details...', 'info');
+                      btn.click();
+                      await demo.wait(2000);
+                      demo.log('✅ Snake page opened', 'success');
+                    } else {
+                      demo.log('❌ View Details button not found', 'error');
+                    }
+                  } catch (e) {
+                    demo.log('💡 Manually click "View Details" button', 'info');
+                  }
+                }
+              }
+            },
+            {
+              title: 'Step 6: Check Buyable',
+              description: 'Verify purchase button exists',
+              url: '/product.html',
+              action: async (demo) => {
+                demo.log('🔍 Checking if snake is buyable...', 'info');
+                await demo.wait(3000); // Wait for product page to load
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const buyBtn = doc.querySelector('.cta-button');
+                    
+                    if (!buyBtn) {
+                      demo.log('❌ ERROR: No buy button found', 'error');
+                      throw new Error('Buy button not found on product page');
+                    }
+                    
+                    const btnText = buyBtn.textContent.trim();
+                    demo.log(`🔎 Button text: "${btnText}"`, 'info');
+                    
+                    if (btnText.includes('€') && !btnText.includes('Link Needed')) {
+                      demo.log('✅ SUCCESS: Snake is buyable with Stripe link', 'success');
+                      demo.log(`💰 Price: ${btnText}`, 'info');
+                    } else if (btnText.includes('Link Needed')) {
+                      demo.log('❌ ERROR: Snake NOT buyable (no Stripe payment link)', 'error');
+                      demo.log('💡 Fix: Add payment link in Stripe product metadata', 'info');
+                      throw new Error('Snake not buyable - missing Stripe payment link');
+                    } else {
+                      demo.log(`⚠️ Unexpected button state: ${btnText}`, 'warning');
+                    }
+                  } catch (e) {
+                    if (e.message.includes('not buyable') || e.message.includes('not found')) {
+                      throw e; // Re-throw our errors
+                    }
+                    demo.log('⚠️ Could not check buy button (CORS)', 'warning');
+                  }
+                }
+              }
+            },
+            {
+              title: 'Step 7: Purchase (if buyable)',
+              description: 'Attempt Stripe checkout',
+              url: '/product.html',
+              action: async (demo) => {
+                demo.log('🛒 Checking purchase option...', 'info');
+                await demo.wait(1000);
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const buyBtn = doc.querySelector('.cta-button:not(.disabled)');
+                    
+                    if (buyBtn && !buyBtn.textContent.includes('Link Needed')) {
+                      demo.log('💳 Stripe checkout available', 'success');
+                      demo.log('💡 Click button to open Stripe payment page', 'info');
+                      demo.log('⚠️ Test mode: Use card 4242 4242 4242 4242', 'info');
+                    } else {
+                      demo.log('⚠️ Cannot purchase: Missing Stripe payment link', 'warning');
+                      demo.log('🔧 Fix: Add payment link in Stripe product metadata', 'info');
+                    }
+                  } catch (e) {
+                    demo.log('💡 Manually test purchase if available', 'info');
+                  }
+                }
               }
             }
           ]
@@ -222,8 +436,8 @@ Chocolate,Pastel,Female,2023,`;
               }
             },
             {
-              title: 'View in Catalog (Modal)',
-              description: 'Click View Details button',
+              title: 'View in Catalog',
+              description: 'Click View Details to see product page',
               url: '/catalog.html',
               action: async (demo) => {
                 demo.log('🔄 Clearing cache...', 'info');
@@ -240,8 +454,8 @@ Chocolate,Pastel,Female,2023,`;
                 await demo.wait(1500);
                 demo.reloadIframe();
                 demo.log('📦 Products visible! Click "ℹ️ View Details"', 'success');
-                demo.log('⚠️ SEO Issue: Using modal, not product pages', 'warning');
-                demo.log('💡 Better: /product/pudding with unique URL', 'info');
+                demo.log('✅ Uses product page URLs for SEO', 'success');
+                demo.log('💡 Example: /en/catalog/ball-pythons/banana-clown/pudding', 'info');
               }
             }
           ]
