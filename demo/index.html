@@ -63,12 +63,15 @@
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const products = doc.querySelectorAll('.product-card');
-                    const loadingMsg = doc.querySelector('.loading-message');
-                    const noProductsMsg = doc.body.textContent.includes('No products') || 
-                                         doc.body.textContent.includes('empty');
+                    const products = doc.querySelectorAll('.catalog-item'); // ✅ Correct class
+                    const loadingMsg = doc.querySelector('.loading');
+                    const emptyMsg = doc.querySelector('.empty-state');
                     
-                    demo.log(`📊 Found ${products.length} product cards in DOM`, 'info');
+                    demo.log(`📊 Found ${products.length} catalog items in DOM`, 'info');
+                    
+                    if (emptyMsg) {
+                      demo.log(`📄 Empty state message: "${emptyMsg.textContent}"`, 'info');
+                    }
                     
                     if (products.length === 0) {
                       demo.log('✅ SUCCESS: Catalog is empty', 'success');
@@ -142,9 +145,9 @@
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const products = doc.querySelectorAll('.product-card');
+                    const products = doc.querySelectorAll('.catalog-item'); // ✅ Correct class
                     
-                    demo.log(`📊 Found ${products.length} product cards in DOM`, 'info');
+                    demo.log(`📊 Found ${products.length} catalog items in DOM`, 'info');
                     
                     if (products.length === 0) {
                       demo.log('❌ ERROR: Snake NOT found in catalog!', 'error');
