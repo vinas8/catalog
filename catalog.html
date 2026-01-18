@@ -19,12 +19,7 @@
 <body>
   <script type="module" src="src/components/Navigation.js"></script>
 
-  <main style="padding: 2rem; padding-top: 1rem;">
-    <div class="view-header">
-      <h2>Snake Shop</h2>
-      <p class="muted">Browse our collection of captive bred snakes</p>
-    </div>
-
+  <main style="padding: 1rem;">
     <div class="catalog-filters">
       <select id="species-filter">
         <option value="all">All Species</option>
@@ -36,7 +31,7 @@
 
     <!-- Available Real Snakes -->
     <section class="catalog-section">
-      <h3>🐍 Available Snakes (Real Money)</h3>
+      <h3>🐍 Available Snakes</h3>
       <div id="available-snakes" class="catalog-grid">
         <div class="loading">Loading...</div>
       </div>
@@ -44,8 +39,7 @@
 
     <!-- Virtual Snakes -->
     <section class="catalog-section">
-      <h3>💰 Virtual Snakes (Gold Coins - In-Game)</h3>
-      <p class="muted">Unlimited stock • Buy in game with gold</p>
+      <h3>💰 Virtual Snakes</h3>
       <div id="virtual-snakes" class="catalog-grid">
         <div class="loading">Loading...</div>
       </div>
@@ -54,7 +48,7 @@
     <!-- Sold Snakes (Collapsed) -->
     <section class="catalog-section sold-section">
       <h3 id="sold-header" style="cursor: pointer; user-select: none;">
-        📦 Sold Snakes <span id="sold-count">(0)</span> 
+        📦 Sold <span id="sold-count">(0)</span> 
         <span id="sold-toggle" style="float: right;">▼</span>
       </h3>
       <div id="sold-snakes" class="catalog-grid" style="display: none;">
