@@ -260,7 +260,7 @@
             },
             {
               title: 'Step 7: Demo Complete ✅',
-              description: 'Demo product is buyable',
+              description: 'Verify purchase flow',
               action: async (demo) => {
                 demo.log('🎉 Demo flow complete!', 'success');
                 await demo.wait(500);
@@ -278,6 +278,12 @@
                       demo.log('📝 Note: Demo uses placeholder Stripe link', 'warning');
                       demo.log('💡 For real purchases: Use "Owner Dashboard" to import real products', 'info');
                       demo.log('🔧 Real imports create actual Stripe payment links', 'info');
+                      demo.log('', 'info');
+                      demo.log('⚠️ LOCALHOST STRIPE TESTING LIMITATION:', 'warning');
+                      demo.log('   Payment links redirect to GitHub Pages, not localhost', 'info');
+                      demo.log('   This is hardcoded in worker (line 1779)', 'info');
+                      demo.log('   → For localhost: Test demo flow only', 'info');
+                      demo.log('   → For real testing: Deploy to GitHub Pages', 'info');
                     } else {
                       demo.log('⚠️ Cannot purchase: Missing Stripe payment link', 'warning');
                       demo.log('🔧 Fix: Run "Owner Dashboard - Import & Sync" scenario', 'info');
