@@ -29,7 +29,7 @@
             {
               title: 'Step 1: Clear Demo Data',
               description: 'Remove demo localStorage only',
-              url: '/catalog.html?source=demo_test',
+              url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
                 demo.log('🧹 Clearing demo data only...', 'info');
                 const iframe = document.getElementById('demo-iframe');
@@ -54,7 +54,7 @@
             {
               title: 'Step 2: Check Empty Catalog',
               description: 'Verify demo catalog is empty',
-              url: '/catalog.html?source=demo_test',
+              url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
                 demo.log('🔍 Checking catalog in browser...', 'info');
                 await demo.wait(3000); // Wait for products to load
@@ -91,7 +91,7 @@
             {
               title: 'Step 3: Import Demo Snake',
               description: 'Add test snake to demo localStorage',
-              url: '/catalog.html?source=demo_test',
+              url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
                 demo.log('📤 Creating demo snake in localStorage...', 'info');
                 
@@ -142,7 +142,7 @@
             {
               title: 'Step 4: Check Catalog',
               description: 'Verify demo snake appears',
-              url: '/catalog.html?source=demo_test',
+              url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
                 demo.log('🔄 Reloading catalog...', 'info');
                 demo.reloadIframe();
@@ -193,7 +193,7 @@
             {
               title: 'Step 5: View Snake',
               description: 'Click View Details button',
-              url: '/catalog.html?source=demo_test',
+              url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
                 demo.log('👉 Looking for View Details button...', 'info');
                 await demo.wait(1500);
@@ -305,7 +305,7 @@
             {
               title: 'Check Your Snakes',
               description: 'Ensure you have snakes assigned',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('🔍 Checking if you have snakes...', 'info');
                 await demo.wait(1500);
@@ -319,7 +319,7 @@
             {
               title: 'Select a Snake',
               description: 'Click on snake card',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('👆 Click on any snake card to select it', 'info');
                 await demo.wait(2000);
@@ -328,7 +328,7 @@
             {
               title: 'Feed Snake',
               description: 'Click feed button',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('🍖 Click the "Feed" button', 'info');
                 await demo.wait(2000);
@@ -337,7 +337,7 @@
             {
               title: 'Give Water',
               description: 'Click water button',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('💧 Click the "Water" button', 'info');
                 await demo.wait(2000);
@@ -346,7 +346,7 @@
             {
               title: 'Clean Enclosure',
               description: 'Click clean button',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('🧹 Click the "Clean" button', 'info');
                 await demo.wait(2000);
@@ -355,7 +355,7 @@
             {
               title: 'Check Stats',
               description: 'View snake health metrics',
-              url: '/game.html',
+              url: `${basePath}/game.html`,
               action: async (demo) => {
                 demo.log('📊 All stats should be 100%', 'success');
                 await demo.wait(1000);
@@ -372,7 +372,7 @@
             {
               title: 'Cleanup Old Products',
               description: 'Clear Stripe before import',
-              url: '/admin/import-modular.html',
+              url: `${basePath}/admin/import-modular.html`,
               action: async (demo) => {
                 demo.log('🧹 Clearing old products from Stripe...', 'info');
                 
@@ -397,7 +397,7 @@
             {
               title: 'Import Sample Data',
               description: 'Load CSV → Stripe → KV',
-              url: '/admin/import-modular.html',
+              url: `${basePath}/admin/import-modular.html`,
               action: async (demo) => {
                 demo.log('📤 Starting real import...', 'info');
                 
@@ -462,7 +462,7 @@ Chocolate,Pastel,Female,2023,`;
             {
               title: 'View in Catalog',
               description: 'Click View Details to see product page',
-              url: '/catalog.html',
+              url: `${basePath}/catalog.html`,
               action: async (demo) => {
                 demo.log('🔄 Clearing cache...', 'info');
                 const iframe = document.getElementById('demo-iframe');
