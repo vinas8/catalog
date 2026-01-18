@@ -378,7 +378,7 @@
                 
                 try {
                   const { ImportManager, StripeDestination } = 
-                    await import('/src/modules/import/index.js');
+                    await import(`${basePath}/src/modules/import/index.js`);
                   
                   const manager = new ImportManager();
                   manager.setDestination(new StripeDestination());
