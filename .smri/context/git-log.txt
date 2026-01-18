@@ -1,3 +1,9 @@
+eece24f fix: Demo product now includes Stripe link and correct button selectors
+b14cd00 feat: Product page Stripe buyability and E2E tests
+60c1e7f fix: Product page demo flow and View Details routing
+e490aa2 fix: Add top-level species/morph fields to demo product for URL building
+9dcbff8 fix: Use correct .catalog-item selector in demo (not .product-card)
+516f057 fix: Demo uses localStorage isolation with ?source=demo_test parameter
 c839793 archive: Move broken demo lifecycle files to archive
 1237de6 docs: Add comprehensive demo lifecycle implementation documentation
 99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
@@ -12,9 +18,3 @@ c595d1e fix: Update version to 0.7.7 and improve cache busting
 19ab6f1 fix: Add cache buster to game-controller import
 fe3da39 fix: Add demo purchase buttons and fix Core export
 d60034c fix: Add source-aware caching to catalog module to support demo isolation
-3edc09c Add demo debug test tool for step-by-step verification
-1084320 feat: Add Cart module with SMRI facade pattern and registration
-8fe3f48 fix: Wait for onStart to complete before rendering steps
-357f647 fix: Handle missing id in product sort
-83c58a2 fix: Add id, price, and active fields to CSV imported products for catalog compatibility
-bbef0b9 Add isolated demo test with full purchase flow

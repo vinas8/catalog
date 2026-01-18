@@ -383,8 +383,16 @@
           : '<span class="status-badge status-sold">❌ Sold</span>';
         
         // Use stripe_link (not stripePaymentLink)
+        const isDemoLink = product.stripe_link && (
+          product.stripe_link.includes('#demo') || 
+          product.stripe_link.includes('placeholder') ||
+          product.id.includes('demo')
+        );
+        
         const buyButton = product.stripe_link 
-          ? `<button class="btn-buy" onclick="window.location.href='${product.stripe_link}'">💳 Buy Now - €${price}</button>`
+          ? isDemoLink
+            ? `<button class="btn-buy" onclick="alert('🎬 Demo Product\\n\\nThis is a test product with a placeholder link.\\n\\nTo buy real snakes:\\n1. Go to Owner Dashboard\\n2. Import real products\\n3. They will have working Stripe payment links'); return false;">💳 Buy Now - €${price} (Demo)</button>`
+            : `<button class="btn-buy" onclick="window.location.href='${product.stripe_link}'">💳 Buy Now - €${price}</button>`
           : `<button class="btn-buy" disabled style="opacity: 0.5;">Contact for Price</button>`;
         
         document.getElementById('product-content').innerHTML = `

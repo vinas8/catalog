@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-16 14:39:59 UTC  
-**Commit:** c839793  
+**Generated:** 2026-01-17 10:30:50 UTC  
+**Commit:** eece24f  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,12 @@
 
 ### Git Log (Last 20 commits)
 ```
+eece24f fix: Demo product now includes Stripe link and correct button selectors
+b14cd00 feat: Product page Stripe buyability and E2E tests
+60c1e7f fix: Product page demo flow and View Details routing
+e490aa2 fix: Add top-level species/morph fields to demo product for URL building
+9dcbff8 fix: Use correct .catalog-item selector in demo (not .product-card)
+516f057 fix: Demo uses localStorage isolation with ?source=demo_test parameter
 c839793 archive: Move broken demo lifecycle files to archive
 1237de6 docs: Add comprehensive demo lifecycle implementation documentation
 99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
@@ -23,12 +29,6 @@ c595d1e fix: Update version to 0.7.7 and improve cache busting
 19ab6f1 fix: Add cache buster to game-controller import
 fe3da39 fix: Add demo purchase buttons and fix Core export
 d60034c fix: Add source-aware caching to catalog module to support demo isolation
-3edc09c Add demo debug test tool for step-by-step verification
-1084320 feat: Add Cart module with SMRI facade pattern and registration
-8fe3f48 fix: Wait for onStart to complete before rendering steps
-357f647 fix: Handle missing id in product sort
-83c58a2 fix: Add id, price, and active fields to CSV imported products for catalog compatibility
-bbef0b9 Add isolated demo test with full purchase flow
 ```
 
 ### Git Status
@@ -37,23 +37,8 @@ bbef0b9 Add isolated demo test with full purchase flow
  M .smri/context/git-log.txt
  M .smri/context/health.txt
  M .smri/context/session.md
- M .smri/context/tree.txt
- M catalog.html
- M collection.html
- M debug/archive-pre-executor-focus/manual-debug-tools/aquarium-shelf-demo.html
- M debug/archive-pre-executor-focus/manual-debug-tools/test-context-separation.html
- M debug/index.html
- M debug/releases/index.html
- M demo/index.html
- M product.html
- M shop/collection.html
- M shop/index.html
- M src/modules/auth/user-auth.js
- M src/modules/game/game-controller.js
- M src/modules/shop/ui/catalog-renderer.js
- M src/modules/shop/ui/shop-view.js
- M src/modules/testing/test-runner.js
- M src/modules/tutorial/event-system.js
+ M tests/e2e/README.md
+?? tests/e2e/README-OLD.md
 ```
 
 ---
@@ -414,7 +399,7 @@ TestRenderer.js
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
 [33m⚠️[0m src/modules/game/game-controller.js: 1215 lines (max: 1000)
-[33m⚠️[0m worker/worker.js: 2202 lines (max: 1000)
+[33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
 [34m
 📦 Checking Module Exports...[0m 
 [32m✅[0m PUBLIC-API.md exists
@@ -463,5 +448,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-16 14:40:00 UTC  
+**Context cached at:** 2026-01-17 10:30:50 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`
