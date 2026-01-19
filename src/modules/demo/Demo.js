@@ -238,7 +238,6 @@ export class Demo {
         font-size: 12px;
         color: #8b949e;
         margin-top: 4px;
-        margin-left: 38px;
       }
 
       /* Controls */
