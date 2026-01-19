@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo Test</title>
+</head>
+<body>
+  <h1>Testing...</h1>
+  <div id="error"></div>
+  <div id="success"></div>
+
+  <script type="module">
+    const errorDiv = document.getElementById('error');
+    const successDiv = document.getElementById('success');
+    
+    try {
+      successDiv.innerHTML += '<p>✅ Script started</p>';
+      
+      const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+      successDiv.innerHTML += `<p>✅ BasePath: ${basePath}</p>`;
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.15';
+      successDiv.innerHTML += `<p>✅ CacheBuster: ${cacheBuster}</p>`;
+      
+      const importPath = `${basePath}/src/modules/demo/index.js?v=${cacheBuster}`;
+      successDiv.innerHTML += `<p>✅ Import path: ${importPath}</p>`;
+      
+      const module = await import(importPath);
+      successDiv.innerHTML += `<p>✅ Module loaded: ${JSON.stringify(Object.keys(module))}</p>`;
+      
+      const { Demo } = module;
+      successDiv.innerHTML += `<p>✅ Demo class: ${typeof Demo}</p>`;
+      
+      const demo = new Demo({ containerId: 'success' });
+      successDiv.innerHTML += `<p>✅ Demo instance created</p>`;
+      
+    } catch (err) {
+      errorDiv.innerHTML = `<p style="color:red">❌ Error: ${err.message}</p><pre>${err.stack}</pre>`;
+    }
+  </script>
+</body>
+</html>
