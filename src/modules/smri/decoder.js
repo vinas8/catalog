@@ -11,7 +11,7 @@
 /**
  * Module mapping
  */
-const MODULE_MAP = {
+export const MODULE_MAP = {
   0: 'Core/Internal',
   1: 'Auth',
   2: 'Common',
