@@ -105,8 +105,7 @@
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe?.contentWindow) {
                   try {
-                    // Create test product WITH USER ASSIGNMENT
-                    // This product is already "purchased" by demo_user_123
+                    // Create test product - AVAILABLE for purchase (not sold yet)
                     const testProduct = {
                       id: 'demo_snake_001',
                       name: 'DemoSnake',
@@ -125,11 +124,9 @@
                         stripe_link: '#demo-placeholder-link'
                       },
                       price: 299,
-                      status: 'sold', // ✅ Mark as purchased
-                      owner: 'demo_user_123', // ✅ Assign to demo user
+                      status: 'available', // ✅ Available for purchase
                       type: 'real',
-                      stripe_link: '#demo-placeholder-link',
-                      purchased_at: new Date().toISOString()
+                      stripe_link: '#demo-placeholder-link'
                     };
                     
                     // Save to demo-isolated localStorage
@@ -137,10 +134,9 @@
                     iframe.contentWindow.localStorage.setItem('demo_test_products', JSON.stringify(products));
                     iframe.contentWindow.localStorage.setItem('demo_test_products_timestamp', Date.now().toString());
                     
-                    demo.log('✅ Demo snake created and assigned', 'success');
-                    demo.log('👤 Owner: demo_user_123', 'info');
+                    demo.log('✅ Demo snake created', 'success');
                     demo.log('🐍 Name: DemoSnake (Banana Het Clown)', 'info');
-                    demo.log('📦 Status: sold (ready for farm)', 'success');
+                    demo.log('📦 Status: available (ready to purchase)', 'success');
                   } catch (err) {
                     demo.log(`❌ Error: ${err.message}`, 'error');
                   }
@@ -269,7 +265,37 @@
               }
             },
             {
-              title: 'Step 7: View in My Farm 🎮',
+              title: 'Step 7: Simulate Purchase',
+              description: 'Mark snake as sold to user',
+              url: `${basePath}/catalog.html?source=demo_test`,
+              action: async (demo) => {
+                demo.log('💳 Simulating purchase...', 'info');
+                
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow) {
+                  try {
+                    // Update product to sold status
+                    const productsStr = iframe.contentWindow.localStorage.getItem('demo_test_products');
+                    if (productsStr) {
+                      const products = JSON.parse(productsStr);
+                      products[0].status = 'sold';
+                      products[0].owner = 'demo_user_123';
+                      products[0].purchased_at = new Date().toISOString();
+                      
+                      iframe.contentWindow.localStorage.setItem('demo_test_products', JSON.stringify(products));
+                      
+                      demo.log('✅ Purchase simulated!', 'success');
+                      demo.log('👤 Assigned to: demo_user_123', 'info');
+                      demo.log('📦 Status: sold', 'success');
+                    }
+                  } catch (err) {
+                    demo.log(`❌ Error: ${err.message}`, 'error');
+                  }
+                }
+              }
+            },
+            {
+              title: 'Step 8: View in My Farm 🎮',
               description: 'See your snake in the game',
               url: `${basePath}/game.html?source=demo_test`,
               action: async (demo) => {
