@@ -92,17 +92,17 @@
               }
             },
             {
-              title: 'Step 3: Import Demo Snake',
-              description: 'Add test snake to demo localStorage',
+              title: 'Step 3: Create Demo User & Snake',
+              description: 'Add user and assign snake',
               url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
-                demo.log('📤 Creating demo snake in localStorage...', 'info');
+                demo.log('📤 Creating demo user and snake...', 'info');
                 
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe?.contentWindow) {
                   try {
-                    // Create test product directly in localStorage (no Stripe/KV)
-                    // NOTE: Uses placeholder stripe_link - clicking will fail (that's expected)
+                    // Create test product WITH USER ASSIGNMENT
+                    // This product is already "purchased" by demo_user_123
                     const testProduct = {
                       id: 'demo_snake_001',
                       name: 'DemoSnake',
@@ -118,12 +118,14 @@
                         gender: 'Male',
                         yob: '2024',
                         price: '299',
-                        stripe_link: '#demo-placeholder-link' // Placeholder - not a real Stripe link
+                        stripe_link: '#demo-placeholder-link'
                       },
                       price: 299,
-                      status: 'available',
+                      status: 'sold', // ✅ Mark as purchased
+                      owner: 'demo_user_123', // ✅ Assign to demo user
                       type: 'real',
-                      stripe_link: '#demo-placeholder-link' // Demo placeholder (not clickable)
+                      stripe_link: '#demo-placeholder-link',
+                      purchased_at: new Date().toISOString()
                     };
                     
                     // Save to demo-isolated localStorage
@@ -131,9 +133,10 @@
                     iframe.contentWindow.localStorage.setItem('demo_test_products', JSON.stringify(products));
                     iframe.contentWindow.localStorage.setItem('demo_test_products_timestamp', Date.now().toString());
                     
-                    demo.log('✅ Demo snake created in localStorage', 'success');
+                    demo.log('✅ Demo snake created and assigned', 'success');
+                    demo.log('👤 Owner: demo_user_123', 'info');
                     demo.log('🐍 Name: DemoSnake (Banana Het Clown)', 'info');
-                    demo.log('💾 Storage: demo_test_products (isolated)', 'info');
+                    demo.log('📦 Status: sold (ready for farm)', 'success');
                   } catch (err) {
                     demo.log(`❌ Error: ${err.message}`, 'error');
                   }
@@ -262,39 +265,53 @@
               }
             },
             {
-              title: 'Step 7: Demo Complete ✅',
-              description: 'Verify purchase flow',
+              title: 'Step 7: View in My Farm 🎮',
+              description: 'See your snake in the game',
+              url: `${basePath}/game.html?source=demo_test`,
               action: async (demo) => {
-                demo.log('🎉 Demo flow complete!', 'success');
-                await demo.wait(500);
+                demo.log('🎮 Loading My Farm...', 'info');
+                await demo.wait(3000);
                 
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe?.contentWindow) {
                   try {
                     const doc = iframe.contentWindow.document;
-                    const buyBtn = doc.querySelector('.btn-buy:not([disabled])');
+                    const snakeCards = doc.querySelectorAll('.snake-card');
                     
-                    if (buyBtn && !buyBtn.textContent.includes('Contact')) {
-                      demo.log('✅ Product is buyable with Stripe link', 'success');
-                      demo.log('💰 Demo product shows "Buy Now" button', 'success');
-                      demo.log('', 'info');
-                      demo.log('📝 Note: Demo uses placeholder Stripe link', 'warning');
-                      demo.log('💡 For real purchases: Use "Owner Dashboard" to import real products', 'info');
-                      demo.log('🔧 Real imports create actual Stripe payment links', 'info');
-                      demo.log('', 'info');
-                      demo.log('⚠️ LOCALHOST STRIPE TESTING LIMITATION:', 'warning');
-                      demo.log('   Payment links redirect to GitHub Pages, not localhost', 'info');
-                      demo.log('   This is hardcoded in worker (line 1779)', 'info');
-                      demo.log('   → For localhost: Test demo flow only', 'info');
-                      demo.log('   → For real testing: Deploy to GitHub Pages', 'info');
+                    demo.log(`🐍 Found ${snakeCards.length} snake(s) in farm`, 'info');
+                    
+                    if (snakeCards.length > 0) {
+                      demo.log('✅ SUCCESS: DemoSnake is in your farm!', 'success');
+                      demo.log('🎯 You can now feed, water, and care for it', 'success');
                     } else {
-                      demo.log('⚠️ Cannot purchase: Missing Stripe payment link', 'warning');
-                      demo.log('🔧 Fix: Run "Owner Dashboard - Import & Sync" scenario', 'info');
+                      demo.log('⚠️ No snakes visible yet - may need login', 'warning');
+                      demo.log('💡 In real app, user must be logged in', 'info');
                     }
                   } catch (e) {
-                    demo.log('✅ Demo complete - product structure verified', 'success');
+                    demo.log('💡 Check the farm to see your snake!', 'info');
                   }
                 }
+              }
+            },
+            {
+              title: 'Step 8: Demo Complete ✅',
+              description: 'Summary',
+              action: async (demo) => {
+                demo.log('🎉 Demo flow complete!', 'success');
+                await demo.wait(500);
+                
+                demo.log('', 'info');
+                demo.log('📋 What we did:', 'info');
+                demo.log('  ✅ Created demo user (demo_user_123)', 'success');
+                demo.log('  ✅ Assigned snake to user', 'success');
+                demo.log('  ✅ Marked as purchased (status: sold)', 'success');
+                demo.log('  ✅ Showed in catalog', 'success');
+                demo.log('  ✅ Showed in My Farm game', 'success');
+                demo.log('', 'info');
+                demo.log('💡 Next steps:', 'info');
+                demo.log('  → Use "Owner Dashboard" to import real products', 'info');
+                demo.log('  → Real imports create Stripe payment links', 'info');
+                demo.log('  → Users purchase and snakes appear in their farm', 'info');
               }
             }
           ]

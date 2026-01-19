@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-19 01:08:55 UTC  
-**Commit:** fca1ef0  
-**Version:** 0.7.7
+**Generated:** 2026-01-19 13:22:23 UTC  
+**Commit:** 7d2aaed  
+**Version:** 0.7.14
 
 ---
 
@@ -9,6 +9,16 @@
 
 ### Git Log (Last 20 commits)
 ```
+7d2aaed fix: Remove CSS order and reorder HTML - browser first, controls second
+af9ce50 fix: Update Demo.js with top/bottom layout and clickable version
+9f554a1 fix: Add cache buster to demo imports for localhost
+f1a6e25 docs: Add versioning and SMRI badge rules to INDEX.md
+bf66959 fix: Correct demo layout proportions - browser 80%, buttons 20%
+d6a0181 feat: Move SMRI decoder to dedicated module
+8c7ff0e fix: Explicit browser layout sizing (3/4 top, 1/4 bottom)
+37ddb5f feat: Add version display to demo components
+56e323c refactor: Improve demo layout - browser on top, remove titles
+af702c7 fix: Product navigation now uses query params consistently
 fca1ef0 fix: Add basePath to import statement in demo
 26ce9ef fix: Demo URLs now work on GitHub Pages
 adcb9a0 docs: Add Stripe localhost testing limitation guide
@@ -19,23 +29,20 @@ ad912a2 fix: Demo Step 7 now uses placeholder link and clearer messaging
 eece24f fix: Demo product now includes Stripe link and correct button selectors
 b14cd00 feat: Product page Stripe buyability and E2E tests
 60c1e7f fix: Product page demo flow and View Details routing
-e490aa2 fix: Add top-level species/morph fields to demo product for URL building
-9dcbff8 fix: Use correct .catalog-item selector in demo (not .product-card)
-516f057 fix: Demo uses localStorage isolation with ?source=demo_test parameter
-c839793 archive: Move broken demo lifecycle files to archive
-1237de6 docs: Add comprehensive demo lifecycle implementation documentation
-99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
-cb7deab fix: Add cache busters to common module sub-imports
-10fae8f fix: Game loads demo snakes from localStorage when source param present
-410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
-f4ba50c fix: Add cache buster to common module import
 ```
 
 ### Git Status
 ```
+ M .smri/context/INDEX.md
  M .smri/context/LAST_UPDATE.txt
  M .smri/context/git-log.txt
+ M .smri/context/health.txt
  M .smri/context/session.md
+ M .smri/context/test-full.txt
+ M .smri/context/tree.txt
+ M package-lock.json
+ M package.json
+ M tests/modules/shop/game.test.js
 ```
 
 ---
@@ -82,6 +89,9 @@ f4ba50c fix: Add cache buster to common module import
 │   ├── smri-runner.html
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
+│   ├── test-browser.cjs
+│   ├── test-localstorage-destination.html
+│   ├── test-quick.html
 │   └── test-runner-simple.html
 ├── demo
 │   ├── customer-journeys
@@ -90,9 +100,6 @@ f4ba50c fix: Add cache buster to common module import
 │   ├── modules
 │   ├── archive-index-old.html
 │   ├── index.html
-│   ├── pokedex-style.html
-│   ├── simple-grid.html
-│   └── trait-style.html
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -100,14 +107,55 @@ f4ba50c fix: Add cache buster to common module import
 
 ## 📚 Core Documentation
 
-### .smri/INDEX.md (920 lines)
+### .smri/INDEX.md (961 lines)
 First 100 lines:
 ```markdown
 # 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.7  
-**Last Updated:** 2026-01-14  
+**Version:** 0.7.11  
+**Last Updated:** 2026-01-19  
 **Purpose:** SMRI system index and operating rules
+
+---
+
+## 🎯 NEW: Versioning & SMRI Badge Rules (2026-01-19)
+
+### 1. Version Bump on Every Change
+```bash
+# ALWAYS bump version when making changes
+npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
+```
+
+### 2. Display Version Badge in Components
+Every interactive component must show version badge:
+- **Location:** Bottom-right corner (fixed position)
+- **Format:** `S{M}.{RRR}.{II} • v{X.Y.Z}`
+- **Example:** `S9.3,2,10.05 • v0.7.11`
+- **Clickable:** Opens SMRI decoder modal
+
+### 3. SMRI Decoder Module
+Use centralized decoder for consistency:
+```javascript
+import { showSMRIModal } from '../modules/smri/index.js';
+
+// In component
+showSMRIModal(this.smri);  // Shows popup explaining SMRI code
+```
+
+### 4. Update SMRI on Changes
+- **File changed?** → Bump iteration: `.01 → .02`
+- **New dependency?** → Update relations: `.2,5 → .2,5,8`
+- **Major refactor?** → Consider new module number
+
+### 5. Module Map (Reference)
+```
+0: Core/Internal     6: Payment
+1: Auth              7: Import
+2: Common            8: Debug
+3: Game              9: Demo
+4: Shop             10: SMRI
+5: Testing
+```
 
 ---
 
@@ -162,47 +210,6 @@ A consolidated documentation system where **ALL** project documentation lives:
 **SOLUTION:** Strict structure enforcement
 ```
 /debug/
-  ├── index.html              ← Main debug hub (ONLY ONE)
-  ├── tools/
-  │   ├── smri-runner.html    ← Test executor (ONLY ONE)
-  │   ├── kv-manager.html     ← KV management
-  │   └── healthcheck.html    ← Health checks
-  ├── purchase-flow-demo.html ← Purchase demo (ONLY ONE)
-  ├── visual-demo.html        ← Visual demo (ONLY ONE)
-  └── archive/                ← Old versions (NEVER use)
-```
-
-**RULES:**
-1. **Before creating ANY file:** Check if it exists using `find` or `tree`
-2. **If similar file exists:** Update existing, DON'T create new
-3. **If old version exists:** Archive it, then create ONE new version
-4. **Never create duplicates:** smri-runner-v2.html, demo-new.html, test-final.html
-5. **Follow the map:** `.smri/INDEX.md` defines structure - stick to it
-
-**AI ACTION REQUIRED:**
-```bash
-# Before creating any file, ALWAYS run:
-cd /root/catalog && find . -name "*similar-name*" -type f
-tree -L 3 debug/
-
-# If duplicates found:
-# 1. Move old to archive
-# 2. Update/create ONE canonical version
-# 3. Document in .smri/logs/
-```
-
-**This prevents:** "Where's the demo? There are 5 demo files!"  
-**This ensures:** "The demo is at `/debug/visual-demo.html` - that's the only one."
-
-### 1. Use Git to Verify Structure
-**ALWAYS run before creating files:**
-```bash
-cd /root/catalog && git status .smri/
-tree -L 3 .smri/
-```
-
-**After changes:**
-```bash
 ```
 ... (truncated, see .smri/context/INDEX.md for full)
 
@@ -387,8 +394,8 @@ TestRenderer.js
 ```
 [34m
 📏 Checking Large Files...[0m 
-[33m⚠️[0m .smri/INDEX.md: 921 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 921 lines (max: 500)
+[33m⚠️[0m .smri/INDEX.md: 962 lines (max: 500)
+[33m⚠️[0m .smri/context/INDEX.md: 962 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)
@@ -403,14 +410,14 @@ TestRenderer.js
 [32m✅[0m module-functions.js exists
 [34m
 📊 Summary:[0m 
-[32m✅[0m Version Consistency
+[31m❌[0m Version Consistency
 [32m✅[0m Module Structure
 [32m✅[0m SMRI Structure
-[32m✅[0m Duplicate Files
+[31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 5/6 (83%)[0m
+[36mScore: 3/6 (50%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -432,7 +439,7 @@ Script: scripts/check-consistency.cjs[0m
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
-- `INDEX.md` - Complete SMRI index (920 lines)
+- `INDEX.md` - Complete SMRI index (961 lines)
 - `README.md` - Complete project README (309 lines)
 - `SMRI.md` - Complete SMRI syntax guide (226 lines)
 - `tree.txt` - Full directory tree
@@ -445,5 +452,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-19 01:08:56 UTC  
+**Context cached at:** 2026-01-19 13:22:24 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

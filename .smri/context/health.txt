@@ -1,7 +1,7 @@
 [34m
 📏 Checking Large Files...[0m 
-[33m⚠️[0m .smri/INDEX.md: 921 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 921 lines (max: 500)
+[33m⚠️[0m .smri/INDEX.md: 962 lines (max: 500)
+[33m⚠️[0m .smri/context/INDEX.md: 962 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)
@@ -16,14 +16,14 @@
 [32m✅[0m module-functions.js exists
 [34m
 📊 Summary:[0m 
-[32m✅[0m Version Consistency
+[31m❌[0m Version Consistency
 [32m✅[0m Module Structure
 [32m✅[0m SMRI Structure
-[32m✅[0m Duplicate Files
+[31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 5/6 (83%)[0m
+[36mScore: 3/6 (50%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m

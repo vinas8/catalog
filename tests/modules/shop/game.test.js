@@ -71,7 +71,7 @@ console.log('\n💰 Economy Tests');
 
 test('Create initial game state', () => {
   const state = createInitialGameState();
-  assert(state.currency.gold === 999999, `Starting gold should be ${GAME_DEFAULTS.STARTING_GOLD}`); // INTENTIONALLY BROKEN
+  assert(state.currency.gold === GAME_DEFAULTS.STARTING_GOLD, `Starting gold should be ${GAME_DEFAULTS.STARTING_GOLD}`);
   assert(state.loyalty_tier === 'bronze', 'Should start as bronze');
   assert(Array.isArray(state.snakes), 'Snakes should be array');
 });

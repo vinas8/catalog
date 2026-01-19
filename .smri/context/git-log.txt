@@ -1,3 +1,13 @@
+7d2aaed fix: Remove CSS order and reorder HTML - browser first, controls second
+af9ce50 fix: Update Demo.js with top/bottom layout and clickable version
+9f554a1 fix: Add cache buster to demo imports for localhost
+f1a6e25 docs: Add versioning and SMRI badge rules to INDEX.md
+bf66959 fix: Correct demo layout proportions - browser 80%, buttons 20%
+d6a0181 feat: Move SMRI decoder to dedicated module
+8c7ff0e fix: Explicit browser layout sizing (3/4 top, 1/4 bottom)
+37ddb5f feat: Add version display to demo components
+56e323c refactor: Improve demo layout - browser on top, remove titles
+af702c7 fix: Product navigation now uses query params consistently
 fca1ef0 fix: Add basePath to import statement in demo
 26ce9ef fix: Demo URLs now work on GitHub Pages
 adcb9a0 docs: Add Stripe localhost testing limitation guide
@@ -8,13 +18,3 @@ ad912a2 fix: Demo Step 7 now uses placeholder link and clearer messaging
 eece24f fix: Demo product now includes Stripe link and correct button selectors
 b14cd00 feat: Product page Stripe buyability and E2E tests
 60c1e7f fix: Product page demo flow and View Details routing
-e490aa2 fix: Add top-level species/morph fields to demo product for URL building
-9dcbff8 fix: Use correct .catalog-item selector in demo (not .product-card)
-516f057 fix: Demo uses localStorage isolation with ?source=demo_test parameter
-c839793 archive: Move broken demo lifecycle files to archive
-1237de6 docs: Add comprehensive demo lifecycle implementation documentation
-99a7193 feat: Enhance SMRI startup with usage tracking, HEAD comparison, and new commands
-cb7deab fix: Add cache busters to common module sub-imports
-10fae8f fix: Game loads demo snakes from localStorage when source param present
-410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
-f4ba50c fix: Add cache buster to common module import

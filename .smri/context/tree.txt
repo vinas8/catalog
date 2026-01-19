@@ -37,6 +37,9 @@
 │   ├── smri-runner.html
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
+│   ├── test-browser.cjs
+│   ├── test-localstorage-destination.html
+│   ├── test-quick.html
 │   └── test-runner-simple.html
 ├── demo
 │   ├── customer-journeys
@@ -159,13 +162,7 @@
 │   ├── worker.js
 │   └── wrangler.toml
 ├── 404.html
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── CREDITS.md
-├── GENETICS-MODULE-MAP.md
-├── PROJECT-STATUS.md
 ├── README.md
-├── STRUCTURE.md
 ├── _redirects
 ├── account.html
 ├── admin-kv.html
@@ -187,12 +184,8 @@
 ├── package-lock.json
 ├── package.json
 ├── product.html
-├── src-structure.txt
 ├── styles.css
 ├── success.html
-├── sw.js
-├── test-browser.cjs
-├── test-localstorage-destination.html
-└── test-quick.html
+└── sw.js
 
-57 directories, 139 files
+57 directories, 132 files
