@@ -105,15 +105,9 @@ export class Demo {
 
       /* Scenario selector */
       .demo-scenarios {
-        padding: 15px;
+        padding: 10px;
         max-height: 100%;
         overflow: hidden;
-      }
-
-      .demo-scenarios h2 {
-        color: #58a6ff;
-        font-size: 16px;
-        margin-bottom: 10px;
       }
 
       .scenario-grid {
@@ -257,14 +251,14 @@ export class Demo {
         background: #238636;
         color: white;
         border: none;
-        padding: 10px 16px;
+        padding: 8px 14px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         transition: all 0.2s;
         flex: 1;
-        min-width: 80px;
+        min-width: 70px;
       }
 
       .demo-btn:hover {
@@ -439,7 +433,6 @@ export class Demo {
         </div>
         <div class="demo-control-panel">
           <div class="demo-scenarios">
-            <h2>Select a Scenario</h2>
             <div class="scenario-grid">
               ${this.scenarios.map((s, i) => `
                 <div class="scenario-card" data-index="${i}">
