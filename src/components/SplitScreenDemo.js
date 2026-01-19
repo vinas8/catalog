@@ -52,6 +52,7 @@ export class SplitScreenDemo {
     style.textContent = `
       .split-demo-container {
         display: flex;
+        flex-direction: column;
         height: calc(100vh - 100px);
         gap: 20px;
         background: #0a0e14;
@@ -60,7 +61,7 @@ export class SplitScreenDemo {
       }
 
       .split-demo-left {
-        flex: 0 0 400px;
+        flex: 0 0 auto;
         background: #161b22;
         border: 2px solid #30363d;
         border-radius: 12px;
@@ -68,6 +69,7 @@ export class SplitScreenDemo {
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        max-height: 33vh;
       }
 
       .split-demo-right {
@@ -77,6 +79,7 @@ export class SplitScreenDemo {
         border-radius: 12px;
         overflow: hidden;
         position: relative;
+        min-height: 66vh;
       }
 
       .split-demo-header {
@@ -189,17 +192,15 @@ export class SplitScreenDemo {
       /* Mobile responsive */
       @media (max-width: 1024px) {
         .split-demo-container {
-          flex-direction: column;
           height: auto;
         }
 
         .split-demo-left {
-          flex: 0 0 auto;
-          max-height: 50vh;
+          max-height: 40vh;
         }
 
         .split-demo-right {
-          min-height: 500px;
+          min-height: 400px;
         }
       }
     `;
@@ -220,16 +221,18 @@ export class SplitScreenDemo {
 
     this.container.innerHTML = `
       <div class="split-demo-container">
-        <!-- Left Panel: Steps -->
-        <div class="split-demo-left">
-          <div class="split-demo-header">
-            <div class="split-demo-title">${scenario.title || 'Scenario ' + (this.currentIndex + 1)}</div>
-            <div class="split-demo-meta">
-              ${scenario.smri || ''} • 
-              ${this.currentIndex + 1}/${this.scenarios.length}
-            </div>
-          </div>
+        <!-- Top Panel: Browser (2/3 height) -->
+        <div class="split-demo-right">
+          <div class="split-demo-loading">Loading...</div>
+          <iframe 
+            class="split-demo-iframe" 
+            id="demo-iframe"
+            src="${scenario.url || 'about:blank'}"
+          ></iframe>
+        </div>
 
+        <!-- Bottom Panel: Steps & Controls (1/3 height) -->
+        <div class="split-demo-left">
           <div class="split-demo-steps">
             ${this.renderSteps(scenario)}
           </div>
@@ -242,16 +245,6 @@ export class SplitScreenDemo {
               Next →
             </button>
           </div>
-        </div>
-
-        <!-- Right Panel: Browser -->
-        <div class="split-demo-right">
-          <div class="split-demo-loading">Loading...</div>
-          <iframe 
-            class="split-demo-iframe" 
-            id="demo-iframe"
-            src="${scenario.url || 'about:blank'}"
-          ></iframe>
         </div>
       </div>
     `;

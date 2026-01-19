@@ -388,10 +388,6 @@ export class Demo {
     this.container.innerHTML = `
       <div class="demo-layout">
         <div class="demo-control-panel">
-          <div class="demo-header">
-            <h1>🎬 Interactive Demos</h1>
-            <p>Watch scenarios execute live</p>
-          </div>
           <div class="demo-scenarios">
             <h2>Select a Scenario</h2>
             <div class="scenario-grid">
@@ -475,10 +471,6 @@ export class Demo {
     const controlPanel = document.querySelector('.demo-control-panel');
     
     controlPanel.innerHTML = `
-      <div class="demo-header">
-        <h1>${this.currentScenario.icon || '🎬'} ${this.currentScenario.title}</h1>
-        <p>${this.currentScenario.smri || ''} • ${this.currentScenario.steps?.length || 0} steps</p>
-      </div>
       <div class="demo-steps">
         ${(this.currentScenario.steps || []).map((step, i) => `
           <div class="step-item ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'completed' : ''}" data-step="${i}">
