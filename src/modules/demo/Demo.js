@@ -105,55 +105,81 @@ export class Demo {
 
       /* Scenario selector */
       .demo-scenarios {
-        padding: 20px;
+        padding: 15px;
+        max-height: 100%;
+        overflow: hidden;
       }
 
       .demo-scenarios h2 {
         color: #58a6ff;
-        font-size: 18px;
-        margin-bottom: 15px;
+        font-size: 16px;
+        margin-bottom: 10px;
       }
 
       .scenario-grid {
-        display: grid;
-        gap: 12px;
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 10px;
+        scrollbar-width: thin;
+        scrollbar-color: #30363d #0d1117;
+      }
+      
+      .scenario-grid::-webkit-scrollbar {
+        height: 6px;
+      }
+      
+      .scenario-grid::-webkit-scrollbar-track {
+        background: #0d1117;
+      }
+      
+      .scenario-grid::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 3px;
       }
 
       .scenario-card {
         background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
         border: 2px solid #1f6feb;
-        padding: 16px;
-        border-radius: 10px;
+        padding: 12px;
+        border-radius: 8px;
         cursor: pointer;
         transition: all 0.3s;
+        min-width: 200px;
+        flex-shrink: 0;
       }
 
       .scenario-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(31, 111, 235, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(31, 111, 235, 0.4);
       }
 
       .scenario-title {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
         color: white;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
       }
 
       .scenario-code {
-        font-size: 12px;
+        font-size: 11px;
         color: rgba(255,255,255,0.7);
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
 
       .scenario-desc {
-        font-size: 13px;
+        font-size: 12px;
         color: rgba(255,255,255,0.9);
+        line-height: 1.3;
       }
 
       /* Steps panel */
       .demo-steps {
-        padding: 20px;
+        padding: 15px;
+        max-height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
 
       .step-item {
@@ -220,10 +246,10 @@ export class Demo {
 
       /* Controls */
       .demo-controls {
-        padding: 15px 20px;
+        padding: 10px 15px;
         border-top: 2px solid #30363d;
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
       }
 
