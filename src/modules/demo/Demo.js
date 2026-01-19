@@ -171,27 +171,32 @@ export class Demo {
         opacity: 0.9;
       }
 
-      /* Steps panel */
+      /* Steps panel - HORIZONTAL SCROLL */
       .demo-steps {
         flex: 1;
-        padding: 12px;
-        overflow-y: auto;
-        overflow-x: hidden;
+        padding: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
       }
 
       .step-item {
         background: #0d1117;
         border: 2px solid #30363d;
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 12px;
-        margin-bottom: 10px;
+        min-width: 200px;
+        max-width: 250px;
+        flex-shrink: 0;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.2s;
       }
 
       .step-item:hover {
         border-color: #1f6feb;
-        transform: translateX(5px);
+        transform: translateY(-2px);
       }
 
       .step-item.active {
@@ -206,16 +211,15 @@ export class Demo {
 
       .step-number {
         display: inline-block;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         background: #21262d;
         color: #8b949e;
         text-align: center;
-        line-height: 28px;
-        font-size: 14px;
+        line-height: 24px;
+        font-size: 12px;
         font-weight: 600;
-        margin-right: 10px;
       }
 
       .step-item.active .step-number {
@@ -229,15 +233,16 @@ export class Demo {
       }
 
       .step-title {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         color: #c9d1d9;
       }
 
       .step-desc {
-        font-size: 12px;
+        font-size: 11px;
         color: #8b949e;
-        margin-top: 4px;
+        margin-top: 6px;
+        line-height: 1.3;
       }
 
       /* Controls */
@@ -521,8 +526,10 @@ export class Demo {
       <div class="demo-steps">
         ${(this.currentScenario.steps || []).map((step, i) => `
           <div class="step-item ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'completed' : ''}" data-step="${i}">
-            <span class="step-number">${i + 1}</span>
-            <span class="step-title">${step.title}</span>
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+              <span class="step-number">${i + 1}</span>
+              <span class="step-title">${step.title}</span>
+            </div>
             <div class="step-desc">${step.description || ''}</div>
           </div>
         `).join('')}
