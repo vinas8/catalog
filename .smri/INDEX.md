@@ -209,7 +209,7 @@ Separators:
 - DASH (-) = Indicates submodule (e.g., 2-7 = Module 2, Submodule 7)
 ```
 
-**Module Numbers:**
+### 6. Scenario Files Structure
 - 0 = Health
 - 1 = Shop
 - 2 = Game (2-7 = Tutorial, 2-8 = Inventory)
@@ -986,3 +986,9 @@ Future:   src/modules/worker/
 5. **S10+ Must Abstract:** External services get internal wrapper
 
 ---
+
+---
+
+## 📚 Lessons Learned
+
+**2026-01-19 - debugging:** Always check browser console (F12) before assuming cache issues. Blank pages are usually JS errors.
