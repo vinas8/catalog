@@ -79,58 +79,48 @@ export class Demo {
 
       .scenario-grid {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         overflow-x: auto;
         overflow-y: hidden;
-        padding-bottom: 6px;
-        scrollbar-width: thin;
-        scrollbar-color: #30363d #161b22;
+        padding: 0;
+        scrollbar-width: none; /* Hide scrollbar */
       }
       
       .scenario-grid::-webkit-scrollbar {
-        height: 5px;
-      }
-      
-      .scenario-grid::-webkit-scrollbar-track {
-        background: #161b22;
-      }
-      
-      .scenario-grid::-webkit-scrollbar-thumb {
-        background: #30363d;
-        border-radius: 3px;
+        display: none; /* Hide scrollbar */
       }
 
       .scenario-card {
         background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
         border: 2px solid #1f6feb;
-        padding: 10px 14px;
+        padding: 8px 12px;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s;
-        min-width: 180px;
+        min-width: 160px;
         flex-shrink: 0;
       }
 
       .scenario-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(31, 111, 235, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(31, 111, 235, 0.3);
       }
 
       .scenario-title {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         color: white;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
       }
 
       .scenario-code {
-        font-size: 10px;
+        font-size: 9px;
         color: rgba(255,255,255,0.6);
-        margin-bottom: 4px;
+        margin-bottom: 3px;
       }
 
       .scenario-desc {
-        font-size: 11px;
+        font-size: 10px;
         color: rgba(255,255,255,0.85);
         line-height: 1.2;
       }
@@ -171,55 +161,76 @@ export class Demo {
         opacity: 0.9;
       }
 
-      /* Steps panel - HORIZONTAL SCROLL */
-      .demo-steps {
+      /* Steps runner - horizontal compact */
+      .demo-steps-runner {
         flex: 1;
-        padding: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
         display: flex;
-        gap: 10px;
-        align-items: flex-start;
+        gap: 4px;
+        overflow: hidden;
+        padding: 0 8px;
+        align-items: center;
       }
 
-      .step-item {
+      .step-indicator {
+        padding: 4px 8px;
         background: #0d1117;
-        border: 2px solid #30363d;
-        border-radius: 8px;
-        padding: 12px;
-        min-width: 200px;
-        max-width: 250px;
-        flex-shrink: 0;
-        cursor: pointer;
+        border: 1px solid #30363d;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: nowrap;
+        color: #8b949e;
         transition: all 0.2s;
       }
 
-      .step-item:hover {
+      .step-indicator.active {
+        background: #1f6feb;
+        color: white;
         border-color: #1f6feb;
-        transform: translateY(-2px);
       }
 
-      .step-item.active {
-        border-color: #1f6feb;
-        background: linear-gradient(135deg, #1f6feb15, #0969da15);
-      }
-
-      .step-item.completed {
+      .step-indicator.completed {
+        background: #238636;
+        color: white;
         border-color: #238636;
-        background: linear-gradient(135deg, #23863615, #2ea04315);
       }
 
-      .step-number {
-        display: inline-block;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
+      /* Step controls */
+      .step-controls {
+        display: flex;
+        gap: 4px;
+        padding: 0 6px;
+      }
+
+      .step-control-btn {
         background: #21262d;
-        color: #8b949e;
-        text-align: center;
-        line-height: 24px;
+        color: #c9d1d9;
+        border: 1px solid #30363d;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
         font-size: 12px;
-        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      .step-control-btn:hover {
+        background: #30363d;
+      }
+
+      .step-control-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .step-control-btn.play {
+        background: #238636;
+        color: white;
+        border-color: #238636;
+      }
+
+      .step-control-btn.pause {
+        background: #f85149;
+        color: white;
+        border-color: #f85149;
       }
 
       .step-item.active .step-number {
@@ -523,25 +534,26 @@ export class Demo {
     const controlPanel = document.querySelector('.demo-control-panel');
     
     controlPanel.innerHTML = `
-      <div class="demo-steps">
+      <button class="step-control-btn" id="demo-back" title="Back to scenarios">⬅️</button>
+      <button class="step-control-btn" id="demo-prev" title="Previous step" ${this.currentStep === 0 ? 'disabled' : ''}>«</button>
+      <div class="demo-steps-runner" id="demo-steps-runner">
         ${(this.currentScenario.steps || []).map((step, i) => `
-          <div class="step-item ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'completed' : ''}" data-step="${i}">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-              <span class="step-number">${i + 1}</span>
-              <span class="step-title">${step.title}</span>
-            </div>
-            ${step.smri ? `<div style="font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 4px;">${step.smri}</div>` : ''}
-            <div class="step-desc">${step.description || ''}</div>
+          <div class="step-indicator ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'completed' : ''}" data-step="${i}" title="${step.title}">
+            ${i + 1}. ${step.title.replace('Step ' + (i+1) + ': ', '')}
           </div>
         `).join('')}
       </div>
-      <div class="demo-controls">
-        <button class="demo-btn back" id="demo-back">← Back to Scenarios</button>
-        <button class="demo-btn secondary" id="demo-prev" ${this.currentStep === 0 ? 'disabled' : ''}>←</button>
-        <button class="demo-btn" id="demo-next">${this.currentStep === (this.currentScenario.steps?.length || 0) - 1 ? '✓ Done' : 'Next →'}</button>
-        <button class="demo-btn secondary" id="demo-autoplay">${this.autoPlaying ? '⏸' : '▶'}</button>
-      </div>
+      <button class="step-control-btn" id="demo-next" title="Next step" ${this.currentStep === (this.currentScenario.steps?.length || 0) - 1 ? 'disabled' : ''}>»</button>
+      <button class="step-control-btn ${this.autoPlaying ? 'pause' : 'play'}" id="demo-autoplay" title="${this.autoPlaying ? 'Pause' : 'Auto-play'}">${this.autoPlaying ? '⏸' : '▶'}</button>
     `;
+
+    // Auto-scroll active step into view
+    setTimeout(() => {
+      const activeStep = controlPanel.querySelector('.step-indicator.active');
+      if (activeStep) {
+        activeStep.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 100);
 
     // Attach step event listeners
     document.querySelectorAll('.step-item').forEach(item => {
