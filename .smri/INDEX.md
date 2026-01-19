@@ -1,8 +1,49 @@
 # 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.7  
-**Last Updated:** 2026-01-14  
+**Version:** 0.7.11  
+**Last Updated:** 2026-01-19  
 **Purpose:** SMRI system index and operating rules
+
+---
+
+## 🎯 NEW: Versioning & SMRI Badge Rules (2026-01-19)
+
+### 1. Version Bump on Every Change
+```bash
+# ALWAYS bump version when making changes
+npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
+```
+
+### 2. Display Version Badge in Components
+Every interactive component must show version badge:
+- **Location:** Bottom-right corner (fixed position)
+- **Format:** `S{M}.{RRR}.{II} • v{X.Y.Z}`
+- **Example:** `S9.3,2,10.05 • v0.7.11`
+- **Clickable:** Opens SMRI decoder modal
+
+### 3. SMRI Decoder Module
+Use centralized decoder for consistency:
+```javascript
+import { showSMRIModal } from '../modules/smri/index.js';
+
+// In component
+showSMRIModal(this.smri);  // Shows popup explaining SMRI code
+```
+
+### 4. Update SMRI on Changes
+- **File changed?** → Bump iteration: `.01 → .02`
+- **New dependency?** → Update relations: `.2,5 → .2,5,8`
+- **Major refactor?** → Consider new module number
+
+### 5. Module Map (Reference)
+```
+0: Core/Internal     6: Payment
+1: Auth              7: Import
+2: Common            8: Debug
+3: Game              9: Demo
+4: Shop             10: SMRI
+5: Testing
+```
 
 ---
 
