@@ -1,7 +1,7 @@
 /**
  * Demo Module - Unified Interactive Demo System
  * @module modules/demo/Demo
- * @version 0.7.8
+ * @version 0.7.13
  * 
  * Features:
  * - Mobile-first responsive split-screen layout
@@ -11,8 +11,10 @@
  * - Auto-play mode
  * - Progress tracking & logging
  * 
- * SMRI: S9.2,8,5.02
+ * SMRI: S9.2,8,5,10.03
  */
+
+import { showSMRIModal } from '../smri/index.js';
 
 export class Demo {
   constructor(options = {}) {
@@ -20,8 +22,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.8';
-    this.smri = 'S9.2,8,5.02';
+    this.version = '0.7.13';
+    this.smri = 'S9.2,8,5,10.03';
     
     this.currentScenario = null;
     this.currentStep = 0;
@@ -66,34 +68,24 @@ export class Demo {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
 
-      /* Mobile-first: vertical layout */
-      .demo-control-panel {
-        background: #161b22;
-        border-bottom: 2px solid #30363d;
-        overflow-y: auto;
-        max-height: 50vh;
-      }
-
+      /* Browser on top (80%) */
       .demo-browser-panel {
-        flex: 1;
+        flex: 0 0 80vh;
+        order: 1;
         display: flex;
         flex-direction: column;
         background: white;
         overflow: hidden;
       }
 
-      /* Desktop: side-by-side */
-      @media (min-width: 1024px) {
-        .demo-layout {
-          flex-direction: row;
-        }
-
-        .demo-control-panel {
-          width: 400px;
-          max-height: 100vh;
-          border-bottom: none;
-          border-right: 2px solid #30363d;
-        }
+      /* Controls on bottom (20%) */
+      .demo-control-panel {
+        flex: 0 0 20vh;
+        order: 2;
+        background: #161b22;
+        border-top: 2px solid #30363d;
+        overflow-y: auto;
+        padding: 10px 15px;
       }
 
       /* Header */
@@ -381,11 +373,18 @@ export class Demo {
         bottom: 10px;
         right: 10px;
         font-size: 10px;
-        color: #8b949e;
-        background: rgba(13, 17, 23, 0.8);
+        color: #58a6ff;
+        background: rgba(13, 17, 23, 0.9);
         padding: 4px 8px;
         border-radius: 4px;
         z-index: 9999;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .demo-version:hover {
+        background: rgba(13, 17, 23, 1);
+        transform: translateY(-2px);
       }
 
       /* Utilities */
@@ -429,7 +428,7 @@ export class Demo {
           <div class="demo-log-panel" id="demo-log"></div>
         </div>
       </div>
-      <div class="demo-version">${this.smri} • v${this.version}</div>
+      <div class="demo-version" id="demo-version-badge">${this.smri} • v${this.version}</div>
     `;
 
     this.attachEventListeners();
@@ -450,6 +449,19 @@ export class Demo {
     // Browser controls
     document.getElementById('demo-reload')?.addEventListener('click', () => this.reloadIframe());
     document.getElementById('demo-toggle-log')?.addEventListener('click', () => this.toggleLog());
+    
+    // Version badge - clickable SMRI decoder
+    const versionBadge = document.getElementById('demo-version-badge');
+    if (versionBadge) {
+      versionBadge.addEventListener('click', () => this.showSMRIDecoder());
+    }
+  }
+
+  /**
+   * Show SMRI decoder modal
+   */
+  showSMRIDecoder() {
+    showSMRIModal(this.smri);
   }
 
   /**

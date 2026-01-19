@@ -3,20 +3,26 @@
  * @module modules/cart
  * @version 0.7.7
  * SMRI: S1.3,4.01
+ * 
+ * PUBLIC API (exported):
+ *  - Cart (class)
+ *  - CartUI (class)
+ *  - addToCart (function)
  */
 
 export { Cart } from './Cart.js';
 export { CartUI } from './CartUI.js';
 
-// Singleton cart instance
+// Internal singleton instances (not exported)
 let cartInstance = null;
 let cartUIInstance = null;
 
 /**
- * Get cart singleton
+ * Get cart singleton (internal helper)
+ * @private
  * @returns {Cart}
  */
-export function getCart() {
+function getCart() {
   if (!cartInstance) {
     cartInstance = new Cart();
   }
@@ -26,6 +32,7 @@ export function getCart() {
 /**
  * Add product to cart and show notification
  * SMRI: S1.3,4.01 - Add to Cart Facade
+ * @public
  * @param {Object} product - Product to add
  * @returns {boolean} Success status
  */
@@ -44,11 +51,12 @@ export function addToCart(product) {
 }
 
 /**
- * Show cart notification popup
+ * Show cart notification popup (internal helper)
+ * @private
  * @param {string} message - Message to show
  * @param {string} type - 'success' | 'warning' | 'error'
  */
-export function showCartPopup(message, type = 'success') {
+function showCartPopup(message, type = 'success') {
   // Remove existing popup
   const existing = document.getElementById('cart-popup');
   if (existing) existing.remove();
@@ -71,9 +79,10 @@ export function showCartPopup(message, type = 'success') {
 }
 
 /**
- * Update cart badge count in UI
+ * Update cart badge count in UI (internal helper)
+ * @private
  */
-export function updateCartBadge() {
+function updateCartBadge() {
   const cart = getCart();
   const count = cart.getCount();
   
@@ -85,10 +94,11 @@ export function updateCartBadge() {
 }
 
 /**
- * Initialize cart UI
+ * Initialize cart UI (internal - use CartUI class directly)
+ * @private
  * @param {Object} options - Configuration options
  */
-export function initCartUI(options = {}) {
+function initCartUI(options = {}) {
   const cart = getCart();
   cartUIInstance = new CartUI({ ...options, cart });
   return cartUIInstance;
