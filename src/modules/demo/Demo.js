@@ -22,8 +22,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.13';
-    this.smri = 'S9.2,8,5,10.03';
+    this.version = '0.7.14';
+    this.smri = 'S9.2,8,5,10.04';
     
     this.currentScenario = null;
     this.currentStep = 0;
@@ -71,7 +71,6 @@ export class Demo {
       /* Browser on top (80%) */
       .demo-browser-panel {
         flex: 0 0 80vh;
-        order: 1;
         display: flex;
         flex-direction: column;
         background: white;
@@ -81,7 +80,6 @@ export class Demo {
       /* Controls on bottom (20%) */
       .demo-control-panel {
         flex: 0 0 20vh;
-        order: 2;
         background: #161b22;
         border-top: 2px solid #30363d;
         overflow-y: auto;
@@ -401,6 +399,18 @@ export class Demo {
   renderScenarioSelector() {
     this.container.innerHTML = `
       <div class="demo-layout">
+        <div class="demo-browser-panel">
+          <div class="demo-browser-controls">
+            <button class="demo-btn secondary" id="demo-reload">🔄</button>
+            <input type="text" class="demo-url-bar" id="demo-url" readonly value="Select a scenario to begin">
+            <button class="demo-btn secondary" id="demo-toggle-log">📋</button>
+          </div>
+          <div class="demo-browser-content">
+            <iframe class="demo-iframe" id="demo-iframe" src="about:blank"></iframe>
+            <div class="demo-status-overlay" id="demo-status"></div>
+          </div>
+          <div class="demo-log-panel" id="demo-log"></div>
+        </div>
         <div class="demo-control-panel">
           <div class="demo-scenarios">
             <h2>Select a Scenario</h2>
@@ -414,18 +424,6 @@ export class Demo {
               `).join('')}
             </div>
           </div>
-        </div>
-        <div class="demo-browser-panel">
-          <div class="demo-browser-controls">
-            <button class="demo-btn secondary" id="demo-reload">🔄</button>
-            <input type="text" class="demo-url-bar" id="demo-url" readonly value="Select a scenario to begin">
-            <button class="demo-btn secondary" id="demo-toggle-log">📋</button>
-          </div>
-          <div class="demo-browser-content">
-            <iframe class="demo-iframe" id="demo-iframe" src="about:blank"></iframe>
-            <div class="demo-status-overlay" id="demo-status"></div>
-          </div>
-          <div class="demo-log-panel" id="demo-log"></div>
         </div>
       </div>
       <div class="demo-version" id="demo-version-badge">${this.smri} • v${this.version}</div>
