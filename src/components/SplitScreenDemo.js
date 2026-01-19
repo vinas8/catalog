@@ -78,23 +78,25 @@ export class SplitScreenDemo {
       }
 
       .split-demo-left {
-        flex: 0 0 25vh;
+        flex: 0 0 20vh;
         background: #161b22;
         border: 2px solid #30363d;
         border-radius: 12px;
-        padding: 20px;
+        padding: 15px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        order: 2;
       }
 
       .split-demo-right {
-        flex: 0 0 calc(75vh - 120px);
+        flex: 0 0 calc(80vh - 140px);
         background: white;
         border: 3px solid #30363d;
         border-radius: 12px;
         overflow: hidden;
         position: relative;
+        order: 1;
         min-height: 66vh;
       }
 
