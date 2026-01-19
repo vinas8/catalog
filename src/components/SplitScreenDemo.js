@@ -1,7 +1,7 @@
 /**
  * SplitScreenDemo Component
  * @module components/SplitScreenDemo
- * @version 0.7.8
+ * @version 0.7.9
  * 
  * Split-screen demo component for interactive scenarios:
  * - Top: Live browser iframe (2/3 height)
@@ -12,7 +12,7 @@
  * - debug/releases/demo.html (presentations)
  * - All interactive demos
  * 
- * SMRI: S9.3,2.02
+ * SMRI: S9.3,2.03
  */
 
 export class SplitScreenDemo {
@@ -25,8 +25,8 @@ export class SplitScreenDemo {
     this.onScenarioChange = options.onScenarioChange || null;
     this.container = null;
     this.iframe = null;
-    this.version = '0.7.8';
-    this.smri = 'S9.3,2.02';
+    this.version = '0.7.9';
+    this.smri = 'S9.3,2.03';
   }
 
   /**
@@ -65,7 +65,7 @@ export class SplitScreenDemo {
       }
 
       .split-demo-left {
-        flex: 0 0 auto;
+        flex: 0 0 25vh;
         background: #161b22;
         border: 2px solid #30363d;
         border-radius: 12px;
@@ -73,11 +73,10 @@ export class SplitScreenDemo {
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        max-height: 33vh;
       }
 
       .split-demo-right {
-        flex: 1;
+        flex: 0 0 calc(75vh - 120px);
         background: white;
         border: 3px solid #30363d;
         border-radius: 12px;
