@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Demo Test</title>
+  <title>Demo Test v2</title>
 </head>
 <body>
-  <h1>Testing...</h1>
-  <div id="error"></div>
-  <div id="success"></div>
+  <h1>Testing Demo v675258e...</h1>
+  <div id="error" style="color: red;"></div>
+  <div id="success" style="color: green;"></div>
 
   <script type="module">
     const errorDiv = document.getElementById('error');
@@ -19,8 +19,7 @@
       const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
       successDiv.innerHTML += `<p>✅ BasePath: ${basePath}</p>`;
       
-      const urlParams = new URLSearchParams(window.location.search);
-      const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.15';
+      const cacheBuster = 'v675258e';
       successDiv.innerHTML += `<p>✅ CacheBuster: ${cacheBuster}</p>`;
       
       const importPath = `${basePath}/src/modules/demo/index.js?v=${cacheBuster}`;
@@ -32,11 +31,23 @@
       const { Demo } = module;
       successDiv.innerHTML += `<p>✅ Demo class: ${typeof Demo}</p>`;
       
-      const demo = new Demo({ containerId: 'success' });
+      const demo = new Demo({ 
+        containerId: 'success',
+        scenarios: [{
+          icon: '🧪',
+          title: 'Test',
+          smri: 'S0.0.0',
+          description: 'Test scenario',
+          steps: [{ title: 'Test step', description: 'Test' }]
+        }]
+      });
       successDiv.innerHTML += `<p>✅ Demo instance created</p>`;
       
+      demo.init();
+      successDiv.innerHTML += `<p>✅ Demo.init() succeeded</p>`;
+      
     } catch (err) {
-      errorDiv.innerHTML = `<p style="color:red">❌ Error: ${err.message}</p><pre>${err.stack}</pre>`;
+      errorDiv.innerHTML = `<p>❌ Error: ${err.message}</p><pre style="font-size: 11px;">${err.stack}</pre>`;
     }
   </script>
 </body>
