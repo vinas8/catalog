@@ -78,7 +78,34 @@ A consolidated documentation system where **ALL** project documentation lives:
 
 ## 🚨 CRITICAL RULES FOR AI ASSISTANTS
 
-### 0. HARD RULE: Only ONE file in .smri root
+### 0. DEBUGGING RULE: Check Console FIRST, Not Cache
+**When page is blank or broken:**
+
+❌ **WRONG approach:**
+```
+"It's probably cache, let me add cache busting..."
+"Let me add meta tags..."
+"Let me add query params..."
+```
+
+✅ **CORRECT approach:**
+```
+1. Ask: "What does browser console say?" (F12 → Console)
+2. Read the actual error message
+3. Fix the code bug
+4. Done
+```
+
+**Real example from 2026-01-19:**
+- Blank demo page
+- AI blamed cache, added meta tags, query params, version busters
+- Real issue: Missing `export` keyword in decoder.js
+- Error was: "does not provide an export named 'MODULE_MAP'"
+- 5 minutes wasted on cache, 1 line fix needed
+
+**LESSON:** Blank page = JavaScript error 99% of time. Cache problems are rare.
+
+### 1. Use Git to Verify Structure
 **ONLY `INDEX.md` allowed in `/root/catalog/.smri/`**
 - ❌ NO `.smri/AI-GUIDE.md`
 - ❌ NO `.smri/README.md`
@@ -86,7 +113,7 @@ A consolidated documentation system where **ALL** project documentation lives:
 - ✅ Use `.smri/logs/` for notes
 - ✅ Use `.smri/docs/` for documentation
 
-### 0.5. ANTI-SCATTER RULE: Follow Defined Structure
+### 1. HARD RULE: Only ONE file in .smri root
 **WHY WE LOAD .smri: To prevent scattered files everywhere**
 
 **PROBLEM:** Files get scattered across project:
@@ -143,7 +170,7 @@ git add .smri/
 git commit -m "update: {description}"
 git status .smri/  # verify clean
 ```
-### 2. NO Documentation Outside .smri/
+### 3. Use Git to Verify Structure
 - ❌ Project root (except README.md, CHANGELOG.md)
 - ❌ `/docs` folder (archived, read-only)
 - ❌ Module folders (`src/*/README.md` - only code comments allowed)
@@ -154,14 +181,14 @@ git status .smri/  # verify clean
 - ✅ `.smri/scenarios/` - Test scenarios
 - ✅ `.smri/logs/` - Session logs
 
-### 3. NO File Duplication
+### 4. NO Documentation Outside .smri/
 **Before creating ANY file:**
 ```bash
 tree -L 3 /root/catalog/.smri/
 ```
 **Check if topic already exists. If yes, UPDATE existing file, don't create new.**
 
-### 4. Scenario Files Structure
+### 5. NO File Duplication
 **Scenarios must be:**
 - Named using SMRI format: `S{M}.{RRR}.{II}-{short-name}.md`
 - Stored flat in `.smri/scenarios/` (NO subfolders)
