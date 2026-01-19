@@ -20,13 +20,26 @@ export class SplitScreenDemo {
     this.containerId = options.containerId || 'split-demo';
     this.scenarios = options.scenarios || [];
     this.currentIndex = 0;
+    this.currentStepIndex = 0;
     this.autoAdvance = options.autoAdvance || false;
     this.autoDelay = options.autoDelay || 3000;
     this.onScenarioChange = options.onScenarioChange || null;
     this.container = null;
     this.iframe = null;
-    this.version = '0.7.9';
-    this.smri = 'S9.3,2.03';
+    this.version = '0.7.10';
+    this.smri = 'S9.3,2.04';
+    this.moduleMap = {
+      0: 'Core/Internal',
+      1: 'Auth',
+      2: 'Common',
+      3: 'Game',
+      4: 'Shop',
+      5: 'Testing',
+      6: 'Payment',
+      7: 'Import',
+      8: 'Debug',
+      9: 'Demo'
+    };
   }
 
   /**
@@ -198,11 +211,79 @@ export class SplitScreenDemo {
         bottom: 10px;
         right: 10px;
         font-size: 10px;
-        color: #8b949e;
-        background: rgba(13, 17, 23, 0.8);
+        color: #58a6ff;
+        background: rgba(13, 17, 23, 0.9);
         padding: 4px 8px;
         border-radius: 4px;
         z-index: 9999;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .split-demo-version:hover {
+        background: rgba(13, 17, 23, 1);
+        transform: translateY(-2px);
+      }
+
+      /* SMRI Decoder Modal */
+      .smri-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .smri-modal.show {
+        display: flex;
+      }
+
+      .smri-modal-content {
+        background: #0d1117;
+        border: 2px solid #30363d;
+        border-radius: 12px;
+        padding: 30px;
+        max-width: 500px;
+        color: #c9d1d9;
+      }
+
+      .smri-modal-header {
+        font-size: 20px;
+        color: #58a6ff;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .smri-modal-body {
+        line-height: 1.8;
+      }
+
+      .smri-code {
+        font-family: 'SF Mono', Monaco, monospace;
+        background: #161b22;
+        padding: 2px 6px;
+        border-radius: 3px;
+        color: #79c0ff;
+      }
+
+      .smri-close {
+        margin-top: 20px;
+        background: #238636;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .smri-close:hover {
+        background: #2ea043;
       }
 
       /* Mobile responsive */
@@ -263,7 +344,7 @@ export class SplitScreenDemo {
           </div>
         </div>
       </div>
-      <div class="split-demo-version">${this.smri} • v${this.version}</div>
+      <div class="split-demo-version" id="smri-badge">${this.getCurrentSMRI()} • v${this.version}</div>
     `;
 
     this.iframe = document.getElementById('demo-iframe');
@@ -293,6 +374,9 @@ export class SplitScreenDemo {
   attachEventListeners() {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
+    const smriBadge = document.getElementById('smri-badge');
+    const smriModal = document.getElementById('smri-modal');
+    const smriClose = document.getElementById('smri-close');
 
     if (prevBtn) {
       prevBtn.addEventListener('click', () => this.previous());
@@ -302,9 +386,25 @@ export class SplitScreenDemo {
       nextBtn.addEventListener('click', () => this.next());
     }
 
+    if (smriBadge) {
+      smriBadge.addEventListener('click', () => this.showSMRIDecoder());
+    }
+
+    if (smriClose) {
+      smriClose.addEventListener('click', () => this.hideSMRIDecoder());
+    }
+
+    if (smriModal) {
+      smriModal.addEventListener('click', (e) => {
+        if (e.target === smriModal) this.hideSMRIDecoder();
+      });
+    }
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === 'Escape') {
+        this.hideSMRIDecoder();
+      } else if (e.key === 'ArrowLeft') {
         this.previous();
       } else if (e.key === 'ArrowRight') {
         this.next();
@@ -368,6 +468,52 @@ export class SplitScreenDemo {
   reload() {
     if (this.iframe) {
       this.iframe.src = this.iframe.src;
+    }
+  }
+
+  /**
+   * Get current SMRI code (scenario or step-specific)
+   */
+  getCurrentSMRI() {
+    const scenario = this.scenarios[this.currentIndex];
+    if (!scenario) return this.smri;
+    
+    // Use step-specific SMRI if available
+    const steps = scenario.steps || [];
+    const currentStep = steps[this.currentStepIndex];
+    if (currentStep && currentStep.smri) {
+      return currentStep.smri;
+    }
+    
+    // Use scenario SMRI if available
+    return scenario.smri || this.smri;
+  }
+
+  /**
+   * Update version badge with current SMRI
+   */
+  updateVersionBadge() {
+    const badge = document.getElementById('smri-badge');
+    if (badge) {
+      badge.textContent = `${this.getCurrentSMRI()} • v${this.version}`;
+    }
+  }
+
+  /**
+   * Show SMRI decoder modal
+   */
+  showSMRIDecoder() {
+    const currentSMRI = this.getCurrentSMRI();
+    showSMRIModal(currentSMRI);
+  }
+
+  /**
+   * Hide SMRI decoder modal (handled by SMRI module)
+   */
+  hideSMRIDecoder() {
+    const modal = document.getElementById('smri-modal');
+    if (modal) {
+      modal.classList.remove('show');
     }
   }
 }
