@@ -530,6 +530,7 @@ export class Demo {
               <span class="step-number">${i + 1}</span>
               <span class="step-title">${step.title}</span>
             </div>
+            ${step.smri ? `<div style="font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 4px;">${step.smri}</div>` : ''}
             <div class="step-desc">${step.description || ''}</div>
           </div>
         `).join('')}

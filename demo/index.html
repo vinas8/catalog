@@ -34,6 +34,7 @@
           description: 'Clear data → Import → Verify catalog → View snake → Check buyable → Purchase',
           steps: [
             {
+              smri: 'S9.0,8.01',
               title: 'Step 1: Clear Demo Data',
               description: 'Remove demo localStorage only',
               url: `${basePath}/catalog.html?source=demo_test`,
@@ -59,6 +60,7 @@
               }
             },
             {
+              smri: 'S9.0,8.02',
               title: 'Step 2: Check Empty Catalog',
               description: 'Verify demo catalog is empty',
               url: `${basePath}/catalog.html?source=demo_test`,
@@ -96,7 +98,8 @@
               }
             },
             {
-              title: 'Step 3: Create Demo User & Snake',
+              smri: 'S9.1,2.01',
+              title: 'Step 3: Create Demo User title: 'Step 3: Create Demo User & Snake', Snake',
               description: 'Add user and assign snake',
               url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
@@ -146,6 +149,7 @@
               }
             },
             {
+              smri: 'S9.4.01',
               title: 'Step 4: Check Catalog',
               description: 'Verify demo snake appears',
               url: `${basePath}/catalog.html?source=demo_test`,
@@ -265,6 +269,7 @@
               }
             },
             {
+              smri: 'S9.6.02',
               title: 'Step 7: Simulate Purchase',
               description: 'Mark snake as sold to user',
               url: `${basePath}/catalog.html?source=demo_test`,
@@ -295,6 +300,7 @@
               }
             },
             {
+              smri: 'S9.3.01',
               title: 'Step 8: View in My Farm 🎮',
               description: 'See your snake in the game',
               url: `${basePath}/game.html?source=demo_test`,
@@ -324,7 +330,7 @@
               }
             },
             {
-              title: 'Step 8: Demo Complete ✅',
+              title: 'Step 9: Demo Complete ✅',
               description: 'Summary',
               action: async (demo) => {
                 demo.log('🎉 Demo flow complete!', 'success');
@@ -332,10 +338,11 @@
                 
                 demo.log('', 'info');
                 demo.log('📋 What we did:', 'info');
-                demo.log('  ✅ Created demo user (demo_user_123)', 'success');
-                demo.log('  ✅ Assigned snake to user', 'success');
-                demo.log('  ✅ Marked as purchased (status: sold)', 'success');
-                demo.log('  ✅ Showed in catalog', 'success');
+                demo.log('  ✅ Created demo product', 'success');
+                demo.log('  ✅ Verified it shows in catalog', 'success');
+                demo.log('  ✅ Checked product is buyable', 'success');
+                demo.log('  ✅ Simulated purchase', 'success');
+                demo.log('  ✅ Assigned to demo user', 'success');
                 demo.log('  ✅ Showed in My Farm game', 'success');
                 demo.log('', 'info');
                 demo.log('💡 Next steps:', 'info');
