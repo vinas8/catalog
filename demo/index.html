@@ -15,7 +15,10 @@
   <script type="module">
     // Fix path for GitHub Pages
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
-    const { Demo } = await import(`${basePath}/src/modules/demo/index.js`);
+    
+    // Cache buster for development
+    const cacheBuster = Date.now();
+    const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
 
     const demo = new Demo({
       containerId: 'demo-root',
