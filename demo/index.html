@@ -16,13 +16,14 @@
   <div id="demo-root"></div>
 
   <script type="module">
-    // Fix path for GitHub Pages
-    const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
-    
-    // Cache buster - use URL param if provided, otherwise use version
-    const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.15';
-    const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
+    try {
+      // Fix path for GitHub Pages
+      const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+      
+      // Cache buster - use URL param if provided, otherwise use version
+      const urlParams = new URLSearchParams(window.location.search);
+      const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.16';
+      const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
 
     const demo = new Demo({
       containerId: 'demo-root',
@@ -546,6 +547,17 @@ Chocolate,Pastel,Female,2023,`;
 
     demo.init();
     console.log('🎬 Demo system initialized');
+  } catch (error) {
+    document.getElementById('demo-root').innerHTML = `
+      <div style="padding: 20px; font-family: monospace;">
+        <h1 style="color: red;">❌ Demo Error</h1>
+        <p><strong>Message:</strong> ${error.message}</p>
+        <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${error.stack}</pre>
+        <p><a href="/catalog/demo/test.html">Try test page</a></p>
+      </div>
+    `;
+    console.error('Demo error:', error);
+  }
   </script>
 </body>
 </html>
