@@ -1,7 +1,7 @@
 /**
  * Demo Module - Unified Interactive Demo System
  * @module modules/demo/Demo
- * @version 0.7.7
+ * @version 0.7.8
  * 
  * Features:
  * - Mobile-first responsive split-screen layout
@@ -11,7 +11,7 @@
  * - Auto-play mode
  * - Progress tracking & logging
  * 
- * SMRI: S9.2,8,5.01
+ * SMRI: S9.2,8,5.02
  */
 
 export class Demo {
@@ -20,6 +20,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
+    this.version = '0.7.8';
+    this.smri = 'S9.2,8,5.02';
     
     this.currentScenario = null;
     this.currentStep = 0;
@@ -373,6 +375,19 @@ export class Demo {
         color: #f87171;
       }
 
+      /* Version footer */
+      .demo-version {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+        color: #8b949e;
+        background: rgba(13, 17, 23, 0.8);
+        padding: 4px 8px;
+        border-radius: 4px;
+        z-index: 9999;
+      }
+
       /* Utilities */
       .demo-hidden {
         display: none !important;
@@ -414,6 +429,7 @@ export class Demo {
           <div class="demo-log-panel" id="demo-log"></div>
         </div>
       </div>
+      <div class="demo-version">${this.smri} • v${this.version}</div>
     `;
 
     this.attachEventListeners();

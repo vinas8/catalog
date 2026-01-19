@@ -1,16 +1,18 @@
 /**
  * SplitScreenDemo Component
  * @module components/SplitScreenDemo
- * @version 0.7.7
+ * @version 0.7.8
  * 
  * Split-screen demo component for interactive scenarios:
- * - Left: Scenario steps/instructions
- * - Right: Live browser iframe
+ * - Top: Live browser iframe (2/3 height)
+ * - Bottom: Scenario steps/instructions (1/3 height)
  * 
  * Used by:
  * - debug/tools/smri-runner.html (SMRI scenarios)
  * - debug/releases/demo.html (presentations)
  * - All interactive demos
+ * 
+ * SMRI: S9.3,2.02
  */
 
 export class SplitScreenDemo {
@@ -23,6 +25,8 @@ export class SplitScreenDemo {
     this.onScenarioChange = options.onScenarioChange || null;
     this.container = null;
     this.iframe = null;
+    this.version = '0.7.8';
+    this.smri = 'S9.3,2.02';
   }
 
   /**
@@ -189,6 +193,19 @@ export class SplitScreenDemo {
         font-size: 16px;
       }
 
+      /* Version footer */
+      .split-demo-version {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+        color: #8b949e;
+        background: rgba(13, 17, 23, 0.8);
+        padding: 4px 8px;
+        border-radius: 4px;
+        z-index: 9999;
+      }
+
       /* Mobile responsive */
       @media (max-width: 1024px) {
         .split-demo-container {
@@ -247,6 +264,7 @@ export class SplitScreenDemo {
           </div>
         </div>
       </div>
+      <div class="split-demo-version">${this.smri} • v${this.version}</div>
     `;
 
     this.iframe = document.getElementById('demo-iframe');
