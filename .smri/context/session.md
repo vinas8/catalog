@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-17 10:30:50 UTC  
-**Commit:** eece24f  
+**Generated:** 2026-01-19 01:08:55 UTC  
+**Commit:** fca1ef0  
 **Version:** 0.7.7
 
 ---
@@ -9,6 +9,13 @@
 
 ### Git Log (Last 20 commits)
 ```
+fca1ef0 fix: Add basePath to import statement in demo
+26ce9ef fix: Demo URLs now work on GitHub Pages
+adcb9a0 docs: Add Stripe localhost testing limitation guide
+32725c8 fix: Sync shop/index.html with catalog.html for consistency
+c7ea18d fix: Demo Buy Now button now shows helpful message instead of doing nothing
+ad912a2 fix: Demo Step 7 now uses placeholder link and clearer messaging
+0c94713 refactor: Simplify catalog page layout
 eece24f fix: Demo product now includes Stripe link and correct button selectors
 b14cd00 feat: Product page Stripe buyability and E2E tests
 60c1e7f fix: Product page demo flow and View Details routing
@@ -22,23 +29,13 @@ cb7deab fix: Add cache busters to common module sub-imports
 10fae8f fix: Game loads demo snakes from localStorage when source param present
 410e6d2 fix: Use correct TIMEOUTS constant name (NOTIFICATION_DURATION)
 f4ba50c fix: Add cache buster to common module import
-b7c15a3 fix: Update test to handle versioned script tags
-724de27 fix: Correct JavaScript structure in success.html
-6b2fd26 feat: Demo purchase follows real purchase flow with success page redirect
-c595d1e fix: Update version to 0.7.7 and improve cache busting
-19ab6f1 fix: Add cache buster to game-controller import
-fe3da39 fix: Add demo purchase buttons and fix Core export
-d60034c fix: Add source-aware caching to catalog module to support demo isolation
 ```
 
 ### Git Status
 ```
  M .smri/context/LAST_UPDATE.txt
  M .smri/context/git-log.txt
- M .smri/context/health.txt
  M .smri/context/session.md
- M tests/e2e/README.md
-?? tests/e2e/README-OLD.md
 ```
 
 ---
@@ -448,5 +445,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-17 10:30:50 UTC  
+**Context cached at:** 2026-01-19 01:08:56 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

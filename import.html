@@ -299,6 +299,13 @@ Taohu,Super Mojave,Male,2024,"></textarea>
             if (r.success) log(`  ✅ ${r.name}`, 'success');
             else log(`  ❌ ${r.name}: ${r.error}`, 'error');
           });
+          
+          // Clear shop cache so new products appear immediately
+          log('🔄 Clearing shop cache...', 'info');
+          localStorage.removeItem('serpent_products_cache');
+          localStorage.removeItem('serpent_products_cache_time');
+          log('✅ Cache cleared! New products will show on shop page.', 'success');
+          
           refreshStats();
         } else {
           log(`❌ Upload failed: ${result.error}`, 'error');

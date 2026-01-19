@@ -341,11 +341,8 @@
           const morph = (product.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
           const name = (product.name || product.id).toLowerCase().replace(/\s+/g, '-');
           
-          // Use query param for dev, clean URL for production
-          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          const productUrl = isDev 
-            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}`
-            : `/en/catalog/${species}/${morph}/${name}`;
+          // Always use query param format for reliability
+          const productUrl = `/product.html?url=/en/catalog/${species}/${morph}/${name}`;
           
           window.location.href = productUrl;
         }

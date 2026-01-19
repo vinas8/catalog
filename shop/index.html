@@ -397,11 +397,9 @@
           const demoSource = urlParams.get('source');
           const sourceParam = demoSource ? `&source=${demoSource}` : '';
           
-          // Use query param for dev, clean URL for production
-          const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          const productUrl = isDev 
-            ? `/product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`
-            : `/en/catalog/${species}/${morph}/${name}`;
+          // Always use query param format for reliability
+          // (GitHub Pages 404.html will handle clean URLs, but direct navigation needs query param)
+          const productUrl = `/product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`;
           
           window.location.href = productUrl;
         } catch (err) {
