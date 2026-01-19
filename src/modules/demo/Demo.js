@@ -68,22 +68,90 @@ export class Demo {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
 
-      /* Browser on top (80%) */
+      /* Scenario selector on top (horizontal) */
+      .demo-scenarios {
+        flex: 0 0 auto;
+        padding: 8px;
+        background: #161b22;
+        border-bottom: 2px solid #30363d;
+        overflow: hidden;
+      }
+
+      .scenario-grid {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #30363d #161b22;
+      }
+      
+      .scenario-grid::-webkit-scrollbar {
+        height: 5px;
+      }
+      
+      .scenario-grid::-webkit-scrollbar-track {
+        background: #161b22;
+      }
+      
+      .scenario-grid::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 3px;
+      }
+
+      .scenario-card {
+        background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+        border: 2px solid #1f6feb;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 180px;
+        flex-shrink: 0;
+      }
+
+      .scenario-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(31, 111, 235, 0.4);
+      }
+
+      .scenario-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 3px;
+      }
+
+      .scenario-code {
+        font-size: 10px;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 4px;
+      }
+
+      .scenario-desc {
+        font-size: 11px;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.2;
+      }
+
+      /* Browser in middle (60%) */
       .demo-browser-panel {
-        flex: 0 0 80vh;
+        flex: 0 0 60vh;
         display: flex;
         flex-direction: column;
         background: white;
         overflow: hidden;
       }
 
-      /* Controls on bottom (20%) */
+      /* Steps/controls on bottom (auto - takes remaining space) */
       .demo-control-panel {
-        flex: 0 0 20vh;
+        flex: 1;
         background: #161b22;
         border-top: 2px solid #30363d;
         overflow-y: auto;
-        padding: 10px 15px;
+        display: flex;
+        flex-direction: column;
       }
 
       /* Header */
@@ -103,75 +171,10 @@ export class Demo {
         opacity: 0.9;
       }
 
-      /* Scenario selector */
-      .demo-scenarios {
-        padding: 10px;
-        max-height: 100%;
-        overflow: hidden;
-      }
-
-      .scenario-grid {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 10px;
-        scrollbar-width: thin;
-        scrollbar-color: #30363d #0d1117;
-      }
-      
-      .scenario-grid::-webkit-scrollbar {
-        height: 6px;
-      }
-      
-      .scenario-grid::-webkit-scrollbar-track {
-        background: #0d1117;
-      }
-      
-      .scenario-grid::-webkit-scrollbar-thumb {
-        background: #30363d;
-        border-radius: 3px;
-      }
-
-      .scenario-card {
-        background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
-        border: 2px solid #1f6feb;
-        padding: 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
-        min-width: 200px;
-        flex-shrink: 0;
-      }
-
-      .scenario-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(31, 111, 235, 0.4);
-      }
-
-      .scenario-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 4px;
-      }
-
-      .scenario-code {
-        font-size: 11px;
-        color: rgba(255,255,255,0.7);
-        margin-bottom: 6px;
-      }
-
-      .scenario-desc {
-        font-size: 12px;
-        color: rgba(255,255,255,0.9);
-        line-height: 1.3;
-      }
-
       /* Steps panel */
       .demo-steps {
-        padding: 15px;
-        max-height: 100%;
+        flex: 1;
+        padding: 12px;
         overflow-y: auto;
         overflow-x: hidden;
       }
