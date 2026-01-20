@@ -25,6 +25,7 @@ export class Demo {
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
     this.flowUrl = options.flowUrl || 'http://localhost:8005';
+    this.purchaseFlow = options.purchaseFlow || null;  // External flow class
     this.version = '0.7.51';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     

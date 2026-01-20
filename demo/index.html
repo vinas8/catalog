@@ -27,10 +27,27 @@
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
         const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.51';
+        
+        // Import modules
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
+        
+        // Import external purchase flow if enabled
+        let PurchaseFlow = null;
+        const { isFeatureEnabled } = await import(`${basePath}/src/modules/config/feature-flags.js?v=${cacheBuster}`);
+        
+        if (isFeatureEnabled('USE_EXTERNAL_PURCHASE_FLOW')) {
+          try {
+            const flowModule = await import('../purchase_flow/packages/flows/purchase/src/index.js');
+            PurchaseFlow = flowModule.PurchaseFlow;
+            console.log('✅ External purchase flow loaded');
+          } catch (err) {
+            console.warn('⚠️ External flow not available, using fallback:', err.message);
+          }
+        }
 
     const demo = new Demo({
       containerId: 'demo-root',
+      purchaseFlow: PurchaseFlow,  // Pass the flow class to demo
       scenarios: [
         {
           icon: '🧪',
@@ -279,33 +296,36 @@
               description: 'Mark snake as sold to user',
               url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
-                let useExternalFlow = window.featureFlags?.check('USE_EXTERNAL_PURCHASE_FLOW');
+                const useExternalFlow = window.featureFlags?.check('USE_EXTERNAL_PURCHASE_FLOW');
                 
-                if (useExternalFlow) {
-                  demo.log('💳 Using external purchase flow...', 'info');
+                if (useExternalFlow && demo.purchaseFlow) {
+                  demo.log('💳 Using external purchase flow MODULE...', 'info');
                   
                   try {
-                    const response = await fetch('http://localhost:8005/api/create-checkout-session', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        productId: 'prod_demo',
-                        userId: 'demo_user_123'
-                      })
+                    // Initialize the external flow
+                    const flow = new demo.purchaseFlow({
+                      workerUrl: 'http://localhost:8005',
+                      debugMode: true
                     });
                     
-                    if (response.ok) {
-                      const session = await response.json();
-                      demo.log(`✅ External flow created session: ${session.id}`, 'success');
-                      demo.log(`💰 Amount: $${session.amount / 100}`, 'info');
-                    } else {
-                      throw new Error('External flow API failed');
-                    }
+                    await flow.init();
+                    
+                    // Purchase using external flow
+                    const session = await flow.purchaseProduct('prod_demo');
+                    
+                    demo.log(`✅ External flow created session: ${session.id}`, 'success');
+                    demo.log(`💰 Amount: $${session.amount / 100}`, 'info');
+                    demo.log('🎉 Used real PurchaseFlow module!', 'success');
+                    
+                    flow.destroy();
                   } catch (err) {
                     demo.log(`❌ External flow error: ${err.message}`, 'error');
                     demo.log('⚠️ Falling back to simulation...', 'warning');
                     useExternalFlow = false;
                   }
+                } else if (useExternalFlow) {
+                  demo.log('⚠️ External flow enabled but module not loaded', 'warning');
+                  useExternalFlow = false;
                 }
                 
                 if (!useExternalFlow) {

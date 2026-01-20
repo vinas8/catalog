@@ -1,6 +1,6 @@
 {
   "name": "snake-muffin",
-  "version": "0.7.50",
+  "version": "0.7.51",
   "description": "Snake care simulation game with Stripe integration",
   "type": "module",
   "scripts": {
@@ -54,5 +54,8 @@
   },
   "devDependencies": {
     "playwright": "^1.57.0"
+  },
+  "dependencies": {
+    "@serpent-town/flow-purchase": "file:../purchase_flow/packages/flows/purchase"
   }
 }
