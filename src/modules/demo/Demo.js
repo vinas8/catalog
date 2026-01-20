@@ -16,6 +16,7 @@
 
 import { showSMRIModal } from '../smri/index.js';
 import { SMRI_REGISTRY } from '../../config/smri-config.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
 
 export class Demo {
   constructor(options = {}) {
@@ -23,6 +24,7 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
+    this.flowUrl = options.flowUrl || 'http://localhost:8005';
     this.version = '0.7.50';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
