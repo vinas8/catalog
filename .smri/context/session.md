@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-19 13:22:23 UTC  
-**Commit:** 7d2aaed  
-**Version:** 0.7.14
+**Generated:** 2026-01-19 19:26:36 UTC  
+**Commit:** 9dede95  
+**Version:** 0.7.17
 
 ---
 
@@ -9,26 +9,26 @@
 
 ### Git Log (Last 20 commits)
 ```
+9dede95 debug: Add minimal demo page to test
+29393dd fix: Wrap top-level await in async IIFE
+ee04480 debug: Add error handling to demo page to show white screen cause
+e2b3ea5 debug: Update test page for v675258e troubleshooting
+675258e feat: Complete layout redesign for mobile - compact runner
+0b7f9c9 feat: Add SMRI codes to each step for reusability
+598ac34 fix: Actually make steps horizontal with proper layout
+55ce91c feat: Steps now display horizontally instead of vertical list
+db4c536 feat: Reorganize layout - scenarios on top, larger steps area
+5abaabd feat: Remove 'Select a Scenario' heading for cleaner UI
+aa02026 feat: Horizontal scenario selector to save space
+4030b28 fix: Demo now creates available product first, then simulates purchase
+e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
+60c412a docs: Add Rule 0 - Check Console First, Not Cache
+2b04968 fix: Export MODULE_MAP as named export
+019533e debug: Add test page for demo troubleshooting
+316aebc feat: Add URL-based cache busting to demo
+0d7d34a feat: Bust cache for demo page v0.7.15
+4a5597e feat: Demo now creates user and assigns snake to farm
 7d2aaed fix: Remove CSS order and reorder HTML - browser first, controls second
-af9ce50 fix: Update Demo.js with top/bottom layout and clickable version
-9f554a1 fix: Add cache buster to demo imports for localhost
-f1a6e25 docs: Add versioning and SMRI badge rules to INDEX.md
-bf66959 fix: Correct demo layout proportions - browser 80%, buttons 20%
-d6a0181 feat: Move SMRI decoder to dedicated module
-8c7ff0e fix: Explicit browser layout sizing (3/4 top, 1/4 bottom)
-37ddb5f feat: Add version display to demo components
-56e323c refactor: Improve demo layout - browser on top, remove titles
-af702c7 fix: Product navigation now uses query params consistently
-fca1ef0 fix: Add basePath to import statement in demo
-26ce9ef fix: Demo URLs now work on GitHub Pages
-adcb9a0 docs: Add Stripe localhost testing limitation guide
-32725c8 fix: Sync shop/index.html with catalog.html for consistency
-c7ea18d fix: Demo Buy Now button now shows helpful message instead of doing nothing
-ad912a2 fix: Demo Step 7 now uses placeholder link and clearer messaging
-0c94713 refactor: Simplify catalog page layout
-eece24f fix: Demo product now includes Stripe link and correct button selectors
-b14cd00 feat: Product page Stripe buyability and E2E tests
-60c1e7f fix: Product page demo flow and View Details routing
 ```
 
 ### Git Status
@@ -40,9 +40,7 @@ b14cd00 feat: Product page Stripe buyability and E2E tests
  M .smri/context/session.md
  M .smri/context/test-full.txt
  M .smri/context/tree.txt
- M package-lock.json
- M package.json
- M tests/modules/shop/game.test.js
+ M src/modules/demo/Demo.js
 ```
 
 ---
@@ -95,11 +93,11 @@ b14cd00 feat: Product page Stripe buyability and E2E tests
 │   └── test-runner-simple.html
 ├── demo
 │   ├── customer-journeys
-│   └── index.html
+│   ├── index.html
+│   ├── minimal.html
+│   └── test.html
 ├── dex
 │   ├── modules
-│   ├── archive-index-old.html
-│   ├── index.html
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -107,7 +105,7 @@ b14cd00 feat: Product page Stripe buyability and E2E tests
 
 ## 📚 Core Documentation
 
-### .smri/INDEX.md (961 lines)
+### .smri/INDEX.md (994 lines)
 First 100 lines:
 ```markdown
 # 🐍 Serpent Town - Index & Rules
@@ -190,26 +188,26 @@ A consolidated documentation system where **ALL** project documentation lives:
 
 ## 🚨 CRITICAL RULES FOR AI ASSISTANTS
 
-### 0. HARD RULE: Only ONE file in .smri root
-**ONLY `INDEX.md` allowed in `/root/catalog/.smri/`**
-- ❌ NO `.smri/AI-GUIDE.md`
-- ❌ NO `.smri/README.md`
-- ❌ NO `.smri/RULES.md`
-- ✅ Use `.smri/logs/` for notes
-- ✅ Use `.smri/docs/` for documentation
+### 0. DEBUGGING RULE: Check Console FIRST, Not Cache
+**When page is blank or broken:**
 
-### 0.5. ANTI-SCATTER RULE: Follow Defined Structure
-**WHY WE LOAD .smri: To prevent scattered files everywhere**
-
-**PROBLEM:** Files get scattered across project:
-- ❌ Multiple demo files in different locations
-- ❌ Duplicate test runners (root, debug/, debug/tools/, debug/archive/)
-- ❌ Similar files with slight differences
-- ❌ No clear "source of truth"
-
-**SOLUTION:** Strict structure enforcement
+❌ **WRONG approach:**
 ```
-/debug/
+"It's probably cache, let me add cache busting..."
+"Let me add meta tags..."
+"Let me add query params..."
+```
+
+✅ **CORRECT approach:**
+```
+1. Ask: "What does browser console say?" (F12 → Console)
+2. Read the actual error message
+3. Fix the code bug
+4. Done
+```
+
+**Real example from 2026-01-19:**
+- Blank demo page
 ```
 ... (truncated, see .smri/context/INDEX.md for full)
 
@@ -394,8 +392,8 @@ TestRenderer.js
 ```
 [34m
 📏 Checking Large Files...[0m 
-[33m⚠️[0m .smri/INDEX.md: 962 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 962 lines (max: 500)
+[33m⚠️[0m .smri/INDEX.md: 995 lines (max: 500)
+[33m⚠️[0m .smri/context/INDEX.md: 995 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)
@@ -439,7 +437,7 @@ Script: scripts/check-consistency.cjs[0m
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
-- `INDEX.md` - Complete SMRI index (961 lines)
+- `INDEX.md` - Complete SMRI index (994 lines)
 - `README.md` - Complete project README (309 lines)
 - `SMRI.md` - Complete SMRI syntax guide (226 lines)
 - `tree.txt` - Full directory tree
@@ -452,5 +450,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-19 13:22:24 UTC  
+**Context cached at:** 2026-01-19 19:26:38 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

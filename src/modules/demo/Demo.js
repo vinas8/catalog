@@ -22,8 +22,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.14';
-    this.smri = 'S9.2,8,5,10.04';
+    this.version = '0.7.43';
+    this.smri = 'S9.2,8,5,10.06';
     
     this.currentScenario = null;
     this.currentStep = 0;
@@ -63,31 +63,43 @@ export class Demo {
         display: flex;
         flex-direction: column;
         height: 100vh;
+        width: 100vw;
         background: #0a0e14;
         color: #c9d1d9;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden;
       }
-
-      /* Scenario selector on top (horizontal) */
-      .demo-scenarios {
-        flex: 0 0 auto;
-        padding: 8px;
-        background: #161b22;
-        border-bottom: 2px solid #30363d;
+      
+      body {
+        margin: 0;
+        padding: 0;
         overflow: hidden;
       }
 
-      .scenario-grid {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 0;
-        scrollbar-width: none; /* Hide scrollbar */
+      /* Scenario selector - dropdown under URL bar */
+      .demo-scenarios {
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 8px;
+        right: 8px;
+        display: none;
+        background: #161b22;
+        border: 2px solid #1f6feb;
+        border-radius: 6px;
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 9998;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.8);
       }
       
-      .scenario-grid::-webkit-scrollbar {
-        display: none; /* Hide scrollbar */
+      .demo-scenarios.expanded {
+        display: block !important;
+      }
+
+      .scenario-grid {
+        display: block;
+        padding: 6px;
       }
 
       .scenario-card {
@@ -97,13 +109,47 @@ export class Demo {
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s;
-        min-width: 160px;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .scenario-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(31, 111, 235, 0.3);
+      }
+      
+      .scenario-card.hidden {
+        display: none !important;
+      }
+
+      .scenario-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0;
+        scrollbar-width: thin;
+        height: 100%;
+      }
+
+      .scenario-card {
+        background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+        border: 2px solid #1f6feb;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
         flex-shrink: 0;
       }
 
       .scenario-card:hover {
         transform: translateY(-1px);
         box-shadow: 0 3px 10px rgba(31, 111, 235, 0.3);
+      }
+      
+      .scenario-card.hidden {
+        display: none;
       }
 
       .scenario-title {
@@ -125,23 +171,28 @@ export class Demo {
         line-height: 1.2;
       }
 
-      /* Browser in middle (60%) */
+      /* Browser in middle */
       .demo-browser-panel {
-        flex: 0 0 60vh;
+        flex: 1 1 0;
+        min-height: 0;
         display: flex;
         flex-direction: column;
         background: white;
-        overflow: hidden;
+        overflow: visible;
       }
 
-      /* Steps/controls on bottom (auto - takes remaining space) */
+      /* Steps on bottom */
       .demo-control-panel {
-        flex: 1;
-        background: #161b22;
-        border-top: 2px solid #30363d;
-        overflow-y: auto;
+        flex: 0 0 50px;
+        background: #0d1117;
+        border-top: 1px solid #30363d;
+        overflow-x: auto;
+        overflow-y: hidden;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        padding: 8px;
+        gap: 4px;
+        align-items: center;
       }
 
       /* Header */
@@ -161,31 +212,40 @@ export class Demo {
         opacity: 0.9;
       }
 
-      /* Steps runner - horizontal compact */
+      /* Steps runner - horizontal, bigger text */
       .demo-steps-runner {
         flex: 1;
         display: flex;
         gap: 4px;
-        overflow: hidden;
-        padding: 0 8px;
+        overflow-x: auto;
+        padding: 8px;
         align-items: center;
+        scrollbar-width: thin;
+        background: #0d1117;
       }
 
       .step-indicator {
-        padding: 4px 8px;
-        background: #0d1117;
+        padding: 8px 12px;
+        background: #21262d;
         border: 1px solid #30363d;
         border-radius: 4px;
-        font-size: 11px;
+        font-size: 13px;
         white-space: nowrap;
-        color: #8b949e;
+        color: #c9d1d9;
         transition: all 0.2s;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      
+      .step-indicator:hover {
+        background: #30363d;
       }
 
       .step-indicator.active {
         background: #1f6feb;
         color: white;
         border-color: #1f6feb;
+        font-weight: 600;
       }
 
       .step-indicator.completed {
@@ -194,22 +254,38 @@ export class Demo {
         border-color: #238636;
       }
 
-      /* Step controls */
-      .step-controls {
-        display: flex;
-        gap: 4px;
-        padding: 0 6px;
-      }
-
+      /* Step control buttons - minimal inline */
       .step-control-btn {
         background: #21262d;
         color: #c9d1d9;
         border: 1px solid #30363d;
-        padding: 6px 10px;
+        padding: 8px 12px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 12px;
+        font-size: 13px;
         transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      
+      .step-control-btn:hover {
+        background: #30363d;
+      }
+      
+      .step-control-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      
+      .step-control-btn.play {
+        background: #238636;
+        color: white;
+        border-color: #238636;
+      }
+      
+      .step-control-btn.pause {
+        background: #f85149;
+        color: white;
+        border-color: #f85149;
       }
 
       .step-control-btn:hover {
@@ -312,6 +388,8 @@ export class Demo {
         gap: 10px;
         align-items: center;
         border-bottom: 2px solid #30363d;
+        position: relative;
+        overflow: visible;
       }
 
       .demo-url-bar {
@@ -406,14 +484,14 @@ export class Demo {
       /* Version footer */
       .demo-version {
         position: fixed;
-        bottom: 10px;
+        bottom: 60px;
         right: 10px;
         font-size: 10px;
         color: #58a6ff;
         background: rgba(13, 17, 23, 0.9);
         padding: 4px 8px;
         border-radius: 4px;
-        z-index: 9999;
+        z-index: 9997;
         cursor: pointer;
         transition: all 0.2s;
       }
@@ -440,8 +518,19 @@ export class Demo {
         <div class="demo-browser-panel">
           <div class="demo-browser-controls">
             <button class="demo-btn secondary" id="demo-reload">🔄</button>
-            <input type="text" class="demo-url-bar" id="demo-url" readonly value="Select a scenario to begin">
+            <input type="text" class="demo-url-bar" id="demo-url" value="" placeholder="Type URL or search scenarios...">
             <button class="demo-btn secondary" id="demo-toggle-log">📋</button>
+            <div class="demo-scenarios" id="demo-scenarios">
+              <div class="scenario-grid">
+                ${this.scenarios.map((s, i) => `
+                  <div class="scenario-card" data-index="${i}" data-search="${(s.title + ' ' + s.description).toLowerCase()}">
+                    <div class="scenario-title">${s.icon || '📋'} ${s.title}</div>
+                    <div class="scenario-code">${s.smri || ''}</div>
+                    <div class="scenario-desc">${s.description || ''}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
           </div>
           <div class="demo-browser-content">
             <iframe class="demo-iframe" id="demo-iframe" src="about:blank"></iframe>
@@ -449,18 +538,8 @@ export class Demo {
           </div>
           <div class="demo-log-panel" id="demo-log"></div>
         </div>
-        <div class="demo-control-panel">
-          <div class="demo-scenarios">
-            <div class="scenario-grid">
-              ${this.scenarios.map((s, i) => `
-                <div class="scenario-card" data-index="${i}">
-                  <div class="scenario-title">${s.icon || '📋'} ${s.title}</div>
-                  <div class="scenario-code">${s.smri || ''}</div>
-                  <div class="scenario-desc">${s.description || ''}</div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
+        <div class="demo-control-panel" id="demo-control-panel">
+          <!-- Steps appear here after selecting scenario -->
         </div>
       </div>
       <div class="demo-version" id="demo-version-badge">${this.smri} • v${this.version}</div>
@@ -478,12 +557,99 @@ export class Demo {
       card.addEventListener('click', () => {
         const index = parseInt(card.dataset.index);
         this.loadScenario(index);
+        // Collapse scenarios after selection
+        document.querySelector('.demo-scenarios')?.classList.remove('expanded');
       });
     });
 
     // Browser controls
     document.getElementById('demo-reload')?.addEventListener('click', () => this.reloadIframe());
     document.getElementById('demo-toggle-log')?.addEventListener('click', () => this.toggleLog());
+    
+    // URL bar - make editable and toggle scenarios
+    const urlBar = document.getElementById('demo-url');
+    const scenarios = document.getElementById('demo-scenarios');
+    
+    console.log('🔍 URL bar:', urlBar);
+    console.log('🔍 Scenarios:', scenarios);
+    
+    if (urlBar && scenarios) {
+      // Show ALL scenarios on focus/click
+      urlBar.addEventListener('focus', () => {
+        console.log('✅ URL bar focused');
+        // Show all cards first
+        document.querySelectorAll('.scenario-card').forEach(card => {
+          card.classList.remove('hidden');
+        });
+        scenarios.classList.add('expanded');
+        console.log('✅ Added expanded class');
+      });
+      
+      urlBar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('✅ URL bar clicked');
+        // Show all cards
+        document.querySelectorAll('.scenario-card').forEach(card => {
+          card.classList.remove('hidden');
+        });
+        scenarios.classList.add('expanded');
+        console.log('✅ Added expanded class');
+        console.log('📊 Scenarios display:', window.getComputedStyle(scenarios).display);
+        console.log('📊 Scenarios z-index:', window.getComputedStyle(scenarios).zIndex);
+        console.log('📊 Scenarios top:', window.getComputedStyle(scenarios).top);
+      });
+      
+      // Filter scenarios while typing
+      urlBar.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.scenario-card');
+        
+        if (!query) {
+          // Empty query - show all
+          cards.forEach(card => card.classList.remove('hidden'));
+          scenarios?.classList.add('expanded');
+        } else if (query.startsWith('/') || query.startsWith('http')) {
+          // Typing URL - hide all scenarios
+          cards.forEach(card => card.classList.add('hidden'));
+        } else {
+          // Filter scenarios by search text
+          let visibleCount = 0;
+          cards.forEach(card => {
+            const searchText = card.dataset.search || '';
+            if (searchText.includes(query)) {
+              card.classList.remove('hidden');
+              visibleCount++;
+            } else {
+              card.classList.add('hidden');
+            }
+          });
+          
+          // Keep expanded if any visible
+          if (visibleCount > 0) {
+            scenarios?.classList.add('expanded');
+          }
+        }
+      });
+      
+      // Navigate on Enter
+      urlBar.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const url = e.target.value;
+          if (url.startsWith('/') || url.startsWith('http')) {
+            this.loadIframe(url);
+            this.log(`🔗 Navigated to: ${url}`, 'info');
+            scenarios?.classList.remove('expanded');
+          }
+        }
+      });
+    }
+    
+    // Hide scenarios when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.demo-browser-controls')) {
+        scenarios?.classList.remove('expanded');
+      }
+    });
     
     // Version badge - clickable SMRI decoder
     const versionBadge = document.getElementById('demo-version-badge');
@@ -495,8 +661,13 @@ export class Demo {
   /**
    * Show SMRI decoder modal
    */
-  showSMRIDecoder() {
-    showSMRIModal(this.smri);
+  async showSMRIDecoder() {
+    try {
+      await showSMRIModal(this.smri);
+    } catch (err) {
+      this.log(`⚠️ SMRI modal error: ${err.message}`, 'warning');
+      alert(`SMRI Code: ${this.smri}\n\nS = Serpent Town\n9 = Demo module\n2,8,5,10 = Dependencies (common, debug, testing, smri)\n04 = Iteration 4`);
+    }
   }
 
   /**
@@ -534,17 +705,13 @@ export class Demo {
     const controlPanel = document.querySelector('.demo-control-panel');
     
     controlPanel.innerHTML = `
-      <button class="step-control-btn" id="demo-back" title="Back to scenarios">⬅️</button>
-      <button class="step-control-btn" id="demo-prev" title="Previous step" ${this.currentStep === 0 ? 'disabled' : ''}>«</button>
       <div class="demo-steps-runner" id="demo-steps-runner">
         ${(this.currentScenario.steps || []).map((step, i) => `
           <div class="step-indicator ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'completed' : ''}" data-step="${i}" title="${step.title}">
-            ${i + 1}. ${step.title.replace('Step ' + (i+1) + ': ', '')}
+            ${i + 1}. ${step.title.replace(/Step \d+: /, '')}
           </div>
         `).join('')}
       </div>
-      <button class="step-control-btn" id="demo-next" title="Next step" ${this.currentStep === (this.currentScenario.steps?.length || 0) - 1 ? 'disabled' : ''}>»</button>
-      <button class="step-control-btn ${this.autoPlaying ? 'pause' : 'play'}" id="demo-autoplay" title="${this.autoPlaying ? 'Pause' : 'Auto-play'}">${this.autoPlaying ? '⏸' : '▶'}</button>
     `;
 
     // Auto-scroll active step into view
@@ -556,17 +723,12 @@ export class Demo {
     }, 100);
 
     // Attach step event listeners
-    document.querySelectorAll('.step-item').forEach(item => {
+    document.querySelectorAll('.step-indicator').forEach(item => {
       item.addEventListener('click', () => {
         const step = parseInt(item.dataset.step);
         this.goToStep(step);
       });
     });
-
-    document.getElementById('demo-back')?.addEventListener('click', () => this.renderScenarioSelector());
-    document.getElementById('demo-prev')?.addEventListener('click', () => this.prevStep());
-    document.getElementById('demo-next')?.addEventListener('click', () => this.nextStep());
-    document.getElementById('demo-autoplay')?.addEventListener('click', () => this.toggleAutoPlay());
 
     // Execute first step
     this.executeStep(this.currentStep);
@@ -713,6 +875,9 @@ export class Demo {
   /**
    * Browser controls
    */
+  /**
+   * Load URL in iframe and scroll to top
+   */
   loadIframe(url) {
     const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
     this.iframe = document.getElementById('demo-iframe');
@@ -720,6 +885,14 @@ export class Demo {
     
     if (this.iframe) {
       this.iframe.src = fullUrl;
+      // Scroll to top after load
+      this.iframe.onload = () => {
+        try {
+          this.iframe.contentWindow.scrollTo(0, 0);
+        } catch (e) {
+          // CORS - can't access cross-origin iframe
+        }
+      };
     }
   }
 

@@ -1,7 +1,7 @@
 [34m
 📏 Checking Large Files...[0m 
-[33m⚠️[0m .smri/INDEX.md: 962 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 962 lines (max: 500)
+[33m⚠️[0m .smri/INDEX.md: 995 lines (max: 500)
+[33m⚠️[0m .smri/context/INDEX.md: 995 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)

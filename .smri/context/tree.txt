@@ -43,7 +43,9 @@
 │   └── test-runner-simple.html
 ├── demo
 │   ├── customer-journeys
-│   └── index.html
+│   ├── index.html
+│   ├── minimal.html
+│   └── test.html
 ├── dex
 │   ├── modules
 │   ├── archive-index-old.html
@@ -91,12 +93,14 @@
 │   ├── find-dead-facades.cjs
 │   ├── kv-namespace-ids.txt
 │   ├── scan-functions.cjs
+│   ├── smri-add-rule.sh
 │   ├── smri-check.sh
 │   ├── smri-diff.sh
 │   ├── smri-list-components.cjs
 │   ├── smri-list-functions.cjs
 │   ├── smri-list-scenarios.cjs
 │   ├── smri-list.sh
+│   ├── smri-memory.cjs
 │   ├── smri-save-context.sh
 │   ├── smri-startup.sh
 │   ├── smri-update-context.sh
@@ -188,4 +192,4 @@
 ├── success.html
 └── sw.js
 
-57 directories, 132 files
+57 directories, 136 files

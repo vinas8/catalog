@@ -87,9 +87,16 @@ class SnakeMuffin {
     this.gameLoop = null;
     this.lastUpdate = Date.now();
     
-    // Detect context from data-context attribute
+    // Detect context from data-context attribute or URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const sourceParam = urlParams.get('source');
     const appElement = document.getElementById('app') || document.querySelector('[data-context]');
-    this.context = appElement?.dataset.context || 'real'; // 'real' or 'virtual'
+    
+    if (sourceParam === 'demo_test') {
+      this.context = 'demo';
+    } else {
+      this.context = appElement?.dataset.context || 'real'; // 'real' or 'virtual'
+    }
     console.log(`🎯 Context detected: ${this.context}`);
     
     this.init();
@@ -196,15 +203,30 @@ class SnakeMuffin {
         const storageKey = `${demoSource}_products`;
         const demoData = localStorage.getItem(storageKey);
         
+        console.log(`🔍 Demo storage key: ${storageKey}`);
+        console.log(`🔍 Demo data exists:`, !!demoData);
+        
         if (demoData) {
           const products = JSON.parse(demoData);
-          const ownedProducts = products.filter(p => p.owner === 'demo_user_123' && p.status === 'sold');
+          console.log(`📦 All products (${products.length}):`, products);
+          
+          // Get user from URL or use default
+          const userParam = urlParams.get('user') || 'demo_user_123';
+          console.log(`👤 Looking for owner: ${userParam}`);
+          
+          const ownedProducts = products.filter(p => {
+            console.log(`  🐍 Product: ${p.name}, owner: ${p.owner}, status: ${p.status}, type: ${p.type}`);
+            return p.owner === userParam && p.status === 'sold';
+          });
           
           debug(`🐍 Found ${ownedProducts.length} owned demo snakes`);
+          console.log(`✅ Owned products:`, ownedProducts);
           
           this.gameState = this.loadGame() || createInitialGameState();
           this.gameState.user_id = this.currentUser.user_id;
           this.gameState.snakes = await this.convertUserProductsToSnakes(ownedProducts);
+          
+          console.log(`🎮 Final game snakes (${this.gameState.snakes.length}):`, this.gameState.snakes);
           
           debug(`✅ Loaded ${this.gameState.snakes.length} demo snakes`);
           return;
@@ -284,33 +306,40 @@ class SnakeMuffin {
       if (!productsResponse.ok) {
         debug('⚠️ Worker catalog not available, using product data from purchase');
         // Convert using only the data from user products
-        return userProducts.map((up, index) => ({
-          id: up.assignment_id || up.product_id || up.id, // Support demo products with just 'id'
-          product_id: up.product_id || up.id,
-          nickname: up.nickname || up.name || `Snake ${index + 1}`,
-          species: up.species || 'ball_python',
-          morph: up.morph || 'normal',
-          type: up.product_type || 'real',
-          sex: up.sex || up.gender || 'unknown',
-          birth_date: up.birth_date || up.yob || 2024,
-          weight_grams: DEFAULT_SNAKE_WEIGHT,
-          length_cm: 30,
-          acquired_date: up.acquired_at || up.purchased_at,
-          stats: up.stats || DEFAULT_SNAKE_STATS,
-          equipment: {
-            heater: null,
-            mister: null,
-            thermometer: false,
-            hygrometer: false
-          },
-          shed_cycle: {
-            stage: 'normal',
-            last_shed: new Date().toISOString(),
-            days_since_last: 0
-          },
-          created_at: up.acquired_at || new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }));
+        return userProducts.map((up, index) => {
+          console.log(`🔄 Converting UP:`, up);
+          const snake = {
+            id: up.assignment_id || up.product_id || up.id, // Support demo products with just 'id'
+            product_id: up.product_id || up.id,
+            nickname: up.nickname || up.name || `Snake ${index + 1}`,
+            species: up.species || 'ball_python',
+            morph: up.morph || 'normal',
+            type: up.type || up.product_type || 'real', // ✅ Check 'type' first, then 'product_type'
+            status: up.status || 'owned',
+            owner: up.owner,
+            sex: up.sex || up.gender || 'unknown',
+            birth_date: up.birth_date || up.yob || 2024,
+            weight_grams: DEFAULT_SNAKE_WEIGHT,
+            length_cm: 30,
+            acquired_date: up.acquired_at || up.purchased_at,
+            stats: up.stats || DEFAULT_SNAKE_STATS,
+            equipment: {
+              heater: null,
+              mister: null,
+              thermometer: false,
+              hygrometer: false
+            },
+            shed_cycle: {
+              stage: 'normal',
+              last_shed: new Date().toISOString(),
+              days_since_last: 0
+            },
+            created_at: up.acquired_at || new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          console.log(`✅ Converted snake type: ${snake.type}, status: ${snake.status}`);
+          return snake;
+        });
       }
       
       const products = await productsResponse.json();
@@ -326,7 +355,7 @@ class SnakeMuffin {
         nickname: up.nickname || up.name || product?.name || `Snake ${products.indexOf(product) + 1}`,
         species: product?.species || up.species || 'ball_python',
         morph: product?.morph || up.morph || 'normal',
-        type: up.product_type, // 'real' or 'virtual'
+        type: up.type || up.product_type || 'real', // ✅ Check 'type' FIRST
         sex: product?.sex || up.sex || up.gender || 'unknown',
         birth_date: product?.birth_year || up.yob || 2024,
         weight_grams: product?.weight_grams || up.weight_grams || 100,
@@ -589,8 +618,19 @@ class SnakeMuffin {
     // 🔒 CRITICAL: Filter snakes by context
     // Farm (real) = show only type:'real'
     // Learn (virtual) = show only type:'virtual'
+    // Demo = show only type:'demo'
     const filteredSnakes = this.gameState.snakes.filter(snake => {
-      const expectedType = this.context === 'real' ? 'real' : 'virtual';
+      // Map context to expected type
+      let expectedType;
+      if (this.context === 'demo') {
+        expectedType = 'demo';
+      } else if (this.context === 'real') {
+        expectedType = 'real';
+      } else {
+        expectedType = 'virtual';
+      }
+      
+      console.log(`🐛 Snake: ${snake.name}, type: ${snake.type}, expected: ${expectedType}, match: ${snake.type === expectedType}`);
       return snake.type === expectedType;
     });
     

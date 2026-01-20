@@ -6,12 +6,28 @@
 
 ---
 
-## 🎯 NEW: Versioning & SMRI Badge Rules (2026-01-19)
+## 🎯 Versioning & SMRI Badge Rules
 
-### 1. Version Bump on Every Change
+### 1. Version Bump Workflow (CRITICAL)
+**On EVERY fix/change, update 3 files:**
 ```bash
-# ALWAYS bump version when making changes
+# 1. Bump package.json
 npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
+
+# 2. Update module version (e.g., src/modules/demo/Demo.js)
+this.version = '0.7.8';
+
+# 3. Update HTML cache buster (e.g., demo/index.html)
+const cacheBuster = urlParams.get('v') || '0.7.8';
+```
+
+**Test BEFORE providing version to user:**
+```bash
+# Option 1: curl test
+curl http://localhost:8000/demo/?v=0.7.8
+
+# Option 2: Browser test with cache busting
+http://localhost:8000/demo/?v=0.7.8
 ```
 
 ### 2. Display Version Badge in Components

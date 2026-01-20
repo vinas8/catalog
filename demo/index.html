@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>🎬 Interactive Demo - Snake Muffin v0.7.15</title>
+  <title>🎬 Interactive Demo - Snake Muffin v0.7.43</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -14,6 +14,9 @@
 </head>
 <body>
   <div id="demo-root"></div>
+
+  <!-- Mobile Debug Console -->
+  <script src="/debug/mobile-console.js"></script>
 
   <script type="module">
     (async () => {
@@ -23,7 +26,7 @@
         
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.17';
+        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.43';
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
 
     const demo = new Demo({
@@ -101,7 +104,7 @@
             },
             {
               smri: 'S9.1,2.01',
-              title: 'Step 3: Create Demo User title: 'Step 3: Create Demo User & Snake', Snake',
+              title: 'Step 3: Create Demo User & Snake',
               description: 'Add user and assign snake',
               url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
@@ -110,7 +113,7 @@
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe?.contentWindow) {
                   try {
-                    // Create test product - AVAILABLE for purchase (not sold yet)
+                    // Create test product - DEMO type for demo context
                     const testProduct = {
                       id: 'demo_snake_001',
                       name: 'DemoSnake',
@@ -130,7 +133,7 @@
                       },
                       price: 299,
                       status: 'available', // ✅ Available for purchase
-                      type: 'real',
+                      type: 'demo', // ✅ DEMO type (not 'real')
                       stripe_link: '#demo-placeholder-link'
                     };
                     
@@ -281,18 +284,24 @@
                 const iframe = document.getElementById('demo-iframe');
                 if (iframe?.contentWindow) {
                   try {
+                    // Create demo user hash
+                    const demoUserHash = 'demo_user_123';
+                    
                     // Update product to sold status
                     const productsStr = iframe.contentWindow.localStorage.getItem('demo_test_products');
                     if (productsStr) {
                       const products = JSON.parse(productsStr);
                       products[0].status = 'sold';
-                      products[0].owner = 'demo_user_123';
+                      products[0].owner = demoUserHash;
                       products[0].purchased_at = new Date().toISOString();
                       
                       iframe.contentWindow.localStorage.setItem('demo_test_products', JSON.stringify(products));
                       
+                      // Store user hash for game to use
+                      iframe.contentWindow.localStorage.setItem('demo_user_hash', demoUserHash);
+                      
                       demo.log('✅ Purchase simulated!', 'success');
-                      demo.log('👤 Assigned to: demo_user_123', 'info');
+                      demo.log(`👤 Assigned to: ${demoUserHash}`, 'info');
                       demo.log('📦 Status: sold', 'success');
                     }
                   } catch (err) {
@@ -305,7 +314,7 @@
               smri: 'S9.3.01',
               title: 'Step 8: View in My Farm 🎮',
               description: 'See your snake in the game',
-              url: `${basePath}/game.html?source=demo_test`,
+              url: `${basePath}/game.html?source=demo_test&user=demo_user_123`,
               action: async (demo) => {
                 demo.log('🎮 Loading My Farm...', 'info');
                 await demo.wait(3000);
@@ -322,8 +331,9 @@
                       demo.log('✅ SUCCESS: DemoSnake is in your farm!', 'success');
                       demo.log('🎯 You can now feed, water, and care for it', 'success');
                     } else {
-                      demo.log('⚠️ No snakes visible yet - may need login', 'warning');
-                      demo.log('💡 In real app, user must be logged in', 'info');
+                      demo.log('⚠️ No snakes visible - checking localStorage...', 'warning');
+                      const products = iframe.contentWindow.localStorage.getItem('demo_test_products');
+                      demo.log(`📦 Storage: ${products ? 'Found products' : 'Empty'}`, 'info');
                     }
                   } catch (e) {
                     demo.log('💡 Check the farm to see your snake!', 'info');
