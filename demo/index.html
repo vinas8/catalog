@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>🎬 Interactive Demo - Snake Muffin v0.7.78</title>
+  <title>🎬 Interactive Demo - Snake Muffin v0.7.79</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -26,7 +26,7 @@
         
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.78';
+        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.79';
         
         // Import modules
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
@@ -618,7 +618,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.01',
               title: 'Step 1: Load Morph Database',
               description: 'Load genetics data from dex',
-              url: `${basePath}/calc/index.html`,
+              url: `${basePath}/calc/index.html?v=0.7.79`,
               action: async (demo) => {
                 demo.log('📚 Loading morph database from dex...', 'info');
                 
@@ -646,7 +646,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.02',
               title: 'Step 2: Test Safe Combo',
               description: 'Pastel x Mojave (safe, popular combo)',
-              url: `${basePath}/calc/index.html`,
+              url: `${basePath}/calc/index.html?v=0.7.79`,
               action: async (demo) => {
                 demo.log('🧪 Testing safe breeding combination...', 'info');
                 demo.log('🐍 Male: Pastel (co-dominant, no health risks)', 'info');
@@ -687,7 +687,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.03',
               title: 'Step 3: Test Lethal Combo',
               description: 'Spider x Spider (FAILS - no viable super)',
-              url: `${basePath}/calc/index.html`,
+              url: `${basePath}/calc/index.html?v=0.7.79`,
               action: async (demo) => {
                 demo.log('⚠️ Testing LETHAL combination...', 'warning');
                 demo.log('🐍 Male: Spider (dominant, high wobble risk)', 'warning');
@@ -787,7 +787,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.06',
               title: 'Step 6: Business Logic Summary',
               description: 'Review all validation rules',
-              url: `${basePath}/calc/index.html`,
+              url: `${basePath}/calc/index.html?v=0.7.79`,
               action: async (demo) => {
                 demo.log('📊 Business Logic Summary', 'success');
                 demo.log('', 'info');

@@ -7,69 +7,94 @@
   <link rel="stylesheet" href="styles.css">
   <script src="src/utils/debug-loader.js"></script>
   <style>
+    /* Reset & Mobile-First Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
+      padding: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
     .calculator-container {
       max-width: 1600px;
       margin: 0 auto;
+      width: 100%;
     }
 
     .header {
       background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
       color: white;
-      padding: 30px;
+      padding: 20px 15px;
       text-align: center;
-      border-radius: 15px 15px 0 0;
+      border-radius: 10px 10px 0 0;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .header h1 {
+      font-size: 1.4em;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 0.9em;
+      opacity: 0.95;
     }
 
     .calculator-section {
       background: white;
-      border-radius: 15px;
+      border-radius: 10px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       overflow: hidden;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .section-header {
       background: #f7fafc;
-      padding: 20px 30px;
+      padding: 15px;
       border-bottom: 2px solid #e2e8f0;
     }
 
     .section-header h2 {
       margin: 0;
-      font-size: 1.5em;
+      font-size: 1.2em;
       color: #2d3748;
     }
 
-    .section-body {
-      padding: 30px;
+    .section-header p {
+      margin: 5px 0 0 0;
+      color: #718096;
+      font-size: 0.85em;
     }
 
-    /* Calculator UI */
+    .section-body {
+      padding: 15px;
+    }
+
+    /* Calculator UI - Mobile First */
     .morph-selector {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 30px;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
     .parent-section {
       border: 2px solid #e2e8f0;
       border-radius: 10px;
-      padding: 20px;
+      padding: 15px;
     }
 
     .parent-section h3 {
       margin-top: 0;
       color: #2d3748;
-      font-size: 1.2em;
-      margin-bottom: 15px;
+      font-size: 1.1em;
+      margin-bottom: 12px;
     }
 
     .morph-input-group {
@@ -325,108 +350,94 @@
     }
 
     /* ========================================
-       MOBILE RESPONSIVE DESIGN
+       DESKTOP RESPONSIVE (min-width)
        ======================================== */
     
-    @media (max-width: 768px) {
+    /* Tablet and up */
+    @media (min-width: 768px) {
       body {
-        padding: 10px;
-      }
-
-      .header {
-        padding: 20px 15px;
-        border-radius: 10px 10px 0 0;
-      }
-
-      .header h1 {
-        font-size: 1.5em;
-      }
-
-      .header p {
-        font-size: 0.9em;
-      }
-
-      .section-header {
-        padding: 15px;
-      }
-
-      .section-header h2 {
-        font-size: 1.2em;
-      }
-
-      .section-body {
-        padding: 15px;
-      }
-
-      /* Stack morph selectors vertically on mobile */
-      .morph-selector {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .parent-section {
-        padding: 15px;
-      }
-
-      .parent-section h3 {
-        font-size: 1.1em;
-      }
-
-      /* Make buttons full width on mobile */
-      .calculate-btn,
-      .demo-btn {
-        width: 100%;
-        padding: 15px;
-        font-size: 1em;
-      }
-
-      /* Responsive results grid */
-      .results-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-
-      .result-card {
-        padding: 15px;
-      }
-
-      /* Smaller score display on mobile */
-      .score-value {
-        font-size: 2em;
-      }
-
-      .score-grade {
-        font-size: 1.2em;
-      }
-
-      .compatibility-score {
         padding: 20px;
       }
 
-      /* Stack autocomplete items better */
+      .header {
+        padding: 30px;
+        border-radius: 15px 15px 0 0;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .header p {
+        font-size: 1em;
+      }
+
+      .section-header {
+        padding: 20px 30px;
+      }
+
+      .section-header h2 {
+        font-size: 1.5em;
+      }
+
+      .section-body {
+        padding: 30px;
+      }
+
+      /* Two columns on desktop */
+      .morph-selector {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .parent-section {
+        padding: 20px;
+      }
+
+      .parent-section h3 {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+      }
+
+      .calculator-section {
+        border-radius: 15px;
+        margin-bottom: 30px;
+      }
+    }
+
+    /* Large desktop */
+    @media (min-width: 1200px) {
+      .header h1 {
+        font-size: 2.5em;
+      }
+
+      .score-value {
+        font-size: 3.5em;
+      }
+    }
+
+    /* Mobile overrides - only necessary adjustments */
+    @media (max-width: 767px) {
+      /* Input fields - prevent iOS zoom */
+      input[type="text"] {
+        font-size: 16px !important;
+      }
+
+      /* Full width buttons */
+      .calculate-btn,
+      .demo-btn {
+        width: 100%;
+      }
+
+      /* Single column results */
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Compact autocomplete */
       .autocomplete-dropdown {
         max-height: 200px;
-      }
-
-      .autocomplete-item {
-        padding: 10px;
-      }
-
-      /* Alert text sizing */
-      .alert {
-        padding: 12px;
-        font-size: 0.9em;
-      }
-
-      /* Morph tags responsive */
-      .morph-tag {
-        font-size: 0.85em;
-        padding: 6px 10px;
-      }
-
-      /* Input fields full width */
-      input[type="text"] {
-        font-size: 16px; /* Prevents iOS zoom on focus */
       }
     }
 
@@ -479,7 +490,7 @@
   <script>
     // Cache buster for Navigation component
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.78';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.79';
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
     
     // Load Navigation with cache buster
@@ -614,7 +625,7 @@
   <script type="module">
     // Cache buster - use URL param if provided, otherwise use version
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.78';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.79';
     
     // Fix path for GitHub Pages
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
