@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Purchase Flow Demo - Feature Flag Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .feature-toggle {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .switch {
+      position: relative;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2ecc71;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .product-morph {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2ecc71;
+      margin: 15px 0;
+    }
+
+    .btn-purchase {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-purchase.enabled {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+    }
+
+    .btn-purchase.enabled:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .btn-purchase.disabled {
+      background: #95a5a6;
+      color: #ecf0f1;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .status-badge.enabled {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.disabled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .info-box {
+      background: #e8f4fd;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .log-panel {
+      background: #1e1e1e;
+      color: #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin: 5px 0;
+      padding: 3px 0;
+      border-bottom: 1px solid #333;
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🐍 Purchase Flow Feature Flag Demo</h1>
+      <p style="color: #666; margin-top: 10px;">
+        Testing external purchase flow module integration with feature flags
+      </p>
+      
+      <div class="feature-toggle">
+        <div class="toggle-switch">
+          <span>External Purchase Flow:</span>
+          <label class="switch">
+            <input type="checkbox" id="flowToggle" onchange="toggleFlow()">
+            <span class="slider"></span>
+          </label>
+          <span id="flowStatus" class="status-badge disabled">DISABLED</span>
+        </div>
+        <p style="margin-top: 15px; font-size: 14px; color: #666;">
+          When <strong>enabled</strong>, uses @serpent-town/flow-purchase module.<br>
+          When <strong>disabled</strong>, purchase buttons are grayed out (legacy mode).
+        </p>
+      </div>
+
+      <div class="info-box">
+        <strong>🎛️ Testing Instructions:</strong><br>
+        1. Toggle the switch above<br>
+        2. Notice how purchase buttons change (enabled vs grayed)<br>
+        3. Click "Buy Now" when enabled to test the external flow<br>
+        4. Check console for flow events
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <!-- Products loaded dynamically -->
+    </div>
+
+    <div class="log-panel" id="logPanel">
+      <div><strong>📋 Event Log:</strong></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { FEATURE_FLAGS, isFeatureEnabled, enableFeature, disableFeature } from './src/modules/config/feature-flags.js';
+
+    let flowEnabled = FEATURE_FLAGS.USE_EXTERNAL_PURCHASE_FLOW;
+    
+    // Mock products
+    const products = [
+      {
+        id: 'prod_1',
+        name: 'Ball Python - Normal',
+        morph: 'Normal',
+        price: 100,
+        emoji: '🐍'
+      },
+      {
+        id: 'prod_2',
+        name: 'Ball Python - Banana',
+        morph: 'Banana',
+        price: 250,
+        emoji: '🍌'
+      },
+      {
+        id: 'prod_3',
+        name: 'Ball Python - Piebald',
+        morph: 'Piebald',
+        price: 500,
+        emoji: '🎨'
+      },
+      {
+        id: 'prod_4',
+        name: 'Corn Snake',
+        morph: 'Amelanistic',
+        price: 75,
+        emoji: '🌽'
+      }
+    ];
+
+    // Initialize
+    function init() {
+      document.getElementById('flowToggle').checked = flowEnabled;
+      updateStatus();
+      renderProducts();
+      log('✅ Demo initialized');
+      log(`🎛️ Feature flag: ${flowEnabled ? 'ENABLED' : 'DISABLED'}`);
+    }
+
+    // Toggle flow
+    window.toggleFlow = function() {
+      flowEnabled = document.getElementById('flowToggle').checked;
+      
+      if (flowEnabled) {
+        enableFeature('USE_EXTERNAL_PURCHASE_FLOW');
+        log('✅ External flow ENABLED');
+      } else {
+        disableFeature('USE_EXTERNAL_PURCHASE_FLOW');
+        log('❌ External flow DISABLED');
+      }
+      
+      updateStatus();
+      renderProducts();
+    };
+
+    // Update status badge
+    function updateStatus() {
+      const badge = document.getElementById('flowStatus');
+      if (flowEnabled) {
+        badge.textContent = 'ENABLED';
+        badge.className = 'status-badge enabled';
+      } else {
+        badge.textContent = 'DISABLED (Legacy Mode)';
+        badge.className = 'status-badge disabled';
+      }
+    }
+
+    // Render products
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = products.map(product => `
+        <div class="product-card">
+          <div class="product-image">${product.emoji}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-morph">${product.morph}</div>
+            <div class="product-price">$${product.price}</div>
+            <button 
+              class="btn-purchase ${flowEnabled ? 'enabled' : 'disabled'}"
+              onclick="handlePurchase('${product.id}')"
+              ${!flowEnabled ? 'disabled' : ''}
+            >
+              <span>🛒</span>
+              <span>${flowEnabled ? 'Buy Now' : 'Legacy Mode'}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Handle purchase
+    window.handlePurchase = async function(productId) {
+      if (!flowEnabled) {
+        log('⚠️ Purchase blocked - flow disabled');
+        alert('External flow is disabled. Enable it to test purchases.');
+        return;
+      }
+
+      log(`🛒 Initiating purchase: ${productId}`);
+      
+      try {
+        // Use external flow from port 8005
+        log('📦 Loading external flow from localhost:8005...');
+        
+        // Since we can't actually import from npm, simulate the flow
+        const response = await fetch(`http://localhost:8005/api/products/${productId}`);
+        const product = await response.json();
+        
+        log(`✅ Product loaded: ${product.name} - $${product.price}`);
+        
+        // Simulate checkout
+        const checkoutResponse = await fetch('http://localhost:8005/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productId: product.id,
+            userId: 'demo_user_' + Date.now()
+          })
+        });
+        
+        const session = await checkoutResponse.json();
+        log(`💳 Checkout session created: ${session.id}`);
+        log(`🔗 Redirect URL: ${session.url}`);
+        
+        alert(`✅ Purchase flow working!\n\nProduct: ${product.name}\nPrice: $${product.price}\nSession: ${session.id}\n\n(In production, user would be redirected to Stripe)`);
+        
+      } catch (error) {
+        log(`❌ Error: ${error.message}`);
+        alert('Error: ' + error.message);
+      }
+    };
+
+    // Log helper
+    function log(message) {
+      const panel = document.getElementById('logPanel');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      panel.appendChild(entry);
+      panel.scrollTop = panel.scrollHeight;
+      console.log(message);
+    }
+
+    // Start
+    init();
+  </script>
+</body>
+</html>
