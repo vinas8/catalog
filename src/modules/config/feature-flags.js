@@ -16,7 +16,7 @@ export const FEATURE_FLAGS = {
   ENABLE_ANALYTICS: false,
   
   // External Flow Modules (from ../../../purchase_flow monorepo)
-  USE_EXTERNAL_PURCHASE_FLOW: false,    // Shop → Auth → Payment → Worker flow
+  USE_EXTERNAL_PURCHASE_FLOW: true,     // Shop → Auth → Payment → Worker flow
   USE_EXTERNAL_TUTORIAL_FLOW: false,    // Tutorial flow (not yet extracted)
   USE_EXTERNAL_BREEDING_FLOW: false,    // Breeding flow (not yet extracted)
   

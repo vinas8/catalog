@@ -279,7 +279,7 @@
               description: 'Mark snake as sold to user',
               url: `${basePath}/catalog.html?source=demo_test`,
               action: async (demo) => {
-                const useExternalFlow = window.featureFlags?.check('USE_EXTERNAL_PURCHASE_FLOW');
+                let useExternalFlow = window.featureFlags?.check('USE_EXTERNAL_PURCHASE_FLOW');
                 
                 if (useExternalFlow) {
                   demo.log('💳 Using external purchase flow...', 'info');
@@ -304,6 +304,7 @@
                   } catch (err) {
                     demo.log(`❌ External flow error: ${err.message}`, 'error');
                     demo.log('⚠️ Falling back to simulation...', 'warning');
+                    useExternalFlow = false;
                   }
                 }
                 
