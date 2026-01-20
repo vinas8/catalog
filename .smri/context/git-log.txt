@@ -1,3 +1,10 @@
+a50de85 v0.7.48 - Add comprehensive flow-based architecture research
+5f907dc v0.7.47 - Add purchase flow dependency graph documentation
+914cb29 v0.7.46 - Fix 404 on product pages & demo scroll animation
+c21231e v0.7.45 - Complete SMRI consolidation: all codes use registry constants
+e9b8c70 v0.7.44 - Add missing SMRI codes to registry (S0.0.0, S2.2,3,4,5.01, S3.1,2,3.01, S0.0,1,2,3,4,5.01)
+2cb6cd3 v0.7.44 - Centralize SMRI codes into constants (Demo, SplitScreenDemo)
+d5aa040 v0.7.43 - Add SMRI modal CSS + versioning workflow docs
 9dede95 debug: Add minimal demo page to test
 29393dd fix: Wrap top-level await in async IIFE
 ee04480 debug: Add error handling to demo page to show white screen cause
@@ -11,10 +18,3 @@ db4c536 feat: Reorganize layout - scenarios on top, larger steps area
 aa02026 feat: Horizontal scenario selector to save space
 4030b28 fix: Demo now creates available product first, then simulates purchase
 e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
-60c412a docs: Add Rule 0 - Check Console First, Not Cache
-2b04968 fix: Export MODULE_MAP as named export
-019533e debug: Add test page for demo troubleshooting
-316aebc feat: Add URL-based cache busting to demo
-0d7d34a feat: Bust cache for demo page v0.7.15
-4a5597e feat: Demo now creates user and assigns snake to farm
-7d2aaed fix: Remove CSS order and reorder HTML - browser first, controls second

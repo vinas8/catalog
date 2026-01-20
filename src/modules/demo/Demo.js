@@ -23,7 +23,7 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.48';
+    this.version = '0.7.49';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
@@ -495,11 +495,73 @@ export class Demo {
         z-index: 9997;
         cursor: pointer;
         transition: all 0.2s;
+        user-select: none;
       }
 
       .demo-version:hover {
         background: rgba(13, 17, 23, 1);
         transform: translateY(-2px);
+      }
+
+      /* SMRI Modal */
+      .smri-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .smri-modal.show {
+        display: flex;
+      }
+
+      .smri-modal-content {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 500px;
+        width: 90%;
+        color: #c9d1d9;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      }
+
+      .smri-modal-header {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #58a6ff;
+      }
+
+      .smri-modal-body {
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .smri-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .smri-close {
+        background: #21262d;
+        color: #c9d1d9;
+        border: 1px solid #30363d;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+      }
+
+      .smri-close:hover {
+        background: #2ea043;
       }
 
       /* Utilities */

@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-19 19:26:36 UTC  
-**Commit:** 9dede95  
-**Version:** 0.7.17
+**Generated:** 2026-01-20 06:20:14 UTC  
+**Commit:** a50de85  
+**Version:** 0.7.48
 
 ---
 
@@ -9,6 +9,13 @@
 
 ### Git Log (Last 20 commits)
 ```
+a50de85 v0.7.48 - Add comprehensive flow-based architecture research
+5f907dc v0.7.47 - Add purchase flow dependency graph documentation
+914cb29 v0.7.46 - Fix 404 on product pages & demo scroll animation
+c21231e v0.7.45 - Complete SMRI consolidation: all codes use registry constants
+e9b8c70 v0.7.44 - Add missing SMRI codes to registry (S0.0.0, S2.2,3,4,5.01, S3.1,2,3.01, S0.0,1,2,3,4,5.01)
+2cb6cd3 v0.7.44 - Centralize SMRI codes into constants (Demo, SplitScreenDemo)
+d5aa040 v0.7.43 - Add SMRI modal CSS + versioning workflow docs
 9dede95 debug: Add minimal demo page to test
 29393dd fix: Wrap top-level await in async IIFE
 ee04480 debug: Add error handling to demo page to show white screen cause
@@ -22,13 +29,6 @@ db4c536 feat: Reorganize layout - scenarios on top, larger steps area
 aa02026 feat: Horizontal scenario selector to save space
 4030b28 fix: Demo now creates available product first, then simulates purchase
 e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
-60c412a docs: Add Rule 0 - Check Console First, Not Cache
-2b04968 fix: Export MODULE_MAP as named export
-019533e debug: Add test page for demo troubleshooting
-316aebc feat: Add URL-based cache busting to demo
-0d7d34a feat: Bust cache for demo page v0.7.15
-4a5597e feat: Demo now creates user and assigns snake to farm
-7d2aaed fix: Remove CSS order and reorder HTML - browser first, controls second
 ```
 
 ### Git Status
@@ -39,8 +39,6 @@ e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
  M .smri/context/health.txt
  M .smri/context/session.md
  M .smri/context/test-full.txt
- M .smri/context/tree.txt
- M src/modules/demo/Demo.js
 ```
 
 ---
@@ -105,7 +103,7 @@ e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
 
 ## 📚 Core Documentation
 
-### .smri/INDEX.md (994 lines)
+### .smri/INDEX.md (1010 lines)
 First 100 lines:
 ```markdown
 # 🐍 Serpent Town - Index & Rules
@@ -116,12 +114,28 @@ First 100 lines:
 
 ---
 
-## 🎯 NEW: Versioning & SMRI Badge Rules (2026-01-19)
+## 🎯 Versioning & SMRI Badge Rules
 
-### 1. Version Bump on Every Change
+### 1. Version Bump Workflow (CRITICAL)
+**On EVERY fix/change, update 3 files:**
 ```bash
-# ALWAYS bump version when making changes
+# 1. Bump package.json
 npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
+
+# 2. Update module version (e.g., src/modules/demo/Demo.js)
+this.version = '0.7.8';
+
+# 3. Update HTML cache buster (e.g., demo/index.html)
+const cacheBuster = urlParams.get('v') || '0.7.8';
+```
+
+**Test BEFORE providing version to user:**
+```bash
+# Option 1: curl test
+curl http://localhost:8000/demo/?v=0.7.8
+
+# Option 2: Browser test with cache busting
+http://localhost:8000/demo/?v=0.7.8
 ```
 
 ### 2. Display Version Badge in Components
@@ -192,22 +206,6 @@ A consolidated documentation system where **ALL** project documentation lives:
 **When page is blank or broken:**
 
 ❌ **WRONG approach:**
-```
-"It's probably cache, let me add cache busting..."
-"Let me add meta tags..."
-"Let me add query params..."
-```
-
-✅ **CORRECT approach:**
-```
-1. Ask: "What does browser console say?" (F12 → Console)
-2. Read the actual error message
-3. Fix the code bug
-4. Done
-```
-
-**Real example from 2026-01-19:**
-- Blank demo page
 ```
 ... (truncated, see .smri/context/INDEX.md for full)
 
@@ -390,17 +388,17 @@ TestRenderer.js
 ## 🏥 Health Status
 
 ```
-[34m
 📏 Checking Large Files...[0m 
-[33m⚠️[0m .smri/INDEX.md: 995 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 995 lines (max: 500)
+[33m⚠️[0m .smri/INDEX.md: 1011 lines (max: 500)
+[33m⚠️[0m .smri/context/INDEX.md: 1011 lines (max: 500)
+[33m⚠️[0m .smri/docs/FLOW-BASED-ARCHITECTURE-RESEARCH.md: 992 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/game/game-controller.js: 1215 lines (max: 1000)
+[33m⚠️[0m src/modules/game/game-controller.js: 1255 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
 [34m
 📦 Checking Module Exports...[0m 
@@ -437,7 +435,7 @@ Script: scripts/check-consistency.cjs[0m
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
-- `INDEX.md` - Complete SMRI index (994 lines)
+- `INDEX.md` - Complete SMRI index (1010 lines)
 - `README.md` - Complete project README (309 lines)
 - `SMRI.md` - Complete SMRI syntax guide (226 lines)
 - `tree.txt` - Full directory tree
@@ -450,5 +448,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-19 19:26:38 UTC  
+**Context cached at:** 2026-01-20 06:20:15 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`
