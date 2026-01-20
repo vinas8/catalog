@@ -397,9 +397,8 @@
           const demoSource = urlParams.get('source');
           const sourceParam = demoSource ? `&source=${demoSource}` : '';
           
-          // Always use query param format for reliability
-          // (GitHub Pages 404.html will handle clean URLs, but direct navigation needs query param)
-          const productUrl = `/product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`;
+          // Use relative path for GitHub Pages compatibility
+          const productUrl = `../product.html?url=/en/catalog/${species}/${morph}/${name}${sourceParam}`;
           
           window.location.href = productUrl;
         } catch (err) {

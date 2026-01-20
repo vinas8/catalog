@@ -23,7 +23,7 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.45';
+    this.version = '0.7.46';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
@@ -877,23 +877,28 @@ export class Demo {
    * Browser controls
    */
   /**
-   * Load URL in iframe and scroll to top
+   * Load URL in iframe and optionally scroll to top
    */
   loadIframe(url) {
     const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
     this.iframe = document.getElementById('demo-iframe');
+    const currentUrl = this.iframe?.src || '';
     document.getElementById('demo-url').value = fullUrl;
     
     if (this.iframe) {
-      this.iframe.src = fullUrl;
-      // Scroll to top after load
-      this.iframe.onload = () => {
-        try {
-          this.iframe.contentWindow.scrollTo(0, 0);
-        } catch (e) {
-          // CORS - can't access cross-origin iframe
-        }
-      };
+      // Only reload and scroll to top if URL is different
+      if (currentUrl !== fullUrl) {
+        this.iframe.src = fullUrl;
+        // Scroll to top only on new page load
+        this.iframe.onload = () => {
+          try {
+            this.iframe.contentWindow.scrollTo(0, 0);
+          } catch (e) {
+            // CORS - can't access cross-origin iframe
+          }
+        };
+      }
+      // Same URL - keep scroll position (don't reload)
     }
   }
 

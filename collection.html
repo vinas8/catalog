@@ -349,8 +349,8 @@
           const morph = (product.morph || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
           const name = (product.name || product.id).toLowerCase().replace(/\s+/g, '-');
           
-          // Always use query param format for reliability
-          const productUrl = `/product.html?url=/en/catalog/${species}/${morph}/${name}`;
+          // Use relative path for GitHub Pages compatibility
+          const productUrl = `product.html?url=/en/catalog/${species}/${morph}/${name}`;
           
           window.location.href = productUrl;
         }
