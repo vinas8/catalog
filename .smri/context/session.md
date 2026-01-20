@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-20 06:28:24 UTC  
-**Commit:** 77c46ee  
-**Version:** 0.7.49
+**Generated:** 2026-01-20 08:54:11 UTC  
+**Commit:** 0de2b3d  
+**Version:** 0.7.75
 
 ---
 
@@ -9,6 +9,19 @@
 
 ### Git Log (Last 20 commits)
 ```
+0de2b3d v0.7.75 - Complete purchase flow integration with test scenarios
+34bdbda v0.7.53 - Add purchase flow integration docs
+dc2286f feat: Use external PurchaseFlow module instead of API calls
+650e539 v0.7.51 - Enable external flow by default with cache busting
+554b9f8 fix: Enable external flow by default and fix variable reassignment
+3c4bb82 feat: Add external flow integration to demo purchase step
+6e98c2e feat: Integrate external purchase flow into demo
+fe6fae3 chore: Bump Demo module version to 0.7.50
+464ae2a chore: Update demo version to 0.7.50
+d78c3f9 test: Add purchase flow demo integration tests
+be31d8b v0.7.50 - Add purchase flow demo with cache busting
+1ed6012 feat: Add purchase flow feature flag demo page
+043cdea feat: Extend feature flags for external flow modules
 77c46ee v0.7.49 - Add SMRI modal CSS styles (complete interrupted patch)
 a50de85 v0.7.48 - Add comprehensive flow-based architecture research
 5f907dc v0.7.47 - Add purchase flow dependency graph documentation
@@ -16,28 +29,18 @@ a50de85 v0.7.48 - Add comprehensive flow-based architecture research
 c21231e v0.7.45 - Complete SMRI consolidation: all codes use registry constants
 e9b8c70 v0.7.44 - Add missing SMRI codes to registry (S0.0.0, S2.2,3,4,5.01, S3.1,2,3.01, S0.0,1,2,3,4,5.01)
 2cb6cd3 v0.7.44 - Centralize SMRI codes into constants (Demo, SplitScreenDemo)
-d5aa040 v0.7.43 - Add SMRI modal CSS + versioning workflow docs
-9dede95 debug: Add minimal demo page to test
-29393dd fix: Wrap top-level await in async IIFE
-ee04480 debug: Add error handling to demo page to show white screen cause
-e2b3ea5 debug: Update test page for v675258e troubleshooting
-675258e feat: Complete layout redesign for mobile - compact runner
-0b7f9c9 feat: Add SMRI codes to each step for reusability
-598ac34 fix: Actually make steps horizontal with proper layout
-55ce91c feat: Steps now display horizontally instead of vertical list
-db4c536 feat: Reorganize layout - scenarios on top, larger steps area
-5abaabd feat: Remove 'Select a Scenario' heading for cleaner UI
-aa02026 feat: Horizontal scenario selector to save space
-4030b28 fix: Demo now creates available product first, then simulates purchase
 ```
 
 ### Git Status
 ```
+ M .smri/context/INDEX.md
  M .smri/context/LAST_UPDATE.txt
+ M .smri/context/README.md
  M .smri/context/git-log.txt
  M .smri/context/health.txt
  M .smri/context/session.md
  M .smri/context/test-full.txt
+ M .smri/context/tree.txt
 ```
 
 ---
@@ -107,8 +110,8 @@ First 100 lines:
 ```markdown
 # 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.11  
-**Last Updated:** 2026-01-19  
+**Version:** 0.7.75  
+**Last Updated:** 2026-01-20  
 **Purpose:** SMRI system index and operating rules
 
 ---
@@ -211,11 +214,11 @@ A consolidated documentation system where **ALL** project documentation lives:
 ### README.md (309 lines)
 First 80 lines:
 ```markdown
-# 🐍 Snake Muffin v0.7.7
+# 🐍 Snake Muffin v0.7.75
 
 > A snake breeding and care e-commerce game with real Stripe payments
 
-[![Version](https://img.shields.io/badge/version-0.7.7-purple)](https://github.com/vinas8/catalog)
+[![Version](https://img.shields.io/badge/version-0.7.75-purple)](https://github.com/vinas8/catalog)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/vinas8/catalog)
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://vinas8.github.io/catalog/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -396,7 +399,7 @@ TestRenderer.js
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/demo/Demo.js: 1045 lines (max: 1000)
+[33m⚠️[0m src/modules/demo/Demo.js: 1047 lines (max: 1000)
 [33m⚠️[0m src/modules/game/game-controller.js: 1255 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
 [34m
@@ -407,12 +410,12 @@ TestRenderer.js
 📊 Summary:[0m 
 [31m❌[0m Version Consistency
 [32m✅[0m Module Structure
-[32m✅[0m SMRI Structure
+[31m❌[0m SMRI Structure
 [31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 3/6 (50%)[0m
+[36mScore: 2/6 (33%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -447,5 +450,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-20 06:28:26 UTC  
+**Context cached at:** 2026-01-20 08:54:13 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

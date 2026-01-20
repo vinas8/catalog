@@ -141,9 +141,12 @@
 │   ├── TEST-CONSTANTS-GUIDE.md
 │   ├── breeding-calculator-curl.sh
 │   ├── breeding-calculator.test.js
+│   ├── browser-purchase-flow-demo.js
 │   ├── run-all.js
 │   ├── test-constants.js
-│   └── test-runner.js
+│   ├── test-purchase-flow-demo.sh
+│   ├── test-runner.js
+│   └── verify-v0.7.75.js
 ├── tutorial
 │   ├── farm.html
 │   ├── index.html
@@ -176,6 +179,7 @@
 ├── catalog.html
 ├── clear-cache.html
 ├── collection.html
+├── demo-purchase-flow.html
 ├── dex.html
 ├── game.html
 ├── import.html
@@ -192,4 +196,4 @@
 ├── success.html
 └── sw.js
 
-57 directories, 136 files
+57 directories, 140 files

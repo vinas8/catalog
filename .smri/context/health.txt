@@ -7,7 +7,7 @@
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/demo/Demo.js: 1045 lines (max: 1000)
+[33m⚠️[0m src/modules/demo/Demo.js: 1047 lines (max: 1000)
 [33m⚠️[0m src/modules/game/game-controller.js: 1255 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
 [34m
@@ -18,12 +18,12 @@
 📊 Summary:[0m 
 [31m❌[0m Version Consistency
 [32m✅[0m Module Structure
-[32m✅[0m SMRI Structure
+[31m❌[0m SMRI Structure
 [31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 3/6 (50%)[0m
+[36mScore: 2/6 (33%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
