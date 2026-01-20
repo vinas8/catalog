@@ -108,6 +108,7 @@ export const SMRI_REGISTRY = {
 
   // === E2E & Debug UI ===
   'fluent-customer-journey': 'S1.1,2,3.09',
+  'all-health-checks-full': 'S0.0,1,2,3,4,5.01',
 
   // === S6: Demo ===
   'demo-first-purchase': 'S1.1,2,3.01',
@@ -120,6 +121,9 @@ export const SMRI_REGISTRY = {
   'demo-tutorial': 'S2.7,5,5-1.01',
   'demo-owner-dashboard': 'S6.1,4,5.01',
   'demo-minimal': 'S9.0.01',
+  'demo-test-placeholder': 'S0.0.0',
+  'demo-snake-care-full': 'S2.2,3,4,5.01',
+  'demo-breeder-scenario': 'S3.1,2,3.01',
 
   // === S9: Components ===
   'component-split-screen-demo': 'S9.3,2.04',
