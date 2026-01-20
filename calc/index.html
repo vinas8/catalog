@@ -490,7 +490,7 @@
   <script>
     // Cache buster for Navigation component
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.79';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.80';
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
     
     // Load Navigation with cache buster
@@ -625,10 +625,13 @@
   <script type="module">
     // Cache buster - use URL param if provided, otherwise use version
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.79';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.80';
     
     // Fix path for GitHub Pages
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    
+    // Set global base path for genetics-core to use
+    window.APP_BASE_PATH = basePath;
     
     const {
       loadGeneticsDatabase,
@@ -648,27 +651,36 @@
 
     async function init() {
       console.log('🧬 Initializing breeding calculator v' + cacheBuster + '...');
+      console.log('📂 Base path:', basePath || '(root)');
       
       const statusEl = document.getElementById('data-status');
       
-      // Load genetics database - LOAD BOTH BASE (50) + EXPANDED (20) = 70 MORPHS
-      const baseResult = await loadGeneticsDatabase(false); // Load base 50
-      const expandedResult = await loadGeneticsDatabase(true); // Load expanded 20
-      
-      if (baseResult && expandedResult) {
-        // Merge both datasets
-        morphDatabase = [
-          ...(baseResult.morphs || []),
-          ...(expandedResult.morphs || [])
-        ];
-        console.log(`✅ Genetics database loaded: ${morphDatabase.length} morphs`);
-        statusEl.innerHTML = `✅ <strong>${morphDatabase.length} morphs</strong> loaded from <a href="data/genetics/" style="color: #667eea; text-decoration: underline;">data/genetics/</a>`;
-      } else if (baseResult) {
-        morphDatabase = baseResult.morphs || [];
-        console.log(`✅ Base genetics database loaded: ${morphDatabase.length} morphs`);
-        statusEl.innerHTML = `✅ ${morphDatabase.length} morphs loaded`;
-      } else {
-        statusEl.innerHTML = `⚠️ Failed to load genetics database`;
+      try {
+        // Load genetics database - LOAD BOTH BASE (50) + EXPANDED (20) = 70 MORPHS
+        console.log('📚 Loading base morphs...');
+        const baseResult = await loadGeneticsDatabase(false); // Load base 50
+        console.log('📚 Loading expanded morphs...');
+        const expandedResult = await loadGeneticsDatabase(true); // Load expanded 20
+        
+        if (baseResult && expandedResult) {
+          // Merge both datasets
+          morphDatabase = [
+            ...(baseResult.morphs || []),
+            ...(expandedResult.morphs || [])
+          ];
+          console.log(`✅ Genetics database loaded: ${morphDatabase.length} morphs`);
+          statusEl.innerHTML = `✅ <strong>${morphDatabase.length} morphs</strong> loaded from <a href="${basePath}/data/genetics/" style="color: #667eea; text-decoration: underline;">data/genetics/</a>`;
+        } else if (baseResult) {
+          morphDatabase = baseResult.morphs || [];
+          console.log(`✅ Base genetics database loaded: ${morphDatabase.length} morphs`);
+          statusEl.innerHTML = `✅ ${morphDatabase.length} morphs loaded (base only)`;
+        } else {
+          console.error('❌ Failed to load genetics database');
+          statusEl.innerHTML = `❌ Failed to load genetics database. Check console for details.`;
+        }
+      } catch (err) {
+        console.error('❌ Error loading genetics:', err);
+        statusEl.innerHTML = `❌ Error: ${err.message}`;
       }
 
       // Setup autocomplete

@@ -22,16 +22,30 @@ export async function loadGeneticsDatabase(useExpandedData = true) {
       ? `${basePath}/data/genetics/morphs-expanded.json`
       : `${basePath}/data/genetics/morphs.json`;
     
+    console.log('📂 Fetching:', morphFile);
     const morphsResponse = await fetch(morphFile);
+    
+    if (!morphsResponse.ok) {
+      throw new Error(`Failed to fetch ${morphFile}: ${morphsResponse.status} ${morphsResponse.statusText}`);
+    }
+    
     morphsData = await morphsResponse.json();
     
     // Load health risks
-    const healthResponse = await fetch(`${basePath}/data/genetics/health-risks.json`);
-    healthRisksData = await healthResponse.json();
+    const healthFile = `${basePath}/data/genetics/health-risks.json`;
+    console.log('📂 Fetching:', healthFile);
+    const healthResponse = await fetch(healthFile);
+    if (healthResponse.ok) {
+      healthRisksData = await healthResponse.json();
+    }
     
     // Load lethal combos
-    const lethalResponse = await fetch(`${basePath}/data/genetics/lethal-combos.json`);
-    lethalCombosData = await lethalResponse.json();
+    const lethalFile = `${basePath}/data/genetics/lethal-combos.json`;
+    console.log('📂 Fetching:', lethalFile);
+    const lethalResponse = await fetch(lethalFile);
+    if (lethalResponse.ok) {
+      lethalCombosData = await lethalResponse.json();
+    }
     
     // Build lookup maps from base morphs
     morphsData.morphs.forEach(morph => {
@@ -53,10 +67,12 @@ export async function loadGeneticsDatabase(useExpandedData = true) {
     const baseCount = morphsData.morphs.length;
     const comboCount = morphsData.popular_combos?.length || 0;
     console.log(`✅ Loaded ${baseCount} morphs + ${comboCount} combos from genetics database v${morphsData.version}`);
-    return true;
+    
+    return morphsData; // Return the actual data
   } catch (error) {
-    console.warn('⚠️ Failed to load genetics database, using fallback constants', error);
-    return false;
+    console.error('❌ Failed to load genetics database:', error.message);
+    console.error('   Full error:', error);
+    return null;
   }
 }
 
