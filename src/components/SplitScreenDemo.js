@@ -28,7 +28,7 @@ export class SplitScreenDemo {
     this.onScenarioChange = options.onScenarioChange || null;
     this.container = null;
     this.iframe = null;
-    this.version = '0.7.10';
+    this.version = '0.7.75';
     this.smri = SMRI_REGISTRY['component-split-screen-demo'];
     this.moduleMap = {
       0: 'Core/Internal',

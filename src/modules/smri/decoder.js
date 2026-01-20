@@ -1,7 +1,7 @@
 /**
  * SMRI Decoder - Human-readable SMRI code explanation
  * @module modules/smri/decoder
- * @version 0.7.10
+ * @version 0.7.75
  * 
  * Decodes SMRI codes (S{M}.{RRR}.{II}) into human-readable format
  * 

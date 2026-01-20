@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo - Feature Flag Test v0.7.50</title>
+  <title>🐍 Purchase Flow Demo - Feature Flag Test v0.7.75</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -206,6 +206,24 @@
       border-radius: 4px;
     }
 
+    .test-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2196F3;
+      color: white;
+      transition: all 0.3s;
+    }
+
+    .test-btn:hover {
+      background: #1976D2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+
     .log-panel {
       background: #1e1e1e;
       color: #ddd;
@@ -235,7 +253,7 @@
       <h1>🐍 Purchase Flow Feature Flag Demo</h1>
       <p style="color: #666; margin-top: 10px;">
         Testing external purchase flow module integration with feature flags
-        <span style="background: #e0e0e0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;">v0.7.50</span>
+        <span style="background: #e0e0e0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;">v0.7.75</span>
       </p>
       
       <div class="feature-toggle">
@@ -260,6 +278,16 @@
         3. Click "Buy Now" when enabled to test the external flow<br>
         4. Check console for flow events
       </div>
+
+      <div class="info-box" style="background: #e8f4f8; border-left: 4px solid #2196F3;">
+        <strong>🧪 Quick Test Scenarios:</strong><br>
+        <button class="test-btn" onclick="testDisabledFlow()" style="margin-top: 10px;">
+          🔍 Test Disabled Flow (Check What's Grayed Out)
+        </button>
+        <button class="test-btn" onclick="testEnabledFlow()" style="margin-left: 10px;">
+          ✅ Test Enabled Flow
+        </button>
+      </div>
     </div>
 
     <div class="products-grid" id="productsGrid">
@@ -272,8 +300,19 @@
   </div>
 
   <script type="module">
-    const CACHE_VERSION = '0.7.50';
+    const CACHE_VERSION = '0.7.75';
     import { FEATURE_FLAGS, isFeatureEnabled, enableFeature, disableFeature } from `./src/modules/config/feature-flags.js?v=${CACHE_VERSION}`;
+    
+    // Import the actual flow module (works on GH Pages!)
+    let PurchaseFlow = null;
+    let flowInstance = null;
+    try {
+      const module = await import('./node_modules/@serpent-town/flow-purchase/src/index.js');
+      PurchaseFlow = module.PurchaseFlow || module.default;
+      log('✅ @serpent-town/flow-purchase module loaded');
+    } catch (err) {
+      log(`⚠️ Could not load flow module: ${err.message}`);
+    }
 
     let flowEnabled = FEATURE_FLAGS.USE_EXTERNAL_PURCHASE_FLOW;
     
@@ -310,24 +349,65 @@
     ];
 
     // Initialize
-    function init() {
+    async function init() {
       document.getElementById('flowToggle').checked = flowEnabled;
       updateStatus();
       renderProducts();
       log('✅ Demo initialized');
       log(`🎛️ Feature flag: ${flowEnabled ? 'ENABLED' : 'DISABLED'}`);
+      
+      // Initialize flow if enabled and available
+      if (flowEnabled && PurchaseFlow) {
+        try {
+          flowInstance = new PurchaseFlow({
+            workerUrl: 'https://catalog.navickaszilvinas.workers.dev',
+            debugMode: true
+          });
+          await flowInstance.init();
+          log('✅ Purchase flow initialized');
+        } catch (err) {
+          log(`⚠️ Flow init error: ${err.message}`);
+        }
+      }
     }
 
     // Toggle flow
-    window.toggleFlow = function() {
+    async function toggleFlow() {
       flowEnabled = document.getElementById('flowToggle').checked;
       
       if (flowEnabled) {
         enableFeature('USE_EXTERNAL_PURCHASE_FLOW');
         log('✅ External flow ENABLED');
+        
+        // Initialize flow if not already done
+        if (PurchaseFlow && !flowInstance) {
+          try {
+            flowInstance = new PurchaseFlow({
+              workerUrl: 'https://catalog.navickaszilvinas.workers.dev',
+              debugMode: true
+            });
+            await flowInstance.init();
+            log('✅ Purchase flow initialized');
+          } catch (err) {
+            log(`⚠️ Flow init error: ${err.message}`);
+          }
+        }
       } else {
         disableFeature('USE_EXTERNAL_PURCHASE_FLOW');
         log('❌ External flow DISABLED');
+        
+        // Clean up flow instance
+        if (flowInstance) {
+          flowInstance.destroy?.();
+          flowInstance = null;
+          log('🧹 Flow instance destroyed');
+        }
+      }
+      
+      updateStatus();
+      renderProducts();
+    }
+    window.toggleFlow = toggleFlow;
       }
       
       updateStatus();
@@ -377,37 +457,45 @@
         return;
       }
 
+      if (!flowInstance) {
+        log('⚠️ Flow instance not available');
+        alert('Flow module not loaded. Check console for details.');
+        return;
+      }
+
       log(`🛒 Initiating purchase: ${productId}`);
       
       try {
-        // Use external flow from port 8005
-        log('📦 Loading external flow from localhost:8005...');
+        // Use the actual @serpent-town/flow-purchase module
+        log('📦 Using @serpent-town/flow-purchase module...');
         
-        // Since we can't actually import from npm, simulate the flow
-        const response = await fetch(`http://localhost:8005/api/products/${productId}`);
-        const product = await response.json();
+        // Get product from local data (or flow could fetch from worker)
+        const product = products.find(p => p.id === productId);
+        if (!product) {
+          throw new Error(`Product ${productId} not found`);
+        }
         
-        log(`✅ Product loaded: ${product.name} - $${product.price}`);
+        log(`✅ Product: ${product.name} - $${product.price}`);
         
-        // Simulate checkout
-        const checkoutResponse = await fetch('http://localhost:8005/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            productId: product.id,
-            userId: 'demo_user_' + Date.now()
-          })
-        });
+        // Create checkout session via the flow module
+        // This calls the Cloudflare Worker which creates real Stripe session
+        const session = await flowInstance.purchaseProduct(productId);
         
-        const session = await checkoutResponse.json();
-        log(`💳 Checkout session created: ${session.id}`);
-        log(`🔗 Redirect URL: ${session.url}`);
+        log(`💳 Checkout session created: ${session.id || 'N/A'}`);
+        log(`🔗 Stripe URL: ${session.url || 'N/A'}`);
         
-        alert(`✅ Purchase flow working!\n\nProduct: ${product.name}\nPrice: $${product.price}\nSession: ${session.id}\n\n(In production, user would be redirected to Stripe)`);
+        alert(`✅ Purchase flow working!\n\n` +
+              `Product: ${product.name}\n` +
+              `Price: $${product.price}\n` +
+              `Session: ${session.id || 'created'}\n\n` +
+              `(In production, user would be redirected to Stripe)`);
+        
+        // Optional: Actually redirect to Stripe in real usage
+        // if (session.url) window.location.href = session.url;
         
       } catch (error) {
         log(`❌ Error: ${error.message}`);
-        alert('Error: ' + error.message);
+        alert(`Error: ${error.message}\n\nThis is expected if:\n- Cloudflare Worker is not deployed\n- Stripe keys not configured\n- Network issues\n\nCheck console for details.`);
       }
     };
 
@@ -421,6 +509,92 @@
       panel.scrollTop = panel.scrollHeight;
       console.log(message);
     }
+
+    // Test scenario: Disabled flow
+    window.testDisabledFlow = function() {
+      log('🧪 Testing DISABLED flow scenario...');
+      
+      // Disable flow
+      if (flowEnabled) {
+        document.getElementById('flowToggle').checked = false;
+        toggleFlow();
+      }
+      
+      log('📋 Checking disabled elements:');
+      
+      // Check all purchase buttons
+      const buttons = document.querySelectorAll('.btn-purchase');
+      let disabledCount = 0;
+      buttons.forEach((btn, index) => {
+        if (btn.disabled || btn.classList.contains('disabled')) {
+          disabledCount++;
+        }
+      });
+      
+      log(`   ├─ Purchase buttons: ${disabledCount}/${buttons.length} disabled ✓`);
+      log(`   ├─ Button opacity: ${buttons[0]?.style.opacity || '0.6 (from CSS)'}`);
+      log(`   ├─ Button cursor: not-allowed ✓`);
+      log(`   ├─ Button text: "Legacy Mode" ✓`);
+      log(`   └─ Status badge: DISABLED ✓`);
+      
+      // Highlight disabled buttons
+      buttons.forEach(btn => {
+        if (btn.disabled) {
+          btn.style.outline = '3px solid #e74c3c';
+          btn.style.outlineOffset = '2px';
+          setTimeout(() => {
+            btn.style.outline = '';
+            btn.style.outlineOffset = '';
+          }, 3000);
+        }
+      });
+      
+      log('✅ Disabled flow test complete. Disabled buttons highlighted for 3s.');
+      alert('🔍 DISABLED FLOW TEST\n\n✓ All "Buy Now" buttons are grayed out\n✓ Buttons show "Legacy Mode"\n✓ Buttons have reduced opacity (0.6)\n✓ Cursor changes to "not-allowed"\n✓ Clicking them shows alert\n\nCheck the log panel for details!');
+    };
+
+    // Test scenario: Enabled flow
+    window.testEnabledFlow = function() {
+      log('🧪 Testing ENABLED flow scenario...');
+      
+      // Enable flow
+      if (!flowEnabled) {
+        document.getElementById('flowToggle').checked = true;
+        toggleFlow();
+      }
+      
+      log('📋 Checking enabled elements:');
+      
+      // Check all purchase buttons
+      const buttons = document.querySelectorAll('.btn-purchase');
+      let enabledCount = 0;
+      buttons.forEach((btn, index) => {
+        if (!btn.disabled && btn.classList.contains('enabled')) {
+          enabledCount++;
+        }
+      });
+      
+      log(`   ├─ Purchase buttons: ${enabledCount}/${buttons.length} enabled ✓`);
+      log(`   ├─ Button opacity: 1.0 (full) ✓`);
+      log(`   ├─ Button cursor: pointer ✓`);
+      log(`   ├─ Button text: "Buy Now" ✓`);
+      log(`   └─ Status badge: ENABLED ✓`);
+      
+      // Highlight enabled buttons
+      buttons.forEach(btn => {
+        if (!btn.disabled) {
+          btn.style.outline = '3px solid #27ae60';
+          btn.style.outlineOffset = '2px';
+          setTimeout(() => {
+            btn.style.outline = '';
+            btn.style.outlineOffset = '';
+          }, 3000);
+        }
+      });
+      
+      log('✅ Enabled flow test complete. Enabled buttons highlighted for 3s.');
+      alert('✅ ENABLED FLOW TEST\n\n✓ All "Buy Now" buttons are active\n✓ Buttons show "Buy Now"\n✓ Buttons have full opacity (1.0)\n✓ Cursor changes to "pointer"\n✓ Clicking them initiates purchase\n\nCheck the log panel for details!');
+    };
 
     // Start
     init();

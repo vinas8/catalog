@@ -1,7 +1,7 @@
 /**
  * Demo Module - Unified Interactive Demo System
  * @module modules/demo/Demo
- * @version 0.7.13
+ * @version 0.7.75
  * 
  * Features:
  * - Mobile-first responsive split-screen layout
@@ -24,9 +24,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.flowUrl = options.flowUrl || 'http://localhost:8005';
     this.purchaseFlow = options.purchaseFlow || null;  // External flow class
-    this.version = '0.7.53';
+    this.version = '0.7.75';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
