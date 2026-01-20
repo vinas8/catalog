@@ -2,14 +2,18 @@
  * SMRI Scenario Definitions
  * @version 0.7.7
  * Central registry of all test scenarios
+ * 
+ * NOTE: All SMRI codes imported from smri-config.js (single source of truth)
  */
+
+import { SMRI_REGISTRY } from '../smri-config.js';
 
 export const SMRI_SCENARIOS = [
   // === HEALTH MODULE (S0) - System health checks ===
   {
     id: 's0-health-generic',
     title: 'S0.0.01: Generic Debug Health',
-    smri: 'S0.0.01',
+    smri: SMRI_REGISTRY['healthcheck'],
     module: 'health',
     url: '../debug/healthcheck.html',
     icon: '🏥',
@@ -19,7 +23,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's0-game-mechanics',
     title: 'S0.2.01: Game Mechanics Check',
-    smri: 'S0.2.01',
+    smri: SMRI_REGISTRY['game-mechanics'],
     module: 'health',
     url: '../../game.html',
     icon: '🎮',
@@ -28,7 +32,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's0-auth-validation',
     title: 'S0.3.01: Auth Validation',
-    smri: 'S0.3.01',
+    smri: SMRI_REGISTRY['auth-validation'],
     module: 'health',
     url: '../../account.html',
     icon: '🔐',
@@ -37,7 +41,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's0-stripe-integration',
     title: 'S0.4.01: Stripe Integration',
-    smri: 'S0.4.01',
+    smri: SMRI_REGISTRY['stripe-integration'],
     module: 'health',
     url: '../../catalog.html',
     icon: '💳',
@@ -46,7 +50,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's0-worker-kv',
     title: 'S0.5,5-1.01: Worker API & KV',
-    smri: 'S0.5,5-1.01',
+    smri: SMRI_REGISTRY['worker-kv'],
     module: 'health',
     url: null,
     icon: '⚙️',
@@ -58,7 +62,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's1-happy-path-purchase',
     title: 'S1.1,2,3,4,5.01: Happy Path Purchase',
-    smri: 'S1.1,2,3,4,5.01',
+    smri: SMRI_REGISTRY['happy-path-purchase'],
     module: 'shop',
     url: '../../catalog.html',
     icon: '🛒',
@@ -67,7 +71,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's1-product-availability',
     title: 'S1.1.01: Product Availability',
-    smri: 'S1.1.01',
+    smri: SMRI_REGISTRY['product-availability'],
     module: 'shop',
     url: '../../catalog.html',
     icon: '📦',
@@ -76,7 +80,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's1-buy-five-snakes',
     title: 'S1.1,2.02: Buy Five Snakes',
-    smri: 'S1.1,2.02',
+    smri: SMRI_REGISTRY['buy-five-snakes'],
     module: 'shop',
     url: '../../catalog.html',
     icon: '🐍',
@@ -87,7 +91,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's2-tutorial-happy-path',
     title: 'S2.7,5,5-1.01: Tutorial Happy Path',
-    smri: 'S2.7,5,5-1.01',
+    smri: SMRI_REGISTRY['tutorial-happy-path'],
     module: 'game',
     url: '../../game.html',
     icon: '📚',
@@ -96,7 +100,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's2-tutorial-missed-care',
     title: 'S2.7,5,5-1.02: Tutorial Missed Care',
-    smri: 'S2.7,5,5-1.02',
+    smri: SMRI_REGISTRY['tutorial-missed-care'],
     module: 'game',
     url: '../../game.html',
     icon: '⚠️',
@@ -105,7 +109,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's2-gamified-shop',
     title: 'S2.1,2.01: Gamified Shop',
-    smri: 'S2.1,2.01',
+    smri: SMRI_REGISTRY['gamified-shop'],
     module: 'game',
     url: '../../game.html',
     icon: '🎮',
@@ -116,7 +120,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's3-calculator-genetics-data',
     title: 'S3.2,3.01: Calculator Genetics Data',
-    smri: 'S3.2,3.01',
+    smri: SMRI_REGISTRY['calculator-genetics-data'],
     module: 'auth',
     url: '../../calculator.html',
     icon: '🧬',
@@ -127,7 +131,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's4-email-receipt',
     title: 'S4.1,4.01: Email Receipt',
-    smri: 'S4.1,4.01',
+    smri: SMRI_REGISTRY['email-receipt'],
     module: 'payment',
     url: null,
     icon: '📧',
@@ -138,7 +142,7 @@ export const SMRI_SCENARIOS = [
   {
     id: 's5-real-snake-completeness',
     title: 'S5.1,2.01: Real Snake Completeness',
-    smri: 'S5.1,2.01',
+    smri: SMRI_REGISTRY['real-snake-completeness'],
     module: 'worker',
     url: null,
     icon: '🔍',

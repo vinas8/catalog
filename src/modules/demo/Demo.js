@@ -23,7 +23,7 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.44';
+    this.version = '0.7.45';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
