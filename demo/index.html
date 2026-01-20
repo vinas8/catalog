@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>🎬 Interactive Demo - Snake Muffin v0.7.43</title>
+  <title>🎬 Interactive Demo - Snake Muffin v0.7.50</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -26,7 +26,7 @@
         
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.43';
+        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.50';
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
 
     const demo = new Demo({
