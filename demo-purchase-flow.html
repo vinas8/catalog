@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐍 Purchase Flow Demo - Feature Flag Test</title>
+  <title>🐍 Purchase Flow Demo - Feature Flag Test v0.7.50</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -235,6 +235,7 @@
       <h1>🐍 Purchase Flow Feature Flag Demo</h1>
       <p style="color: #666; margin-top: 10px;">
         Testing external purchase flow module integration with feature flags
+        <span style="background: #e0e0e0; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;">v0.7.50</span>
       </p>
       
       <div class="feature-toggle">
@@ -271,7 +272,8 @@
   </div>
 
   <script type="module">
-    import { FEATURE_FLAGS, isFeatureEnabled, enableFeature, disableFeature } from './src/modules/config/feature-flags.js';
+    const CACHE_VERSION = '0.7.50';
+    import { FEATURE_FLAGS, isFeatureEnabled, enableFeature, disableFeature } from `./src/modules/config/feature-flags.js?v=${CACHE_VERSION}`;
 
     let flowEnabled = FEATURE_FLAGS.USE_EXTERNAL_PURCHASE_FLOW;
     

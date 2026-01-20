@@ -1,4 +1,3 @@
-📏 Checking Large Files...[0m 
 [33m⚠️[0m .smri/INDEX.md: 1011 lines (max: 500)
 [33m⚠️[0m .smri/context/INDEX.md: 1011 lines (max: 500)
 [33m⚠️[0m .smri/docs/FLOW-BASED-ARCHITECTURE-RESEARCH.md: 992 lines (max: 500)
@@ -8,6 +7,7 @@
 [33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
 [33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
 [33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
+[33m⚠️[0m src/modules/demo/Demo.js: 1045 lines (max: 1000)
 [33m⚠️[0m src/modules/game/game-controller.js: 1255 lines (max: 1000)
 [33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
 [34m

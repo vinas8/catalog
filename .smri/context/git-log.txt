@@ -1,3 +1,4 @@
+77c46ee v0.7.49 - Add SMRI modal CSS styles (complete interrupted patch)
 a50de85 v0.7.48 - Add comprehensive flow-based architecture research
 5f907dc v0.7.47 - Add purchase flow dependency graph documentation
 914cb29 v0.7.46 - Fix 404 on product pages & demo scroll animation
@@ -17,4 +18,3 @@ db4c536 feat: Reorganize layout - scenarios on top, larger steps area
 5abaabd feat: Remove 'Select a Scenario' heading for cleaner UI
 aa02026 feat: Horizontal scenario selector to save space
 4030b28 fix: Demo now creates available product first, then simulates purchase
-e0d3de7 feat: Add SMRI memory system (like store_memory but for INDEX.md)
