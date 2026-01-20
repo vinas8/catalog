@@ -15,6 +15,7 @@
  */
 
 import { showSMRIModal } from '../smri/index.js';
+import { SMRI_REGISTRY } from '../../config/smri-config.js';
 
 export class Demo {
   constructor(options = {}) {
@@ -22,8 +23,8 @@ export class Demo {
     this.scenarios = options.scenarios || [];
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
-    this.version = '0.7.43';
-    this.smri = 'S9.2,8,5,10.06';
+    this.version = '0.7.44';
+    this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
     this.currentStep = 0;

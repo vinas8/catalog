@@ -108,6 +108,25 @@ export const SMRI_REGISTRY = {
 
   // === E2E & Debug UI ===
   'fluent-customer-journey': 'S1.1,2,3.09',
+
+  // === S6: Demo ===
+  'demo-first-purchase': 'S1.1,2,3.01',
+  'demo-debug-test': 'S9.0,8.01',
+  'demo-clear-localStorage': 'S9.0,8.02',
+  'demo-shop-browse': 'S9.1,2.01',
+  'demo-stripe-checkout': 'S9.4.01',
+  'demo-game-tamagotchi': 'S9.6.02',
+  'demo-breeding': 'S9.3.01',
+  'demo-tutorial': 'S2.7,5,5-1.01',
+  'demo-owner-dashboard': 'S6.1,4,5.01',
+  'demo-minimal': 'S9.0.01',
+
+  // === S9: Components ===
+  'component-split-screen-demo': 'S9.3,2.04',
+  'component-demo-system': 'S9.2,8,5,10.06',
+
+  // === S10: SMRI System ===
+  'smri-decoder': 'S10.2,5.01',
 };
 
 /**

@@ -15,6 +15,8 @@
  * SMRI: S9.3,2.03
  */
 
+import { SMRI_REGISTRY } from '../config/smri-config.js';
+
 export class SplitScreenDemo {
   constructor(options = {}) {
     this.containerId = options.containerId || 'split-demo';
@@ -27,7 +29,7 @@ export class SplitScreenDemo {
     this.container = null;
     this.iframe = null;
     this.version = '0.7.10';
-    this.smri = 'S9.3,2.04';
+    this.smri = SMRI_REGISTRY['component-split-screen-demo'];
     this.moduleMap = {
       0: 'Core/Internal',
       1: 'Auth',
