@@ -51,30 +51,7 @@
       padding: 30px;
     }
 
-    /* MorphMarket iframe section */
-    .iframe-container {
-      position: relative;
-      width: 100%;
-      min-height: 600px;
-      border: 3px solid #9333ea;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .iframe-overlay {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(147, 51, 234, 0.95);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 0.9em;
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    /* Local calculator UI */
+    /* Calculator UI */
     .morph-selector {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -346,52 +323,187 @@
       border-left: 4px solid #3b82f6;
       color: #1e40af;
     }
+
+    /* ========================================
+       MOBILE RESPONSIVE DESIGN
+       ======================================== */
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .header {
+        padding: 20px 15px;
+        border-radius: 10px 10px 0 0;
+      }
+
+      .header h1 {
+        font-size: 1.5em;
+      }
+
+      .header p {
+        font-size: 0.9em;
+      }
+
+      .section-header {
+        padding: 15px;
+      }
+
+      .section-header h2 {
+        font-size: 1.2em;
+      }
+
+      .section-body {
+        padding: 15px;
+      }
+
+      /* Stack morph selectors vertically on mobile */
+      .morph-selector {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .parent-section {
+        padding: 15px;
+      }
+
+      .parent-section h3 {
+        font-size: 1.1em;
+      }
+
+      /* Make buttons full width on mobile */
+      .calculate-btn,
+      .demo-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1em;
+      }
+
+      /* Responsive results grid */
+      .results-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .result-card {
+        padding: 15px;
+      }
+
+      /* Smaller score display on mobile */
+      .score-value {
+        font-size: 2em;
+      }
+
+      .score-grade {
+        font-size: 1.2em;
+      }
+
+      .compatibility-score {
+        padding: 20px;
+      }
+
+      /* Stack autocomplete items better */
+      .autocomplete-dropdown {
+        max-height: 200px;
+      }
+
+      .autocomplete-item {
+        padding: 10px;
+      }
+
+      /* Alert text sizing */
+      .alert {
+        padding: 12px;
+        font-size: 0.9em;
+      }
+
+      /* Morph tags responsive */
+      .morph-tag {
+        font-size: 0.85em;
+        padding: 6px 10px;
+      }
+
+      /* Input fields full width */
+      input[type="text"] {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+
+      .header {
+        padding: 15px 10px;
+      }
+
+      .header h1 {
+        font-size: 1.3em;
+      }
+
+      .section-body {
+        padding: 10px;
+      }
+
+      .parent-section {
+        padding: 12px;
+      }
+
+      .score-value {
+        font-size: 1.8em;
+      }
+
+      .score-grade {
+        font-size: 1em;
+      }
+
+      .result-card h4 {
+        font-size: 1em;
+      }
+
+      .outcome-item {
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px 0;
+      }
+
+      .outcome-morph,
+      .outcome-probability,
+      .outcome-value {
+        text-align: left;
+      }
+    }
   </style>
+  <script>
+    // Cache buster for Navigation component
+    const urlParams = new URLSearchParams(window.location.search);
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.78';
+    const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    
+    // Load Navigation with cache buster
+    import(`${basePath}/src/components/Navigation.js?v=${cacheBuster}`).then(module => {
+      console.log('✅ Navigation loaded v' + cacheBuster);
+    }).catch(err => {
+      console.warn('Navigation load failed:', err);
+    });
+  </script>
 </head>
 <body>
-  <script type="module" src="src/components/Navigation.js"></script>
 
   <div class="calculator-container">
     <div class="header">
-      <h1>🧬 Integrated Breeding Calculator</h1>
-      <p>MorphMarket calculator with advanced Serpent Town genetics analysis</p>
+      <h1>🧬 Ball Python Breeding Calculator</h1>
+      <p>Advanced genetics analysis with market values, health risks, and breeding compatibility</p>
     </div>
 
-    <!-- MorphMarket Calculator Section -->
+    <!-- Info Banner -->
     <div class="calculator-section">
-      <div class="section-header">
-        <h2>📊 MorphMarket Genetic Calculator</h2>
-        <p style="margin: 5px 0 0 0; color: #718096; font-size: 0.9em;">
-          Industry-standard calculator - selections sync to our system below
-        </p>
-      </div>
       <div class="section-body">
         <div class="alert alert-info">
-          <strong>🔗 Integration Active:</strong> Morph selections from MorphMarket are automatically synced to our database.
-          Make your selections above, then see advanced analysis below.
-        </div>
-        
-        <div class="iframe-container">
-          <div class="iframe-overlay">
-            <span class="sync-indicator synced"></span>
-            Sync Active
-          </div>
-          <iframe 
-            id="morphmarket-iframe"
-            src="https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/genetic-calculator/"
-            width="100%"
-            height="600"
-            frameborder="0"
-            sandbox="allow-scripts allow-same-origin allow-forms"
-            style="width: 100%; height: 600px; border: none;"
-          ></iframe>
-        </div>
-
-        <div class="db-match-info">
-          <strong>📋 Database Sync Status:</strong>
-          <div id="sync-status" style="margin-top: 10px;">
-            Waiting for morph selections...
-          </div>
+          <strong>📚 Genetics Database:</strong> 70+ morphs with lethal combo detection, health risk assessment, and market analysis.
+          <br><strong>🔗 Reference:</strong> Data verified against <a href="https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/genetic-calculator/" target="_blank" style="color: #667eea; text-decoration: underline;">MorphMarket</a> and <a href="https://www.worldofballpythons.com/" target="_blank" style="color: #667eea; text-decoration: underline;">World of Ball Pythons</a>
         </div>
       </div>
     </div>
@@ -500,7 +612,14 @@
   </div>
 
   <script type="module">
-    import {
+    // Cache buster - use URL param if provided, otherwise use version
+    const urlParams = new URLSearchParams(window.location.search);
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.78';
+    
+    // Fix path for GitHub Pages
+    const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+    
+    const {
       loadGeneticsDatabase,
       calculateCompatibility,
       calculateOffspring,
@@ -510,14 +629,14 @@
       calculateInbreedingCoefficient,
       calculateGeneticDiversity,
       calculateHeterozygosity
-    } from './src/modules/breeding/genetics-core.js';
+    } = await import(`${basePath}/src/modules/breeding/genetics-core.js?v=${cacheBuster}`);
 
     let morphDatabase = [];
     let selectedMaleMorphs = [];
     let selectedFemaleMorphs = [];
 
     async function init() {
-      console.log('🧬 Initializing integrated calculator...');
+      console.log('🧬 Initializing breeding calculator v' + cacheBuster + '...');
       
       const statusEl = document.getElementById('data-status');
       
