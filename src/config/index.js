@@ -6,7 +6,8 @@
 export { APP_CONFIG, GAME_NAME, GAME_DISPLAY_NAME } from './app-config.js';
 export { FEATURE_FLAGS } from './feature-flags.js';
 export { STRIPE_CONFIG } from './stripe-config.js';
-export { WORKER_CONFIG } from './worker-config.js';
+export { WORKER_CONFIG, PAGE_URLS } from './worker-config.js';
+export { URLS, WORKER_URL } from './urls.js';
 export { 
   VERSION_CONFIG, 
   VERSION, 
