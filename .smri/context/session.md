@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-20 14:31:46 UTC  
-**Commit:** 5579c38  
-**Version:** 0.7.81
+**Generated:** 2026-01-21 02:00:53 UTC  
+**Commit:**   
+**Version:** 0.7.94
 
 ---
 
@@ -9,34 +9,17 @@
 
 ### Git Log (Last 20 commits)
 ```
-5579c38 v0.7.81 - Add comprehensive morphs database: 66 morphs from WOBP (ethical extraction)
-81e6939 v0.7.80 - Fix genetics database loading: set APP_BASE_PATH, return data not boolean, better error handling
-c8d8952 v0.7.79 - Fix breeding calculator mobile-first responsive design + cache buster in demo
-dd3a138 v0.7.78 - Fix breeding calculator: remove MorphMarket iframe, add cache buster, mobile responsive design
-4da5976 v0.7.77 - Lucky version 🍀 Add morph calculator demo with genetics, lethal combos & care sheets
-965a546 v0.7.76 - Fix Step 7 const reassignment error in demo purchase flow
-0de2b3d v0.7.75 - Complete purchase flow integration with test scenarios
-34bdbda v0.7.53 - Add purchase flow integration docs
-dc2286f feat: Use external PurchaseFlow module instead of API calls
-650e539 v0.7.51 - Enable external flow by default with cache busting
-554b9f8 fix: Enable external flow by default and fix variable reassignment
-3c4bb82 feat: Add external flow integration to demo purchase step
-6e98c2e feat: Integrate external purchase flow into demo
-fe6fae3 chore: Bump Demo module version to 0.7.50
-464ae2a chore: Update demo version to 0.7.50
-d78c3f9 test: Add purchase flow demo integration tests
-be31d8b v0.7.50 - Add purchase flow demo with cache busting
-1ed6012 feat: Add purchase flow feature flag demo page
-043cdea feat: Extend feature flags for external flow modules
-77c46ee v0.7.49 - Add SMRI modal CSS styles (complete interrupted patch)
+
 ```
 
 ### Git Status
 ```
  M .smri/context/LAST_UPDATE.txt
  M .smri/context/git-log.txt
- M .smri/context/session.md
+ M .smri/context/health.txt
+ M .smri/context/modules.txt
  M .smri/context/test-full.txt
+ M .smri/context/tree.txt
 ```
 
 ---
@@ -44,56 +27,7 @@ be31d8b v0.7.50 - Add purchase flow demo with cache busting
 ## 📁 Project Structure
 
 ```
-.
-├── admin
-│   ├── account.html
-│   ├── import-modular.html
-│   ├── import.html
-│   └── index.html
-├── calc
-│   ├── calculator.html
-│   └── index.html
-├── cloudflare
-│   └── product-router.js
-├── data
-│   ├── backup-20260102-192725
-│   ├── cache
-│   ├── genetics
-│   ├── demo-products.json
-│   ├── index.html
-│   ├── products-real-test.json
-│   └── snakes-collection.csv
-├── debug
-│   ├── archive
-│   ├── archive-pre-executor-focus
-│   ├── archive-pre-v0.8.0
-│   ├── breeding-calculator
-│   ├── calc
-│   ├── modules
-│   ├── releases
-│   ├── templates
-│   ├── tools
-│   ├── README.md
-│   ├── csv-import-manager.js
-│   ├── debug-guard.js
-│   ├── index.html
-│   ├── mcp-test-report.html
-│   ├── mobile-console.js
-│   ├── redirect.html
-│   ├── smri-runner.html
-│   ├── smri-scenarios.js
-│   ├── smri-tests.js
-│   ├── test-browser.cjs
-│   ├── test-localstorage-destination.html
-│   ├── test-quick.html
-│   └── test-runner-simple.html
-├── demo
-│   ├── customer-journeys
-│   ├── index.html
-│   ├── minimal.html
-│   └── test.html
-├── dex
-│   ├── modules
+
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -101,251 +35,24 @@ be31d8b v0.7.50 - Add purchase flow demo with cache busting
 
 ## 📚 Core Documentation
 
-### .smri/INDEX.md (1010 lines)
+### .smri/INDEX.md (0 lines)
 First 100 lines:
 ```markdown
-# 🐍 Serpent Town - Index & Rules
 
-**Version:** 0.7.75  
-**Last Updated:** 2026-01-20  
-**Purpose:** SMRI system index and operating rules
-
----
-
-## 🎯 Versioning & SMRI Badge Rules
-
-### 1. Version Bump Workflow (CRITICAL)
-**On EVERY fix/change, update 3 files:**
-```bash
-# 1. Bump package.json
-npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
-
-# 2. Update module version (e.g., src/modules/demo/Demo.js)
-this.version = '0.7.8';
-
-# 3. Update HTML cache buster (e.g., demo/index.html)
-const cacheBuster = urlParams.get('v') || '0.7.8';
-```
-
-**Test BEFORE providing version to user:**
-```bash
-# Option 1: curl test
-curl http://localhost:8000/demo/?v=0.7.8
-
-# Option 2: Browser test with cache busting
-http://localhost:8000/demo/?v=0.7.8
-```
-
-### 2. Display Version Badge in Components
-Every interactive component must show version badge:
-- **Location:** Bottom-right corner (fixed position)
-- **Format:** `S{M}.{RRR}.{II} • v{X.Y.Z}`
-- **Example:** `S9.3,2,10.05 • v0.7.11`
-- **Clickable:** Opens SMRI decoder modal
-
-### 3. SMRI Decoder Module
-Use centralized decoder for consistency:
-```javascript
-import { showSMRIModal } from '../modules/smri/index.js';
-
-// In component
-showSMRIModal(this.smri);  // Shows popup explaining SMRI code
-```
-
-### 4. Update SMRI on Changes
-- **File changed?** → Bump iteration: `.01 → .02`
-- **New dependency?** → Update relations: `.2,5 → .2,5,8`
-- **Major refactor?** → Consider new module number
-
-### 5. Module Map (Reference)
-```
-0: Core/Internal     6: Payment
-1: Auth              7: Import
-2: Common            8: Debug
-3: Game              9: Demo
-4: Shop             10: SMRI
-5: Testing
-```
-
----
-
-## 🚨 AI: STOP! READ THIS FIRST
-
-**When user types `.smri`, DO THIS FIRST:**
-
-```bash
-bash scripts/smri-startup.sh
-```
-
-**DO NOT manually load INDEX.md, README.md, etc.**  
-**The script handles EVERYTHING automatically.**
-
-After script completes, you can read this INDEX.md if needed for additional context.
-
----
-
-## 📖 What is .smri?
-
-**SMRI** = **S**erpent Town **M**aster **R**eference **I**ndex
-
-A consolidated documentation system where **ALL** project documentation lives:
-- **INDEX.md** (this file) - Navigation, rules, AI instructions
-- **docs/** - Focused topic docs (business, technical, deployment)
-- **scenarios/** - Test scenarios in structured format
-- **logs/** - Daily session conversation history
-
-**Goal:** Single source of truth. **NO scattered docs**. Everything in `.smri/`.
-
----
-
-## 🚨 CRITICAL RULES FOR AI ASSISTANTS
-
-### 0. DEBUGGING RULE: Check Console FIRST, Not Cache
-**When page is blank or broken:**
-
-❌ **WRONG approach:**
 ```
 ... (truncated, see .smri/context/INDEX.md for full)
 
-### README.md (309 lines)
+### README.md (0 lines)
 First 80 lines:
 ```markdown
-# 🐍 Snake Muffin v0.7.75
 
-> A snake breeding and care e-commerce game with real Stripe payments
-
-[![Version](https://img.shields.io/badge/version-0.7.75-purple)](https://github.com/vinas8/catalog)
-[![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/vinas8/catalog)
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://vinas8.github.io/catalog/)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-
-⚠️ **Beta Software** - Not production ready. Use at your own risk.
-
-## 🎯 What is Snake Muffin?
-
-Snake Muffin is a unique web application combining:
-- **E-commerce** - Buy real ball pythons with Stripe payments
-- **Pet Care Game** - Tamagotchi-style snake care mechanics
-- **Collection Management** - Track and manage your purchased snakes
-
-## ✨ Features
-
-### 🛒 Shop & Purchase
-- Browse available ball pythons
-- Secure Stripe Checkout integration
-- Real-time payment processing
-- Automatic product delivery
-
-### 🎮 Care Mechanics
-- 8 vital stats (hunger, water, temperature, humidity, health, stress, cleanliness, happiness)
-- Feed, water, and clean your snakes
-- Stats decay over time (requires care)
-- Equipment shop (auto-feeders, thermostats, etc.)
-
-### 📊 Collection
-- View all purchased snakes
-- Track individual stats per snake
-- Species and morph information
-- Purchase history
-
-## 🚀 Live Demo
-
-**Frontend:** https://vinas8.github.io/catalog/  
-**API:** https://catalog.navickaszilvinas.workers.dev
-
-## 🏗️ Architecture
-
-```
-┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
-│  GitHub Pages   │      │ Cloudflare Worker │      │     Stripe      │
-│   (Frontend)    │─────▶│    (Backend)      │◀─────│   (Payments)    │
-└─────────────────┘      └──────────────────┘      └─────────────────┘
-                                  │
-                                  ▼
-                         ┌──────────────────┐
-                         │  Cloudflare KV   │
-                         │    (Storage)     │
-                         └──────────────────┘
-```
-
-### Tech Stack
-
-**Frontend:**
-- Plain JavaScript (ES6 modules)
-- No framework, no build step
-- HTML5 + CSS3
-
-**Backend:**
-- Cloudflare Workers (serverless)
-- Cloudflare KV (storage)
-- Stripe API integration
-
-**Deployment:**
-- GitHub Pages (static frontend)
-- Cloudflare Workers (API)
-- GitHub Actions (CI/CD)
-
-## 📁 Project Structure
-
-```
-catalog/
-├── index.html              # Landing page
 ```
 ... (truncated, see .smri/context/README.md for full)
 
-### src/SMRI.md (226 lines)
+### src/SMRI.md (0 lines)
 First 50 lines:
 ```markdown
-# 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.7.7  
-**Status:** ⚠️ BETA - Not Production Ready  
-**Tests:** 88/88 passing (98%) ✅
-
----
-
-## 📋 SMRI Commands
-
-Type these commands for quick access:
-
-- **`.smri`** - Complete project briefing (tree, docs, API, status)
-- **`.smri help`** - Show this command list
-- **`.smri progress`** - Show progress (tests, E2E, debug tools, features)
-- **`.smri update`** - Update SMRI from latest docs
-- **`.smri update recent`** - Document recent commit changes
-
----
-
-## 🎯 What is Serpent Town?
-
-A snake breeding e-commerce game combining:
-- **Shop**: Buy real snakes with Stripe payments
-- **Game**: Tamagotchi-style care mechanics
-- **Business**: Real product catalog with morphs & genetics
-
----
-
-## 🏗️ Architecture
-
-```
-Frontend (GitHub Pages - Static)
-    ↓
-Cloudflare Worker (Backend API)
-    ↓
-KV Storage (User Products)
-    ↓
-Stripe (Payments & Webhooks)
-```
-
----
-
-## 📁 Project Structure
-
-### `/src/modules/` - Core Logic (ES6 Modules)
-- **`auth/`** - User authentication (hash-based)
-- **`common/`** - Shared utilities, constants, security
-- **`debug/`** - Debug tools & UI
-- **`game/`** - Tamagotchi game controller & plugins
 ```
 ... (truncated, see .smri/context/SMRI.md for full)
 
@@ -355,30 +62,12 @@ Stripe (Payments & Webhooks)
 
 ### Modules (src/modules/)
 ```
-auth
-breeding
-cart
-common
-config
-demo
-game
-import
-payment
-shop
-smri
-testing
-tutorial
+
 ```
 
 ### Components (src/components/)
 ```
-BrowserFrame.js
-DebugPanel.js
-Navigation.js
-PWAInstallButton.js
-SnakeDetailModal.js
-SplitScreenDemo.js
-TestRenderer.js
+
 ```
 
 ---
@@ -386,36 +75,7 @@ TestRenderer.js
 ## 🏥 Health Status
 
 ```
-[33m⚠️[0m .smri/INDEX.md: 1011 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 1011 lines (max: 500)
-[33m⚠️[0m .smri/docs/FLOW-BASED-ARCHITECTURE-RESEARCH.md: 992 lines (max: 500)
-[33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
-[33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
-[33m⚠️[0m .smri/docs/business-plan/SERPENT-TOWN-BUSINESS-PLAN.md: 777 lines (max: 500)
-[33m⚠️[0m .smri/docs/morphmarket-integration.md: 502 lines (max: 500)
-[33m⚠️[0m .smri/docs/technical.md: 523 lines (max: 500)
-[33m⚠️[0m .smri/scenarios/S6.1,2,3.09-FLUENT-CUSTOMER-JOURNEY.md: 849 lines (max: 500)
-[33m⚠️[0m src/modules/demo/Demo.js: 1047 lines (max: 1000)
-[33m⚠️[0m src/modules/game/game-controller.js: 1255 lines (max: 1000)
-[33m⚠️[0m worker/worker.js: 2271 lines (max: 1000)
-[34m
-📦 Checking Module Exports...[0m 
-[32m✅[0m PUBLIC-API.md exists
-[32m✅[0m module-functions.js exists
-[34m
-📊 Summary:[0m 
-[31m❌[0m Version Consistency
-[32m✅[0m Module Structure
-[31m❌[0m SMRI Structure
-[31m❌[0m Duplicate Files
-[31m❌[0m File Sizes
-[32m✅[0m Module Exports
 
-[36mScore: 2/6 (33%)[0m
-[33m
-⚠️[0m Some checks failed - review above
-[36m
-Script: scripts/check-consistency.cjs[0m
 ```
 
 ---
@@ -423,9 +83,7 @@ Script: scripts/check-consistency.cjs[0m
 ## 🧪 Test Summary
 
 ```
-🎉 All tests passed!
-🎉 All tests passed!
-🎉 All scenario tests passed!
+
 ```
 
 ---
@@ -433,9 +91,9 @@ Script: scripts/check-consistency.cjs[0m
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
-- `INDEX.md` - Complete SMRI index (1010 lines)
-- `README.md` - Complete project README (309 lines)
-- `SMRI.md` - Complete SMRI syntax guide (226 lines)
+- `INDEX.md` - Complete SMRI index (0 lines)
+- `README.md` - Complete project README (0 lines)
+- `SMRI.md` - Complete SMRI syntax guide (0 lines)
 - `tree.txt` - Full directory tree
 - `git-log.txt` - Full git history
 - `health.txt` - Complete health check output
@@ -446,5 +104,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-20 14:31:47 UTC  
+**Context cached at:** 2026-01-21 02:00:54 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

@@ -1,20 +1,2 @@
-5579c38 v0.7.81 - Add comprehensive morphs database: 66 morphs from WOBP (ethical extraction)
-81e6939 v0.7.80 - Fix genetics database loading: set APP_BASE_PATH, return data not boolean, better error handling
-c8d8952 v0.7.79 - Fix breeding calculator mobile-first responsive design + cache buster in demo
-dd3a138 v0.7.78 - Fix breeding calculator: remove MorphMarket iframe, add cache buster, mobile responsive design
-4da5976 v0.7.77 - Lucky version 🍀 Add morph calculator demo with genetics, lethal combos & care sheets
-965a546 v0.7.76 - Fix Step 7 const reassignment error in demo purchase flow
-0de2b3d v0.7.75 - Complete purchase flow integration with test scenarios
-34bdbda v0.7.53 - Add purchase flow integration docs
-dc2286f feat: Use external PurchaseFlow module instead of API calls
-650e539 v0.7.51 - Enable external flow by default with cache busting
-554b9f8 fix: Enable external flow by default and fix variable reassignment
-3c4bb82 feat: Add external flow integration to demo purchase step
-6e98c2e feat: Integrate external purchase flow into demo
-fe6fae3 chore: Bump Demo module version to 0.7.50
-464ae2a chore: Update demo version to 0.7.50
-d78c3f9 test: Add purchase flow demo integration tests
-be31d8b v0.7.50 - Add purchase flow demo with cache busting
-1ed6012 feat: Add purchase flow feature flag demo page
-043cdea feat: Extend feature flags for external flow modules
-77c46ee v0.7.49 - Add SMRI modal CSS styles (complete interrupted patch)
+b67ab41 Checkpoint from Copilot CLI for coding agent session
+569cc0a v0.7.94 - Document snake ranch architecture TODO
