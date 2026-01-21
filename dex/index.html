@@ -280,7 +280,8 @@
     <script type="module">
         // Setup paths
         const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
-        const cacheBuster = '0.777';
+        const urlParams = new URLSearchParams(window.location.search);
+        const cacheBuster = urlParams.get('v') || '0.7.94';
         
         // Load state management
         const { getUnlockedMorphs, markProgress } = await import(`${basePath}/src/core/state.js?v=${cacheBuster}`);
