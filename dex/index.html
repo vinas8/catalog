@@ -3,35 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐍 Snake Dex - Detailed Encyclopedia</title>
+    <title>🐍 Morph Dex - Ball Python Encyclopedia</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #f5f7fa;
-            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
         
         .dex-container {
             max-width: 1400px;
             margin: 0 auto;
+            background: white;
+            border-radius: 16px;
             padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
-        /* Grid View - 2 columns on mobile like Pokemon DB */
-        .morphs-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Always 2 columns on mobile */
-            gap: 0.5rem;
+        .dex-header {
+            text-align: center;
             margin-bottom: 2rem;
         }
         
-        /* Larger screens: more columns */
+        .dex-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 30px;
+            overflow: hidden;
+            margin: 1rem auto;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .morphs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
         @media (min-width: 768px) {
             .morphs-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 1rem;
             }
         }
         
@@ -41,32 +116,56 @@
             }
         }
         
-        .morph-thumb {
+        .morph-card {
             background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.5rem;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            position: relative;
         }
         
-        @media (min-width: 768px) {
-            .morph-thumb {
-                padding: 1rem;
-            }
-        }
-        
-        .morph-thumb:hover {
-            border-color: #4299e1;
+        .morph-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-color: #667eea;
         }
         
-        .morph-thumb img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
+        /* LOCKED STATE */
+        .morph-card.locked {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            border-color: #cbd5e0;
+        }
+        
+        .morph-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #cbd5e0;
+        }
+        
+        .morph-card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* UNLOCKED STATE */
+        .morph-card.unlocked {
+            border-color: #48bb78;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        }
+        
+        .morph-card.unlocked::after {
+            content: '✅';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
         }
         
         .morph-number {
@@ -75,158 +174,59 @@
             margin-bottom: 0.5rem;
         }
         
+        .morph-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 0.5rem;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .morph-name {
             font-weight: bold;
-            font-size: 0.95rem;
-            margin-top: 0.5rem;
-        }
-        
-        /* Detailed View (like Pokemon DB) */
-        .morph-detail {
-            display: none;
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .morph-detail.active {
-            display: block;
-        }
-        
-        .detail-header {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        .detail-image img {
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-        }
-        
-        .detail-info h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .detail-number {
-            color: #a0aec0;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .detail-badges {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .badge {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        
-        .badge-gene { background: #bee3f8; color: #2c5282; }
-        .badge-rarity { background: #fbd38d; color: #7c2d12; }
-        .badge-health { background: #fc8181; color: #742a2a; }
-        
-        /* Stats Table (like Pokemon DB) */
-        .stats-section {
-            margin: 2rem 0;
-        }
-        
-        .stats-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #2d3748;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-        
-        .stat-box {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: #718096;
+            font-size: 0.9rem;
             margin-bottom: 0.3rem;
         }
         
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #2d3748;
+        .morph-type {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 0.3rem;
         }
         
-        /* Genetics Section */
-        .genetics-section {
-            background: #f0fff4;
-            border: 2px solid #9ae6b4;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
+        .type-dominant { background: #fed7d7; color: #c53030; }
+        .type-co-dominant { background: #feebc8; color: #c05621; }
+        .type-recessive { background: #bee3f8; color: #2c5282; }
+        
+        .morph-actions {
+            margin-top: 1rem;
+            display: none;
         }
         
-        .genetics-title {
-            font-size: 1.3rem;
-            color: #22543d;
-            margin-bottom: 1rem;
+        .morph-card.unlocked .morph-actions {
+            display: block;
         }
         
-        /* Health Risks */
-        .health-section {
-            background: #fff5f5;
-            border: 2px solid #fc8181;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-        
-        .health-title {
-            font-size: 1.3rem;
-            color: #742a2a;
-            margin-bottom: 1rem;
-        }
-        
-        .health-issue {
-            background: white;
-            padding: 1rem;
+        .calc-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
             border-radius: 6px;
-            margin-bottom: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
         }
         
-        /* Breeding Section */
-        .breeding-section {
-            background: #fef5e7;
-            border: 2px solid #f6ad55;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
+        .calc-btn:hover {
+            background: #5a67d8;
         }
         
-        .breeding-title {
-            font-size: 1.3rem;
-            color: #7c2d12;
-            margin-bottom: 1rem;
-        }
-        
-        /* Back button */
         .back-btn {
             padding: 0.8rem 1.5rem;
             background: #4299e1;
@@ -236,6 +236,8 @@
             cursor: pointer;
             font-weight: bold;
             margin-bottom: 1rem;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .back-btn:hover {
@@ -245,241 +247,168 @@
 </head>
 <body>
     <div class="dex-container">
-        <h1 style="text-align: center; margin-bottom: 2rem; font-size: 2.5rem;">🐍 Ball Python Dex</h1>
+        <div class="dex-header">
+            <h1>🐍 Ball Python Morph Dex</h1>
+            <p style="color: #718096; margin-bottom: 1rem;">Collect, discover, and breed ball python morphs</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-bar" style="width: 0%;">
+                    <span id="progress-text">0 / 0</span>
+                </div>
+            </div>
+        </div>
         
-        <!-- Grid View -->
-        <div id="grid-view" class="morphs-grid"></div>
+        <input type="text" id="search" class="search-box" placeholder="🔍 Search morphs...">
         
-        <!-- Detail View -->
-        <div id="detail-view" class="morph-detail"></div>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Morphs</button>
+            <button class="filter-btn" data-filter="unlocked">Unlocked</button>
+            <button class="filter-btn" data-filter="locked">Locked</button>
+            <button class="filter-btn" data-filter="dominant">Dominant</button>
+            <button class="filter-btn" data-filter="co-dominant">Co-Dominant</button>
+            <button class="filter-btn" data-filter="recessive">Recessive</button>
+        </div>
+        
+        <div class="morphs-grid" id="morphs-grid"></div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="../learn-farm.html" class="back-btn">← Back to My Farm</a>
+            <a href="../calc/" class="back-btn" style="background: #9333ea;">🧬 Breeding Calculator</a>
+        </div>
     </div>
 
     <script type="module">
-        // Load all genetics data
-        const [morphsBase, morphsExpanded, geneTypes, healthRisks] = await Promise.all([
-            fetch('../data/genetics/morphs.json').then(r => r.json()),
-            fetch('../data/genetics/morphs-expanded.json').then(r => r.json()),
-            fetch('../data/genetics/gene-types.json').then(r => r.json()),
-            fetch('../data/genetics/health-risks.json').then(r => r.json())
-        ]);
+        // Setup paths
+        const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+        const cacheBuster = '0.777';
         
-        const allMorphs = [...morphsBase.morphs, ...morphsExpanded.morphs].map((m, i) => ({
-            ...m,
-            index: i + 1
-        }));
-
-        // Render grid
-        function renderGrid() {
-            const grid = document.getElementById('grid-view');
-            grid.innerHTML = allMorphs.map(morph => `
-                <div class="morph-thumb" onclick="showDetail('${morph.id}')">
-                    <div class="morph-number">#${String(morph.index).padStart(3, '0')}</div>
-                    <svg width="100" height="100" viewBox="0 0 100 100" style="opacity: 0.3;">
-                        <path d="M20,50 Q30,30 50,30 T80,50 Q70,60 60,65 Q50,70 40,65 Q30,60 20,50" 
-                              fill="#4a5568" stroke="#2d3748" stroke-width="2"/>
-                        <circle cx="45" cy="40" r="2" fill="#2d3748"/>
-                        <circle cx="55" cy="40" r="2" fill="#2d3748"/>
-                    </svg>
-                    <div class="morph-name">${morph.name}</div>
-                </div>
-            `).join('');
-        }
-
-        // Show detailed view (like Pokemon DB)
-        window.showDetail = function(morphId) {
-            const morph = allMorphs.find(m => m.id === morphId);
-            if (!morph) return;
-
-            const geneInfo = geneTypes.gene_types[morph.gene_type] || {};
-            const healthIssues = healthRisks.documented_issues.filter(h => h.morph === morphId);
-
-            document.getElementById('grid-view').style.display = 'none';
-            const detailView = document.getElementById('detail-view');
-            detailView.classList.add('active');
+        // Load state management
+        const { getUnlockedMorphs, markProgress } = await import(`${basePath}/src/core/state.js?v=${cacheBuster}`);
+        
+        // Load genetics database (comprehensive v3.0)
+        const response = await fetch(`${basePath}/data/genetics/morphs-comprehensive.json?v=${cacheBuster}`);
+        const data = await response.json();
+        const allMorphs = data.morphs || [];
+        
+        console.log(`✅ Loaded ${allMorphs.length} morphs from comprehensive DB (v${data.version})`);
+        
+        // Get unlocked morphs
+        const unlockedMorphs = getUnlockedMorphs();
+        console.log(`🔓 Unlocked morphs (${unlockedMorphs.length}):`, unlockedMorphs);
+        
+        // State
+        let currentFilter = 'all';
+        let searchQuery = '';
+        
+        // Update progress bar
+        function updateProgress() {
+            const total = allMorphs.length;
+            const unlocked = unlockedMorphs.length;
+            const percentage = (unlocked / total * 100).toFixed(1);
             
-            detailView.innerHTML = `
-                <button class="back-btn" onclick="showGrid()">← Back to Dex</button>
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = `${unlocked} / ${total}`;
+        }
+        
+        // Check if morph is unlocked
+        function isMorphUnlocked(morphId) {
+            return unlockedMorphs.includes(morphId.toLowerCase());
+        }
+        
+        // Render morphs grid
+        function renderMorphs() {
+            const grid = document.getElementById('morphs-grid');
+            
+            // Filter morphs
+            let filtered = allMorphs.filter(morph => {
+                // Search filter
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    const matchesName = morph.name.toLowerCase().includes(query);
+                    const matchesAlias = morph.aliases?.some(a => a.toLowerCase().includes(query));
+                    if (!matchesName && !matchesAlias) return false;
+                }
                 
-                <div class="detail-header">
-                    <div class="detail-image">
-                        <svg width="200" height="200" viewBox="0 0 200 200" style="opacity: 0.2;">
-                            <path d="M40,100 Q60,60 100,60 T160,100 Q140,120 120,130 Q100,140 80,130 Q60,120 40,100" 
-                                  fill="#4a5568" stroke="#2d3748" stroke-width="3"/>
-                            <circle cx="90" cy="80" r="4" fill="#2d3748"/>
-                            <circle cx="110" cy="80" r="4" fill="#2d3748"/>
-                            <text x="100" y="110" text-anchor="middle" font-size="16" fill="#718096">Ball Python</text>
-                        </svg>
+                // Type filter
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'unlocked') return isMorphUnlocked(morph.id);
+                if (currentFilter === 'locked') return !isMorphUnlocked(morph.id);
+                if (currentFilter === 'dominant') return morph.gene_type === 'dominant';
+                if (currentFilter === 'co-dominant') return morph.gene_type === 'co-dominant';
+                if (currentFilter === 'recessive') return morph.gene_type === 'recessive';
+                
+                return true;
+            });
+            
+            grid.innerHTML = filtered.map((morph, index) => {
+                const unlocked = isMorphUnlocked(morph.id);
+                const geneClass = `type-${morph.gene_type.replace('_', '-')}`;
+                
+                return `
+                    <div class="morph-card ${unlocked ? 'unlocked' : 'locked'}">
+                        <div class="morph-number">#${String(index + 1).padStart(3, '0')}</div>
+                        <div class="morph-icon">🐍</div>
+                        <div class="morph-name">${morph.name}</div>
+                        <div class="morph-type ${geneClass}">${morph.gene_type}</div>
+                        
+                        ${unlocked ? `
+                            <div class="morph-actions">
+                                <button class="calc-btn" onclick="tryInCalculator('${morph.id}')">
+                                    🧬 Try in Calculator
+                                </button>
+                            </div>
+                        ` : `
+                            <div style="margin-top: 1rem; font-size: 0.75rem; color: #a0aec0;">
+                                Unlock by owning this morph
+                            </div>
+                        `}
                     </div>
-                    <div class="detail-info">
-                        <div class="detail-number">National № ${String(morph.index).padStart(4, '0')}</div>
-                        <h1>${morph.name}</h1>
-                        <div class="detail-badges">
-                            <span class="badge badge-gene">${morph.gene_type}</span>
-                            <span class="badge badge-rarity">${morph.rarity}</span>
-                            ${morph.health_risk !== 'none' ? `<span class="badge badge-health">⚠️ ${morph.health_risk} risk</span>` : ''}
-                        </div>
-                        ${morph.aliases?.length ? `<p><strong>Also known as:</strong> ${morph.aliases.join(', ')}</p>` : ''}
+                `;
+            }).join('');
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #a0aec0;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                        <div style="font-size: 1.2rem;">No morphs found</div>
+                        <div style="font-size: 0.9rem; margin-top: 0.5rem;">Try a different search or filter</div>
                     </div>
-                </div>
-
-                <!-- Dex Data (Most Important First - Like Pokemon DB) -->
-                <div class="stats-section">
-                    <h2>📊 Morph Data</h2>
-                    <table style="width: 100%; border-collapse: collapse; background: #f7fafc;">
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">National №</td>
-                            <td style="padding: 0.8rem;">${String(morph.index).padStart(4, '0')}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Gene Type</td>
-                            <td style="padding: 0.8rem;"><span class="badge badge-gene">${morph.gene_type}</span></td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Species</td>
-                            <td style="padding: 0.8rem;">Ball Python (Python regius)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Avg Length</td>
-                            <td style="padding: 0.8rem;">1.0-1.5 m (3-5 ft)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Avg Weight</td>
-                            <td style="padding: 0.8rem;">1.2-1.8 kg (2.5-4 lbs)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Lifespan</td>
-                            <td style="padding: 0.8rem;">20-30 years</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Rarity</td>
-                            <td style="padding: 0.8rem;"><span class="badge badge-rarity">${morph.rarity}</span></td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.8rem; font-weight: bold;">Market Value</td>
-                            <td style="padding: 0.8rem; font-size: 1.2rem; font-weight: bold; color: #38a169;">$${morph.market_value_usd}</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Care Requirements (Most Important!) -->
-                <div class="breeding-section">
-                    <h2>🌡️ Care Requirements</h2>
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Temperature (Day)</td>
-                            <td style="padding: 0.8rem;">28-32°C (82-90°F)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Temperature (Night)</td>
-                            <td style="padding: 0.8rem;">24-26°C (75-79°F)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Humidity</td>
-                            <td style="padding: 0.8rem;">50-60%</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Enclosure Size</td>
-                            <td style="padding: 0.8rem;">90x45x45 cm (36x18x18 in) minimum</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Feeding Schedule</td>
-                            <td style="padding: 0.8rem;">Every 7-10 days (adults)</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #f6ad55;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Substrate</td>
-                            <td style="padding: 0.8rem;">Aspen, cypress mulch, or paper</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.8rem; font-weight: bold;">Care Level</td>
-                            <td style="padding: 0.8rem;"><strong style="color: #38a169;">Beginner Friendly</strong></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Genetics & Breeding -->
-                <div class="genetics-section">
-                    <h2>🧬 Genetics & Breeding</h2>
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
-                        <tr style="border-bottom: 1px solid #9ae6b4;">
-                            <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Inheritance</td>
-                            <td style="padding: 0.8rem;">${morph.gene_type.toUpperCase()}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #9ae6b4;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Description</td>
-                            <td style="padding: 0.8rem;">${geneInfo.description || 'Standard inheritance pattern'}</td>
-                        </tr>
-                        ${morph.super_form ? `
-                        <tr style="border-bottom: 1px solid #9ae6b4;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Super Form</td>
-                            <td style="padding: 0.8rem;"><strong>${morph.super_form}</strong> (homozygous)</td>
-                        </tr>
-                        ` : ''}
-                        <tr style="border-bottom: 1px solid #9ae6b4;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Breeding Age</td>
-                            <td style="padding: 0.8rem;">3-4 years old minimum</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #9ae6b4;">
-                            <td style="padding: 0.8rem; font-weight: bold;">Clutch Size</td>
-                            <td style="padding: 0.8rem;">4-10 eggs average</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.8rem; font-weight: bold;">Incubation</td>
-                            <td style="padding: 0.8rem;">55-60 days at 31°C (88°F)</td>
-                        </tr>
-                    </table>
-                    ${morph.breeding_notes ? `
-                        <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px;">
-                            <strong>⚠️ Breeding Notes:</strong><br>
-                            ${morph.breeding_notes}
-                        </div>
-                    ` : ''}
-                </div>
-
-                <!-- Health & Risks -->
-                ${morph.health_risk !== 'none' || healthIssues.length > 0 ? `
-                    <div class="health-section">
-                        <h2>⚕️ Health & Safety</h2>
-                        <table style="width: 100%; border-collapse: collapse; background: white;">
-                            <tr style="border-bottom: 1px solid #fc8181;">
-                                <td style="padding: 0.8rem; font-weight: bold; width: 150px;">Health Risk</td>
-                                <td style="padding: 0.8rem;">
-                                    <strong style="color: ${morph.health_risk === 'high' ? '#e53e3e' : morph.health_risk === 'moderate' ? '#dd6b20' : '#38a169'};">
-                                        ${morph.health_risk.toUpperCase()}
-                                    </strong>
-                                </td>
-                            </tr>
-                            ${morph.health_issues?.length ? morph.health_issues.map(issue => `
-                            <tr style="border-bottom: 1px solid #fc8181;">
-                                <td style="padding: 0.8rem; font-weight: bold;">Issue</td>
-                                <td style="padding: 0.8rem;">⚠️ ${issue}</td>
-                            </tr>
-                            `).join('') : ''}
-                            <tr>
-                                <td style="padding: 0.8rem; font-weight: bold;">Vet Checkups</td>
-                                <td style="padding: 0.8rem;">Annual recommended</td>
-                            </tr>
-                        </table>
-                    </div>
-                ` : ''}
-
-
-                <!-- Source -->
-                <div style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
-                    <small style="color: #718096;">
-                        <strong>Source:</strong> <a href="${morph.source_url}" target="_blank">${morph.source_url}</a><br>
-                        <strong>Last Updated:</strong> ${morph.fetched_at}
-                    </small>
-                </div>
-            `;
+                `;
+            }
+        }
+        
+        // Navigate to calculator with morph pre-selected
+        window.tryInCalculator = function(morphId) {
+            console.log(`🧬 Opening calculator with morph: ${morphId}`);
+            
+            // Mark dex progress
+            markProgress('dex');
+            
+            // Navigate to calculator with morph as male parent
+            window.location.href = `${basePath}/calc/?male=${morphId}&v=${cacheBuster}`;
         };
-
-        window.showGrid = function() {
-            document.getElementById('grid-view').style.display = 'grid';
-            document.getElementById('detail-view').classList.remove('active');
-        };
-
-        renderGrid();
-        console.log(`✅ Loaded ${allMorphs.length} ball python morphs!`);
+        
+        // Search handler
+        document.getElementById('search').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderMorphs();
+        });
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderMorphs();
+            });
+        });
+        
+        // Initial render
+        updateProgress();
+        renderMorphs();
+        
+        console.log('✅ Dex initialized!');
     </script>
 </body>
 </html>

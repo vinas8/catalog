@@ -4,10 +4,12 @@
  */
 
 export const VERSION_CONFIG = {
-  CURRENT: 's0.7.7',
+  CURRENT: 's0.7.92',
+  CACHE_BUSTER: '0.7.92',  // For URLs (no 's' prefix)
+  DISPLAY: '0.7.92',        // For display in UI
   MAJOR: 0,
   MODULE: 7,
-  PATCH: 7,
+  PATCH: 92,
   
   HISTORY: [
     { version: 's0.1.0', date: '2024-01', description: 'MVP - Shop and game' },

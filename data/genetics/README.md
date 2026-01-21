@@ -1,150 +1,156 @@
 # Ball Python Genetics Database
 
-**Version:** 2.0.0  
-**Source:** WOBP + SnakeDB + Wikipedia (multi-source validated)  
-**Last Updated:** 2026-01-06  
-**Status:** 🚀 Expanded to 70+ morphs + 10 combos (140% growth)
+## 📊 Database Files
 
----
+### 🎯 Primary Database (Use This!)
+**`morphs-comprehensive.json`** - **66 morphs** (v3.0.0)
+- **50 base morphs** from morphs.json
+- **20 expanded morphs** from morphs-expanded.json  
+- **New morphs** with full genetic data
+- ✅ Recommended for production use
 
-## 📁 Files
+### 📚 Legacy Files
+- **`morphs.json`** - Original 50 morphs (v1.0.0)
+- **`morphs-expanded.json`** - Additional 20 morphs (v2.0.0)
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `sources.json` | Data source configuration | ✅ Complete |
-| `morphs.json` | Original 50 morphs (v1.0) | ✅ Complete |
-| `morphs-expanded.json` | **NEW** 70+ morphs + combos (v2.0) | ✅ Complete |
-| `gene-types.json` | Inheritance patterns | ✅ Complete |
-| `health-risks.json` | Health risk categorization | ✅ 10 issues documented |
-| `lethal-combos.json` | Fatal breeding combinations | ✅ 3 combos documented |
-| `morphmarket-parity-checklist.json` | **NEW** Manual testing guide (15 tests) | ✅ Complete |
-| `snakedb-enrichment.json` | **NEW** Multi-source validation | ✅ Complete |
-| `EXTRACTION-GUIDE.md` | Manual extraction instructions | ✅ Complete |
+### 📋 Reference Data
+- **`health-risks.json`** - Health risk categories and scoring
+- **`lethal-combos.json`** - Known lethal breeding combinations
+- **`gene-types.json`** - Gene type definitions
 
----
+## 📈 Statistics
 
-## 🎯 Current Coverage
-
-### Morphs (70+) ✅ EXPANDED
-
-**Base Morphs (50):** Original database (morphs.json)
-
-**NEW Additions (20+):**
-- **Het Forms:** Het Piebald, Het Albino, Het Clown, Het Axanthic
-- **Line Variants:** Axanthic VPI, Axanthic TSK
-- **Co-doms:** Freeway, Highway, Specter, Mystic, Inferno, Asphalt, Special, Bongo
-- **Super Forms:** Ivory (Super YellowBelly), Super Freeway, Super Highway
-
-**Popular Combos (10):** Bumblebee, Killer Bee, Banana Spider, Pastel Banana, Mojave Pastel, Blue Eyed Leucistic, Fire Pastel, Enchi Pastel, Pinstripe Pastel, Super Lesser
-
-### Gene Types (4/4) ✅
-Dominant, Co-dominant, Recessive, Incomplete Dominant
-
-### Health Risks (7 documented) ✅
-Spider wobble (HIGH), HGW wobble (HIGH), Champagne wobble (MODERATE), Super Champagne (HIGH), Super Banana fertility (LOW), Super Black Pastel kinking (LOW), Scaleless humidity needs (MODERATE)
-
-### Lethal Combos (3 documented) ✅
-Lesser x Butter, Spider x Spider, HGW x HGW
-
----
-
-## 📊 Data Quality
-
-**Data Source:** Public Ball Python Genetics Knowledge
-- Based on widely documented genetics information
-- Factual inheritance patterns (dominant/co-dom/recessive)
-- Market values from public hobby data
-- Health issues from breeder community knowledge
-- NO web scraping performed (WOBP heavily JavaScript-rendered)
-
-**Validation:**
-- ✅ JSON syntax validated
-- ✅ Schema consistency checked
-- ✅ 50 morphs with complete metadata
-- ⏳ Cross-reference with MorphMarket (pending)
-- ⏳ Breeding calculator integration (next step)
-
----
-
-## 🚀 Usage
-
-### Load Data in JavaScript
-```javascript
-const sources = await fetch('/data/genetics/sources.json').then(r => r.json());
-const morphs = await fetch('/data/genetics/morphs.json').then(r => r.json());
-const geneTypes = await fetch('/data/genetics/gene-types.json').then(r => r.json());
-const healthRisks = await fetch('/data/genetics/health-risks.json').then(r => r.json());
-const lethalCombos = await fetch('/data/genetics/lethal-combos.json').then(r => r.json());
-
-console.log(`Loaded ${morphs.morph_count} morphs from ${sources.active_source}`);
+```json
+{
+  "total_morphs": 66,
+  "gene_types": {
+    "dominant": 6,
+    "co-dominant": 32,
+    "recessive": 22,
+    "incomplete-dominant": 6
+  },
+  "health_risks": {
+    "high": 2,
+    "moderate": 3,
+    "low": 4,
+    "none": 57
+  }
+}
 ```
 
-### Query Morph Data
-```javascript
-const banana = morphs.morphs.find(m => m.id === 'banana');
-console.log(banana.gene_type); // "co-dominant"
-console.log(banana.health_risk); // "low"
-console.log(banana.market_value_usd); // 150
-```
+## 🔍 Morph Categories
 
-### Check Health Risks
-```javascript
-const spiderRisk = healthRisks.risk_levels.HIGH.morphs.includes('spider');
-console.log(spiderRisk); // true
+### High Health Risk (2)
+- **Spider** - Neurological wobble in most specimens
+- **Hidden Gene Woma (HGW)** - Similar wobble issues
 
-const spiderIssue = healthRisks.documented_issues.find(i => i.morph_id === 'spider');
-console.log(spiderIssue.description); // "Head tilting, corkscrewing..."
-```
+### Moderate Health Risk (3)
+- **Champagne** - Wobble in some specimens
+- **Cinnamon** (Super) - Head wobble reported
+- **Scaleless** - Dehydration & skin injury risks
 
-### Check Lethal Combos
-```javascript
-const lesserButterCombo = lethalCombos.lethal_combinations.find(
-  c => (c.morph1 === 'lesser' && c.morph2 === 'butter') ||
-       (c.morph1 === 'butter' && c.morph2 === 'lesser')
-);
-console.log(lesserButterCombo.lethality); // "fatal"
-```
+### Popular Designer Combos
+- **Banana Pastel** (co-dom + co-dom)
+- **Mojave Lesser** (Blue Eyed Leucistic)
+- **Piebald Albino** (recessive + recessive)
 
----
+## 🧬 Genetic Types Explained
 
-## 📝 Next Steps
+**Dominant (6 morphs)**
+- Single copy shows visual trait
+- No super form or lethal super
+- Examples: Spider, Pinstripe, Spotnose
 
-### Database ✅ v2.0 COMPLETE
-- ✅ 50 base morphs (v1.0)
-- ✅ 70+ morphs with hets + combos (v2.0)
-- ✅ Gene types validated (3 sources)
-- ✅ Health risks cross-validated (SnakeDB + Wikipedia)
-- ✅ Lethal combos documented
-- ✅ MorphMarket parity checklist (15 test cases)
-- ✅ JSON files validated
+**Co-Dominant (32 morphs)**
+- Single copy shows trait (het form)
+- Two copies = super form
+- Examples: Banana, Pastel, Mojave, Lesser
 
-### Integration Status
-1. ✅ Calculator integrated (calculator-integrated.html)
-2. ✅ genetics-core.js loads data dynamically
-3. ✅ Multi-source validation (WOBP + SnakeDB + Wikipedia)
-4. ⏳ Update calculator to use morphs-expanded.json
-5. ⏳ Run MorphMarket parity tests (manual - 403 blocks automation)
-6. ⏳ Add combo recognition to calculator UI
+**Recessive (22 morphs)**
+- Two copies needed for visual
+- Single copy = het (hidden carrier)
+- Examples: Piebald, Albino, Clown, Ghost
 
----
+## ⚠️ Lethal Combinations
 
-## 🔗 Sources
+❌ **Never Breed:**
+- Lesser × Butter = Lethal super
+- Spider × Spider = No viable super
+- HGW × HGW = No viable super
+
+✅ **Safe BEL Combos:**
+- Mojave × Lesser = Blue Eyed Leucistic
+- Butter × Russo = Blue Eyed Leucistic
+
+## 📖 Data Sources
 
 - **Primary:** [World of Ball Pythons](https://www.worldofballpythons.com/morphs/)
-- **Validation:** [MorphMarket Calculator](https://www.morphmarket.com/c/reptiles/pythons/ball-pythons/index) (manual comparison)
-- **Extraction Guide:** See `EXTRACTION-GUIDE.md`
+- **Verification:** MorphMarket price data
+- **Extraction:** Manual ethical review (see EXTRACTION-GUIDE.md)
+- **Last Updated:** 2026-01-20
 
----
+## 🔄 How to Use
 
-## ⚖️ License & Attribution
+### In Breeding Calculator
+```javascript
+import { loadGeneticsDatabase } from './src/modules/breeding/genetics-core.js';
 
-**Data Source:** World of Ball Pythons (educational use, factual extraction)  
-**Method:** Manual review and summarization  
-**Ethics:** Respects robots.txt, no verbatim copying, source attribution included  
-**Usage:** Educational breeding calculator for Serpent Town project
+// Load comprehensive database (66 morphs)
+const data = await loadGeneticsDatabase(false);  
+console.log(`Loaded ${data.morph_count} morphs`);
+```
 
----
+### Direct Access
+```javascript
+const response = await fetch('/data/genetics/morphs-comprehensive.json');
+const db = await response.json();
 
-**Last Updated:** 2026-01-04T19:35:00Z  
-**Maintainer:** Serpent Town Team  
-**Status:** 🟡 In Progress (20% complete)
+// Find specific morph
+const banana = db.morphs.find(m => m.id === 'banana');
+
+// Filter by gene type
+const recessives = db.morphs.filter(m => m.gene_type === 'recessive');
+
+// Check health risks
+const risky = db.morphs.filter(m => m.health_risk !== 'none');
+```
+
+## 📝 Schema
+
+```typescript
+interface Morph {
+  id: string;                    // Unique slug
+  name: string;                  // Display name
+  aliases?: string[];            // Alternative names
+  gene_type: "dominant" | "co-dominant" | "recessive" | "incomplete-dominant";
+  super_form?: string;           // Name of super form (co-dom only)
+  market_value_usd: number;      // Typical market price
+  rarity: "common" | "uncommon" | "rare" | "very_rare";
+  health_risk: "none" | "low" | "moderate" | "high";
+  health_issues: string[];       // Documented health concerns
+  breeding_notes?: string;       // Important breeding info
+  source_url: string;            // WOBP reference URL
+  fetched_at: string;            // ISO 8601 timestamp
+}
+```
+
+## 🛠️ Maintenance
+
+To add new morphs:
+1. Follow **EXTRACTION-GUIDE.md** ethical guidelines
+2. Add to `morphs-comprehensive.json`
+3. Update `morph_count` field
+4. Run validation: `jq empty morphs-comprehensive.json`
+5. Test in breeding calculator
+6. Commit with descriptive message
+
+## ✅ Ethics Statement
+
+All data extracted following ethical guidelines:
+- ✅ Factual information only
+- ✅ Manual review process
+- ✅ Source attribution
+- ✅ No verbatim copying
+- ✅ Respects robots.txt
+- ✅ Educational use only
+

@@ -1,4 +1,4 @@
-// Main Game Logic - Serpent Town v0.7.7
+// Main Game Logic - Serpent Town
 // User authentication via URL hash + user-specific data loading
 
 console.log('🚀 GAME-CONTROLLER.JS TOP - Module file is executing!');
@@ -9,8 +9,9 @@ import {
   DEFAULT_SNAKE_STATS, 
   DEFAULT_SNAKE_WEIGHT,
   STRING_LIMITS
-} from '../common/index.js?v=0.7.7';
+} from '../common/index.js';
 import { UI_CONFIG } from '../../config/ui-config.js';
+import { VERSION_CONFIG } from '../../config/version.js';
 
 // Dynamic imports
 let Economy, createInitialGameState, EquipmentShop, openShop;
@@ -103,7 +104,7 @@ class SnakeMuffin {
   }
   
   async init() {
-    console.log('🐍 Snake Muffin v0.7.7 - Starting...');
+    console.log(`🐍 Snake Muffin v${VERSION_CONFIG.DISPLAY} - Starting...`);
     
     // Load user from URL
     this.currentUser = await initializeUser();

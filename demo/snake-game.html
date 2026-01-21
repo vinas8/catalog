@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Ranch - Serpent Town</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #2a1810;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            background: #1a1410;
+            border: 8px solid #4a3828;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        #game-canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #version-badge {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(42, 24, 16, 0.95);
+            color: #8ab060;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border: 2px solid #4a3828;
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        #version-badge:hover {
+            background: rgba(74, 56, 40, 0.95);
+            transform: scale(1.05);
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #8ab060;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="loading">Loading Ranch...</div>
+    </div>
+    
+    <div id="version-badge">Loading...</div>
+
+    <script type="module">
+        const { DEMO_VERSION } = await import('./config.js');
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || DEMO_VERSION;
+        const timestamp = Date.now();
+        
+        const { SnakeGame } = await import(`../src/modules/snake-game/index.js?v=${cacheBuster}&t=${timestamp}`);
+        const { showSMRIModal } = await import(`../src/modules/smri/index.js?v=${cacheBuster}&t=${timestamp}`);
+        
+        async function init() {
+            const canvas = document.getElementById('game-canvas');
+            const game = new SnakeGame(canvas);
+            
+            await game.init();
+            
+            // Update version badge
+            const badge = document.getElementById('version-badge');
+            badge.textContent = `${game.smri} • v${game.version}`;
+            badge.onclick = () => showSMRIModal(game.smri);
+            
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            
+            // Start game loop
+            game.start();
+        }
+
+        init().catch(err => {
+            console.error('Failed to initialize game:', err);
+            document.getElementById('loading').textContent = 'Error loading game';
+        });
+    </script>
+</body>
+</html>

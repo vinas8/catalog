@@ -1,7 +1,6 @@
 /**
  * SplitScreenDemo Component
  * @module components/SplitScreenDemo
- * @version 0.7.9
  * 
  * Split-screen demo component for interactive scenarios:
  * - Top: Live browser iframe (2/3 height)
@@ -16,6 +15,7 @@
  */
 
 import { SMRI_REGISTRY } from '../config/smri-config.js';
+import { VERSION_CONFIG } from '../config/version.js';
 
 export class SplitScreenDemo {
   constructor(options = {}) {
@@ -28,7 +28,7 @@ export class SplitScreenDemo {
     this.onScenarioChange = options.onScenarioChange || null;
     this.container = null;
     this.iframe = null;
-    this.version = '0.7.75';
+    this.version = VERSION_CONFIG.DISPLAY;
     this.smri = SMRI_REGISTRY['component-split-screen-demo'];
     this.moduleMap = {
       0: 'Core/Internal',

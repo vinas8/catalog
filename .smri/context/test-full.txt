@@ -1,5 +1,5 @@
 
-> snake-muffin@0.7.75 test
+> snake-muffin@0.7.94 test
 > node tests/modules/shop/game.test.js && node tests/snapshot/structure-validation.test.js && node tests/smri/scenario-runner.test.js
 
 🧪 Running Game Tests...

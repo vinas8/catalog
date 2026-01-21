@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calculator Integration Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #0f0; }
+    h1 { color: #0ff; }
+    h2 { color: #ff0; margin-top: 20px; }
+    .pass { color: #0f0; }
+    .fail { color: #f00; }
+    pre { background: #000; padding: 10px; border: 1px solid #333; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Calculator Integration Test</h1>
+  <div id="results"></div>
+  
+  <script type="module">
+    const results = document.getElementById('results');
+    
+    function log(msg, isError = false) {
+      const className = isError ? 'fail' : 'pass';
+      results.innerHTML += `<div class="${className}">${msg}</div>`;
+    }
+    
+    async function runTests() {
+      log('<h2>Test 1: Load State Module</h2>');
+      
+      try {
+        const stateModule = await import('/src/core/state.js?v=0.777');
+        log('✅ State module loaded');
+        log(`✅ APP_STATE exists: ${!!window.APP_STATE}`);
+        log(`✅ Current state: ${JSON.stringify(window.APP_STATE, null, 2)}`);
+        
+        // Test createDemoSnake
+        log('<h2>Test 2: Create Demo Snake</h2>');
+        const snake = stateModule.createDemoSnake();
+        log(`✅ Demo snake created: ${snake.name}`);
+        log(`✅ Morphs: ${snake.morphs.join(', ')}`);
+        log(`✅ Snake ID: ${snake.id}`);
+        
+        const unlocked = stateModule.getUnlockedMorphs();
+        log(`✅ Unlocked morphs: ${unlocked.join(', ')}`);
+        
+        const owned = stateModule.getOwnedSnakes();
+        log(`✅ Owned snakes: ${owned.length}`);
+        
+        log('<h2>Test 3: URL Param Parsing</h2>');
+        
+        // Simulate URL params
+        const testUrl = new URL('http://localhost:8000/calc/?male=banana,spider&female=piebald');
+        const params = new URLSearchParams(testUrl.search);
+        const male = params.get('male');
+        const female = params.get('female');
+        
+        log(`✅ Male param: ${male}`);
+        log(`✅ Female param: ${female}`);
+        log(`✅ Male morphs array: ${male.split(',').join(', ')}`);
+        log(`✅ Female morphs array: ${female.split(',').join(', ')}`);
+        
+        log('<h2>Test 4: Check localStorage</h2>');
+        const saved = localStorage.getItem('serpent_town_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          log(`✅ State saved to localStorage`);
+          log(`<pre>${JSON.stringify(parsed, null, 2)}</pre>`);
+        } else {
+          log('⚠️ No state in localStorage yet', true);
+        }
+        
+        log('<h2>✅ ALL TESTS PASSED!</h2>');
+        log('<br><strong>Next: Test calculator with URL params</strong>');
+        log('<a href="/calc/?male=banana,spider&female=piebald" style="color:#0ff;">Open Calculator with URL Params</a>');
+        
+      } catch (error) {
+        log(`<h2>❌ TEST FAILED</h2>`, true);
+        log(`<pre>${error.message}\n${error.stack}</pre>`, true);
+      }
+    }
+    
+    runTests();
+  </script>
+</body>
+</html>

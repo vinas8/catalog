@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🧬 Breeding Calculator - Serpent Town v0.7.82</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .flow-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        @media (min-width: 768px) {
+            .flow-container {
+                max-width: 600px;
+                min-height: auto;
+                margin: 20px auto;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 4px;
+            margin-top: 15px;
+        }
+        
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 33%;
+            transition: width 0.3s;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .step {
+            display: none;
+        }
+        
+        .step.active {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+        
+        .morph-tags {
+            min-height: 60px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .morph-tag {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .morph-tag button {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .autocomplete {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .autocomplete.show {
+            display: block;
+        }
+        
+        .autocomplete-item {
+            padding: 15px;
+            border-bottom: 1px solid #f7fafc;
+            cursor: pointer;
+        }
+        
+        .autocomplete-item:active {
+            background: #edf2f7;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+        }
+        
+        .result-card {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .probability {
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-danger {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            color: #c53030;
+        }
+        
+        .alert-warning {
+            background: #fffaf0;
+            border: 2px solid #f6ad55;
+            color: #c05621;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <div class="flow-container">
+        <div class="header">
+            <h1>🧬 Breeding Calculator</h1>
+            <p>Ball Python Genetics v0.7.82</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Step 1: Male -->
+            <div class="step active" id="step-male">
+                <h2>♂️ Select Male Parent</h2>
+                <div class="morph-tags" id="male-tags">
+                    <div style="color:#a0aec0;">No morphs selected</div>
+                </div>
+                <input type="text" id="male-search" class="search-box" placeholder="🔍 Search morphs...">
+                <div class="autocomplete" id="male-autocomplete"></div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="skipMale()">Skip</button>
+                    <button class="btn btn-primary" onclick="nextStep()" id="male-next" disabled>Next →</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Female -->
+            <div class="step" id="step-female">
+                <h2>♀️ Select Female Parent</h2>
+                <div class="morph-tags" id="female-tags">
+                    <div style="color:#a0aec0;">No morphs selected</div>
+                </div>
+                <input type="text" id="female-search" class="search-box" placeholder="🔍 Search morphs...">
+                <div class="autocomplete" id="female-autocomplete"></div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="calculateResults()">Calculate 🧬</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Results -->
+            <div class="step" id="step-results">
+                <h2>🥚 Breeding Results</h2>
+                <div id="results-content"></div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+        const cacheBuster = '0.7.82';
+        
+        console.log('🧬 Loading breeding calculator...');
+        
+        // Load modules
+        const stateModule = await import(`${basePath}/src/core/state.js?v=${cacheBuster}`);
+        const geneticsModule = await import(`${basePath}/src/modules/breeding/genetics-core.js?v=${cacheBuster}`);
+        
+        const { markProgress } = stateModule;
+        const { loadGeneticsDatabase, calculateOffspring, checkLethalCombo, assessHealthRisk } = geneticsModule;
+        
+        // State
+        let morphDatabase = [];
+        let maleMorphs = [];
+        let femaleMorphs = [];
+        let currentStep = 1;
+        
+        // Load database
+        const data = await loadGeneticsDatabase(true);
+        morphDatabase = data.morphs || [];
+        console.log(`✅ Loaded ${morphDatabase.length} morphs`);
+        
+        // Setup autocomplete
+        function setupAutocomplete(parent) {
+            const search = document.getElementById(`${parent}-search`);
+            const autocomplete = document.getElementById(`${parent}-autocomplete`);
+            
+            search.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                
+                if (query.length < 2) {
+                    autocomplete.classList.remove('show');
+                    return;
+                }
+                
+                const matches = morphDatabase.filter(m => 
+                    m.name.toLowerCase().includes(query) ||
+                    m.aliases?.some(a => a.toLowerCase().includes(query))
+                ).slice(0, 10);
+                
+                if (matches.length === 0) {
+                    autocomplete.classList.remove('show');
+                    return;
+                }
+                
+                autocomplete.innerHTML = matches.map(m => `
+                    <div class="autocomplete-item" onclick="addMorph('${parent}', '${m.id}')">
+                        ${m.name} <small>(${m.gene_type})</small>
+                    </div>
+                `).join('');
+                
+                autocomplete.classList.add('show');
+            });
+        }
+        
+        window.addMorph = function(parent, morphId) {
+            const morphs = parent === 'male' ? maleMorphs : femaleMorphs;
+            
+            if (morphs.includes(morphId)) return;
+            
+            morphs.push(morphId);
+            renderTags(parent);
+            
+            document.getElementById(`${parent}-autocomplete`).classList.remove('show');
+            document.getElementById(`${parent}-search`).value = '';
+            
+            if (parent === 'male') {
+                document.getElementById('male-next').disabled = false;
+            }
+        };
+        
+        window.removeMorph = function(parent, morphId) {
+            if (parent === 'male') {
+                maleMorphs = maleMorphs.filter(id => id !== morphId);
+                if (maleMorphs.length === 0) {
+                    document.getElementById('male-next').disabled = true;
+                }
+            } else {
+                femaleMorphs = femaleMorphs.filter(id => id !== morphId);
+            }
+            renderTags(parent);
+        };
+        
+        function renderTags(parent) {
+            const morphs = parent === 'male' ? maleMorphs : femaleMorphs;
+            const container = document.getElementById(`${parent}-tags`);
+            
+            if (morphs.length === 0) {
+                container.innerHTML = '<div style="color:#a0aec0;">No morphs selected</div>';
+                return;
+            }
+            
+            container.innerHTML = morphs.map(id => {
+                const morph = morphDatabase.find(m => m.id === id);
+                return `
+                    <div class="morph-tag">
+                        ${morph.name}
+                        <button onclick="removeMorph('${parent}', '${id}')">×</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        window.nextStep = function() {
+            document.getElementById('step-male').classList.remove('active');
+            document.getElementById('step-female').classList.add('active');
+            currentStep = 2;
+            updateProgress();
+        };
+        
+        window.prevStep = function() {
+            document.getElementById('step-female').classList.remove('active');
+            document.getElementById('step-male').classList.add('active');
+            currentStep = 1;
+            updateProgress();
+        };
+        
+        window.skipMale = function() {
+            nextStep();
+        };
+        
+        window.startOver = function() {
+            maleMorphs = [];
+            femaleMorphs = [];
+            currentStep = 1;
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-male').classList.add('active');
+            renderTags('male');
+            renderTags('female');
+            document.getElementById('male-next').disabled = true;
+            updateProgress();
+        };
+        
+        window.calculateResults = async function() {
+            document.getElementById('step-female').classList.remove('active');
+            document.getElementById('step-results').classList.add('active');
+            currentStep = 3;
+            updateProgress();
+            
+            markProgress('calculator');
+            
+            const resultsDiv = document.getElementById('results-content');
+            resultsDiv.innerHTML = '<div class="empty">⏳ Calculating...</div>';
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            let alerts = '';
+            
+            // Check lethal combos
+            for (let m1 of maleMorphs) {
+                for (let m2 of maleMorphs) {
+                    if (m1 !== m2) {
+                        const lethal = checkLethalCombo(m1, m2);
+                        if (lethal && lethal.lethal) {
+                            alerts += `
+                                <div class="alert alert-danger">
+                                    <strong>⚠️ LETHAL COMBO:</strong> ${lethal.description}
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            }
+            
+            // Health risks
+            const healthRisk = assessHealthRisk(maleMorphs, femaleMorphs);
+            if (healthRisk && healthRisk.risk_level !== 'low') {
+                alerts += `
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Health Risk: ${healthRisk.risk_level}</strong><br>
+                        ${healthRisk.issues.join(', ')}
+                    </div>
+                `;
+            }
+            
+            // Calculate offspring
+            const results = calculateOffspring(maleMorphs, femaleMorphs);
+            
+            if (!results || !results.outcomes) {
+                resultsDiv.innerHTML = '<div class="empty">🤔 Select morphs to see results</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                ${alerts}
+                ${results.outcomes.map(outcome => `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span>${outcome.phenotype}</span>
+                            <span class="probability">${outcome.probability}%</span>
+                        </div>
+                        <div>${outcome.genotype || ''}</div>
+                    </div>
+                `).join('')}
+            `;
+        };
+        
+        function updateProgress() {
+            const progress = (currentStep / 3) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+        
+        // Initialize
+        setupAutocomplete('male');
+        setupAutocomplete('female');
+        
+        // URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('male')) {
+            maleMorphs = urlParams.get('male').split(',');
+            renderTags('male');
+            document.getElementById('male-next').disabled = false;
+        }
+        if (urlParams.get('female')) {
+            femaleMorphs = urlParams.get('female').split(',');
+            renderTags('female');
+        }
+        if (maleMorphs.length > 0 && femaleMorphs.length > 0) {
+            currentStep = 3;
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-results').classList.add('active');
+            updateProgress();
+            calculateResults();
+        }
+        
+        console.log('✅ Breeding calculator ready!');
+    </script>
+</body>
+</html>

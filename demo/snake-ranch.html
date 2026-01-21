@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snake Ranch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #181425;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1410;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #game-canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(3, 70px);
+            gap: 10px;
+            z-index: 100;
+            opacity: 0.85;
+        }
+
+        .btn {
+            background: rgba(42, 24, 16, 0.95);
+            border: 3px solid #8ab060;
+            border-radius: 12px;
+            color: #8ab060;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn:active {
+            background: rgba(138, 176, 96, 0.95);
+            color: #2a1810;
+            transform: scale(0.92);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-center { 
+            grid-column: 2; 
+            grid-row: 2;
+            background: rgba(42, 24, 16, 0.5);
+            border: 2px solid rgba(138, 176, 96, 0.3);
+            pointer-events: none;
+        }
+
+        #version-badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(42, 24, 16, 0.9);
+            color: #8ab060;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #4a3828;
+            z-index: 1000;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    </style>
+</head>
+<body>
+    <div id="version-badge">v0.7.92</div>
+    
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+    </div>
+    
+    <div id="controls">
+        <button class="btn" id="btn-up">▲</button>
+        <button class="btn" id="btn-left">◄</button>
+        <div class="btn" id="btn-center"></div>
+        <button class="btn" id="btn-down">▼</button>
+        <button class="btn" id="btn-right">►</button>
+    </div>
+
+    <script type="module">
+        const { DEMO_VERSION } = await import('./config.js');
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || DEMO_VERSION;
+        const timestamp = Date.now();
+        
+        const { SnakeRanch } = await import(`../src/modules/snake-game/SnakeRanch.js?v=${cacheBuster}&t=${timestamp}`);
+        
+        const canvas = document.getElementById('game-canvas');
+        const game = new SnakeRanch(canvas);
+        
+        await game.init();
+        game.start();
+        
+        // Touch controls
+        const addControl = (id, key) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                game.keys[key] = true;
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                game.keys[key] = false;
+            });
+            btn.addEventListener('mousedown', () => game.keys[key] = true);
+            btn.addEventListener('mouseup', () => game.keys[key] = false);
+        };
+        
+        addControl('btn-up', 'ArrowUp');
+        addControl('btn-down', 'ArrowDown');
+        addControl('btn-left', 'ArrowLeft');
+        addControl('btn-right', 'ArrowRight');
+    </script>
+</body>
+</html>

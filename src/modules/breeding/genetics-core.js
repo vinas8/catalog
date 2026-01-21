@@ -17,10 +17,10 @@ export async function loadGeneticsDatabase(useExpandedData = true) {
   try {
     const basePath = window.APP_BASE_PATH || '';
     
-    // Load morphs database (use expanded v2.0 if available)
+    // Load morphs database (use comprehensive v3.0 with 66+ morphs!)
     const morphFile = useExpandedData 
-      ? `${basePath}/data/genetics/morphs-expanded.json`
-      : `${basePath}/data/genetics/morphs.json`;
+      ? `${basePath}/data/genetics/morphs-comprehensive.json`  // v3.0 - 66 morphs
+      : `${basePath}/data/genetics/morphs.json`;               // v1.0 - 50 morphs (legacy)
     
     console.log('📂 Fetching:', morphFile);
     const morphsResponse = await fetch(morphFile);
