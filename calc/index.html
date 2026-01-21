@@ -490,7 +490,7 @@
   <script>
     // Cache buster for Navigation component
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.94';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.8.0';
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
     
     // Load Navigation with cache buster
@@ -625,7 +625,7 @@
   <script type="module">
     // Cache buster - use URL param if provided, otherwise use version
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.94';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.8.0';
     
     // Fix path for GitHub Pages
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';

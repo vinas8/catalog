@@ -1,6 +1,6 @@
 # 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.7.94  
+**Version:** 0.8.0  
 **Status:** ⚠️ BETA - Not Production Ready  
 **Tests:** 88/88 passing (100%) ✅
 

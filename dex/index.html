@@ -281,7 +281,7 @@
         // Setup paths
         const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || '0.7.94';
+        const cacheBuster = urlParams.get('v') || '0.8.0';
         
         // Load state management
         const { getUnlockedMorphs, markProgress } = await import(`${basePath}/src/core/state.js?v=${cacheBuster}`);
