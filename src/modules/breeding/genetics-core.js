@@ -107,30 +107,63 @@ export function getHealthRisk(morphId) {
   return fallbackRisks[morphId] || 'NONE';
 }
 
-export function checkLethalCombo(morph1, morph2) {
+export function checkLethalCombo(morph1Array, morph2Array) {
+  // Handle both array and string inputs
+  const morphs1 = Array.isArray(morph1Array) ? morph1Array : [morph1Array];
+  const morphs2 = Array.isArray(morph2Array) ? morph2Array : [morph2Array];
+  
   if (!lethalCombosData) {
     // Fallback lethal combos
     const lethals = [
-      { m1: 'lesser', m2: 'butter', result: 'Fatal' },
-      { m1: 'spider', m2: 'spider', result: 'No viable super' },
-      { m1: 'hidden-gene-woma', m2: 'hidden-gene-woma', result: 'No viable super' }
+      { m1: 'lesser', m2: 'butter', result: 'Fatal', reason: 'Lesser bred to Butter produces lethal super form' },
+      { m1: 'spider', m2: 'spider', result: 'No viable super', reason: 'Spider gene does not produce viable super form' },
+      { m1: 'hidden-gene-woma', m2: 'hidden-gene-woma', result: 'No viable super', reason: 'HGW gene does not produce viable super form' }
     ];
-    for (let combo of lethals) {
-      if ((combo.m1 === morph1 && combo.m2 === morph2) ||
-          (combo.m1 === morph2 && combo.m2 === morph1)) {
-        return combo.result;
+    
+    for (let morph1 of morphs1) {
+      for (let morph2 of morphs2) {
+        const m1 = morph1.toLowerCase().replace(/ /g, '-');
+        const m2 = morph2.toLowerCase().replace(/ /g, '-');
+        
+        for (let combo of lethals) {
+          if ((combo.m1 === m1 && combo.m2 === m2) ||
+              (combo.m1 === m2 && combo.m2 === m1)) {
+            return {
+              lethal: true,
+              result: combo.result,
+              reason: combo.reason,
+              morphs: [morph1, morph2]
+            };
+          }
+        }
       }
     }
-    return null;
+    return { lethal: false };
   }
   
-  for (let combo of lethalCombosData.lethal_combinations) {
-    if ((combo.morph1 === morph1 && combo.morph2 === morph2) ||
-        (combo.morph1 === morph2 && combo.morph2 === morph1)) {
-      return combo.result;
+  // Check against loaded data
+  for (let morph1 of morphs1) {
+    for (let morph2 of morphs2) {
+      const m1 = morph1.toLowerCase().replace(/ /g, '-');
+      const m2 = morph2.toLowerCase().replace(/ /g, '-');
+      
+      for (let combo of lethalCombosData.lethal_combinations) {
+        if ((combo.morph1 === m1 && combo.morph2 === m2) ||
+            (combo.morph1 === m2 && combo.morph2 === m1)) {
+          return {
+            lethal: true,
+            result: combo.result,
+            reason: combo.description,
+            morphs: [morph1, morph2],
+            stage: combo.stage,
+            verified: combo.verified
+          };
+        }
+      }
     }
   }
-  return null;
+  
+  return { lethal: false };
 }
 
 // ============================================================================
@@ -229,24 +262,51 @@ export function assessHealthRisk(male, female) {
     ...(female.morphs || [])
   ];
   
-  let maxRisk = 'NONE';
-  let riskCount = 0;
+  let maxRisk = 'none';
+  const issues = [];
   
-  for (let morph of allMorphs) {
-    const risk = getHealthRisk(morph);
-    if (risk === 'HIGH') {
-      maxRisk = 'HIGH';
-      riskCount++;
-    } else if (risk === 'MODERATE' && maxRisk !== 'HIGH') {
-      maxRisk = 'MODERATE';
-      riskCount++;
-    } else if (risk === 'LOW' && maxRisk === 'NONE') {
-      maxRisk = 'LOW';
-      riskCount++;
+  // Check each morph against health risks data
+  for (let morphName of allMorphs) {
+    const morphId = morphName.toLowerCase().replace(/ /g, '-');
+    const morphData = morphMap.get(morphId);
+    
+    if (!morphData) continue;
+    
+    const risk = morphData.health_risk || 'none';
+    const healthIssues = morphData.health_issues || [];
+    
+    // Add issues from this morph
+    if (healthIssues.length > 0) {
+      issues.push(...healthIssues.map(issue => `${morphName}: ${issue}`));
+    }
+    
+    // Check documented issues from health-risks.json
+    if (healthRisksData && healthRisksData.documented_issues) {
+      const documentedIssue = healthRisksData.documented_issues.find(
+        doc => doc.morph_id === morphId
+      );
+      
+      if (documentedIssue) {
+        issues.push(`${morphName}: ${documentedIssue.description} (${documentedIssue.severity} risk)`);
+      }
+    }
+    
+    // Update max risk level
+    if (risk === 'high') {
+      maxRisk = 'high';
+    } else if (risk === 'moderate' && maxRisk !== 'high') {
+      maxRisk = 'moderate';
+    } else if (risk === 'low' && maxRisk === 'none') {
+      maxRisk = 'low';
     }
   }
   
-  return { level: maxRisk, count: riskCount };
+  return { 
+    risk: maxRisk, 
+    level: maxRisk,
+    issues: issues.length > 0 ? issues : ['No known health issues'],
+    count: issues.length
+  };
 }
 
 // ============================================================================
