@@ -9,7 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8000;
+const PORT = 8001;
 const ROOT_DIR = path.join(__dirname, '..');
 const LOG_DIR = path.join(ROOT_DIR, 'logs/demo');
 
