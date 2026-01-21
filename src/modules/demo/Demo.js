@@ -25,7 +25,7 @@ export class Demo {
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
     this.purchaseFlow = options.purchaseFlow || null;  // External flow class
-    this.version = '0.7.85';
+    this.version = '0.7.90';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
@@ -830,16 +830,15 @@ export class Demo {
       this.log(`✅ Step ${stepIndex + 1} completed`, 'success');
       this.showStatus(`✓ ${step.title}`, 'success');
       
-      // Save logs to file after each step
-      await this._saveLogsToFile();
-      
       // Auto-advance to next step
       await this.wait(2000);
       if (this.currentStep < (this.currentScenario.steps?.length || 0) - 1) {
         this.nextStep();
       } else {
         this.log('🎉 All steps completed!', 'success');
-        await this._saveLogsToFile(); // Final save
+        // Download all logs as one file at the end
+        await this.wait(1000);
+        this._downloadLogsToFile();
       }
 
     } catch (error) {
@@ -1013,56 +1012,50 @@ export class Demo {
     logPanel.scrollTop = logPanel.scrollHeight;
 
     console.log(`[Demo] ${message}`);
-    
-    // Send to file logging server
-    this._sendToLogServer({
-      scenario: this.currentScenario?.title || 'Unknown',
-      smri: this.currentScenario?.smri || 'unknown',
-      timestamp: fullTimestamp,
-      level: type,
-      message: message
-    });
   }
 
-  async _sendToLogServer(logData) {
-    try {
-      await fetch('http://localhost:8001/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(logData)
-      });
-    } catch (err) {
-      // Silent fail - log server might not be running
-      // console.debug('Log server unavailable:', err.message);
+  async _downloadLogsToFile() {
+    if (!this.currentScenario || this.logs.length === 0) {
+      console.warn(`[Demo] Cannot save logs: scenario=${!!this.currentScenario}, logs=${this.logs.length}`);
+      return;
     }
-  }
-
-  async _saveLogsToFile() {
-    if (!this.currentScenario || this.logs.length === 0) return;
     
+    const smri = this.currentScenario.smri || 'unknown';
+    const title = this.currentScenario.title || 'Unknown Scenario';
+    const timestamp = new Date().toISOString();
+    const dateStr = timestamp.split('T')[0];
+    const timeStr = timestamp.split('T')[1].split('.')[0].replace(/:/g, '-');
+    
+    const filename = `${smri}_${dateStr}_${timeStr}.log`;
+    
+    console.log(`[Demo] 💾 Saving ${this.logs.length} logs to /logs/demo/${filename}...`);
+    
+    // Create log content
+    const header = `=== ${title} (${smri}) ===\n=== ${timestamp} ===\n=== Total Logs: ${this.logs.length} ===\n\n`;
+    const logContent = this.logs.map(log => 
+      `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+    ).join('\n');
+    
+    const content = header + logContent + '\n';
+    
+    // Save to server
     try {
-      const smri = this.currentScenario.smri || 'unknown';
-      const title = this.currentScenario.title || 'Unknown Scenario';
-      const timestamp = new Date().toISOString();
-      
-      // Send all logs as a batch
-      const logContent = this.logs.map(log => 
-        `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
-      ).join('\n');
-      
-      await fetch('http://localhost:8001/save-batch', {
+      const response = await fetch('/save-log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          smri,
-          title,
-          timestamp,
-          logs: logContent
-        })
+        body: JSON.stringify({ filename, content })
       });
+      
+      if (response.ok) {
+        console.log(`[Demo] ✅ Log saved: /logs/demo/${filename} (${this.logs.length} entries)`);
+        this.log(`💾 Log saved to /logs/demo/${filename}`, 'success');
+      } else {
+        console.error('[Demo] ❌ Save failed:', response.status);
+        this.log('❌ Failed to save log file', 'error');
+      }
     } catch (err) {
-      // Silent fail
-      console.debug('Batch log save failed:', err.message);
+      console.error('[Demo] ❌ Save error:', err.message);
+      this.log(`❌ Save error: ${err.message}`, 'error');
     }
   }
 

@@ -10,6 +10,18 @@
             padding: 0;
             box-sizing: border-box;
             touch-action: manipulation;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
         }
 
         body {
@@ -17,73 +29,84 @@
             background: #181425;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
         }
 
         #game-container {
             position: relative;
+            width: 100vw;
+            height: 100vh;
             background: #1a1410;
-            border: 4px solid #4a3828;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #game-canvas {
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
             display: grid;
-            grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px);
-            gap: 8px;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(3, 70px);
+            gap: 10px;
             z-index: 100;
+            opacity: 0.85;
         }
 
         .btn {
-            background: rgba(74, 56, 40, 0.9);
-            border: 3px solid #4a3828;
-            border-radius: 8px;
+            background: rgba(42, 24, 16, 0.95);
+            border: 3px solid #8ab060;
+            border-radius: 12px;
             color: #8ab060;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            user-select: none;
             transition: all 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
         .btn:active {
-            background: rgba(138, 176, 96, 0.9);
+            background: rgba(138, 176, 96, 0.95);
             color: #2a1810;
-            transform: scale(0.95);
+            transform: scale(0.92);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         #btn-up { grid-column: 2; grid-row: 1; }
         #btn-left { grid-column: 1; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
         #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-center { 
+            grid-column: 2; 
+            grid-row: 2;
+            background: rgba(42, 24, 16, 0.5);
+            border: 2px solid rgba(138, 176, 96, 0.3);
+            pointer-events: none;
+        }
 
         #version-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(42, 24, 16, 0.95);
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(42, 24, 16, 0.9);
             color: #8ab060;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9px;
             font-family: 'Courier New', monospace;
-            cursor: pointer;
             border: 2px solid #4a3828;
             z-index: 1000;
         }
@@ -92,21 +115,22 @@
     </style>
 </head>
 <body>
+    <div id="version-badge">v0.7.93</div>
+    
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
-        
-        <div id="controls">
-            <button class="btn" id="btn-up">▲</button>
-            <button class="btn" id="btn-left">◄</button>
-            <button class="btn" id="btn-down">▼</button>
-            <button class="btn" id="btn-right">►</button>
-        </div>
     </div>
     
-    <div id="version-badge">v0.7.85</div>
+    <div id="controls">
+        <button class="btn" id="btn-up">▲</button>
+        <button class="btn" id="btn-left">◄</button>
+        <div class="btn" id="btn-center"></div>
+        <button class="btn" id="btn-down">▼</button>
+        <button class="btn" id="btn-right">►</button>
+    </div>
 
     <script type="module">
-        const cacheBuster = new URLSearchParams(window.location.search).get('v') || '0.7.85';
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || '0.7.93';
         const timestamp = Date.now();
         
         const { SnakeRanch } = await import(`../src/modules/snake-game/SnakeRanch.js?v=${cacheBuster}&t=${timestamp}`);

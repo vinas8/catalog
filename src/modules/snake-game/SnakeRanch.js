@@ -7,7 +7,7 @@ export class SnakeRanch {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.version = '0.7.85';
+        this.version = '0.7.93';
         
         // Simple clean map - 20x15 tiles @ 32px
         this.tileSize = 32;
@@ -20,6 +20,12 @@ export class SnakeRanch {
             y: 12,
             dir: 'down'
         };
+        
+        // Snake collection
+        this.snakes = [];
+        this.encounterZones = [];
+        this.showingEncounter = false;
+        this.currentEncounter = null;
         
         // Keys
         this.keys = {};
@@ -44,19 +50,35 @@ export class SnakeRanch {
     }
     
     async init() {
-        // Mobile-friendly size
-        const w = Math.min(window.innerWidth - 40, 640);
-        const h = Math.min(window.innerHeight - 200, 480);
-        
-        this.canvas.width = w;
-        this.canvas.height = h;
-        this.canvas.style.width = w + 'px';
-        this.canvas.style.height = h + 'px';
+        // Fullscreen on mobile
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
         
         this.ctx.imageSmoothingEnabled = false;
         
+        // Load existing collection
+        const saved = localStorage.getItem('snakeCollection');
+        if (saved) {
+            try {
+                const all = JSON.parse(saved);
+                this.snakes = all.filter(s => s.source === 'ranch-game');
+            } catch (e) {
+                this.snakes = [];
+            }
+        }
+        
         // Generate simple map
         this.map = this.createMap();
+        
+        // Setup click handler
+        this.canvas.addEventListener('click', (e) => this.handleClick(e));
+        this.canvas.addEventListener('touchend', (e) => {
+            if (e.changedTouches.length > 0) {
+                this.handleClick(e.changedTouches[0]);
+            }
+        });
     }
     
     createMap() {
@@ -106,6 +128,24 @@ export class SnakeRanch {
         map[5][15] = 'tree';
         map[12][5] = 'tree';
         
+        // Create encounter zones (tall grass areas)
+        this.encounterZones = [
+            { x: 13, y: 8, width: 4, height: 3 },
+            { x: 15, y: 2, width: 3, height: 4 },
+            { x: 2, y: 11, width: 5, height: 3 }
+        ];
+        
+        // Mark tall grass on map
+        this.encounterZones.forEach(zone => {
+            for (let y = zone.y; y < zone.y + zone.height; y++) {
+                for (let x = zone.x; x < zone.x + zone.width; x++) {
+                    if (x < this.mapWidth && y < this.mapHeight) {
+                        map[y][x] = 'tallgrass';
+                    }
+                }
+            }
+        });
+        
         return map;
     }
     
@@ -153,11 +193,116 @@ export class SnakeRanch {
         
         this.player.x = newX;
         this.player.y = newY;
+        
+        // Check for encounters in tall grass
+        if (tile === 'tallgrass' && Math.random() < 0.3) {
+            this.triggerEncounter();
+        }
+    }
+    
+    triggerEncounter() {
+        const morphs = [
+            { name: 'Normal Ball Python', morph: 'Normal', price: 50, color: '#8B4513' },
+            { name: 'Pastel Ball Python', morph: 'Pastel', price: 150, color: '#F4C430' },
+            { name: 'Mojave Ball Python', morph: 'Mojave', price: 200, color: '#D4A574' },
+            { name: 'Banana Ball Python', morph: 'Banana', price: 300, color: '#FFE135' },
+            { name: 'Piebald Ball Python', morph: 'Piebald', price: 500, color: '#FFFFFF' }
+        ];
+        
+        const snake = morphs[Math.floor(Math.random() * morphs.length)];
+        snake.id = Date.now();
+        
+        this.currentEncounter = snake;
+        this.showingEncounter = true;
+    }
+    
+    catchSnake() {
+        if (!this.currentEncounter) return;
+        
+        const caughtSnake = {
+            id: this.currentEncounter.id,
+            name: this.currentEncounter.name,
+            morph: this.currentEncounter.morph,
+            price: this.currentEncounter.price,
+            color: this.currentEncounter.color,
+            caughtAt: new Date().toISOString(),
+            source: 'ranch-game',
+            // Game stats for /game integration
+            stats: {
+                hunger: 100,
+                water: 100,
+                temperature: 80,
+                humidity: 60,
+                health: 100,
+                stress: 0,
+                cleanliness: 100,
+                happiness: 100
+            }
+        };
+        
+        this.snakes.push(caughtSnake);
+        
+        // Save to localStorage for dex AND game
+        const collection = JSON.parse(localStorage.getItem('snakeCollection') || '[]');
+        collection.push(caughtSnake);
+        localStorage.setItem('snakeCollection', JSON.stringify(collection));
+        
+        // Also save to userProducts for /game
+        const products = JSON.parse(localStorage.getItem('userProducts') || '[]');
+        products.push({
+            id: caughtSnake.id,
+            name: caughtSnake.name,
+            morph: caughtSnake.morph,
+            price: caughtSnake.price,
+            purchaseDate: caughtSnake.caughtAt,
+            stats: caughtSnake.stats
+        });
+        localStorage.setItem('userProducts', JSON.stringify(products));
+        
+        this.currentEncounter = null;
+        this.showingEncounter = false;
+    }
+    
+    skipEncounter() {
+        this.currentEncounter = null;
+        this.showingEncounter = false;
+    }
+    
+    handleClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        
+        const canvasX = (e.clientX - rect.left) * scaleX;
+        const canvasY = (e.clientY - rect.top) * scaleY;
+        
+        // Check dex button (top right area)
+        if (canvasY < 40 && canvasX > this.canvas.width - 200) {
+            window.location.href = '/game/index.html';
+            return;
+        }
+        
+        // Check encounter buttons
+        if (this.showingEncounter && this.encounterZones) {
+            const zones = this.encounterZones;
+            
+            if (zones.catch && canvasX >= zones.catch.x && canvasX <= zones.catch.x + zones.catch.w &&
+                canvasY >= zones.catch.y && canvasY <= zones.catch.y + zones.catch.h) {
+                this.catchSnake();
+                return;
+            }
+            
+            if (zones.skip && canvasX >= zones.skip.x && canvasX <= zones.skip.x + zones.skip.w &&
+                canvasY >= zones.skip.y && canvasY <= zones.skip.y + zones.skip.h) {
+                this.skipEncounter();
+                return;
+            }
+        }
     }
     
     render() {
-        // Clear
-        this.ctx.fillStyle = '#87CEEB'; // sky blue
+        // Clear with green background
+        this.ctx.fillStyle = '#4a7a3a';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Calculate visible area
@@ -183,6 +328,11 @@ export class SnakeRanch {
         
         // UI
         this.drawUI();
+        
+        // Encounter modal
+        if (this.showingEncounter) {
+            this.drawEncounterModal();
+        }
     }
     
     drawTile(x, y, type) {
@@ -294,16 +444,97 @@ export class SnakeRanch {
     
     drawUI() {
         // Title bar
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        this.ctx.fillRect(0, 0, this.canvas.width, 36);
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        this.ctx.fillRect(0, 0, this.canvas.width, 40);
         
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 14px Arial';
+        this.ctx.font = 'bold 16px Arial';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText('🐍 Snake Ranch', 12, 24);
+        this.ctx.fillText('🐍 Snake Ranch', 12, 26);
         
+        // Dex button - big and visible
+        this.ctx.fillStyle = '#FFD700';
+        this.ctx.font = 'bold 18px Arial';
         this.ctx.textAlign = 'right';
-        this.ctx.font = '12px Arial';
-        this.ctx.fillText(`Tile: ${this.player.x}, ${this.player.y}`, this.canvas.width - 12, 24);
+        this.ctx.fillText(`📖 DEX: ${this.snakes.length}`, this.canvas.width - 12, 26);
+    }
+    
+    drawEncounterModal() {
+        const w = Math.min(400, this.canvas.width - 40);
+        const h = 300;
+        const x = (this.canvas.width - w) / 2;
+        const y = (this.canvas.height - h) / 2;
+        
+        // Overlay
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Modal background
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(x, y, w, h);
+        
+        // Border
+        this.ctx.strokeStyle = '#4a3828';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeRect(x, y, w, h);
+        
+        // Title
+        this.ctx.fillStyle = '#2a1810';
+        this.ctx.font = 'bold 20px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('Wild Snake Appeared!', x + w/2, y + 40);
+        
+        // Snake info
+        const snake = this.currentEncounter;
+        this.ctx.font = 'bold 18px Arial';
+        this.ctx.fillText(snake.name, x + w/2, y + 80);
+        
+        this.ctx.font = '14px Arial';
+        this.ctx.fillStyle = '#666';
+        this.ctx.fillText(`Morph: ${snake.morph}`, x + w/2, y + 110);
+        this.ctx.fillText(`Value: $${snake.price}`, x + w/2, y + 135);
+        
+        // Draw snake visual
+        this.ctx.fillStyle = snake.color;
+        this.ctx.beginPath();
+        this.ctx.arc(x + w/2, y + 180, 30, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Pattern spots
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.fillRect(x + w/2 - 15, y + 170, 10, 10);
+        this.ctx.fillRect(x + w/2 + 5, y + 180, 10, 10);
+        
+        // Buttons
+        const btnY = y + h - 60;
+        const btnW = 100;
+        const btnH = 40;
+        
+        // Store zones for clicking
+        this.encounterZones = {
+            catch: { x: x + 50, y: btnY, w: btnW, h: btnH },
+            skip: { x: x + w - 150, y: btnY, w: btnW, h: btnH }
+        };
+        
+        // Catch button
+        this.ctx.fillStyle = '#28a745';
+        this.ctx.fillRect(x + 50, btnY, btnW, btnH);
+        this.ctx.strokeStyle = '#1e7e34';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x + 50, btnY, btnW, btnH);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 16px Arial';
+        this.ctx.fillText('CATCH', x + 100, btnY + 26);
+        
+        // Skip button
+        this.ctx.fillStyle = '#dc3545';
+        this.ctx.fillRect(x + w - 150, btnY, btnW, btnH);
+        this.ctx.strokeStyle = '#c82333';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x + w - 150, btnY, btnW, btnH);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText('RUN', x + w - 100, btnY + 26);
     }
 }

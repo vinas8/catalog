@@ -1,6 +1,6 @@
 {
   "name": "snake-muffin",
-  "version": "0.7.85",
+  "version": "0.7.93",
   "description": "Snake care simulation game with Stripe integration",
   "type": "module",
   "scripts": {

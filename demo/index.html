@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>🎬 Interactive Demo - Snake Muffin v0.7.85</title>
+  <title>🎬 Interactive Demo - Snake Muffin v0.7.86</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -26,7 +26,7 @@
         
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.85';
+        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.86';
         
         // Import modules
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
@@ -618,48 +618,106 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.01',
               title: 'Step 1: Load Calculator',
               description: 'Open mobile-optimized breeding flow',
-              url: `${basePath}/breeding_flow/public/?v=0.7.82`,
+              url: `${basePath}/breeding_flow/public/?v=0.7.90`,
               action: async (demo) => {
                 demo.log('📱 Loading mobile breeding calculator...', 'info');
                 await demo.wait(2000);
-                demo.log('✅ Calculator loaded!', 'success');
-                demo.log(`📊 Morphs available: 66`, 'info');
+                
+                // Actually check the iframe
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow?.document) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const title = doc.querySelector('h1');
+                    const morphSelect = doc.querySelector('.morph-autocomplete') || doc.querySelector('input[placeholder*="morph"]');
+                    
+                    if (title && morphSelect) {
+                      demo.log(`✅ Calculator loaded: ${title.textContent.substring(0, 30)}`, 'success');
+                      demo.log(`📊 Morph input found - ready for selection`, 'success');
+                    } else {
+                      demo.log('❌ Calculator UI elements missing', 'error');
+                    }
+                  } catch (e) {
+                    demo.log('⚠️ Cannot verify (CORS)', 'warning');
+                    demo.log('📊 Assuming calculator loaded', 'info');
+                  }
+                } else {
+                  demo.log('⚠️ Iframe not accessible', 'warning');
+                }
               }
             },
             {
               smri: 'S9.2,3.02',
               title: 'Step 2: Auto-Load Combo',
               description: 'Test Banana x Piebald with URL params',
-              url: `${basePath}/breeding_flow/public/?male=banana&female=piebald&v=0.7.82`,
+              url: `${basePath}/breeding_flow/public/?male=banana&female=piebald&v=0.7.90`,
               action: async (demo) => {
                 demo.log('🔗 Loading with URL parameters...', 'info');
                 demo.log('♂️ Male: Banana (co-dominant)', 'info');
                 demo.log('♀️ Female: Piebald (recessive)', 'info');
                 await demo.wait(2500);
-                demo.log('✅ Auto-calculated results!', 'success');
-                demo.log('📊 50% Banana, 50% Normal (all Het Piebald)', 'info');
-                demo.log('🏥 Health Risk: Low', 'success');
+                
+                // Check if results are shown
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow?.document) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const results = doc.querySelector('.results') || doc.querySelector('[class*="result"]') || doc.querySelector('.outcomes');
+                    const pills = doc.querySelectorAll('.morph-pill, .selected-morph, [class*="selected"]');
+                    
+                    if (results) {
+                      demo.log('✅ Results displayed!', 'success');
+                    } else if (pills.length >= 2) {
+                      demo.log('✅ Morphs selected (Banana + Piebald)', 'success');
+                    } else {
+                      demo.log('⚠️ Results not visible yet', 'warning');
+                    }
+                  } catch (e) {
+                    demo.log('⚠️ Cannot verify (CORS)', 'warning');
+                  }
+                }
+                demo.log('📊 Expected: 50% Banana, 50% Normal (Het Pied)', 'info');
               }
             },
             {
               smri: 'S9.2,3.03',
               title: 'Step 3: Lethal Combo Test',
               description: 'Spider x Spider - should warn',
-              url: `${basePath}/breeding_flow/public/?male=spider&female=spider&v=0.7.82`,
+              url: `${basePath}/breeding_flow/public/?male=spider&female=spider&v=0.7.90`,
               action: async (demo) => {
                 demo.log('⚠️ Testing LETHAL combination...', 'warning');
                 demo.log('🐍 Both parents: Spider (wobble risk)', 'warning');
                 await demo.wait(2500);
-                demo.log('🚨 LETHAL COMBO DETECTED!', 'error');
-                demo.log('❌ 25% would be Super Spider (100% lethal)', 'error');
-                demo.log('✅ System correctly blocks/warns', 'success');
+                
+                // Check for warning message
+                const iframe = document.getElementById('demo-iframe');
+                if (iframe?.contentWindow?.document) {
+                  try {
+                    const doc = iframe.contentWindow.document;
+                    const warning = doc.querySelector('.error, .warning, .alert-danger, [class*="lethal"]');
+                    const errorText = warning?.textContent?.toLowerCase() || '';
+                    
+                    if (warning && (errorText.includes('lethal') || errorText.includes('super spider') || errorText.includes('not viable'))) {
+                      demo.log('✅ LETHAL COMBO WARNING SHOWN!', 'success');
+                      demo.log(`⚠️ Message: "${errorText.substring(0, 60)}"`, 'warning');
+                    } else if (warning) {
+                      demo.log('⚠️ Warning shown but content unclear', 'warning');
+                    } else {
+                      demo.log('❌ NO WARNING SHOWN - System failed!', 'error');
+                    }
+                  } catch (e) {
+                    demo.log('⚠️ Cannot verify (CORS)', 'warning');
+                  }
+                } else {
+                  demo.log('⚠️ Cannot check iframe', 'warning');
+                }
               }
             },
             {
               smri: 'S9.2,3.04',
               title: 'Step 4: View in Dex',
               description: 'Browse morph encyclopedia',
-              url: `${basePath}/dex/?v=0.7.82`,
+              url: `${basePath}/dex/?v=0.7.90`,
               action: async (demo) => {
                 demo.log('📚 Loading Morph Dex...', 'info');
                 await demo.wait(2000);
@@ -673,7 +731,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.05',
               title: 'Step 5: MyFarm Check',
               description: 'View owned snakes',
-              url: `${basePath}/learn-farm.html?v=0.7.82`,
+              url: `${basePath}/game/?v=0.7.90`,
               action: async (demo) => {
                 demo.log('🏡 Loading My Farm...', 'info');
                 await demo.wait(2000);
@@ -686,7 +744,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.06',
               title: 'Step 6: Integration Test',
               description: 'Verify all systems',
-              url: `${basePath}/test-integration.html?v=0.7.82`,
+              url: `${basePath}/test-integration.html?v=0.7.90`,
               action: async (demo) => {
                 demo.log('🧪 Running integration tests...', 'info');
                 await demo.wait(2000);
