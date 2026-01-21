@@ -166,6 +166,75 @@
       });
     }
   </script>
+  
+  <!-- Farm State Integration -->
+  <script type="module">
+    // Load state management
+    const basePath = window.APP_BASE_PATH || '';
+    const { getOwnedSnakes, markProgress } = await import(`${basePath}/src/core/state.js?v=0.777`);
+    
+    // Render owned snakes
+    function renderSnakeCollection() {
+      const snakes = getOwnedSnakes();
+      const collection = document.getElementById('snake-collection');
+      const emptyState = document.getElementById('empty-collection');
+      
+      console.log(`🐍 Rendering ${snakes.length} owned snakes`);
+      
+      if (snakes.length === 0) {
+        collection.style.display = 'none';
+        emptyState.style.display = 'flex';
+        return;
+      }
+      
+      collection.style.display = 'grid';
+      emptyState.style.display = 'none';
+      
+      collection.innerHTML = snakes.map(snake => `
+        <div class="snake-card" style="
+          background: white;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          transition: all 0.3s;
+        ">
+          <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">
+            ${snake.image || '🐍'}
+          </div>
+          <h3 style="margin-bottom: 0.5rem; color: #333;">${snake.name}</h3>
+          <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">
+            <strong>Morphs:</strong> ${snake.morphs.join(', ')}
+          </p>
+          <p style="color: #999; font-size: 0.8rem; margin-bottom: 1rem;">
+            Acquired: ${new Date(snake.dateAcquired).toLocaleDateString()}
+          </p>
+          <button 
+            onclick="viewInDex('${snake.id}')" 
+            class="primary-btn" 
+            style="width: 100%; padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            🔍 View in Dex
+          </button>
+        </div>
+      `).join('');
+    }
+    
+    // Navigate to Dex
+    window.viewInDex = function(snakeId) {
+      console.log(`🔍 Viewing snake ${snakeId} in Dex`);
+      
+      // Mark farm progress
+      markProgress('farm');
+      
+      // Navigate to Dex
+      window.location.href = `${basePath}/dex/?v=0.777`;
+    };
+    
+    // Render on load
+    renderSnakeCollection();
+    
+    console.log('✅ Farm initialized with state management');
+  </script>
+  
   <script type="module" src="src/modules/game/game-controller.js"></script>
   
   <style>

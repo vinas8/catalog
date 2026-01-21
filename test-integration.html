@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Integration Test Helper</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 { color: #0ff; margin-bottom: 20px; }
+        h2 { color: #ff0; margin: 20px 0 10px; }
+        .btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover { background: #5a67d8; }
+        .btn-danger { background: #e53e3e; }
+        .btn-danger:hover { background: #c53030; }
+        .btn-success { background: #48bb78; }
+        .btn-success:hover { background: #38a169; }
+        .info { background: #000; padding: 15px; border: 1px solid #333; margin: 15px 0; }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        #output { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Serpent Town - Integration Test Helper</h1>
+    
+    <div class="info">
+        <strong>Current State:</strong>
+        <div id="state-display">Loading...</div>
+    </div>
+    
+    <h2>📝 Step 1: Setup Demo Snake</h2>
+    <button class="btn btn-success" onclick="createDemoSnake()">
+        🐍 Create Demo Snake (Banana + Spider)
+    </button>
+    <button class="btn btn-danger" onclick="resetState()">
+        🔄 Reset All State
+    </button>
+    
+    <h2>🔗 Step 2: Test Components</h2>
+    <a href="learn-farm.html" target="_blank">
+        <button class="btn">🏡 MyFarm</button>
+    </a>
+    <a href="dex/" target="_blank">
+        <button class="btn">📚 Dex</button>
+    </a>
+    <a href="calc/?male=banana,spider&female=piebald" target="_blank">
+        <button class="btn">🧬 Calculator (with URL params)</button>
+    </a>
+    
+    <h2>🧪 Step 3: Run Tests</h2>
+    <button class="btn" onclick="runAllTests()">▶️ Run All Tests</button>
+    
+    <div id="output"></div>
+    
+    <h2>📊 Expected Flow:</h2>
+    <div class="info" style="color: #aaa; line-height: 1.6;">
+        1. Create demo snake (unlocks Banana + Spider morphs)<br>
+        2. Visit MyFarm → See demo snake with "View in Dex" button<br>
+        3. Click button → Dex shows 2 unlocked (green), 64 locked (grayscale)<br>
+        4. Click "Try in Calculator" on Banana → Opens calc with Banana pre-selected<br>
+        5. Calculator auto-calculates results<br>
+        6. Progress tracked: checkout ✅ farm ✅ dex ✅ calculator ✅
+    </div>
+    
+    <script type="module">
+        const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+        const { 
+            getOwnedSnakes, 
+            getUnlockedMorphs, 
+            getDemoProgress, 
+            createDemoSnake: createSnake,
+            resetState: reset
+        } = await import(`${basePath}/src/core/state.js?v=0.777`);
+        
+        function displayState() {
+            const owned = getOwnedSnakes();
+            const unlocked = getUnlockedMorphs();
+            const progress = getDemoProgress();
+            
+            document.getElementById('state-display').innerHTML = `
+                <div class="pass">Owned Snakes: ${owned.length}</div>
+                ${owned.map(s => `<div style="margin-left:20px;">• ${s.name} (${s.morphs.join(', ')})</div>`).join('')}
+                <div class="pass" style="margin-top:10px;">Unlocked Morphs: ${unlocked.length}</div>
+                <div style="margin-left:20px;">${unlocked.join(', ') || '(none)'}</div>
+                <div class="pass" style="margin-top:10px;">Progress:</div>
+                <div style="margin-left:20px;">
+                    Checkout: ${progress.checkout ? '✅' : '❌'}<br>
+                    Farm: ${progress.farm ? '✅' : '❌'}<br>
+                    Dex: ${progress.dex ? '✅' : '❌'}<br>
+                    Calculator: ${progress.calculator ? '✅' : '❌'}
+                </div>
+            `;
+        }
+        
+        window.createDemoSnake = function() {
+            const snake = createSnake();
+            document.getElementById('output').innerHTML = `
+                <div class="pass">✅ Demo snake created!</div>
+                <div>Name: ${snake.name}</div>
+                <div>Morphs: ${snake.morphs.join(', ')}</div>
+                <div>ID: ${snake.id}</div>
+            `;
+            setTimeout(displayState, 100);
+        };
+        
+        window.resetState = function() {
+            if (confirm('Reset all state? This will clear owned snakes and unlocked morphs.')) {
+                reset();
+                document.getElementById('output').innerHTML = `<div class="fail">🔄 State reset!</div>`;
+                setTimeout(displayState, 100);
+            }
+        };
+        
+        window.runAllTests = async function() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h2>Running Tests...</h2>';
+            
+            const tests = [];
+            
+            // Test 1
+            try {
+                const owned = getOwnedSnakes();
+                if (owned.length > 0) {
+                    tests.push(`<div class="pass">✅ Test 1: Owned snakes exist (${owned.length})</div>`);
+                } else {
+                    tests.push(`<div class="fail">❌ Test 1: No owned snakes (create demo snake first)</div>`);
+                }
+            } catch(e) {
+                tests.push(`<div class="fail">❌ Test 1 ERROR: ${e.message}</div>`);
+            }
+            
+            // Test 2
+            try {
+                const unlocked = getUnlockedMorphs();
+                if (unlocked.length >= 2) {
+                    tests.push(`<div class="pass">✅ Test 2: Morphs unlocked (${unlocked.length})</div>`);
+                } else {
+                    tests.push(`<div class="fail">❌ Test 2: Not enough unlocked morphs (${unlocked.length})</div>`);
+                }
+            } catch(e) {
+                tests.push(`<div class="fail">❌ Test 2 ERROR: ${e.message}</div>`);
+            }
+            
+            // Test 3
+            try {
+                const response = await fetch(`${basePath}/data/genetics/morphs-comprehensive.json?v=0.777`);
+                const data = await response.json();
+                if (data.morphs && data.morphs.length >= 66) {
+                    tests.push(`<div class="pass">✅ Test 3: Comprehensive DB loaded (${data.morphs.length} morphs)</div>`);
+                } else {
+                    tests.push(`<div class="fail">❌ Test 3: DB incomplete (${data.morphs?.length || 0} morphs)</div>`);
+                }
+            } catch(e) {
+                tests.push(`<div class="fail">❌ Test 3 ERROR: ${e.message}</div>`);
+            }
+            
+            // Test 4
+            try {
+                const progress = getDemoProgress();
+                const completed = Object.values(progress).filter(v => v === true).length;
+                tests.push(`<div class="${completed > 0 ? 'pass' : 'fail'}">Test 4: Progress tracked (${completed}/4 complete)</div>`);
+            } catch(e) {
+                tests.push(`<div class="fail">❌ Test 4 ERROR: ${e.message}</div>`);
+            }
+            
+            output.innerHTML = `<h2>Test Results:</h2>${tests.join('')}`;
+        };
+        
+        // Initial display
+        displayState();
+        
+        console.log('✅ Test helper loaded!');
+    </script>
+</body>
+</html>

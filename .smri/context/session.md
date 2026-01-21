@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-20 08:54:11 UTC  
-**Commit:** 0de2b3d  
-**Version:** 0.7.75
+**Generated:** 2026-01-20 14:31:46 UTC  
+**Commit:** 5579c38  
+**Version:** 0.7.81
 
 ---
 
@@ -9,6 +9,12 @@
 
 ### Git Log (Last 20 commits)
 ```
+5579c38 v0.7.81 - Add comprehensive morphs database: 66 morphs from WOBP (ethical extraction)
+81e6939 v0.7.80 - Fix genetics database loading: set APP_BASE_PATH, return data not boolean, better error handling
+c8d8952 v0.7.79 - Fix breeding calculator mobile-first responsive design + cache buster in demo
+dd3a138 v0.7.78 - Fix breeding calculator: remove MorphMarket iframe, add cache buster, mobile responsive design
+4da5976 v0.7.77 - Lucky version 🍀 Add morph calculator demo with genetics, lethal combos & care sheets
+965a546 v0.7.76 - Fix Step 7 const reassignment error in demo purchase flow
 0de2b3d v0.7.75 - Complete purchase flow integration with test scenarios
 34bdbda v0.7.53 - Add purchase flow integration docs
 dc2286f feat: Use external PurchaseFlow module instead of API calls
@@ -23,24 +29,14 @@ be31d8b v0.7.50 - Add purchase flow demo with cache busting
 1ed6012 feat: Add purchase flow feature flag demo page
 043cdea feat: Extend feature flags for external flow modules
 77c46ee v0.7.49 - Add SMRI modal CSS styles (complete interrupted patch)
-a50de85 v0.7.48 - Add comprehensive flow-based architecture research
-5f907dc v0.7.47 - Add purchase flow dependency graph documentation
-914cb29 v0.7.46 - Fix 404 on product pages & demo scroll animation
-c21231e v0.7.45 - Complete SMRI consolidation: all codes use registry constants
-e9b8c70 v0.7.44 - Add missing SMRI codes to registry (S0.0.0, S2.2,3,4,5.01, S3.1,2,3.01, S0.0,1,2,3,4,5.01)
-2cb6cd3 v0.7.44 - Centralize SMRI codes into constants (Demo, SplitScreenDemo)
 ```
 
 ### Git Status
 ```
- M .smri/context/INDEX.md
  M .smri/context/LAST_UPDATE.txt
- M .smri/context/README.md
  M .smri/context/git-log.txt
- M .smri/context/health.txt
  M .smri/context/session.md
  M .smri/context/test-full.txt
- M .smri/context/tree.txt
 ```
 
 ---
@@ -450,5 +446,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-20 08:54:13 UTC  
+**Context cached at:** 2026-01-20 14:31:47 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snake Ranch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #181425;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            background: #1a1410;
+            border: 4px solid #4a3828;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        #game-canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .btn {
+            background: rgba(74, 56, 40, 0.9);
+            border: 3px solid #4a3828;
+            border-radius: 8px;
+            color: #8ab060;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            transition: all 0.1s;
+        }
+
+        .btn:active {
+            background: rgba(138, 176, 96, 0.9);
+            color: #2a1810;
+            transform: scale(0.95);
+        }
+
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+
+        #version-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(42, 24, 16, 0.95);
+            color: #8ab060;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border: 2px solid #4a3828;
+            z-index: 1000;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="controls">
+            <button class="btn" id="btn-up">▲</button>
+            <button class="btn" id="btn-left">◄</button>
+            <button class="btn" id="btn-down">▼</button>
+            <button class="btn" id="btn-right">►</button>
+        </div>
+    </div>
+    
+    <div id="version-badge">v0.7.85</div>
+
+    <script type="module">
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || '0.7.85';
+        const timestamp = Date.now();
+        
+        const { SnakeRanch } = await import(`../src/modules/snake-game/SnakeRanch.js?v=${cacheBuster}&t=${timestamp}`);
+        
+        const canvas = document.getElementById('game-canvas');
+        const game = new SnakeRanch(canvas);
+        
+        await game.init();
+        game.start();
+        
+        // Touch controls
+        const addControl = (id, key) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                game.keys[key] = true;
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                game.keys[key] = false;
+            });
+            btn.addEventListener('mousedown', () => game.keys[key] = true);
+            btn.addEventListener('mouseup', () => game.keys[key] = false);
+        };
+        
+        addControl('btn-up', 'ArrowUp');
+        addControl('btn-down', 'ArrowDown');
+        addControl('btn-left', 'ArrowLeft');
+        addControl('btn-right', 'ArrowRight');
+    </script>
+</body>
+</html>

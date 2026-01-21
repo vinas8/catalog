@@ -25,7 +25,7 @@ export class Demo {
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
     this.purchaseFlow = options.purchaseFlow || null;  // External flow class
-    this.version = '0.7.81';
+    this.version = '0.7.85';
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;
@@ -830,12 +830,16 @@ export class Demo {
       this.log(`✅ Step ${stepIndex + 1} completed`, 'success');
       this.showStatus(`✓ ${step.title}`, 'success');
       
+      // Save logs to file after each step
+      await this._saveLogsToFile();
+      
       // Auto-advance to next step
       await this.wait(2000);
       if (this.currentStep < (this.currentScenario.steps?.length || 0) - 1) {
         this.nextStep();
       } else {
         this.log('🎉 All steps completed!', 'success');
+        await this._saveLogsToFile(); // Final save
       }
 
     } catch (error) {
@@ -995,6 +999,7 @@ export class Demo {
    */
   log(message, type = 'info') {
     const timestamp = new Date().toLocaleTimeString();
+    const fullTimestamp = new Date().toISOString();
     this.logs.push({ timestamp, message, type });
 
     const logPanel = document.getElementById('demo-log');
@@ -1008,6 +1013,57 @@ export class Demo {
     logPanel.scrollTop = logPanel.scrollHeight;
 
     console.log(`[Demo] ${message}`);
+    
+    // Send to file logging server
+    this._sendToLogServer({
+      scenario: this.currentScenario?.title || 'Unknown',
+      smri: this.currentScenario?.smri || 'unknown',
+      timestamp: fullTimestamp,
+      level: type,
+      message: message
+    });
+  }
+
+  async _sendToLogServer(logData) {
+    try {
+      await fetch('http://localhost:8001/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(logData)
+      });
+    } catch (err) {
+      // Silent fail - log server might not be running
+      // console.debug('Log server unavailable:', err.message);
+    }
+  }
+
+  async _saveLogsToFile() {
+    if (!this.currentScenario || this.logs.length === 0) return;
+    
+    try {
+      const smri = this.currentScenario.smri || 'unknown';
+      const title = this.currentScenario.title || 'Unknown Scenario';
+      const timestamp = new Date().toISOString();
+      
+      // Send all logs as a batch
+      const logContent = this.logs.map(log => 
+        `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+      ).join('\n');
+      
+      await fetch('http://localhost:8001/save-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          smri,
+          title,
+          timestamp,
+          logs: logContent
+        })
+      });
+    } catch (err) {
+      // Silent fail
+      console.debug('Batch log save failed:', err.message);
+    }
   }
 
   toggleLog() {

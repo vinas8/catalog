@@ -625,13 +625,16 @@
   <script type="module">
     // Cache buster - use URL param if provided, otherwise use version
     const urlParams = new URLSearchParams(window.location.search);
-    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.81';
+    const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.777';
     
     // Fix path for GitHub Pages
     const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
     
     // Set global base path for genetics-core to use
     window.APP_BASE_PATH = basePath;
+    
+    // Load state management
+    const { markProgress } = await import(`${basePath}/src/core/state.js?v=${cacheBuster}`);
     
     const {
       loadGeneticsDatabase,
@@ -685,6 +688,9 @@
 
       // Try to listen for iframe changes (limited by CORS)
       setupIframeSyncListener();
+      
+      // Check for URL params and auto-load
+      await loadFromURLParams();
     }
 
     function setupAutocomplete(parent) {
@@ -1000,6 +1006,61 @@
       resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Load morphs from URL parameters
+    async function loadFromURLParams() {
+      const male = urlParams.get('male');
+      const female = urlParams.get('female');
+      
+      if (!male && !female) {
+        console.log('ℹ️ No URL params found');
+        return;
+      }
+      
+      console.log('🔗 Loading from URL params:', { male, female });
+      
+      // Clear existing
+      selectedMaleMorphs = [];
+      selectedFemaleMorphs = [];
+      
+      // Parse male morphs (comma-separated)
+      if (male) {
+        const maleIds = male.split(',').map(id => id.trim().toLowerCase());
+        maleIds.forEach(id => {
+          const morph = morphDatabase.find(m => m.id === id || m.name.toLowerCase() === id);
+          if (morph) {
+            selectedMaleMorphs.push(morph.id);
+          }
+        });
+      }
+      
+      // Parse female morphs (comma-separated)
+      if (female) {
+        const femaleIds = female.split(',').map(id => id.trim().toLowerCase());
+        femaleIds.forEach(id => {
+          const morph = morphDatabase.find(m => m.id === id || m.name.toLowerCase() === id);
+          if (morph) {
+            selectedFemaleMorphs.push(morph.id);
+          }
+        });
+      }
+      
+      // Render tags
+      renderMorphTags('male');
+      renderMorphTags('female');
+      updateSyncStatus();
+      
+      // Auto-calculate if we have at least one morph selected
+      if (selectedMaleMorphs.length > 0 || selectedFemaleMorphs.length > 0) {
+        console.log('🎬 Auto-calculating from URL params...');
+        setTimeout(() => {
+          calculateResults();
+          
+          // Mark calculator progress
+          markProgress('calculator');
+        }, 500);
+      }
+    }
+    
     // Demo mode
     function loadDemo() {
       console.log('🎬 Loading demo breeding pair...');
