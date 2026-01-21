@@ -35,8 +35,8 @@ fi
 # 3. Core Documentation
 # ============================================
 echo "  📖 Documentation files..."
-if [ -f ".smri/INDEX.md" ]; then
-    cp ".smri/INDEX.md" "$CONTEXT_DIR/INDEX.md"
+if [ -f ".smri/docs/INDEX.md" ]; then
+    cp ".smri/docs/INDEX.md" "$CONTEXT_DIR/INDEX.md"
 else
     echo "INDEX.md not found" > "$CONTEXT_DIR/INDEX.md"
 fi

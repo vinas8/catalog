@@ -9,5 +9,6 @@ import
 payment
 shop
 smri
+snake-game
 testing
 tutorial

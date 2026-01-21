@@ -4,6 +4,12 @@
 │   ├── import-modular.html
 │   ├── import.html
 │   └── index.html
+├── assets
+│   └── sprites
+├── breeding_flow
+│   ├── packages
+│   ├── public
+│   └── scripts
 ├── calc
 │   ├── calculator.html
 │   └── index.html
@@ -43,13 +49,17 @@
 │   └── test-runner-simple.html
 ├── demo
 │   ├── customer-journeys
+│   ├── config.js
 │   ├── index.html
 │   ├── minimal.html
+│   ├── snake-game.html
+│   ├── snake-ranch.html
 │   └── test.html
 ├── dex
 │   ├── modules
 │   ├── archive-index-old.html
 │   ├── index.html
+│   ├── index.html.backup
 │   ├── pokedex-style.html
 │   ├── simple-grid.html
 │   └── trait-style.html
@@ -74,6 +84,8 @@
 │   ├── icon-gen.html
 │   ├── icon-shop.png
 │   └── super-banana.jpg
+├── logs
+│   └── demo
 ├── prompts
 │   ├── README.md
 │   ├── ai-avatar-pipeline.md
@@ -89,6 +101,7 @@
 │   ├── check-architecture.cjs
 │   ├── check-consistency.cjs
 │   ├── create-stripe-payment-links.js
+│   ├── demo-server.cjs
 │   ├── deploy-worker-api.sh
 │   ├── find-dead-facades.cjs
 │   ├── kv-namespace-ids.txt
@@ -119,6 +132,7 @@
 ├── src
 │   ├── components
 │   ├── config
+│   ├── core
 │   ├── data
 │   ├── modules
 │   ├── styles
@@ -142,6 +156,7 @@
 │   ├── breeding-calculator-curl.sh
 │   ├── breeding-calculator.test.js
 │   ├── browser-purchase-flow-demo.js
+│   ├── integration-test.js
 │   ├── run-all.js
 │   ├── test-constants.js
 │   ├── test-purchase-flow-demo.sh
@@ -194,6 +209,8 @@
 ├── product.html
 ├── styles.css
 ├── success.html
-└── sw.js
+├── sw.js
+├── test-calc.html
+└── test-integration.html
 
-57 directories, 140 files
+66 directories, 148 files
