@@ -6,10 +6,6 @@
 │   └── index.html
 ├── assets
 │   └── sprites
-├── breeding_flow
-│   ├── packages
-│   ├── public
-│   └── scripts
 ├── calc
 │   ├── calculator.html
 │   └── index.html
@@ -44,9 +40,7 @@
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
-│   ├── test-localstorage-destination.html
-│   ├── test-quick.html
-│   └── test-runner-simple.html
+│   └── test-quick.html
 ├── demo
 │   ├── customer-journeys
 │   ├── config.js
@@ -213,4 +207,4 @@
 ├── test-calc.html
 └── test-integration.html
 
-66 directories, 148 files
+62 directories, 146 files

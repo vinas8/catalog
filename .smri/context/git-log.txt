@@ -1,3 +1,4 @@
+8cb2206 Phase 1: Fix SMRI structure - move INDEX.md to docs/, archive obsolete tests
 b67ab41 Checkpoint from Copilot CLI for coding agent session
 569cc0a v0.7.94 - Document snake ranch architecture TODO
 de721bc v0.7.93 - Snake ranch game with encounters (needs facade refactor)
@@ -17,4 +18,3 @@ dc2286f feat: Use external PurchaseFlow module instead of API calls
 6e98c2e feat: Integrate external purchase flow into demo
 fe6fae3 chore: Bump Demo module version to 0.7.50
 464ae2a chore: Update demo version to 0.7.50
-d78c3f9 test: Add purchase flow demo integration tests

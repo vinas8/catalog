@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-21 02:00:57 UTC  
-**Commit:** b67ab41  
+**Generated:** 2026-01-21 05:03:26 UTC  
+**Commit:** 8cb2206  
 **Version:** 0.7.94
 
 ---
@@ -9,6 +9,7 @@
 
 ### Git Log (Last 20 commits)
 ```
+8cb2206 Phase 1: Fix SMRI structure - move INDEX.md to docs/, archive obsolete tests
 b67ab41 Checkpoint from Copilot CLI for coding agent session
 569cc0a v0.7.94 - Document snake ranch architecture TODO
 de721bc v0.7.93 - Snake ranch game with encounters (needs facade refactor)
@@ -28,18 +29,25 @@ dc2286f feat: Use external PurchaseFlow module instead of API calls
 6e98c2e feat: Integrate external purchase flow into demo
 fe6fae3 chore: Bump Demo module version to 0.7.50
 464ae2a chore: Update demo version to 0.7.50
-d78c3f9 test: Add purchase flow demo integration tests
 ```
 
 ### Git Status
 ```
+ M .smri/context/INDEX.md
  M .smri/context/LAST_UPDATE.txt
+ M .smri/context/README.md
+ M .smri/context/SMRI.md
  M .smri/context/git-log.txt
  M .smri/context/health.txt
- M .smri/context/modules.txt
  M .smri/context/session.md
- M .smri/context/test-full.txt
  M .smri/context/tree.txt
+ D .smri/docs/INDEX.md
+ D breeding_flow/packages/flows/breeding/src/index.js
+ D breeding_flow/public/index.html
+ D breeding_flow/public/styles.css
+ D breeding_flow/scripts/build.js
+ M package.json
+?? .smri/INDEX.md
 ```
 
 ---
@@ -55,10 +63,6 @@ d78c3f9 test: Add purchase flow demo integration tests
 │   └── index.html
 ├── assets
 │   └── sprites
-├── breeding_flow
-│   ├── packages
-│   ├── public
-│   └── scripts
 ├── calc
 │   ├── calculator.html
 │   └── index.html
@@ -93,10 +97,14 @@ d78c3f9 test: Add purchase flow demo integration tests
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
-│   ├── test-localstorage-destination.html
-│   ├── test-quick.html
-│   └── test-runner-simple.html
+│   └── test-quick.html
 ├── demo
+│   ├── customer-journeys
+│   ├── config.js
+│   ├── index.html
+│   ├── minimal.html
+│   ├── snake-game.html
+│   ├── snake-ranch.html
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -104,120 +112,21 @@ d78c3f9 test: Add purchase flow demo integration tests
 
 ## 📚 Core Documentation
 
-### .smri/INDEX.md (1010 lines)
+### .smri/INDEX.md (1 lines)
 First 100 lines:
 ```markdown
-# 🐍 Serpent Town - Index & Rules
-
-**Version:** 0.7.75  
-**Last Updated:** 2026-01-20  
-**Purpose:** SMRI system index and operating rules
-
----
-
-## 🎯 Versioning & SMRI Badge Rules
-
-### 1. Version Bump Workflow (CRITICAL)
-**On EVERY fix/change, update 3 files:**
-```bash
-# 1. Bump package.json
-npm version patch --no-git-tag-version  # 0.7.7 → 0.7.8
-
-# 2. Update module version (e.g., src/modules/demo/Demo.js)
-this.version = '0.7.8';
-
-# 3. Update HTML cache buster (e.g., demo/index.html)
-const cacheBuster = urlParams.get('v') || '0.7.8';
-```
-
-**Test BEFORE providing version to user:**
-```bash
-# Option 1: curl test
-curl http://localhost:8000/demo/?v=0.7.8
-
-# Option 2: Browser test with cache busting
-http://localhost:8000/demo/?v=0.7.8
-```
-
-### 2. Display Version Badge in Components
-Every interactive component must show version badge:
-- **Location:** Bottom-right corner (fixed position)
-- **Format:** `S{M}.{RRR}.{II} • v{X.Y.Z}`
-- **Example:** `S9.3,2,10.05 • v0.7.11`
-- **Clickable:** Opens SMRI decoder modal
-
-### 3. SMRI Decoder Module
-Use centralized decoder for consistency:
-```javascript
-import { showSMRIModal } from '../modules/smri/index.js';
-
-// In component
-showSMRIModal(this.smri);  // Shows popup explaining SMRI code
-```
-
-### 4. Update SMRI on Changes
-- **File changed?** → Bump iteration: `.01 → .02`
-- **New dependency?** → Update relations: `.2,5 → .2,5,8`
-- **Major refactor?** → Consider new module number
-
-### 5. Module Map (Reference)
-```
-0: Core/Internal     6: Payment
-1: Auth              7: Import
-2: Common            8: Debug
-3: Game              9: Demo
-4: Shop             10: SMRI
-5: Testing
-```
-
----
-
-## 🚨 AI: STOP! READ THIS FIRST
-
-**When user types `.smri`, DO THIS FIRST:**
-
-```bash
-bash scripts/smri-startup.sh
-```
-
-**DO NOT manually load INDEX.md, README.md, etc.**  
-**The script handles EVERYTHING automatically.**
-
-After script completes, you can read this INDEX.md if needed for additional context.
-
----
-
-## 📖 What is .smri?
-
-**SMRI** = **S**erpent Town **M**aster **R**eference **I**ndex
-
-A consolidated documentation system where **ALL** project documentation lives:
-- **INDEX.md** (this file) - Navigation, rules, AI instructions
-- **docs/** - Focused topic docs (business, technical, deployment)
-- **scenarios/** - Test scenarios in structured format
-- **logs/** - Daily session conversation history
-
-**Goal:** Single source of truth. **NO scattered docs**. Everything in `.smri/`.
-
----
-
-## 🚨 CRITICAL RULES FOR AI ASSISTANTS
-
-### 0. DEBUGGING RULE: Check Console FIRST, Not Cache
-**When page is blank or broken:**
-
-❌ **WRONG approach:**
+INDEX.md not found
 ```
 ... (truncated, see .smri/context/INDEX.md for full)
 
 ### README.md (309 lines)
 First 80 lines:
 ```markdown
-# 🐍 Snake Muffin v0.7.75
+# 🐍 Snake Muffin v0.7.94
 
 > A snake breeding and care e-commerce game with real Stripe payments
 
-[![Version](https://img.shields.io/badge/version-0.7.75-purple)](https://github.com/vinas8/catalog)
+[![Version](https://img.shields.io/badge/version-0.7.94-purple)](https://github.com/vinas8/catalog)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/vinas8/catalog)
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://vinas8.github.io/catalog/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -301,9 +210,9 @@ First 50 lines:
 ```markdown
 # 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.7.7  
+**Version:** 0.7.94  
 **Status:** ⚠️ BETA - Not Production Ready  
-**Tests:** 88/88 passing (98%) ✅
+**Tests:** 88/88 passing (100%) ✅
 
 ---
 
@@ -390,8 +299,8 @@ TestRenderer.js
 ## 🏥 Health Status
 
 ```
+📏 Checking Large Files...[0m 
 [33m⚠️[0m .smri/INDEX.md: 1011 lines (max: 500)
-[33m⚠️[0m .smri/context/INDEX.md: 1011 lines (max: 500)
 [33m⚠️[0m .smri/docs/FLOW-BASED-ARCHITECTURE-RESEARCH.md: 992 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-CHAPTERS-3-6.md: 728 lines (max: 500)
 [33m⚠️[0m .smri/docs/business-plan/BUSINESS-PLAN-COMPREHENSIVE.md: 1576 lines (max: 500)
@@ -408,14 +317,14 @@ TestRenderer.js
 [32m✅[0m module-functions.js exists
 [34m
 📊 Summary:[0m 
-[31m❌[0m Version Consistency
+[32m✅[0m Version Consistency
 [32m✅[0m Module Structure
-[31m❌[0m SMRI Structure
-[31m❌[0m Duplicate Files
+[32m✅[0m SMRI Structure
+[32m✅[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 2/6 (33%)[0m
+[36mScore: 5/6 (83%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -437,7 +346,7 @@ Script: scripts/check-consistency.cjs[0m
 ## 📖 Full Documentation Available
 
 All complete files are cached in `.smri/context/`:
-- `INDEX.md` - Complete SMRI index (1010 lines)
+- `INDEX.md` - Complete SMRI index (1 lines)
 - `README.md` - Complete project README (309 lines)
 - `SMRI.md` - Complete SMRI syntax guide (226 lines)
 - `tree.txt` - Full directory tree
@@ -450,5 +359,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-21 02:00:59 UTC  
+**Context cached at:** 2026-01-21 05:03:27 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`
