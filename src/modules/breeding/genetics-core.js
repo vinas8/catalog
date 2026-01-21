@@ -310,87 +310,302 @@ export function assessHealthRisk(male, female) {
 }
 
 // ============================================================================
-// OFFSPRING CALCULATOR (PUNNETT SQUARE LOGIC)
+// OFFSPRING CALCULATOR (COMPREHENSIVE PUNNETT SQUARE LOGIC)
 // ============================================================================
 
 export function calculateOffspring(male, female) {
   const outcomes = [];
   
-  // Check for lethal combinations
-  for (let mMorph of male.morphs || []) {
-    for (let fMorph of female.morphs || []) {
-      const lethal = checkLethalCombo(mMorph, fMorph);
-      if (lethal) {
+  // Get all morphs from both parents
+  const maleMorphs = male.morphs || [];
+  const femaleMorphs = female.morphs || [];
+  
+  // Check for lethal combinations first
+  for (let mMorph of maleMorphs) {
+    for (let fMorph of femaleMorphs) {
+      const m1 = mMorph.toLowerCase().replace(/ /g, '-');
+      const f1 = fMorph.toLowerCase().replace(/ /g, '-');
+      const lethal = checkLethalCombo([m1], [f1]);
+      if (lethal.lethal) {
         outcomes.push({
-          morph: `${mMorph} × ${fMorph}`,
+          morph: `⚠️ ${lethal.result}`,
           percentage: 0,
           count: 0,
           value: 0,
           lethal: true,
-          description: lethal
+          geneType: 'lethal',
+          description: lethal.reason,
+          warning: true
         });
         return outcomes;
       }
     }
   }
   
-  // BEL complex (Mojave × Lesser = 25% BEL)
-  const hasMojave = (male.morphs?.includes('mojave') || female.morphs?.includes('mojave'));
-  const hasLesser = (male.morphs?.includes('lesser') || female.morphs?.includes('lesser'));
+  // Get morph data for all parents' morphs
+  const maleMorphData = maleMorphs.map(m => {
+    const id = m.toLowerCase().replace(/ /g, '-');
+    return morphMap.get(id);
+  }).filter(Boolean);
   
-  if (hasMojave && hasLesser) {
+  const femaleMorphData = femaleMorphs.map(m => {
+    const id = m.toLowerCase().replace(/ /g, '-');
+    return morphMap.get(id);
+  }).filter(Boolean);
+  
+  // SPECIAL CASE: BEL Complex (Mojave, Lesser, Butter, Russo)
+  const belComplex = ['mojave', 'lesser', 'butter', 'russo'];
+  const maleBEL = maleMorphs.find(m => belComplex.includes(m.toLowerCase().replace(/ /g, '-')));
+  const femaleBEL = femaleMorphs.find(m => belComplex.includes(m.toLowerCase().replace(/ /g, '-')));
+  
+  if (maleBEL && femaleBEL && maleBEL.toLowerCase() !== femaleBEL.toLowerCase()) {
+    const mId = maleBEL.toLowerCase().replace(/ /g, '-');
+    const fId = femaleBEL.toLowerCase().replace(/ /g, '-');
+    
     outcomes.push(
-      { morph: 'Blue Eyed Leucistic', percentage: 25, count: 1, value: getMorphValue('blue-eyed-leucistic') },
-      { morph: 'Mojave', percentage: 25, count: 1, value: getMorphValue('mojave') },
-      { morph: 'Lesser', percentage: 25, count: 1, value: getMorphValue('lesser') },
-      { morph: 'Normal', percentage: 25, count: 1, value: 50 }
+      { 
+        morph: 'Blue Eyed Leucistic (BEL)', 
+        percentage: 25, 
+        count: 1, 
+        value: getMorphValue('blue-eyed-leucistic') || 500,
+        geneType: 'co-dominant super',
+        description: `Super form from ${maleBEL} × ${femaleBEL}`,
+        rarity: 'rare'
+      },
+      { 
+        morph: maleBEL, 
+        percentage: 25, 
+        count: 1, 
+        value: getMorphValue(mId),
+        geneType: 'co-dominant',
+        description: `Single gene from male parent`
+      },
+      { 
+        morph: femaleBEL, 
+        percentage: 25, 
+        count: 1, 
+        value: getMorphValue(fId),
+        geneType: 'co-dominant',
+        description: `Single gene from female parent`
+      },
+      { 
+        morph: 'Normal', 
+        percentage: 25, 
+        count: 1, 
+        value: 50,
+        geneType: 'wild-type',
+        description: `No morph genes inherited`
+      }
     );
     return outcomes;
   }
   
-  // Dominant gene (Spider, HGW) = 50% show trait
-  const dominantMorphs = ['spider', 'hidden-gene-woma'];
-  for (let morph of dominantMorphs) {
-    if (male.morphs?.includes(morph) || female.morphs?.includes(morph)) {
+  // CO-DOMINANT: Single copy shows trait, double shows super
+  const coDominantMorphs = ['banana', 'pastel', 'mojave', 'lesser', 'cinnamon', 'black-pastel', 'orange-dream', 'enchi'];
+  for (let morph of coDominantMorphs) {
+    const maleHas = maleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    const femaleHas = femaleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    
+    if (maleHas && femaleHas) {
+      // Both parents have same co-dominant = 25% super, 50% single, 25% normal
+      const morphName = morphMap.get(morph)?.name || morph;
       outcomes.push(
-        { morph: morph.charAt(0).toUpperCase() + morph.slice(1), percentage: 50, count: 2, value: getMorphValue(morph) },
-        { morph: 'Normal', percentage: 50, count: 2, value: 50 }
+        { 
+          morph: `Super ${morphName}`, 
+          percentage: 25, 
+          count: 1, 
+          value: getMorphValue(`super-${morph}`) || getMorphValue(morph) * 2,
+          geneType: 'co-dominant super',
+          description: `Double copy - super form`,
+          rarity: 'uncommon'
+        },
+        { 
+          morph: morphName, 
+          percentage: 50, 
+          count: 2, 
+          value: getMorphValue(morph),
+          geneType: 'co-dominant',
+          description: `Single copy from one parent`
+        },
+        { 
+          morph: 'Normal', 
+          percentage: 25, 
+          count: 1, 
+          value: 50,
+          geneType: 'wild-type',
+          description: `No morph genes`
+        }
+      );
+      return outcomes;
+    } else if (maleHas || femaleHas) {
+      // One parent has co-dominant = 50% show, 50% normal
+      const morphName = morphMap.get(morph)?.name || morph;
+      outcomes.push(
+        { 
+          morph: morphName, 
+          percentage: 50, 
+          count: 2, 
+          value: getMorphValue(morph),
+          geneType: 'co-dominant',
+          description: `Single copy inherited`
+        },
+        { 
+          morph: 'Normal', 
+          percentage: 50, 
+          count: 2, 
+          value: 50,
+          geneType: 'wild-type',
+          description: `No morph genes`
+        }
       );
       return outcomes;
     }
   }
   
-  // Recessive × same recessive = 100% visual
-  const recessiveMorphs = ['piebald', 'albino', 'clown'];
+  // DOMINANT: Single copy shows trait, no super form
+  const dominantMorphs = ['spider', 'hidden-gene-woma', 'pinstripe', 'clown'];
+  for (let morph of dominantMorphs) {
+    const maleHas = maleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    const femaleHas = femaleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    
+    if (maleHas || femaleHas) {
+      const morphName = morphMap.get(morph)?.name || morph;
+      outcomes.push(
+        { 
+          morph: morphName, 
+          percentage: 50, 
+          count: 2, 
+          value: getMorphValue(morph),
+          geneType: 'dominant',
+          description: `Dominant gene - always shows when present`
+        },
+        { 
+          morph: 'Normal', 
+          percentage: 50, 
+          count: 2, 
+          value: 50,
+          geneType: 'wild-type',
+          description: `No morph genes`
+        }
+      );
+      return outcomes;
+    }
+  }
+  
+  // RECESSIVE: Both parents must have gene
+  const recessiveMorphs = ['piebald', 'albino', 'axanthic', 'clown', 'ghost', 'caramel'];
   for (let morph of recessiveMorphs) {
-    if (male.morphs?.includes(morph) && female.morphs?.includes(morph)) {
+    const maleHas = maleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    const femaleHas = femaleMorphs.some(m => m.toLowerCase().replace(/ /g, '-') === morph);
+    
+    if (maleHas && femaleHas) {
+      // Both visual = 100% visual offspring
+      const morphName = morphMap.get(morph)?.name || morph;
       outcomes.push({
-        morph: morph.charAt(0).toUpperCase() + morph.slice(1),
+        morph: morphName,
         percentage: 100,
         count: 4,
-        value: getMorphValue(morph)
+        value: getMorphValue(morph),
+        geneType: 'recessive',
+        description: `Both parents visual - all offspring visual`,
+        rarity: 'guaranteed'
+      });
+      return outcomes;
+    } else if (maleHas || femaleHas) {
+      // One visual, one normal = 100% het
+      const morphName = morphMap.get(morph)?.name || morph;
+      outcomes.push({
+        morph: `Het ${morphName}`,
+        percentage: 100,
+        count: 4,
+        value: getMorphValue(morph) * 0.3, // Hets worth ~30% of visual
+        geneType: 'recessive het',
+        description: `All carry gene but don't show it (heterozygous)`
       });
       return outcomes;
     }
   }
   
-  // Different morphs = mix
-  const maleMorph = male.morphs?.[0] || 'Normal';
-  const femaleMorph = female.morphs?.[0] || 'Normal';
+  // MULTI-GENE COMBINATIONS
+  if (maleMorphs.length > 1 || femaleMorphs.length > 1) {
+    // Calculate combo outcomes
+    const comboName = [...new Set([...maleMorphs, ...femaleMorphs])].join(' ');
+    const avgValue = (maleMorphs.reduce((sum, m) => sum + getMorphValue(m.toLowerCase().replace(/ /g, '-')), 0) / maleMorphs.length +
+                     femaleMorphs.reduce((sum, m) => sum + getMorphValue(m.toLowerCase().replace(/ /g, '-')), 0) / femaleMorphs.length) / 2;
+    
+    outcomes.push(
+      {
+        morph: `${comboName} Combo`,
+        percentage: 25,
+        count: 1,
+        value: Math.round(avgValue * 1.5),
+        geneType: 'multi-gene',
+        description: `Multiple genes combined`,
+        rarity: 'uncommon'
+      },
+      {
+        morph: 'Single Gene Offspring',
+        percentage: 50,
+        count: 2,
+        value: Math.round(avgValue * 0.8),
+        geneType: 'mixed',
+        description: `Some genes inherited`
+      },
+      {
+        morph: 'Normal',
+        percentage: 25,
+        count: 1,
+        value: 50,
+        geneType: 'wild-type',
+        description: `No morph genes`
+      }
+    );
+    return outcomes;
+  }
   
-  if (maleMorph !== femaleMorph) {
-    outcomes.push({
-      morph: `${maleMorph} Mix`,
-      percentage: 100,
-      count: 4,
-      value: (getMorphValue(maleMorph) + getMorphValue(femaleMorph)) / 2
-    });
-  } else {
+  // FALLBACK: Simple inheritance
+  const maleMorph = maleMorphs[0] || 'Normal';
+  const femaleMorph = femaleMorphs[0] || 'Normal';
+  
+  if (maleMorph === femaleMorph && maleMorph !== 'Normal') {
+    const mId = maleMorph.toLowerCase().replace(/ /g, '-');
     outcomes.push({
       morph: maleMorph,
       percentage: 100,
       count: 4,
-      value: getMorphValue(maleMorph)
+      value: getMorphValue(mId),
+      geneType: 'same-morph',
+      description: `Both parents same morph`
+    });
+  } else if (maleMorph !== 'Normal' && femaleMorph !== 'Normal') {
+    const mId = maleMorph.toLowerCase().replace(/ /g, '-');
+    const fId = femaleMorph.toLowerCase().replace(/ /g, '-');
+    outcomes.push(
+      {
+        morph: `${maleMorph} Het ${femaleMorph}`,
+        percentage: 50,
+        count: 2,
+        value: (getMorphValue(mId) + getMorphValue(fId)) / 2,
+        geneType: 'mixed',
+        description: `Mixed genetics`
+      },
+      {
+        morph: 'Normal Het',
+        percentage: 50,
+        count: 2,
+        value: getMorphValue(mId) * 0.2,
+        geneType: 'het',
+        description: `Carries genes but doesn't show`
+      }
+    );
+  } else {
+    outcomes.push({
+      morph: 'Normal',
+      percentage: 100,
+      count: 4,
+      value: 50,
+      geneType: 'wild-type',
+      description: `Standard ball python`
     });
   }
   
