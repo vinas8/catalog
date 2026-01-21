@@ -115,7 +115,7 @@
     </style>
 </head>
 <body>
-    <div id="version-badge">v0.7.93</div>
+    <div id="version-badge">v0.7.92</div>
     
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
@@ -130,7 +130,8 @@
     </div>
 
     <script type="module">
-        const cacheBuster = new URLSearchParams(window.location.search).get('v') || '0.7.93';
+        const { DEMO_VERSION } = await import('./config.js');
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || DEMO_VERSION;
         const timestamp = Date.now();
         
         const { SnakeRanch } = await import(`../src/modules/snake-game/SnakeRanch.js?v=${cacheBuster}&t=${timestamp}`);

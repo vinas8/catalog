@@ -6,7 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>🎬 Interactive Demo - Snake Muffin v0.7.86</title>
+  <title>🎬 Interactive Demo - Snake Muffin</title>
+  <!-- VERSION: Update in demo/config.js -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -21,12 +22,15 @@
   <script type="module">
     (async () => {
       try {
+        // Import version config
+        const { DEMO_VERSION } = await import('./config.js');
+        
         // Fix path for GitHub Pages
         const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
         
         // Cache buster - use URL param if provided, otherwise use version
         const urlParams = new URLSearchParams(window.location.search);
-        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || '0.7.86';
+        const cacheBuster = urlParams.get('v') || urlParams.get('cb') || DEMO_VERSION;
         
         // Import modules
         const { Demo } = await import(`${basePath}/src/modules/demo/index.js?v=${cacheBuster}`);
@@ -618,7 +622,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.01',
               title: 'Step 1: Load Calculator',
               description: 'Open mobile-optimized breeding flow',
-              url: `${basePath}/breeding_flow/public/?v=0.7.90`,
+              url: `${basePath}/breeding_flow/public/?v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('📱 Loading mobile breeding calculator...', 'info');
                 await demo.wait(2000);
@@ -650,7 +654,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.02',
               title: 'Step 2: Auto-Load Combo',
               description: 'Test Banana x Piebald with URL params',
-              url: `${basePath}/breeding_flow/public/?male=banana&female=piebald&v=0.7.90`,
+              url: `${basePath}/breeding_flow/public/?male=banana&female=piebald&v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('🔗 Loading with URL parameters...', 'info');
                 demo.log('♂️ Male: Banana (co-dominant)', 'info');
@@ -683,7 +687,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.03',
               title: 'Step 3: Lethal Combo Test',
               description: 'Spider x Spider - should warn',
-              url: `${basePath}/breeding_flow/public/?male=spider&female=spider&v=0.7.90`,
+              url: `${basePath}/breeding_flow/public/?male=spider&female=spider&v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('⚠️ Testing LETHAL combination...', 'warning');
                 demo.log('🐍 Both parents: Spider (wobble risk)', 'warning');
@@ -717,7 +721,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.04',
               title: 'Step 4: View in Dex',
               description: 'Browse morph encyclopedia',
-              url: `${basePath}/dex/?v=0.7.90`,
+              url: `${basePath}/dex/?v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('📚 Loading Morph Dex...', 'info');
                 await demo.wait(2000);
@@ -731,7 +735,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.05',
               title: 'Step 5: MyFarm Check',
               description: 'View owned snakes',
-              url: `${basePath}/game/?v=0.7.90`,
+              url: `${basePath}/game/?v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('🏡 Loading My Farm...', 'info');
                 await demo.wait(2000);
@@ -744,7 +748,7 @@ Chocolate,Pastel,Female,2023,`;
               smri: 'S9.2,3.06',
               title: 'Step 6: Integration Test',
               description: 'Verify all systems',
-              url: `${basePath}/test-integration.html?v=0.7.90`,
+              url: `${basePath}/test-integration.html?v=${DEMO_VERSION}`,
               action: async (demo) => {
                 demo.log('🧪 Running integration tests...', 'info');
                 await demo.wait(2000);

@@ -1,7 +1,6 @@
 /**
  * Demo Module - Unified Interactive Demo System
  * @module modules/demo/Demo
- * @version 0.7.75
  * 
  * Features:
  * - Mobile-first responsive split-screen layout
@@ -17,6 +16,7 @@
 import { showSMRIModal } from '../smri/index.js';
 import { SMRI_REGISTRY } from '../../config/smri-config.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
+import { VERSION_CONFIG } from '../../config/version.js';
 
 export class Demo {
   constructor(options = {}) {
@@ -25,7 +25,7 @@ export class Demo {
     this.workerUrl = options.workerUrl || 'https://catalog.navickaszilvinas.workers.dev';
     this.baseUrl = options.baseUrl || window.location.origin;
     this.purchaseFlow = options.purchaseFlow || null;  // External flow class
-    this.version = '0.7.90';
+    this.version = VERSION_CONFIG.DISPLAY;
     this.smri = SMRI_REGISTRY['component-demo-system'];
     
     this.currentScenario = null;

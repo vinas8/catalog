@@ -78,7 +78,8 @@
     <div id="version-badge">Loading...</div>
 
     <script type="module">
-        const cacheBuster = new URLSearchParams(window.location.search).get('v') || '0.7.84';
+        const { DEMO_VERSION } = await import('./config.js');
+        const cacheBuster = new URLSearchParams(window.location.search).get('v') || DEMO_VERSION;
         const timestamp = Date.now();
         
         const { SnakeGame } = await import(`../src/modules/snake-game/index.js?v=${cacheBuster}&t=${timestamp}`);

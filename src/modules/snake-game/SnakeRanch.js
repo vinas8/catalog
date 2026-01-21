@@ -3,11 +3,13 @@
  * SMRI: S11.2,10.05
  */
 
+import { VERSION_CONFIG } from '../../config/version.js';
+
 export class SnakeRanch {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.version = '0.7.93';
+        this.version = VERSION_CONFIG.DISPLAY;
         
         // Simple clean map - 20x15 tiles @ 32px
         this.tileSize = 32;

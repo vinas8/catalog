@@ -3,11 +3,13 @@
  * SMRI: S11.2,10.02
  */
 
+import { VERSION_CONFIG } from '../../config/version.js';
+
 export class SnakeGame {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.version = '0.7.83';
+        this.version = VERSION_CONFIG.DISPLAY;
         this.smri = 'S11.2,10.03';
         
         // Game dimensions (internal pixel resolution)
