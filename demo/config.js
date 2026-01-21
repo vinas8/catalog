@@ -1,3 +1,7 @@
-// Demo version config - imports from global version
-export { VERSION_CONFIG } from '../src/config/version.js';
-export const DEMO_VERSION = VERSION_CONFIG?.CACHE_BUSTER || '0.7.92';
+// Demo version config - hardcoded to match package.json
+export const VERSION_CONFIG = {
+  CACHE_BUSTER: '0.7.94',
+  DISPLAY: '0.7.94'
+};
+
+export const DEMO_VERSION = '0.7.94';
