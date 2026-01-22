@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quick Test</title>
+<style>
+body { background: #000; color: #0f0; font-family: monospace; padding: 20px; font-size: 16px; }
+pre { background: #111; padding: 15px; border: 1px solid #0f0; }
+.ok { color: #0f0; }
+.fail { color: #f00; }
+</style>
+</head>
+<body>
+<h1>🧪 QUICK TEST</h1>
+<pre id="out">Loading...</pre>
+<script type="module">
+const o = document.getElementById('out');
+const log = (t) => { o.textContent += t + '\n'; };
+
+log('START: ' + new Date().toTimeString().slice(0,8));
+
+try {
+  const bp = location.hostname.includes('github.io') ? '/catalog' : '';
+  log('Base: ' + (bp || 'root'));
+  
+  log('\n1. Loading module...');
+  const m = await import(bp + '/src/modules/breeding/genetics-core.js?v=0.8.0');
+  log('✅ Module loaded');
+  
+  log('\n2. Loading database...');
+  const db = await m.loadGeneticsDatabase(true);
+  
+  if (db && db.morphs) {
+    log('✅ SUCCESS!');
+    log('Morphs: ' + db.morphs.length);
+    log('First: ' + db.morphs[0].name);
+    log('Last: ' + db.morphs[db.morphs.length-1].name);
+    
+    log('\n3. Testing search...');
+    const test = db.morphs.filter(x => x.name.toLowerCase().includes('banana'));
+    log('Search "banana": ' + test.length + ' found');
+    if (test.length > 0) log('Result: ' + test[0].name);
+    
+    log('\n✅ ALL WORKING!');
+  } else {
+    log('❌ FAIL: No data');
+  }
+  
+} catch (e) {
+  log('❌ ERROR: ' + e.message);
+}
+
+log('\nEND: ' + new Date().toTimeString().slice(0,8));
+</script>
+</body>
+</html>
