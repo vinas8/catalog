@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧮 Calculator Debug Tool</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #00ff00;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+    .panel {
+      background: #000;
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel h2 {
+      color: #00ff00;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .log-entry {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: #0a0a0a;
+      border-left: 3px solid #00ff00;
+    }
+    .log-entry.error {
+      color: #ff0000;
+      border-left-color: #ff0000;
+    }
+    .log-entry.success {
+      color: #00ff00;
+      border-left-color: #00ff00;
+    }
+    .log-entry.warning {
+      color: #ffaa00;
+      border-left-color: #ffaa00;
+    }
+    .log-entry.info {
+      color: #00aaff;
+      border-left-color: #00aaff;
+    }
+    .status-box {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      margin: 0.25rem;
+      background: #0a0a0a;
+      border: 1px solid #00ff00;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .status-box.fail {
+      border-color: #ff0000;
+      color: #ff0000;
+    }
+    .test-input {
+      width: 100%;
+      padding: 0.75rem;
+      background: #0a0a0a;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      font-family: inherit;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    .test-input:focus {
+      outline: none;
+      border-color: #00ffaa;
+    }
+    .morph-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background: #0a0a0a;
+    }
+    .morph-item {
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      border-left: 2px solid #00ff00;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .morph-item:hover {
+      background: #1a1a1a;
+      border-left-width: 4px;
+    }
+    button {
+      background: #00ff00;
+      color: #000;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      margin: 0.5rem 0.5rem 0.5rem 0;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #00ffaa;
+    }
+    .timestamp {
+      color: #666;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧮 BREEDING CALCULATOR - DEBUG TOOL</h1>
+    
+    <div class="panel">
+      <h2>📊 SYSTEM STATUS</h2>
+      <div id="status-container">
+        <div class="status-box">⏳ Initializing...</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>📝 CONSOLE LOG</h2>
+      <div id="console-log"></div>
+    </div>
+
+    <div class="panel">
+      <h2>🧪 LIVE TEST - Type a morph name</h2>
+      <input type="text" class="test-input" id="test-input" placeholder="Type 'banana', 'piebald', or any morph...">
+      <div id="search-results"></div>
+    </div>
+
+    <div class="panel">
+      <h2>📚 DATABASE CONTENTS</h2>
+      <button id="show-morphs-btn">Show All Morphs</button>
+      <button id="reload-btn">Reload Database</button>
+      <div id="morphs-container"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    // ============================================================================
+    // DEBUG CONSOLE LOGGER
+    // ============================================================================
+    const consoleLog = document.getElementById('console-log');
+    const statusContainer = document.getElementById('status-container');
+    const searchResults = document.getElementById('search-results');
+    const morphsContainer = document.getElementById('morphs-container');
+    
+    let logCount = 0;
+    
+    function addLog(message, type = 'info') {
+      logCount++;
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.innerHTML = `<span class="timestamp">[${timestamp}]</span>${message}`;
+      consoleLog.appendChild(entry);
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+      
+      // Also log to real console
+      console.log(`[DEBUG] ${message}`);
+    }
+    
+    function updateStatus(items) {
+      statusContainer.innerHTML = items.map(item => 
+        `<div class="status-box ${item.fail ? 'fail' : ''}">${item.text}</div>`
+      ).join('');
+    }
+
+    // Override console methods to capture logs
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    console.log = function(...args) {
+      addLog(args.join(' '), 'info');
+      originalLog.apply(console, args);
+    };
+    
+    console.error = function(...args) {
+      addLog(args.join(' '), 'error');
+      originalError.apply(console, args);
+    };
+    
+    console.warn = function(...args) {
+      addLog(args.join(' '), 'warning');
+      originalWarn.apply(console, args);
+    };
+
+    // ============================================================================
+    // INITIALIZE
+    // ============================================================================
+    
+    let morphDatabase = [];
+    let geneticsModule = null;
+    
+    async function init() {
+      try {
+        addLog('🚀 Starting breeding calculator debug session...', 'info');
+        
+        // Detect environment
+        const basePath = window.location.hostname.includes('github.io') ? '/catalog' : '';
+        const cacheBuster = '0.8.0';
+        window.APP_BASE_PATH = basePath;
+        
+        addLog(`📂 Base path: ${basePath || '(root)'}`, 'info');
+        addLog(`🔧 Cache buster: ${cacheBuster}`, 'info');
+        
+        updateStatus([
+          { text: '🌐 Environment: ' + (basePath ? 'GitHub Pages' : 'Localhost') },
+          { text: '⏳ Loading module...' }
+        ]);
+        
+        // Load genetics module
+        addLog('📦 Loading genetics-core module...', 'info');
+        geneticsModule = await import(`${basePath}/src/modules/breeding/genetics-core.js?v=${cacheBuster}`);
+        addLog('✅ Module loaded successfully', 'success');
+        addLog(`   Functions: ${Object.keys(geneticsModule).join(', ')}`, 'info');
+        
+        // Load database
+        addLog('📚 Loading genetics database...', 'info');
+        const result = await geneticsModule.loadGeneticsDatabase(true);
+        
+        if (result && result.morphs) {
+          morphDatabase = result.morphs;
+          addLog(`✅ SUCCESS! Loaded ${morphDatabase.length} morphs`, 'success');
+          addLog(`   Version: ${result.version}`, 'info');
+          addLog(`   First morph: ${morphDatabase[0].name}`, 'info');
+          addLog(`   Last morph: ${morphDatabase[morphDatabase.length - 1].name}`, 'info');
+          
+          updateStatus([
+            { text: '✅ Environment: ' + (basePath ? 'GitHub Pages' : 'Localhost') },
+            { text: `✅ Module Loaded` },
+            { text: `✅ Database: ${morphDatabase.length} morphs` }
+          ]);
+          
+          // Enable live test
+          setupLiveTest();
+          
+        } else {
+          addLog('❌ FAILED: No data returned from loadGeneticsDatabase', 'error');
+          updateStatus([
+            { text: '❌ Database Load Failed', fail: true }
+          ]);
+        }
+        
+      } catch (error) {
+        addLog(`❌ CRITICAL ERROR: ${error.message}`, 'error');
+        addLog(`   Stack: ${error.stack}`, 'error');
+        updateStatus([
+          { text: '❌ Fatal Error', fail: true }
+        ]);
+      }
+    }
+
+    // ============================================================================
+    // LIVE TEST
+    // ============================================================================
+    
+    function setupLiveTest() {
+      const input = document.getElementById('test-input');
+      
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+          searchResults.innerHTML = '<p style="color: #666; padding: 1rem;">Type at least 2 characters...</p>';
+          return;
+        }
+        
+        addLog(`🔍 Searching for: "${query}"`, 'info');
+        
+        const matches = morphDatabase.filter(m => 
+          m.name.toLowerCase().includes(query) ||
+          m.aliases?.some(a => a.toLowerCase().includes(query))
+        );
+        
+        addLog(`   Found ${matches.length} matches`, matches.length > 0 ? 'success' : 'warning');
+        
+        if (matches.length === 0) {
+          searchResults.innerHTML = '<p style="color: #ffaa00; padding: 1rem;">❌ No morphs found</p>';
+          return;
+        }
+        
+        searchResults.innerHTML = `
+          <div style="color: #00ff00; padding: 0.5rem; margin-top: 1rem;">
+            ✅ Found ${matches.length} match${matches.length === 1 ? '' : 'es'}:
+          </div>
+          <div class="morph-list">
+            ${matches.map(m => `
+              <div class="morph-item">
+                <strong>${m.name}</strong> - 
+                ${m.gene_type} | 
+                $${m.market_value_usd || 'N/A'} | 
+                Health: ${m.health_risk || 'NONE'}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      });
+    }
+
+    // ============================================================================
+    // SHOW ALL MORPHS
+    // ============================================================================
+    
+    document.getElementById('show-morphs-btn').addEventListener('click', () => {
+      if (morphDatabase.length === 0) {
+        morphsContainer.innerHTML = '<p style="color: #ff0000; padding: 1rem;">❌ No morphs loaded yet</p>';
+        return;
+      }
+      
+      addLog(`📋 Displaying all ${morphDatabase.length} morphs`, 'info');
+      
+      morphsContainer.innerHTML = `
+        <div class="morph-list">
+          ${morphDatabase.map((m, i) => `
+            <div class="morph-item">
+              <strong>${i + 1}. ${m.name}</strong> - 
+              ${m.gene_type} | 
+              $${m.market_value_usd || 'N/A'} | 
+              Health: ${m.health_risk || 'NONE'}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    });
+
+    // ============================================================================
+    // RELOAD DATABASE
+    // ============================================================================
+    
+    document.getElementById('reload-btn').addEventListener('click', async () => {
+      addLog('🔄 Reloading database...', 'info');
+      morphDatabase = [];
+      morphsContainer.innerHTML = '';
+      searchResults.innerHTML = '';
+      await init();
+    });
+
+    // ============================================================================
+    // START
+    // ============================================================================
+    
+    init();
+  </script>
+</body>
+</html>
