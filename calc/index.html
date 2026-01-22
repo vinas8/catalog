@@ -869,9 +869,11 @@
 
     async function calculateResults() {
       if (selectedMaleMorphs.length === 0 || selectedFemaleMorphs.length === 0) {
-        alert('Please select morphs for both male and female parents');
+        alert('⚠️ Please select morphs for both male and female parents');
         return;
       }
+
+      console.log('🧬 Calculating breeding results...');
 
       // Create snake objects for calculation
       const male = {
@@ -890,13 +892,19 @@
         sex: 'female'
       };
 
-      console.log('Calculating compatibility...', { male, female });
+      console.log('📊 Parents:', { male: male.morphs.join(' + '), female: female.morphs.join(' + ') });
 
       // Calculate compatibility
       const compatibility = calculateCompatibility(male, female);
       const offspring = calculateOffspring(male, female);
       const healthRisk = assessHealthRisk(male, female);
       const lethalCheck = checkLethalCombo(male.morphs, female.morphs);
+
+      console.log('✅ Calculation complete:', {
+        score: compatibility.score,
+        offspring: offspring.outcomes?.length || 0,
+        lethal: lethalCheck?.lethal || false
+      });
 
       // Display results
       displayResults(compatibility, offspring, healthRisk, lethalCheck, male, female);
@@ -1148,9 +1156,17 @@
       renderMorphTags('female');
       updateSyncStatus();
       
-      // Auto-calculate
+      // Auto-calculate and scroll to results
       setTimeout(() => {
         calculateResults();
+        
+        // Scroll to results smoothly
+        setTimeout(() => {
+          const resultsContainer = document.getElementById('results-container');
+          if (resultsContainer) {
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
       }, 500);
     }
 
