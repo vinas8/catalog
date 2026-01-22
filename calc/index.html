@@ -417,6 +417,13 @@
       }
     }
 
+    /* Button container */
+    .button-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
     /* Mobile overrides - only necessary adjustments */
     @media (max-width: 767px) {
       /* Input fields - prevent iOS zoom */
@@ -424,10 +431,17 @@
         font-size: 16px !important;
       }
 
+      /* Stack buttons vertically on mobile */
+      .button-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+
       /* Full width buttons */
       .calculate-btn,
       .demo-btn {
-        width: 100%;
+        width: 100% !important;
+        flex: 1 1 auto !important;
       }
 
       /* Single column results */
@@ -570,12 +584,12 @@
           </div>
         </div>
 
-        <div style="display: flex; gap: 15px;">
+        <div class="button-group">
           <button id="calculate-btn" class="calculate-btn" style="flex: 1;">
-            🧬 Calculate Breeding Compatibility & Outcomes
+            🧬 Calculate Breeding
           </button>
-          <button id="demo-btn" class="calculate-btn" style="flex: 0 0 auto; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-            🎬 Load Demo
+          <button id="demo-btn" class="calculate-btn" style="flex: 0 0 auto; min-width: 140px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            🎬 Demo
           </button>
         </div>
 
