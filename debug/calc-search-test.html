@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calc Debug - Live Test</title>
+<style>
+body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+input { background: #111; color: #0f0; border: 2px solid #0f0; padding: 10px; font-size: 16px; width: 100%; margin: 10px 0; }
+.dropdown { background: #111; border: 2px solid #0f0; max-height: 300px; overflow-y: auto; }
+.item { padding: 10px; border-bottom: 1px solid #0f0; cursor: pointer; }
+.item:hover { background: #222; }
+pre { background: #111; padding: 10px; border: 1px solid #0f0; margin: 10px 0; }
+</style>
+</head>
+<body>
+<h1>🧪 CALC MORPH SEARCH TEST</h1>
+<pre id="status">Loading...</pre>
+
+<h2>Type morph name (try "banana"):</h2>
+<input type="text" id="search" placeholder="Type at least 2 characters...">
+<div id="results" class="dropdown"></div>
+
+<script type="module">
+const status = document.getElementById('status');
+const searchInput = document.getElementById('search');
+const results = document.getElementById('results');
+
+const log = (msg) => {
+  status.textContent += msg + '\n';
+  console.log(msg);
+};
+
+log('START: ' + new Date().toLocaleTimeString());
+
+try {
+  const basePath = location.hostname.includes('github.io') ? '/catalog' : '';
+  log('Base: ' + (basePath || 'root'));
+  
+  log('Loading genetics module...');
+  const module = await import(basePath + '/src/modules/breeding/genetics-core.js?v=0.8.0');
+  log('✅ Module loaded');
+  
+  log('Loading database...');
+  const db = await module.loadGeneticsDatabase(true);
+  
+  if (!db || !db.morphs) {
+    log('❌ FAIL: No database');
+    throw new Error('Database not loaded');
+  }
+  
+  log('✅ Database: ' + db.morphs.length + ' morphs');
+  log('First: ' + db.morphs[0].name);
+  
+  const morphDatabase = db.morphs;
+  
+  // Setup search
+  log('\n✅ READY TO SEARCH!');
+  log('Type in the input above...\n');
+  
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    
+    log('Search: "' + query + '"');
+    
+    if (query.length < 2) {
+      results.innerHTML = '<div class="item" style="color: #666;">Type at least 2 characters</div>';
+      return;
+    }
+    
+    const matches = morphDatabase.filter(m => 
+      m.name.toLowerCase().includes(query) ||
+      m.aliases?.some(a => a.toLowerCase().includes(query))
+    );
+    
+    log('Found: ' + matches.length + ' matches');
+    
+    if (matches.length === 0) {
+      results.innerHTML = '<div class="item" style="color: #f00;">❌ No morphs found</div>';
+      return;
+    }
+    
+    results.innerHTML = matches.map(m => `
+      <div class="item">
+        <strong>${m.name}</strong> - ${m.gene_type} | $${m.market_value_usd || 'N/A'}
+      </div>
+    `).join('');
+  });
+  
+} catch (e) {
+  log('❌ ERROR: ' + e.message);
+  log(e.stack);
+}
+</script>
+</body>
+</html>
