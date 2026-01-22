@@ -680,19 +680,25 @@
         if (result && result.morphs) {
           morphDatabase = result.morphs;
           console.log(`✅ Genetics database loaded: ${morphDatabase.length} morphs (v${result.version})`);
+          console.log(`   First morph: ${morphDatabase[0]?.name}`);
+          console.log(`   Sample IDs: ${morphDatabase.slice(0, 3).map(m => m.id).join(', ')}`);
           statusEl.innerHTML = `✅ <strong>${morphDatabase.length} morphs</strong> loaded • <a href="${basePath}/data/genetics/" style="color: #667eea; text-decoration: underline;">v${result.version || '3.0.0'}</a>`;
+          
+          // Setup autocomplete ONLY after database loads
+          console.log('🔧 Setting up autocomplete...');
+          setupAutocomplete('male');
+          setupAutocomplete('female');
+          console.log('✅ Autocomplete ready');
         } else {
-          console.error('❌ Failed to load genetics database');
+          console.error('❌ Failed to load genetics database - result:', result);
           statusEl.innerHTML = `❌ Failed to load genetics database. Check console for details.`;
+          return; // Don't setup autocomplete if database failed
         }
       } catch (err) {
         console.error('❌ Error loading genetics:', err);
         statusEl.innerHTML = `❌ Error: ${err.message}`;
+        return; // Don't setup autocomplete on error
       }
-
-      // Setup autocomplete
-      setupAutocomplete('male');
-      setupAutocomplete('female');
 
       // Setup calculate button
       document.getElementById('calculate-btn').addEventListener('click', calculateResults);
@@ -712,8 +718,12 @@
       const dropdown = document.getElementById(`${parent}-autocomplete`);
       const tagsContainer = document.getElementById(`${parent}-morphs`);
 
+      console.log(`🔧 setupAutocomplete(${parent}): morphDatabase has ${morphDatabase.length} morphs`);
+
       input.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
+        
+        console.log(`🔍 ${parent} search: "${query}" (database: ${morphDatabase.length} morphs)`);
         
         if (query.length < 2) {
           dropdown.classList.remove('show');
@@ -724,6 +734,8 @@
           m.name.toLowerCase().includes(query) ||
           m.aliases?.some(a => a.toLowerCase().includes(query))
         );
+
+        console.log(`   Found ${matches.length} matches`);
 
         if (matches.length === 0) {
           dropdown.innerHTML = '<div class="autocomplete-item">No morphs found</div>';
@@ -748,6 +760,7 @@
           item.addEventListener('click', () => {
             const morphId = item.dataset.morphId;
             if (morphId) {
+              console.log(`✅ Selected ${parent}: ${morphId}`);
               addMorph(parent, morphId);
               input.value = '';
               dropdown.classList.remove('show');
