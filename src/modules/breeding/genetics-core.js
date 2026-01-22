@@ -16,11 +16,51 @@ let healthRiskMap = new Map();
 export async function loadGeneticsDatabase(useExpandedData = true) {
   try {
     const basePath = window.APP_BASE_PATH || '';
+    const CACHE_KEY = 'serpent_town_genetics_db_v3';
+    const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
     
-    // Load morphs database (use comprehensive v3.0 with 66+ morphs!)
+    // Try localStorage first
+    console.log('🔍 Checking localStorage cache...');
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+      try {
+        const cached = JSON.parse(cachedData);
+        const cacheAge = Date.now() - (cached.timestamp || 0);
+        
+        if (cacheAge < CACHE_DURATION) {
+          console.log(`✅ Using cached database (${Math.round(cacheAge / 1000 / 60)} min old)`);
+          morphsData = cached.data;
+          
+          // Build lookup maps from cached data
+          morphsData.morphs.forEach(morph => {
+            morphMap.set(morph.id, morph);
+            const value = morph.market_value_usd?.median || morph.market_value_usd || 200;
+            morphValueMap.set(morph.id, value);
+            healthRiskMap.set(morph.id, morph.health_risk || 'NONE');
+          });
+          
+          if (morphsData.popular_combos) {
+            morphsData.popular_combos.forEach(combo => {
+              morphMap.set(combo.id, combo);
+              morphValueMap.set(combo.id, combo.market_value_usd || 300);
+              healthRiskMap.set(combo.id, combo.health_risk || 'NONE');
+            });
+          }
+          
+          console.log(`✅ Loaded ${morphsData.morphs.length} morphs from cache`);
+          return morphsData;
+        } else {
+          console.log('⏰ Cache expired, fetching fresh data...');
+        }
+      } catch (e) {
+        console.warn('⚠️ Cache corrupted, fetching fresh data...', e);
+      }
+    }
+    
+    // Load morphs database from network
     const morphFile = useExpandedData 
-      ? `${basePath}/data/genetics/morphs-comprehensive.json`  // v3.0 - 66 morphs
-      : `${basePath}/data/genetics/morphs.json`;               // v1.0 - 50 morphs (legacy)
+      ? `${basePath}/data/genetics/morphs-comprehensive.json`
+      : `${basePath}/data/genetics/morphs.json`;
     
     console.log('📂 Fetching:', morphFile);
     const morphsResponse = await fetch(morphFile);
@@ -30,6 +70,17 @@ export async function loadGeneticsDatabase(useExpandedData = true) {
     }
     
     morphsData = await morphsResponse.json();
+    
+    // Cache the data
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data: morphsData,
+        timestamp: Date.now()
+      }));
+      console.log('💾 Database cached to localStorage');
+    } catch (e) {
+      console.warn('⚠️ Could not cache to localStorage:', e.message);
+    }
     
     // Load health risks
     const healthFile = `${basePath}/data/genetics/health-risks.json`;
@@ -68,10 +119,11 @@ export async function loadGeneticsDatabase(useExpandedData = true) {
     const comboCount = morphsData.popular_combos?.length || 0;
     console.log(`✅ Loaded ${baseCount} morphs + ${comboCount} combos from genetics database v${morphsData.version}`);
     
-    return morphsData; // Return the actual data
+    return morphsData;
   } catch (error) {
     console.error('❌ Failed to load genetics database:', error.message);
     console.error('   Full error:', error);
+    console.error('   Base path:', window.APP_BASE_PATH || '(root)');
     return null;
   }
 }
