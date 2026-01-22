@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Debug Calc</title></head><body>
+<h1>🧪 Testing Breeding Calculator</h1>
+<pre id="log"></pre>
+<script type="module">
+const log = document.getElementById('log');
+function addLog(msg) {
+  log.textContent += msg + '\n';
+  console.log(msg);
+}
+
+try {
+  addLog('1️⃣ Testing GitHub Pages calculator...');
+  const basePath = '/catalog';
+  
+  // Test module load
+  addLog('2️⃣ Loading genetics-core module...');
+  const module = await import(`https://vinas8.github.io${basePath}/src/modules/breeding/genetics-core.js?v=0.8.0`);
+  addLog('✅ Module loaded with functions: ' + Object.keys(module).slice(0, 5).join(', '));
+  
+  // Test database load
+  addLog('3️⃣ Loading genetics database...');
+  const result = await module.loadGeneticsDatabase(true);
+  
+  if (result && result.morphs) {
+    addLog(`✅ SUCCESS! Loaded ${result.morphs.length} morphs`);
+    addLog(`   First 5 morphs: ${result.morphs.slice(0, 5).map(m => m.name).join(', ')}`);
+    addLog('');
+    addLog('✅ DATABASE IS WORKING ON GITHUB PAGES!');
+    addLog('');
+    addLog('🔍 If autocomplete still fails, check:');
+    addLog('   - Browser console for JS errors');
+    addLog('   - Network tab for failed requests');
+    addLog('   - Check if init() function runs');
+  } else {
+    addLog('❌ FAILED: No data returned');
+  }
+  
+} catch (err) {
+  addLog('❌ ERROR: ' + err.message);
+  addLog('   Stack: ' + err.stack);
+}
+</script>
+</body></html>
