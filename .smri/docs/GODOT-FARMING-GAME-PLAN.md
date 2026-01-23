@@ -1,26 +1,74 @@
-# Godot Farming Game - Implementation Plan
+# Godot RPG → Farming Game - Implementation Plan
 
 **SMRI Code:** S9.2,6.01 (New farming module, uses game+testing)
 
 ## 📺 Tutorial Source
 **Playlist:** https://youtube.com/playlist?list=PL9FzW-m48fn2SlrW0KoLT4n5egNdX-W9a&si=sREWspajKQlKFQGa
 
-**Goal:** Clone Stardew Valley-type mechanics from tutorial series, implement in JavaScript/HTML5 for web, integrate with existing Snake Muffin game.
+**Strategy:** 
+1. **Phase 1:** Clone Action RPG tutorial (movement, sprites, map, animations) 
+2. **Phase 2:** Evolve into Stardew Valley farming gameplay
+
+**Goal:** Start with solid game foundation (movement, world, rendering), then add farming/life-sim mechanics.
 
 ---
 
-## 🎯 Core Features to Clone from Tutorial
+## 🎯 PHASE 1: Clone Action RPG Foundation (Videos 1-22)
 
-### 1. **Farming System**
-- [ ] Tilling soil
-- [ ] Planting seeds
-- [ ] Watering crops
-- [ ] Growth stages (day-based)
-- [ ] Harvesting
-- [ ] Seasonal crops
-- [ ] Crop quality system
+### 1. **Player Movement & Animation** (Videos 1-6)
+- [ ] Basic 8-directional movement
+- [ ] Delta time for smooth motion
+- [ ] AnimationPlayer equivalent in JavaScript
+- [ ] Sprite sheet animations
+- [ ] Animation state tree
 
-### 2. **Animal Husbandry** 
+### 2. **World & Rendering** (Videos 7-8)
+- [ ] Tile-based map system
+- [ ] Autotile/tileset rendering
+- [ ] YSort (depth sorting)
+- [ ] Collision layers
+- [ ] Canvas rendering engine
+
+### 3. **Combat System** (Videos 9-13)
+- [ ] Attack animations
+- [ ] State machine (idle, move, attack, roll)
+- [ ] Hitbox/Hurtbox system
+- [ ] Knockback physics
+- [ ] Roll/dodge mechanic
+
+### 4. **Enemy AI** (Videos 14-21)
+- [ ] Enemy stats system
+- [ ] Basic AI behaviors (wander, chase)
+- [ ] Pathfinding
+- [ ] Soft collisions
+- [ ] Death/spawn effects
+
+### 5. **UI & Polish** (Videos 18, 22)
+- [ ] Health/hearts display
+- [ ] Camera follow player
+- [ ] Camera limits
+- [ ] Sound effects
+- [ ] Hit flash effects
+
+---
+
+## 🌾 PHASE 2: Add Farming/Stardew Elements
+
+### 1. **Replace Combat with Farming Tools**
+- [ ] Hoe tool (replace sword attack animation)
+- [ ] Watering can (use attack hitbox for area)
+- [ ] Axe and Pickaxe
+- [ ] Tool upgrade system
+
+### 2. **Crop System**
+- [ ] Tilling soil (change tile state)
+- [ ] Planting seeds (inventory → tile)
+- [ ] Watering (tile moisture state)
+- [ ] Growth stages (time-based)
+- [ ] Harvesting (collect to inventory)
+- [ ] Seasonal system
+
+### 3. **Animal Husbandry & Snakes** 
 - [ ] Animal housing (coops, barns)
 - [ ] Feeding animals
 - [ ] Collecting products (eggs, milk, etc.)
@@ -116,35 +164,49 @@ src/modules/farming/
 
 ---
 
-## 📝 Implementation Phases
+## 📝 Implementation Timeline
 
-### Phase 1: Core Farming (Week 1-2)
-- [ ] Watch tutorials 1-5, take notes
-- [ ] Create basic tile grid system
-- [ ] Implement crop planting/growth
-- [ ] Add watering mechanic
-- [ ] Simple day/night cycle
+### Week 1-2: Core Game Engine (Videos 1-8)
+- [ ] Day 1-2: Player movement system
+- [ ] Day 3-4: Animation system
+- [ ] Day 5-6: Tile-based world rendering
+- [ ] Day 7: Collision system
+- [ ] Day 8-9: Canvas optimization
+- [ ] Day 10: Camera system
 
-### Phase 2: Tools & Energy (Week 3)
-- [ ] Watch tutorials 6-10
-- [ ] Tool system (hoe, watering can)
-- [ ] Energy/stamina system
-- [ ] Tool animations
-- [ ] Sleep/save mechanic
+**Deliverable:** Player can walk around a tile-based world
 
-### Phase 3: Animals & Economy (Week 4)
-- [ ] Watch tutorials 11-15
-- [ ] Add chickens, cows
-- [ ] Product collection
-- [ ] Shop for seeds/animals
-- [ ] Currency system
+### Week 3: State Machine & Interaction (Videos 9-13)
+- [ ] Day 1-2: State machine pattern
+- [ ] Day 3-4: Action/interaction hitboxes
+- [ ] Day 5: Roll/dash mechanic
+- [ ] Day 6-7: Knockback & physics
 
-### Phase 4: NPCs & Polish (Week 5-6)
-- [ ] Watch remaining tutorials
-- [ ] NPC dialogue
-- [ ] Quest system
-- [ ] Weather effects
-- [ ] UI polish
+**Deliverable:** Player can interact with world (attack → till soil)
+
+### Week 4: Entity System (Videos 14-21)
+- [ ] Day 1-3: Entity/stats system
+- [ ] Day 4-5: AI behaviors (for animals)
+- [ ] Day 6-7: Spawning system
+
+**Deliverable:** Moving entities (enemies → animals)
+
+### Week 5-6: Convert to Farming Mechanics
+- [ ] Day 1-2: Replace combat with farming tools
+- [ ] Day 3-4: Crop planting/growth system
+- [ ] Day 5-6: Inventory & storage
+- [ ] Day 7-8: Time/day cycle
+- [ ] Day 9-10: Shop & economy
+
+**Deliverable:** Playable farming game
+
+### Week 7-8: Snake Integration & Polish
+- [ ] Day 1-3: Integrate snake breeding system
+- [ ] Day 4-5: NPCs & dialogue
+- [ ] Day 6-8: UI/UX polish
+- [ ] Day 9-10: Testing & bug fixes
+
+**Deliverable:** Full game with snakes + farming
 
 ---
 
@@ -158,22 +220,40 @@ src/modules/farming/
 
 ---
 
-## 📊 Tutorial Analysis Plan
+## 🎓 Tutorial → JavaScript Translation Guide
 
-### Method 1: Manual Notes
-- Watch each video
-- Document mechanics, formulas, systems
-- Screenshot key diagrams
+### Godot → JavaScript Mapping
 
-### Method 2: AI Transcription (Recommended)
-- Use YouTube auto-captions
-- Feed to AI for summarization
-- Extract: mechanics, data structures, formulas
+| Godot Concept | JavaScript Equivalent |
+|---------------|----------------------|
+| `Node2D` | Canvas sprite object |
+| `KinematicBody2D` | Entity with collision |
+| `move_and_slide()` | Custom physics function |
+| `AnimationPlayer` | Sprite sheet animator |
+| `AnimationTree` | State machine class |
+| `Area2D` (hitbox) | Collision rectangle |
+| `TileMap` | 2D array + tile rendering |
+| `YSort` | Z-index sorting |
+| `Signal` | EventEmitter/callbacks |
+| `Vector2` | `{x, y}` object |
+| `delta` | `deltaTime` from RAF |
 
-### Method 3: Code Analysis
-- If tutorial provides GitHub repo
-- Study Godot scripts
-- Translate GDScript → JavaScript
+### Key Videos to Watch First
+
+**Priority 1 (Foundation):**
+- Video 1-3: Movement basics
+- Video 7-8: Tile system
+- Video 9: State machines
+
+**Priority 2 (Mechanics):**
+- Video 5-6: Animation system
+- Video 10: Signals/events
+- Video 20: Camera
+
+**Priority 3 (Optional for MVP):**
+- Combat videos (adapt to farming)
+- Enemy AI (adapt to animals)
+- UI/polish videos
 
 ---
 
