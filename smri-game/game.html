@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Serpent Town RPG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            background: #000;
+            border: 4px solid #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        #debugInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            padding: 10px;
+            font-size: 10px;
+            border: 1px solid #0f0;
+            font-family: 'Courier New', monospace;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 10px;
+            font-size: 8px;
+            border: 1px solid #fff;
+            text-align: right;
+        }
+        
+        #backButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'Press Start 2P', monospace;
+            z-index: 101;
+        }
+        
+        #backButton:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+        
+        <button id="backButton" onclick="window.location.href='index.html'">← BACK</button>
+        
+        <div id="debugInfo">
+            <div>FPS: <span id="fps">60</span></div>
+            <div>X: <span id="posX">0</span>, Y: <span id="posY">0</span></div>
+            <div>VX: <span id="velX">0</span>, VY: <span id="velY">0</span></div>
+            <div>State: <span id="state">MOVE</span></div>
+        </div>
+        
+        <div id="controls">
+            WASD / Arrow Keys - Move<br>
+            Space - Roll<br>
+            Z / Enter - Attack
+        </div>
+    </div>
+    
+    <script type="module">
+        // =================================================================
+        // GAME ENGINE - Based on Godot Action RPG Tutorial
+        // =================================================================
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game constants
+        const TILE_SIZE = 16;
+        const WORLD_WIDTH = 40;
+        const WORLD_HEIGHT = 30;
+        
+        // =================================================================
+        // INPUT SYSTEM
+        // =================================================================
+        
+        class Input {
+            static keys = {};
+            static keysPressed = {};
+            
+            static init() {
+                window.addEventListener('keydown', (e) => {
+                    if (!this.keys[e.key]) {
+                        this.keysPressed[e.key] = true;
+                    }
+                    this.keys[e.key] = true;
+                });
+                
+                window.addEventListener('keyup', (e) => {
+                    this.keys[e.key] = false;
+                });
+            }
+            
+            static isKeyDown(key) {
+                return this.keys[key] || false;
+            }
+            
+            static isKeyJustPressed(key) {
+                const pressed = this.keysPressed[key] || false;
+                this.keysPressed[key] = false;
+                return pressed;
+            }
+            
+            static getInputVector() {
+                const right = this.isKeyDown('ArrowRight') || this.isKeyDown('d') || this.isKeyDown('D');
+                const left = this.isKeyDown('ArrowLeft') || this.isKeyDown('a') || this.isKeyDown('A');
+                const down = this.isKeyDown('ArrowDown') || this.isKeyDown('s') || this.isKeyDown('S');
+                const up = this.isKeyDown('ArrowUp') || this.isKeyDown('w') || this.isKeyDown('W');
+                
+                return {
+                    x: (right ? 1 : 0) - (left ? 1 : 0),
+                    y: (down ? 1 : 0) - (up ? 1 : 0)
+                };
+            }
+        }
+        
+        // =================================================================
+        // VECTOR2 HELPER
+        // =================================================================
+        
+        class Vector2 {
+            constructor(x = 0, y = 0) {
+                this.x = x;
+                this.y = y;
+            }
+            
+            static ZERO() {
+                return new Vector2(0, 0);
+            }
+            
+            static normalized(vec) {
+                const magnitude = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+                if (magnitude === 0) return new Vector2(0, 0);
+                return new Vector2(vec.x / magnitude, vec.y / magnitude);
+            }
+            
+            static moveToward(current, target, maxDelta) {
+                const dx = target.x - current.x;
+                const dy = target.y - current.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= maxDelta || distance === 0) {
+                    return new Vector2(target.x, target.y);
+                }
+                
+                return new Vector2(
+                    current.x + (dx / distance) * maxDelta,
+                    current.y + (dy / distance) * maxDelta
+                );
+            }
+            
+            static multiply(vec, scalar) {
+                return new Vector2(vec.x * scalar, vec.y * scalar);
+            }
+        }
+        
+        // =================================================================
+        // PLAYER - Based on Godot Player.gd
+        // =================================================================
+        
+        const PlayerStates = {
+            MOVE: 'MOVE',
+            ROLL: 'ROLL',
+            ATTACK: 'ATTACK'
+        };
+        
+        class Player {
+            constructor(x, y) {
+                // Movement constants (from Godot export vars)
+                this.ACCELERATION = 500;
+                this.MAX_SPEED = 80;
+                this.ROLL_SPEED = 120;
+                this.FRICTION = 500;
+                
+                // State
+                this.position = new Vector2(x, y);
+                this.velocity = Vector2.ZERO();
+                this.state = PlayerStates.MOVE;
+                this.rollVector = new Vector2(0, 1); // DOWN
+                
+                // Animation
+                this.facing = 'down';
+                this.animationTimer = 0;
+                this.animationFrame = 0;
+                
+                // Roll state tracking
+                this.rollTimer = 0;
+                this.rollDuration = 0.4; // seconds
+                
+                // Attack state tracking
+                this.attackTimer = 0;
+                this.attackDuration = 0.4; // seconds
+            }
+            
+            update(deltaTime) {
+                switch (this.state) {
+                    case PlayerStates.MOVE:
+                        this.moveState(deltaTime);
+                        break;
+                    case PlayerStates.ROLL:
+                        this.rollState(deltaTime);
+                        break;
+                    case PlayerStates.ATTACK:
+                        this.attackState(deltaTime);
+                        break;
+                }
+                
+                // Update animation
+                this.animationTimer += deltaTime;
+                if (this.animationTimer > 0.2) {
+                    this.animationTimer = 0;
+                    this.animationFrame = (this.animationFrame + 1) % 4;
+                }
+            }
+            
+            moveState(deltaTime) {
+                const inputVec = Input.getInputVector();
+                const input = Vector2.normalized(inputVec);
+                
+                if (input.x !== 0 || input.y !== 0) {
+                    // Update facing direction
+                    this.rollVector = input;
+                    if (Math.abs(input.x) > Math.abs(input.y)) {
+                        this.facing = input.x > 0 ? 'right' : 'left';
+                    } else {
+                        this.facing = input.y > 0 ? 'down' : 'up';
+                    }
+                    
+                    // Accelerate toward max speed
+                    const targetVelocity = Vector2.multiply(input, this.MAX_SPEED);
+                    this.velocity = Vector2.moveToward(
+                        this.velocity,
+                        targetVelocity,
+                        this.ACCELERATION * deltaTime
+                    );
+                } else {
+                    // Apply friction
+                    this.velocity = Vector2.moveToward(
+                        this.velocity,
+                        Vector2.ZERO(),
+                        this.FRICTION * deltaTime
+                    );
+                }
+                
+                // Move
+                this.move();
+                
+                // Check for state changes
+                if (Input.isKeyJustPressed(' ') || Input.isKeyJustPressed('Shift')) {
+                    this.state = PlayerStates.ROLL;
+                    this.rollTimer = 0;
+                }
+                
+                if (Input.isKeyJustPressed('z') || Input.isKeyJustPressed('Z') || 
+                    Input.isKeyJustPressed('Enter')) {
+                    this.state = PlayerStates.ATTACK;
+                    this.attackTimer = 0;
+                }
+            }
+            
+            rollState(deltaTime) {
+                this.rollTimer += deltaTime;
+                
+                // Set velocity to roll speed
+                this.velocity = Vector2.multiply(this.rollVector, this.ROLL_SPEED);
+                this.move();
+                
+                // Check if roll finished
+                if (this.rollTimer >= this.rollDuration) {
+                    // Slow down at end of roll (0.8 multiplier from Godot)
+                    this.velocity = Vector2.multiply(this.velocity, 0.8);
+                    this.state = PlayerStates.MOVE;
+                }
+            }
+            
+            attackState(deltaTime) {
+                this.attackTimer += deltaTime;
+                
+                // Stop moving during attack
+                this.velocity = Vector2.ZERO();
+                
+                // Check if attack finished
+                if (this.attackTimer >= this.attackDuration) {
+                    this.state = PlayerStates.MOVE;
+                }
+            }
+            
+            move() {
+                // Update position (move_and_slide equivalent)
+                this.position.x += this.velocity.x * (1/60); // Approximate delta
+                this.position.y += this.velocity.y * (1/60);
+                
+                // Basic collision with world bounds
+                this.position.x = Math.max(20, Math.min(WORLD_WIDTH * TILE_SIZE - 20, this.position.x));
+                this.position.y = Math.max(20, Math.min(WORLD_HEIGHT * TILE_SIZE - 20, this.position.y));
+            }
+            
+            render(ctx) {
+                // Draw player as a colored square for now
+                ctx.save();
+                
+                // Choose color based on state
+                let color = '#4a90e2'; // Blue for MOVE
+                if (this.state === PlayerStates.ROLL) {
+                    color = '#f39c12'; // Orange for ROLL
+                } else if (this.state === PlayerStates.ATTACK) {
+                    color = '#e74c3c'; // Red for ATTACK
+                }
+                
+                // Draw player shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(this.position.x - 6, this.position.y + 10, 12, 4);
+                
+                // Draw player body
+                ctx.fillStyle = color;
+                ctx.fillRect(this.position.x - 8, this.position.y - 8, 16, 16);
+                
+                // Draw facing indicator
+                ctx.fillStyle = '#fff';
+                const indicatorOffset = 4;
+                if (this.facing === 'up') {
+                    ctx.fillRect(this.position.x - 2, this.position.y - 8 - indicatorOffset, 4, 2);
+                } else if (this.facing === 'down') {
+                    ctx.fillRect(this.position.x - 2, this.position.y + 8 + indicatorOffset - 2, 4, 2);
+                } else if (this.facing === 'left') {
+                    ctx.fillRect(this.position.x - 8 - indicatorOffset, this.position.y - 2, 2, 4);
+                } else if (this.facing === 'right') {
+                    ctx.fillRect(this.position.x + 8 + indicatorOffset - 2, this.position.y - 2, 2, 4);
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // =================================================================
+        // GAME WORLD
+        // =================================================================
+        
+        class World {
+            constructor() {
+                this.tiles = this.generateWorld();
+            }
+            
+            generateWorld() {
+                const tiles = [];
+                for (let y = 0; y < WORLD_HEIGHT; y++) {
+                    const row = [];
+                    for (let x = 0; x < WORLD_WIDTH; x++) {
+                        // Simple pattern: grass with some paths
+                        if ((x % 10 === 0 || y % 10 === 0)) {
+                            row.push(1); // Path
+                        } else {
+                            row.push(0); // Grass
+                        }
+                    }
+                    tiles.push(row);
+                }
+                return tiles;
+            }
+            
+            render(ctx) {
+                for (let y = 0; y < WORLD_HEIGHT; y++) {
+                    for (let x = 0; x < WORLD_WIDTH; x++) {
+                        const tileType = this.tiles[y][x];
+                        
+                        // Draw tile
+                        if (tileType === 0) {
+                            // Grass
+                            ctx.fillStyle = '#88c070';
+                        } else {
+                            // Path
+                            ctx.fillStyle = '#d4a574';
+                        }
+                        
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        
+                        // Add grass texture
+                        if (tileType === 0 && (x + y) % 3 === 0) {
+                            ctx.fillStyle = '#7ab060';
+                            ctx.fillRect(x * TILE_SIZE + 2, y * TILE_SIZE + 2, 2, 2);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // =================================================================
+        // GAME MAIN
+        // =================================================================
+        
+        class Game {
+            constructor() {
+                this.world = new World();
+                this.player = new Player(320, 240);
+                this.lastTime = 0;
+                this.fps = 60;
+                this.frameCount = 0;
+                this.fpsTimer = 0;
+            }
+            
+            start() {
+                console.log('🎮 Starting Serpent Town RPG...');
+                Input.init();
+                this.loop(0);
+            }
+            
+            loop(currentTime) {
+                const deltaTime = Math.min((currentTime - this.lastTime) / 1000, 0.1);
+                this.lastTime = currentTime;
+                
+                // Update FPS counter
+                this.frameCount++;
+                this.fpsTimer += deltaTime;
+                if (this.fpsTimer >= 1) {
+                    this.fps = this.frameCount;
+                    this.frameCount = 0;
+                    this.fpsTimer = 0;
+                }
+                
+                this.update(deltaTime);
+                this.render();
+                this.updateDebugInfo();
+                
+                requestAnimationFrame((time) => this.loop(time));
+            }
+            
+            update(dt) {
+                this.player.update(dt);
+            }
+            
+            render() {
+                // Clear canvas
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Render world
+                this.world.render(ctx);
+                
+                // Render player
+                this.player.render(ctx);
+            }
+            
+            updateDebugInfo() {
+                document.getElementById('fps').textContent = this.fps;
+                document.getElementById('posX').textContent = Math.round(this.player.position.x);
+                document.getElementById('posY').textContent = Math.round(this.player.position.y);
+                document.getElementById('velX').textContent = Math.round(this.player.velocity.x);
+                document.getElementById('velY').textContent = Math.round(this.player.velocity.y);
+                document.getElementById('state').textContent = this.player.state;
+            }
+        }
+        
+        // =================================================================
+        // START GAME
+        // =================================================================
+        
+        const game = new Game();
+        game.start();
+        
+        console.log('✅ Game initialized');
+        console.log('📦 World size:', WORLD_WIDTH, 'x', WORLD_HEIGHT);
+        console.log('🎮 Controls: WASD/Arrows=Move, Space=Roll, Z=Attack');
+    </script>
+</body>
+</html>
