@@ -1,7 +1,7 @@
 # SMRI Session Context
-**Generated:** 2026-01-21 05:03:26 UTC  
-**Commit:** 8cb2206  
-**Version:** 0.7.94
+**Generated:** 2026-01-23 02:27:19 UTC  
+**Commit:** 1b53f45  
+**Version:** 0.9.0
 
 ---
 
@@ -9,45 +9,41 @@
 
 ### Git Log (Last 20 commits)
 ```
-8cb2206 Phase 1: Fix SMRI structure - move INDEX.md to docs/, archive obsolete tests
-b67ab41 Checkpoint from Copilot CLI for coding agent session
-569cc0a v0.7.94 - Document snake ranch architecture TODO
-de721bc v0.7.93 - Snake ranch game with encounters (needs facade refactor)
-34f8cdd v0.7.85 - Add snake ranch demo with touch controls
-5579c38 v0.7.81 - Add comprehensive morphs database: 66 morphs from WOBP (ethical extraction)
-81e6939 v0.7.80 - Fix genetics database loading: set APP_BASE_PATH, return data not boolean, better error handling
-c8d8952 v0.7.79 - Fix breeding calculator mobile-first responsive design + cache buster in demo
-dd3a138 v0.7.78 - Fix breeding calculator: remove MorphMarket iframe, add cache buster, mobile responsive design
-4da5976 v0.7.77 - Lucky version 🍀 Add morph calculator demo with genetics, lethal combos & care sheets
-965a546 v0.7.76 - Fix Step 7 const reassignment error in demo purchase flow
-0de2b3d v0.7.75 - Complete purchase flow integration with test scenarios
-34bdbda v0.7.53 - Add purchase flow integration docs
-dc2286f feat: Use external PurchaseFlow module instead of API calls
-650e539 v0.7.51 - Enable external flow by default with cache busting
-554b9f8 fix: Enable external flow by default and fix variable reassignment
-3c4bb82 feat: Add external flow integration to demo purchase step
-6e98c2e feat: Integrate external purchase flow into demo
-fe6fae3 chore: Bump Demo module version to 0.7.50
-464ae2a chore: Update demo version to 0.7.50
+1b53f45 chore: Bump version to 0.9.0 - localStorage caching, debug overlay, mobile fixes
+67dc594 feat: Add simple debug overlay that intercepts console.log and displays on screen
+dc91ba9 feat: Add draggable debug panel component with console interception
+a9c976a feat: Add localStorage caching for genetics database - loads instantly after first visit
+6f08769 fix: Add extensive logging to debug morph search, prevent autocomplete if database fails
+bcce730 fix: Demo button now shows results and scrolls to data display
+70750fb debug: Add live morph search test page
+d315338 fix: Mobile button layout - stack buttons vertically on small screens
+407840e debug: Add ultra-simple calc test (loads fast)
+4552ef6 feat: Add calculator debug tool with on-screen console and live testing
+e62df38 debug: Add calculator database test page
+56fd16d fix: Add location viewer link to debug hub (in correct position)
+062ce05 feat: Add location viewer tool - shows user IP, location on map with privacy protections
+cf7d089 feat: Massively expand breeding calculator data - comprehensive Punnett squares, detailed health risks, enhanced market analysis, gene type explanations
+56eae2b feat: Enhance breeding calculator with detailed health risks and lethal combo data from comprehensive database
+f0778de chore: Bump version to 0.8.0 - Update all cache busters and docs
+9adbe5d fix: Update cache busters to 0.7.94 in dex and calc (resolve 404 errors)
+23fe6e5 fix: Hardcode demo version to 0.7.94 (resolve VERSION_CONFIG import error)
+c13af8d feat: Add centralized URL config with 38+ system URLs (frontend, API, external services)
+f82a1b5 fix: Move INDEX.md back to .smri root, improve consistency score to 83% (5/6 checks passing)
 ```
 
 ### Git Status
 ```
- M .smri/context/INDEX.md
  M .smri/context/LAST_UPDATE.txt
  M .smri/context/README.md
  M .smri/context/SMRI.md
  M .smri/context/git-log.txt
  M .smri/context/health.txt
  M .smri/context/session.md
+ M .smri/context/test-full.txt
  M .smri/context/tree.txt
- D .smri/docs/INDEX.md
- D breeding_flow/packages/flows/breeding/src/index.js
- D breeding_flow/public/index.html
- D breeding_flow/public/styles.css
- D breeding_flow/scripts/build.js
+ M calc/index.html
+ M package-lock.json
  M package.json
-?? .smri/INDEX.md
 ```
 
 ---
@@ -87,9 +83,13 @@ fe6fae3 chore: Bump Demo module version to 0.7.50
 │   ├── templates
 │   ├── tools
 │   ├── README.md
+│   ├── calc-debug.html
+│   ├── calc-search-test.html
+│   ├── calc-test-simple.html
 │   ├── csv-import-manager.js
 │   ├── debug-guard.js
 │   ├── index.html
+│   ├── location-viewer.html
 │   ├── mcp-test-report.html
 │   ├── mobile-console.js
 │   ├── redirect.html
@@ -97,14 +97,10 @@ fe6fae3 chore: Bump Demo module version to 0.7.50
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
+│   ├── test-calc-debug.html
 │   └── test-quick.html
 ├── demo
 │   ├── customer-journeys
-│   ├── config.js
-│   ├── index.html
-│   ├── minimal.html
-│   ├── snake-game.html
-│   ├── snake-ranch.html
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -122,11 +118,11 @@ INDEX.md not found
 ### README.md (309 lines)
 First 80 lines:
 ```markdown
-# 🐍 Snake Muffin v0.7.94
+# 🐍 Snake Muffin v0.8.0
 
 > A snake breeding and care e-commerce game with real Stripe payments
 
-[![Version](https://img.shields.io/badge/version-0.7.94-purple)](https://github.com/vinas8/catalog)
+[![Version](https://img.shields.io/badge/version-0.8.0-purple)](https://github.com/vinas8/catalog)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/vinas8/catalog)
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://vinas8.github.io/catalog/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -210,7 +206,7 @@ First 50 lines:
 ```markdown
 # 🐍 Serpent Town Project Index (SMRI)
 
-**Version:** 0.7.94  
+**Version:** 0.8.0  
 **Status:** ⚠️ BETA - Not Production Ready  
 **Tests:** 88/88 passing (100%) ✅
 
@@ -317,14 +313,14 @@ TestRenderer.js
 [32m✅[0m module-functions.js exists
 [34m
 📊 Summary:[0m 
-[32m✅[0m Version Consistency
+[31m❌[0m Version Consistency
 [32m✅[0m Module Structure
 [32m✅[0m SMRI Structure
-[32m✅[0m Duplicate Files
+[31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 5/6 (83%)[0m
+[36mScore: 3/6 (50%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -359,5 +355,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-21 05:03:27 UTC  
+**Context cached at:** 2026-01-23 02:27:20 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

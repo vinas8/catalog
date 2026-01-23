@@ -35,6 +35,7 @@ log('START: ' + new Date().toLocaleTimeString());
 
 try {
   const basePath = location.hostname.includes('github.io') ? '/catalog' : '';
+  window.APP_BASE_PATH = basePath; // Set global for genetics-core.js
   log('Base: ' + (basePath || 'root'));
   
   log('Loading genetics module...');

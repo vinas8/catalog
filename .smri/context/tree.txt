@@ -30,9 +30,13 @@
 │   ├── templates
 │   ├── tools
 │   ├── README.md
+│   ├── calc-debug.html
+│   ├── calc-search-test.html
+│   ├── calc-test-simple.html
 │   ├── csv-import-manager.js
 │   ├── debug-guard.js
 │   ├── index.html
+│   ├── location-viewer.html
 │   ├── mcp-test-report.html
 │   ├── mobile-console.js
 │   ├── redirect.html
@@ -40,6 +44,7 @@
 │   ├── smri-scenarios.js
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
+│   ├── test-calc-debug.html
 │   └── test-quick.html
 ├── demo
 │   ├── customer-journeys
@@ -207,4 +212,4 @@
 ├── test-calc.html
 └── test-integration.html
 
-62 directories, 146 files
+62 directories, 151 files
