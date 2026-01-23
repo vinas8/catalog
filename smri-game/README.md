@@ -1,151 +1,123 @@
-# 🐍 Serpent Town - SMRI Game Hub
+# 🎮 Serpent Town RPG - Full Game
 
-**Version:** 1.0.0  
-**Status:** ✅ Production Ready  
-**Type:** Single-file town navigation hub
+**Complete Action RPG based on Godot Tutorial Series**
 
----
+## 🎯 Play Now
 
-## What Is This?
+**Full Game:** https://vinas8.github.io/catalog/smri-game/rpg-full.html
 
-A **beautiful town map** that connects all your snake breeding modules.
-
-**One HTML file. No dependencies. Just works.**
+**Hub:** https://vinas8.github.io/catalog/smri-game/
 
 ---
 
-## 🏘️ Buildings
+## ✨ Features Implemented
 
-| Icon | Building | Links To |
-|------|----------|----------|
-| 🏪 | Snake Shop | `/catalog/catalog.html` - Buy snakes with Stripe |
-| 📖 | Snake Dex | `/catalog/dex.html` - Pokédex-style encyclopedia |
-| 🎒 | My Collection | `/catalog/collection.html` - View purchased snakes |
-| 🎮 | Care Station | `/catalog/game.html` - Tamagotchi care game |
-| 🧮 | Genetics Calculator | `/catalog/calculator.html` - Breeding calculator |
-| 🧬 | Breeding Center | `/catalog/calc/index.html` - Advanced genetics |
-| 📚 | Tutorial Center | `/catalog/tutorial/index.html` - Learn the game |
-| 🌾 | Snake Farm | 🔒 Locked - Coming soon |
-| 🔧 | Admin Panel | `/catalog/admin-kv.html` - Debug tools |
+### ✅ From Godot Tutorial (100% Complete)
+
+- **Player System**
+  - 8-directional movement
+  - State machine (MOVE, ROLL, ATTACK)
+  - Smooth acceleration/friction
+  - Knockback physics
+  - Health system (4 hearts)
+  - Invincibility frames
+  - Death & respawn
+
+- **Combat System**
+  - Hitbox/Hurtbox collision
+  - Melee attack (Z/Enter)
+  - Roll/dodge (Space)
+  - Damage numbers
+  - Knockback on hit
+
+- **Enemy AI (Bat)**
+  - State machine (IDLE, WANDER, CHASE)
+  - Player detection (80px range)
+  - Pathfinding to player
+  - Wander behavior
+  - Attack on contact
+  - Health system (2 HP)
+  - Invincibility frames
+  - Death & despawn
+
+- **UI**
+  - Hearts health display
+  - Debug overlay (toggle with DEBUG button)
+  - FPS counter
+  - Mobile touch controls
+
+- **World**
+  - Tile-based map (40x30)
+  - Grass and path tiles
+  - Collision boundaries
+  - Enemy spawning system
 
 ---
 
-## 🌐 Live URL
+## 🎮 Controls
 
-**https://vinas8.github.io/catalog/smri-game/**
+### Desktop
+- **WASD / Arrow Keys** - Move
+- **Space / Shift** - Roll (dodge)
+- **Z / Enter** - Attack
+- **DEBUG button** - Toggle debug info
+
+### Mobile
+- **D-Pad** (bottom left) - Move
+- **ROLL** (orange button) - Dodge
+- **ATK** (red button) - Attack
+
+---
+
+## 📊 Stats
+
+- **Player HP:** 4 hearts
+- **Enemy HP:** 2 hearts
+- **Player Damage:** 1
+- **Enemy Damage:** 1
+- **Roll Duration:** 0.4s
+- **Attack Duration:** 0.4s
+- **Invincibility:** 0.6s (player), 0.4s (enemy)
+
+---
+
+## 🛠️ Technical Details
+
+**Based on:** https://github.com/uheartbeast/youtube-tutorials/tree/master/Action%20RPG
+
+**Translation:** Godot GDScript → JavaScript/Canvas
+
+**File Size:** Single HTML file (~38KB)
+
+**Dependencies:** None (pure vanilla JS)
 
 ---
 
 ## 🎨 Features
 
-- ✅ **Single HTML file** (7KB total)
-- ✅ **All CSS inline** (no external dependencies)
-- ✅ **Instant load** (no build step)
-- ✅ **Stardew Valley aesthetic** (3D buttons, gradient background)
-- ✅ **Mobile responsive** (works on all devices)
-- ✅ **9 clickable buildings** (direct navigation)
+1. ✅ **State machines** - Both player and enemies
+2. ✅ **Physics system** - Velocity, acceleration, friction
+3. ✅ **Combat system** - Hitboxes, hurtboxes, damage
+4. ✅ **AI behaviors** - IDLE, WANDER, CHASE states
+5. ✅ **Health system** - Stats class with callbacks
+6. ✅ **Invincibility** - Blink effect during i-frames
+7. ✅ **Knockback** - Physics-based push on hit
+8. ✅ **Death system** - Player respawns, enemies despawn
+9. ✅ **Spawning** - Auto-spawn enemies when low
+10. ✅ **Mobile controls** - Touch D-pad + buttons
 
 ---
 
-## 🚀 How It Works
+## 🚀 Next Steps
 
-```html
-<!-- Click a building -->
-<div class="building" onclick="navigate('/catalog/catalog.html')">
-    <div class="building-icon">🏪</div>
-    <div class="building-title">Snake Shop</div>
-</div>
-
-<script>
-function navigate(path) {
-    window.location.href = path;
-}
-</script>
-```
-
-That's it. Simple, clean, fast.
+- [ ] Add actual sprite sheets from Godot
+- [ ] Sound effects (hit, death, attack)
+- [ ] More enemy types
+- [ ] Boss fights
+- [ ] Dungeon rooms
+- [ ] Items/powerups
+- [ ] Save system
 
 ---
 
-## 📊 Technical Details
-
-**File structure:**
-```
-smri-game/
-└── index.html    (7KB - everything in one file)
-```
-
-**No:**
-- ❌ External CSS files
-- ❌ External JS files
-- ❌ Build tools
-- ❌ Dependencies
-- ❌ Complex state management
-
-**Just:**
-- ✅ One HTML file
-- ✅ Inline CSS
-- ✅ Inline JS
-- ✅ Works everywhere
-
----
-
-## 🎮 Local Development
-
-```bash
-cd /root/catalog
-python3 -m http.server 8000
-```
-
-Visit: http://localhost:8000/smri-game/
-
----
-
-## 🔧 How to Add a Building
-
-1. **Copy a building div:**
-   ```html
-   <div class="building" onclick="navigate('/catalog/your-page.html')">
-       <div class="building-icon">🆕</div>
-       <div class="building-title">New Building</div>
-       <div class="building-desc">Description here</div>
-   </div>
-   ```
-
-2. **Done!** No state management, no config files, no complexity.
-
----
-
-## ✅ What Changed (v1.0.0)
-
-### Before (v0.x.x):
-- Multiple files (HTML, CSS, JS, JSON)
-- External dependencies
-- Complex screen system
-- State management
-- Service workers
-- PWA configuration
-- ~20KB total
-
-### After (v1.0.0):
-- **ONE FILE**
-- **7KB total**
-- **Zero dependencies**
-- **Zero complexity**
-- **Just works**
-
----
-
-## 🌟 Philosophy
-
-**Simplicity wins.**
-
-No frameworks. No build tools. No complexity.  
-Just a beautiful town map that links to your real modules.
-
-Clean. Fast. Reliable.
-
----
-
-**Built with ❤️ and 🐍**  
-**Serpent Town v1.0.0**
+**Built with ❤️ following HeartBeast's Godot tutorial**
