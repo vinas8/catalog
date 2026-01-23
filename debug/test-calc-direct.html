@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Direct Test</title>
+<style>
+body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+pre { background: #111; padding: 15px; border: 2px solid #0f0; margin: 10px 0; }
+.ok { color: #0f0; }
+.fail { color: #f00; }
+</style>
+</head>
+<body>
+<h1>🧪 DIRECT CALCULATOR TEST</h1>
+<pre id="log">Testing...</pre>
+
+<script type="module">
+const log = document.getElementById('log');
+const add = (t, ok = true) => { 
+  log.innerHTML += `<span class="${ok ? 'ok' : 'fail'}">${t}</span>\n`; 
+  console.log(t);
+};
+
+add('1. Testing genetics-core module...');
+
+try {
+  const basePath = '';
+  window.APP_BASE_PATH = basePath;
+  
+  add('2. Importing module from: ' + basePath + '/src/modules/breeding/genetics-core.js');
+  
+  const module = await import(basePath + '/src/modules/breeding/genetics-core.js?t=' + Date.now());
+  add('✅ Module imported successfully', true);
+  add('   Functions: ' + Object.keys(module).slice(0, 5).join(', '), true);
+  
+  add('\n3. Loading database...');
+  const db = await module.loadGeneticsDatabase(true);
+  
+  if (!db) {
+    add('❌ FAIL: loadGeneticsDatabase returned null', false);
+    throw new Error('Database is null');
+  }
+  
+  if (!db.morphs) {
+    add('❌ FAIL: No morphs property', false);
+    add('   Returned: ' + JSON.stringify(Object.keys(db)), false);
+    throw new Error('No morphs in database');
+  }
+  
+  add('✅ Database loaded!', true);
+  add('   Morphs count: ' + db.morphs.length, true);
+  add('   First morph: ' + db.morphs[0].name, true);
+  add('   Last morph: ' + db.morphs[db.morphs.length - 1].name, true);
+  
+  add('\n4. Testing search...');
+  const searchTest = db.morphs.filter(m => m.name.toLowerCase().includes('banana'));
+  add('   Search "banana": ' + searchTest.length + ' results', true);
+  if (searchTest.length > 0) {
+    add('   Found: ' + searchTest[0].name + ' (' + searchTest[0].gene_type + ')', true);
+  }
+  
+  add('\n✅✅✅ ALL TESTS PASSED! ✅✅✅', true);
+  add('\nNow open: http://localhost:8000/calc/', true);
+  add('And check if morphs load there too.', true);
+  
+} catch (e) {
+  add('\n❌ ERROR: ' + e.message, false);
+  add('   Stack: ' + e.stack, false);
+}
+</script>
+</body>
+</html>

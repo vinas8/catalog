@@ -123,5 +123,32 @@
 
 ---
 
+## 🎁 GitHub Source Code Available!
+
+**Repository:** https://github.com/uheartbeast/youtube-tutorials  
+**Folder:** `/Action RPG/`  
+**License:** MIT  
+
+### 📦 Downloaded Files
+Complete Godot 3.2 project source code is now in:  
+`/root/catalog/godot-rpg-source/`
+
+### Key Files
+- **Player/** - Player movement, animations, combat
+- **Enemies/** - Bat AI, wander controller, detection zones
+- **Overlap/** - Hitbox/Hurtbox system
+- **Effects/** - Death effects, hit effects, grass particles
+- **UI/** - Health display
+- **Stats.gd** - Stats system (health, max_health)
+- **project.godot** - Full Godot project config
+
+### Resources Available
+- Sprites & animations (included)
+- Sound effects (included)
+- Complete working Godot project
+- All GDScript source code
+
+---
+
 **Created:** 2026-01-23  
-**Status:** 📝 Planning - Waiting for vision clarification
+**Status:** ✅ Source code downloaded - Ready to analyze and port to JavaScript
