@@ -6,6 +6,13 @@
   <title>🧬 Integrated Breeding Calculator - Serpent Town</title>
   <link rel="stylesheet" href="styles.css">
   <script src="src/utils/debug-loader.js"></script>
+  
+  <!-- Debug Panel -->
+  <script type="module">
+    import { DebugPanel } from '../src/components/DebugPanel.js';
+    window.debugPanel = new DebugPanel();
+  </script>
+  
   <style>
     /* Reset & Mobile-First Base */
     * {
@@ -516,6 +523,9 @@
   </script>
 </head>
 <body>
+
+  <!-- Debug Panel Container -->
+  <div id="debug-panel"></div>
 
   <div class="calculator-container">
     <div class="header">
