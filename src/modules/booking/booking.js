@@ -1,6 +1,8 @@
 /**
  * Grožio Salono Užsakymų Sistema
  * Google Calendar Integration
+ * Version: 1.1 - Debug Mode
+ * Last Updated: 2026-01-27 14:36
  */
 
 // Backend API Configuration
@@ -11,12 +13,47 @@ const CONFIG = {
     
     // Old OAuth config (not used with backend approach)
     USE_BACKEND: true, // Set to false to use client-side OAuth
+    DEBUG_MODE: true, // Enable debug logging
     CLIENT_ID: '904838926097-09n22uaudeshvrmc4b5g6p798mu5b4bk.apps.googleusercontent.com',
     API_KEY: 'AIzaSyCYfxy1UFVxFm56PNpNMC115zB6M8wLx-Y',
     CALENDAR_ID: 'primary',
     DISCOVERY_DOCS: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
     SCOPES: 'https://www.googleapis.com/auth/calendar.events'
 };
+
+// Debug Logger
+const DEBUG = {
+    log: function(message, data) {
+        if (CONFIG.DEBUG_MODE) {
+            console.log(`[BOOKING DEBUG] ${message}`, data || '');
+            this.addToDebugPanel(message, data);
+        }
+    },
+    error: function(message, error) {
+        console.error(`[BOOKING ERROR] ${message}`, error);
+        this.addToDebugPanel(`ERROR: ${message}`, error, 'error');
+    },
+    addToDebugPanel: function(message, data, type = 'info') {
+        let panel = document.getElementById('debug-panel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'debug-panel';
+            panel.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:200px;overflow-y:auto;background:#000;color:#0f0;font-family:monospace;font-size:11px;padding:10px;z-index:9999;border-top:2px solid #0f0;';
+            document.body.appendChild(panel);
+        }
+        const time = new Date().toLocaleTimeString();
+        const color = type === 'error' ? '#f00' : '#0f0';
+        panel.innerHTML += `<div style="color:${color};margin:2px 0">[${time}] ${message} ${data ? JSON.stringify(data).substring(0, 200) : ''}</div>`;
+        panel.scrollTop = panel.scrollHeight;
+    }
+};
+
+DEBUG.log('Booking system loaded', {
+    version: '1.1',
+    backend: CONFIG.BACKEND_URL,
+    useBackend: CONFIG.USE_BACKEND,
+    timestamp: new Date().toISOString()
+});
 
 let gapiInited = false;
 let gisInited = false;
@@ -87,23 +124,49 @@ function gisLoaded() {
  * Send booking to backend (no user login required)
  */
 async function sendBookingToBackend(formData) {
-    const response = await fetch(CONFIG.BACKEND_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            ...formData,
-            origin: window.location.origin
-        })
+    DEBUG.log('Starting backend request', {
+        url: CONFIG.BACKEND_URL,
+        data: formData
     });
+    
+    try {
+        const response = await fetch(CONFIG.BACKEND_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...formData,
+                origin: window.location.origin
+            })
+        });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Serverio klaida');
+        DEBUG.log('Response received', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            type: response.type,
+            url: response.url
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            DEBUG.error('Bad response', { status: response.status, body: errorText.substring(0, 500) });
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        DEBUG.log('Success', result);
+        return result;
+        
+    } catch (error) {
+        DEBUG.error('Fetch failed', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        throw error;
     }
-
-    return await response.json();
 }
 
 /**
