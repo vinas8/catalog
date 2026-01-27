@@ -68,13 +68,6 @@ function doGet(e) {
 }
 
 // ============================================
-// OPTIONS HANDLER - CORS
-// ============================================
-function doOptions(e) {
-  return jsonResponse({});
-}
-
-// ============================================
 // JSON Response Helper
 // ============================================
 function jsonResponse(data) {
@@ -84,7 +77,7 @@ function jsonResponse(data) {
 }
 
 // ============================================
-// TEST FUNCTION
+// TEST FUNCTION - Run this first!
 // ============================================
 function testBooking() {
   const testEvent = {
@@ -104,4 +97,6 @@ function testBooking() {
   
   const result = doPost(testEvent);
   Logger.log(result.getContent());
+  
+  // Should see: {"success":true,...}
 }
