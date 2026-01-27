@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-23 02:27:19 UTC  
-**Commit:** 1b53f45  
+**Generated:** 2026-01-24 01:36:58 UTC  
+**Commit:** cd65671  
 **Version:** 0.9.0
 
 ---
@@ -9,6 +9,18 @@
 
 ### Git Log (Last 20 commits)
 ```
+cd65671 docs: Add comprehensive README for complete RPG game
+b0d4edf feat: Complete RPG with combat, enemies (bats), health, hitboxes - Full Godot tutorial implementation
+eea0417 feat: Add mobile touch controls (D-pad + action buttons)
+e3ca988 feat: Add working RPG game with player movement (based on Godot tutorial)
+bff342a feat: Add Godot source code and JavaScript translation guide
+6fabc85 docs: Update plan - Phase 1 clone RPG foundation, Phase 2 add farming mechanics
+ac67c27 fix: Correct debug-loader.js path in calc, add direct test
+7c10ec9 docs: Add Godot Action RPG video list - clarify this is Zelda-like combat, not farming
+74ccc46 fix: Remove duplicate debug component, use existing debug-loader.js
+ef56a9b docs: Add comprehensive Godot farming game implementation plan (S9.2,6.01)
+3b18f15 docs: Add Godot farming game tutorial reference for future Stardew Valley-type features
+1c21469 fix: Set APP_BASE_PATH in calc-search-test.html to enable database loading
 1b53f45 chore: Bump version to 0.9.0 - localStorage caching, debug overlay, mobile fixes
 67dc594 feat: Add simple debug overlay that intercepts console.log and displays on screen
 dc91ba9 feat: Add draggable debug panel component with console interception
@@ -17,33 +29,14 @@ a9c976a feat: Add localStorage caching for genetics database - loads instantly a
 bcce730 fix: Demo button now shows results and scrolls to data display
 70750fb debug: Add live morph search test page
 d315338 fix: Mobile button layout - stack buttons vertically on small screens
-407840e debug: Add ultra-simple calc test (loads fast)
-4552ef6 feat: Add calculator debug tool with on-screen console and live testing
-e62df38 debug: Add calculator database test page
-56fd16d fix: Add location viewer link to debug hub (in correct position)
-062ce05 feat: Add location viewer tool - shows user IP, location on map with privacy protections
-cf7d089 feat: Massively expand breeding calculator data - comprehensive Punnett squares, detailed health risks, enhanced market analysis, gene type explanations
-56eae2b feat: Enhance breeding calculator with detailed health risks and lethal combo data from comprehensive database
-f0778de chore: Bump version to 0.8.0 - Update all cache busters and docs
-9adbe5d fix: Update cache busters to 0.7.94 in dex and calc (resolve 404 errors)
-23fe6e5 fix: Hardcode demo version to 0.7.94 (resolve VERSION_CONFIG import error)
-c13af8d feat: Add centralized URL config with 38+ system URLs (frontend, API, external services)
-f82a1b5 fix: Move INDEX.md back to .smri root, improve consistency score to 83% (5/6 checks passing)
 ```
 
 ### Git Status
 ```
  M .smri/context/LAST_UPDATE.txt
- M .smri/context/README.md
- M .smri/context/SMRI.md
  M .smri/context/git-log.txt
- M .smri/context/health.txt
  M .smri/context/session.md
- M .smri/context/test-full.txt
  M .smri/context/tree.txt
- M calc/index.html
- M package-lock.json
- M package.json
 ```
 
 ---
@@ -98,9 +91,9 @@ f82a1b5 fix: Move INDEX.md back to .smri root, improve consistency score to 83% 
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
 │   ├── test-calc-debug.html
+│   ├── test-calc-direct.html
 │   └── test-quick.html
 ├── demo
-│   ├── customer-journeys
 ... (truncated, see .smri/context/tree.txt for full)
 ```
 
@@ -355,5 +348,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-23 02:27:20 UTC  
+**Context cached at:** 2026-01-24 01:37:00 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

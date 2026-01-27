@@ -17,7 +17,7 @@ const CONFIG = {
   ALLOWED_ORIGINS: [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://YOUR-GITHUB-USERNAME.github.io'  // ← PAKEISKITE!
+    'https://vinas8.github.io'  // ← PAKEISTA!
   ],
   
   // Email pranešimai (optional)

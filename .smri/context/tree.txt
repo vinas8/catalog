@@ -45,6 +45,7 @@
 │   ├── smri-tests.js
 │   ├── test-browser.cjs
 │   ├── test-calc-debug.html
+│   ├── test-calc-direct.html
 │   └── test-quick.html
 ├── demo
 │   ├── customer-journeys
@@ -72,9 +73,31 @@
 │   ├── DEMO-COMPLETE.md
 │   ├── GENETICS-MODULE-MAP.md
 │   ├── PRODUCT-URLS.md
-│   └── USER-SYSTEM.md
+│   ├── USER-SYSTEM.md
+│   └── godot-farming-game-tutorial.md
 ├── game
 │   └── index.html
+├── godot-rpg-source
+│   ├── Effects
+│   ├── Enemies
+│   ├── Music and Sounds
+│   ├── Overlap
+│   ├── Player
+│   ├── Shadows
+│   ├── UI
+│   ├── World
+│   ├── 2D Pixel Art Editor Profile.profile
+│   ├── Action RPG Resources.zip
+│   ├── Camera2D.gd
+│   ├── Camera2D.tscn
+│   ├── Stats.gd
+│   ├── Stats.tscn
+│   ├── WhiteColor.shader
+│   ├── World.tscn
+│   ├── default_env.tres
+│   ├── icon.png
+│   ├── icon.png.import
+│   └── project.godot
 ├── img
 │   ├── icon-192.png
 │   ├── icon-512.png
@@ -126,8 +149,11 @@
 │   ├── index.html
 │   └── success.html
 ├── smri-game
+│   ├── assets
 │   ├── README.md
-│   └── index.html
+│   ├── game.html
+│   ├── index.html
+│   └── rpg-full.html
 ├── src
 │   ├── components
 │   ├── config
@@ -212,4 +238,4 @@
 ├── test-calc.html
 └── test-integration.html
 
-62 directories, 151 files
+72 directories, 167 files

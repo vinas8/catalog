@@ -3,11 +3,17 @@
  * Google Calendar Integration
  */
 
-// Google Calendar API Configuration
+// Backend API Configuration
 const CONFIG = {
+    // Google Apps Script Web App URL
+    // Get this after deploying the script (see BACKEND-SETUP.md)
+    BACKEND_URL: 'YOUR_GOOGLE_APPS_SCRIPT_URL',
+    
+    // Old OAuth config (not used with backend approach)
+    USE_BACKEND: true, // Set to false to use client-side OAuth
     CLIENT_ID: '904838926097-09n22uaudeshvrmc4b5g6p798mu5b4bk.apps.googleusercontent.com',
     API_KEY: 'AIzaSyCYfxy1UFVxFm56PNpNMC115zB6M8wLx-Y',
-    CALENDAR_ID: 'primary', // arba konkretaus kalendoriaus ID
+    CALENDAR_ID: 'primary',
     DISCOVERY_DOCS: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
     SCOPES: 'https://www.googleapis.com/auth/calendar.events'
 };
@@ -20,6 +26,12 @@ let tokenClient;
  * Užkrauti Google API
  */
 function loadGoogleAPI() {
+    // Jei naudojame backend, nereikia krauti Google API
+    if (CONFIG.USE_BACKEND) {
+        console.log('Backend režimas: Google API nekraunama');
+        return;
+    }
+    
     // Jei jau demo režimas, nereikia krauti
     if (CONFIG.CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com') {
         console.log('Demo režimas: Google Calendar API nekonfigūruota');
@@ -71,6 +83,32 @@ function gisLoaded() {
 /**
  * Pridėti įvykį į Google kalendorių
  */
+/**
+ * Send booking to backend (no user login required)
+ */
+async function sendBookingToBackend(formData) {
+    const response = await fetch(CONFIG.BACKEND_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ...formData,
+            origin: window.location.origin
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Serverio klaida');
+    }
+
+    return await response.json();
+}
+
+/**
+ * Add event to Google Calendar (client-side OAuth - requires user login)
+ */
 async function addEventToGoogleCalendar(formData) {
     return new Promise((resolve, reject) => {
         tokenClient.callback = async (resp) => {
@@ -85,8 +123,8 @@ async function addEventToGoogleCalendar(formData) {
                 const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // +1 valanda
 
                 const event = {
-                    summary: `${formData.service} - ${formData.name}`,
-                    description: `Klientas: ${formData.name}\nTelefonas: ${formData.phone}\nEl. paštas: ${formData.email || 'Nenurodyta'}\nPastabos: ${formData.notes || 'Nėra'}`,
+                    summary: `⏳ PENDING: ${formData.service} - ${formData.name}`,
+                    description: `⚠️ LAUKIAMA PATVIRTINIMO\n\nKlientas: ${formData.name}\nTelefonas: ${formData.phone}\nEl. paštas: ${formData.email || 'Nenurodyta'}\nPastabos: ${formData.notes || 'Nėra'}\n\n📋 Veiksmai:\n✅ Patvirtinti - Pašalinkite "⏳ PENDING:" iš pavadinimo\n❌ Atmesti - Ištrinkite šį įvykį`,
                     start: {
                         dateTime: startDateTime.toISOString(),
                         timeZone: 'Europe/Vilnius',
@@ -95,14 +133,14 @@ async function addEventToGoogleCalendar(formData) {
                         dateTime: endDateTime.toISOString(),
                         timeZone: 'Europe/Vilnius',
                     },
+                    colorId: '11', // Raudona spalva - "pending" statusui
                     reminders: {
                         useDefault: false,
                         overrides: [
-                            { method: 'email', minutes: 24 * 60 }, // 1 diena prieš
-                            { method: 'popup', minutes: 60 }, // 1 valanda prieš
+                            { method: 'email', minutes: 10 }, // Nedelsiant pranešti admin
+                            { method: 'popup', minutes: 10 },
                         ],
                     },
-                    colorId: '9', // Mėlyna spalva
                 };
 
                 const request = await gapi.client.calendar.events.insert({
@@ -239,14 +277,19 @@ function initBookingForm() {
             // Išsaugoti lokaliai kaip backup
             saveBookingLocally(formData);
 
-            // Bandyti išsaugoti į Google Calendar
-            if (CONFIG.CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com' && gapiInited && gisInited) {
+            // Check if using backend or client-side OAuth
+            if (CONFIG.USE_BACKEND && CONFIG.BACKEND_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                // Backend approach - NO USER LOGIN REQUIRED
+                await sendBookingToBackend(formData);
+                showMessage('✓ Užsakymas priimtas! Netrukus susisieksime su Jumis.', 'success');
+            } else if (!CONFIG.USE_BACKEND && gapiInited && gisInited) {
+                // Client-side OAuth - requires user to login
                 await addEventToGoogleCalendar(formData);
                 showMessage('✓ Užsakymas priimtas ir laukia patvirtinimo! Susisieksime netrukus.', 'success');
             } else {
-                // Demo režimas
+                // Demo mode
                 console.log('Užsakymo duomenys:', formData);
-                showMessage('✓ Užsakymas priimtas! Netrukus susisieksime. (Demo režimas)', 'success');
+                showMessage('✓ Užsakymas priimtas! (Demo režimas - sukonfigūruokite backend)', 'success');
             }
 
             // Išvalyti formą
@@ -254,7 +297,7 @@ function initBookingForm() {
 
         } catch (error) {
             console.error('Klaida:', error);
-            showMessage('❌ Įvyko klaida. Bandykite dar kartą arba skambinkite telefonu.', 'error');
+            showMessage('❌ Įvyko klaida: ' + error.message, 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = '✓ Užsiregistruoti';
@@ -266,12 +309,17 @@ function initBookingForm() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initBookingForm();
-        loadGoogleAPI();
+        // Only load Google API if not using backend
+        if (!CONFIG.USE_BACKEND) {
+            loadGoogleAPI();
+        }
     });
 } else {
     initBookingForm();
-    loadGoogleAPI();
+    if (!CONFIG.USE_BACKEND) {
+        loadGoogleAPI();
+    }
 }
 
 // Eksportuoti funkcijas (jei reikia)
-export { addEventToGoogleCalendar, showMessage, validateForm };
+export { addEventToGoogleCalendar, sendBookingToBackend, showMessage, validateForm };
