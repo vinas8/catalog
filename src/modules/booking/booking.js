@@ -7,7 +7,7 @@
 const CONFIG = {
     // Google Apps Script Web App URL
     // Get this after deploying the script (see BACKEND-SETUP.md)
-    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbx1mZslFlqoDr6d1thREevMrR0rRrWzpjMm6c3_xl0phr-gcjL_TdZSWRk3VoA35CYSjQ/exec',
+    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzEbaTvhRzNcm434H5KmMvECBb1-QiCFMUd9P1VrF3qWYcmCuVDDg7HIpveljQ9R5b22w/exec',
     
     // Old OAuth config (not used with backend approach)
     USE_BACKEND: true, // Set to false to use client-side OAuth

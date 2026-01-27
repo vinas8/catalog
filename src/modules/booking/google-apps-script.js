@@ -304,13 +304,7 @@ function createResponse(data, statusCode = 200) {
   
   return ContentService
     .createTextOutput(output)
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '86400'
-    });
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 // ============================================
