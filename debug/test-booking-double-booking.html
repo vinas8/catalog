@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 Booking System Test - Double Booking Prevention</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .test-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-left: 4px solid #ccc;
+    }
+
+    .test-card.pending {
+      border-left-color: #ffa500;
+    }
+
+    .test-card.pass {
+      border-left-color: #4caf50;
+    }
+
+    .test-card.fail {
+      border-left-color: #f44336;
+    }
+
+    .test-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .test-description {
+      color: #666;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .test-expected {
+      background: #f5f5f5;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-success {
+      background: #4caf50;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #999;
+      color: white;
+    }
+
+    .result {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .result.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-pass {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-fail {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .quick-links {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .quick-links a {
+      display: inline-block;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .quick-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 Booking System Test</h1>
+      <p>Double-Booking Prevention Validation</p>
+    </div>
+
+    <div class="quick-links">
+      <strong>🔗 Quick Links:</strong><br>
+      <a href="/catalog/booking.html" target="_blank">📝 Booking Form</a>
+      <a href="/catalog/booking-admin.html" target="_blank">⚙️ Admin Panel</a>
+      <a href="#" onclick="clearAllBookings()">🗑️ Clear All Bookings</a>
+      <a href="#" onclick="viewBookings()">👁️ View Bookings</a>
+    </div>
+
+    <!-- Test 1 -->
+    <div class="test-card pending" id="test1">
+      <div class="test-title">
+        Test 1: Create Booking
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Create a booking for tomorrow at 14:00. Should succeed.
+      </div>
+      <div class="test-expected">
+        ✅ Expected: Success message, booking saved to localStorage
+      </div>
+      <button class="btn btn-primary" onclick="runTest1()">▶️ Run Test 1</button>
+      <div class="result" id="result1"></div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-card pending" id="test2">
+      <div class="test-title">
+        Test 2: Try Duplicate (Before Approval)
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Try to book same time (14:00) before approving. Should ALLOW (not yet approved).
+      </div>
+      <div class="test-expected">
+        ✅ Expected: Success - booking allowed (pending bookings don't block)
+      </div>
+      <button class="btn btn-primary" onclick="runTest2()">▶️ Run Test 2</button>
+      <div class="result" id="result2"></div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-card pending" id="test3">
+      <div class="test-title">
+        Test 3: Approve First Booking
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Manually approve first booking (mark as approved in localStorage).
+      </div>
+      <div class="test-expected">
+        ✅ Expected: Booking marked as approvedToCalendar=true
+      </div>
+      <button class="btn btn-primary" onclick="runTest3()">▶️ Run Test 3</button>
+      <div class="result" id="result3"></div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-card pending" id="test4">
+      <div class="test-title">
+        Test 4: Try Duplicate (After Approval)
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Try to book same time (14:00) after approval. Should BLOCK.
+      </div>
+      <div class="test-expected">
+        ❌ Expected: BLOCKED - "Šis laikas jau užimtas"
+      </div>
+      <button class="btn btn-primary" onclick="runTest4()">▶️ Run Test 4</button>
+      <div class="result" id="result4"></div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-card pending" id="test5">
+      <div class="test-title">
+        Test 5: Try Adjacent Slot
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Try to book 14:30 (after 14:00-14:30 approved slot). Should ALLOW.
+      </div>
+      <div class="test-expected">
+        ✅ Expected: Success - no overlap with 14:00-14:30
+      </div>
+      <button class="btn btn-primary" onclick="runTest5()">▶️ Run Test 5</button>
+      <div class="result" id="result5"></div>
+    </div>
+
+    <!-- Test 6 -->
+    <div class="test-card pending" id="test6">
+      <div class="test-title">
+        Test 6: Try Overlapping Slot
+        <span class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="test-description">
+        Try to book 14:15 (overlaps with approved 14:00-14:30). Should BLOCK.
+      </div>
+      <div class="test-expected">
+        ❌ Expected: BLOCKED - overlaps with existing slot
+      </div>
+      <button class="btn btn-primary" onclick="runTest6()">▶️ Run Test 6</button>
+      <div class="result" id="result6"></div>
+    </div>
+
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
+      <button class="btn btn-success" onclick="runAllTests()">▶️ Run All Tests</button>
+      <button class="btn btn-secondary" onclick="resetTests()">🔄 Reset</button>
+    </div>
+  </div>
+
+  <script>
+    function getTomorrow() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow.toISOString().split('T')[0];
+    }
+
+    function isTimeSlotTaken(date, time) {
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      const [hours, minutes] = time.split(':').map(Number);
+      const requestedStart = hours * 60 + minutes;
+      const requestedEnd = requestedStart + 30;
+      
+      return bookings.some(booking => {
+        if (booking.date !== date || !booking.approvedToCalendar) {
+          return false;
+        }
+        const [bookingHours, bookingMinutes] = booking.time.split(':').map(Number);
+        const bookingStart = bookingHours * 60 + bookingMinutes;
+        const bookingEnd = bookingStart + 30;
+        return (requestedStart < bookingEnd && requestedEnd > bookingStart);
+      });
+    }
+
+    function showResult(testNum, success, message) {
+      const card = document.getElementById(`test${testNum}`);
+      const result = document.getElementById(`result${testNum}`);
+      
+      card.classList.remove('pending', 'pass', 'fail');
+      card.classList.add(success ? 'pass' : 'fail');
+      
+      const badge = card.querySelector('.status-badge');
+      badge.classList.remove('status-pending', 'status-pass', 'status-fail');
+      badge.classList.add(success ? 'status-pass' : 'status-fail');
+      badge.textContent = success ? 'PASS' : 'FAIL';
+      
+      result.classList.remove('success', 'error');
+      result.classList.add(success ? 'success' : 'error', 'show');
+      result.textContent = message;
+    }
+
+    function runTest1() {
+      const tomorrow = getTomorrow();
+      const booking = {
+        name: 'Test User 1',
+        phone: '+370 600 00001',
+        email: 'test1@test.lt',
+        service: 'Soliariumas',
+        duration: '15',
+        date: tomorrow,
+        time: '14:00',
+        notes: 'Test booking 1',
+        timestamp: new Date().toISOString(),
+        id: Date.now()
+      };
+      
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      bookings.push(booking);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      
+      showResult(1, true, `✅ PASS: Booking created for ${tomorrow} at 14:00`);
+    }
+
+    function runTest2() {
+      const tomorrow = getTomorrow();
+      const booking = {
+        name: 'Test User 2',
+        phone: '+370 600 00002',
+        email: 'test2@test.lt',
+        service: 'Soliariumas',
+        duration: '15',
+        date: tomorrow,
+        time: '14:00',
+        notes: 'Test booking 2 (duplicate)',
+        timestamp: new Date().toISOString(),
+        id: Date.now()
+      };
+      
+      const isBlocked = isTimeSlotTaken(booking.date, booking.time);
+      
+      if (isBlocked) {
+        showResult(2, false, `❌ FAIL: Booking blocked (should allow - not yet approved)`);
+      } else {
+        const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        bookings.push(booking);
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        showResult(2, true, `✅ PASS: Booking allowed (pending bookings don't block)`);
+      }
+    }
+
+    function runTest3() {
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      if (bookings.length > 0) {
+        bookings[0].approvedToCalendar = true;
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        showResult(3, true, `✅ PASS: First booking approved (approvedToCalendar=true)`);
+      } else {
+        showResult(3, false, `❌ FAIL: No bookings to approve. Run Test 1 first.`);
+      }
+    }
+
+    function runTest4() {
+      const tomorrow = getTomorrow();
+      const isBlocked = isTimeSlotTaken(tomorrow, '14:00');
+      
+      if (isBlocked) {
+        showResult(4, true, `✅ PASS: Booking correctly BLOCKED (approved slot protects time)`);
+      } else {
+        showResult(4, false, `❌ FAIL: Booking NOT blocked (should block approved slot)`);
+      }
+    }
+
+    function runTest5() {
+      const tomorrow = getTomorrow();
+      const isBlocked = isTimeSlotTaken(tomorrow, '14:30');
+      
+      if (isBlocked) {
+        showResult(5, false, `❌ FAIL: Booking blocked (should allow - no overlap)`);
+      } else {
+        showResult(5, true, `✅ PASS: Booking allowed (adjacent slot OK)`);
+      }
+    }
+
+    function runTest6() {
+      const tomorrow = getTomorrow();
+      const isBlocked = isTimeSlotTaken(tomorrow, '14:15');
+      
+      if (isBlocked) {
+        showResult(6, true, `✅ PASS: Booking correctly BLOCKED (overlaps with 14:00-14:30)`);
+      } else {
+        showResult(6, false, `❌ FAIL: Booking NOT blocked (should block - overlaps)`);
+      }
+    }
+
+    async function runAllTests() {
+      clearAllBookings();
+      await new Promise(r => setTimeout(r, 500));
+      runTest1();
+      await new Promise(r => setTimeout(r, 500));
+      runTest2();
+      await new Promise(r => setTimeout(r, 500));
+      runTest3();
+      await new Promise(r => setTimeout(r, 500));
+      runTest4();
+      await new Promise(r => setTimeout(r, 500));
+      runTest5();
+      await new Promise(r => setTimeout(r, 500));
+      runTest6();
+    }
+
+    function resetTests() {
+      for (let i = 1; i <= 6; i++) {
+        const card = document.getElementById(`test${i}`);
+        const result = document.getElementById(`result${i}`);
+        card.classList.remove('pass', 'fail');
+        card.classList.add('pending');
+        const badge = card.querySelector('.status-badge');
+        badge.classList.remove('status-pass', 'status-fail');
+        badge.classList.add('status-pending');
+        badge.textContent = 'PENDING';
+        result.classList.remove('show');
+      }
+    }
+
+    function clearAllBookings() {
+      localStorage.removeItem('bookings');
+      alert('✅ All bookings cleared');
+    }
+
+    function viewBookings() {
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      console.table(bookings);
+      alert(`📊 Bookings (${bookings.length}):\n\n${JSON.stringify(bookings, null, 2)}\n\nCheck console for table view.`);
+    }
+  </script>
+</body>
+</html>
