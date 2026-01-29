@@ -2292,14 +2292,18 @@ async function handleBookingSimple(request, env, corsHeaders) {
       });
     }
 
-    // Store booking in KV
+    // Store booking in KV (if available)
     const bookingId = `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     if (env.BOOKINGS) {
-      await env.BOOKINGS.put(bookingId, JSON.stringify({
-        ...data,
-        createdAt: new Date().toISOString(),
-        status: 'pending'
-      }));
+      try {
+        await env.BOOKINGS.put(bookingId, JSON.stringify({
+          ...data,
+          createdAt: new Date().toISOString(),
+          status: 'pending'
+        }));
+      } catch (e) {
+        console.log('BOOKINGS KV not available, skipping storage');
+      }
     }
 
     // Log to console (visible in Cloudflare dashboard)
