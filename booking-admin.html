@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Užsakymų Valdymas</title>
+  <title>Soliariumo Užsakymai</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     .admin-container {
@@ -141,7 +141,7 @@
 <body>
   <div class="admin-container">
     <div class="admin-header">
-      <h1>📋 Užsakymų Valdymas</h1>
+      <h1>☀️ Soliariumo Užsakymai</h1>
       <p>Peržiūrėkite ir tvarkykite gautus užsakymus</p>
       <button class="btn btn-refresh" onclick="loadBookings()">🔄 Atnaujinti</button>
     </div>
@@ -205,15 +205,15 @@
                   <span class="info-value">${booking.service}</span>
                 </div>
                 <div class="info-item">
-                  <span class="info-label">⏱️ Trukmė</span>
-                  <span class="info-value">${booking.duration || '-'} min (vizitas 30 min)</span>
+                  <span class="info-label">⏱️ Laikas saulės lovoje</span>
+                  <span class="info-value">${booking.duration || '-'} min</span>
                 </div>
                 <div class="info-item">
                   <span class="info-label">📅 Data</span>
                   <span class="info-value">${booking.date}</span>
                 </div>
                 <div class="info-item">
-                  <span class="info-label">🕐 Laikas</span>
+                  <span class="info-label">🕐 Vizito laikas</span>
                   <span class="info-value">${booking.time} (30 min)</span>
                 </div>
               </div>
@@ -268,8 +268,8 @@
       const startDateTime = new Date(`${booking.date}T${booking.time}:00`);
       const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); // +30 minutes (always)
       
-      const title = `☀️ ${booking.service} - ${booking.name}`;
-      const description = `Klientas: ${booking.name}\\nTelefonas: ${booking.phone}\\nEl. paštas: ${booking.email || 'Nenurodyta'}\\nTrukmė: ${booking.duration || '-'} min (vizitas 30 min)\\nPastabos: ${booking.notes || 'Nėra'}`;
+      const title = `☀️ Soliariumas - ${booking.name}`;
+      const description = `Klientas: ${booking.name}\\nTelefonas: ${booking.phone}\\nEl. paštas: ${booking.email || 'Nenurodyta'}\\nLaikas saulės lovoje: ${booking.duration || '-'} min\\nPastabos: ${booking.notes || 'Nėra'}\\n\\n(Bendras vizito laikas: 30 min)`;
       const location = '';
       
       // Format dates for Google Calendar
