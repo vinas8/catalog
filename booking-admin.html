@@ -205,12 +205,16 @@
                   <span class="info-value">${booking.service}</span>
                 </div>
                 <div class="info-item">
+                  <span class="info-label">⏱️ Trukmė</span>
+                  <span class="info-value">${booking.duration || '-'} min (vizitas 30 min)</span>
+                </div>
+                <div class="info-item">
                   <span class="info-label">📅 Data</span>
                   <span class="info-value">${booking.date}</span>
                 </div>
                 <div class="info-item">
                   <span class="info-label">🕐 Laikas</span>
-                  <span class="info-value">${booking.time}</span>
+                  <span class="info-value">${booking.time} (30 min)</span>
                 </div>
               </div>
               
@@ -262,10 +266,10 @@
 
       // Create Google Calendar URL
       const startDateTime = new Date(`${booking.date}T${booking.time}:00`);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // +1 hour
+      const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000); // +30 minutes (always)
       
-      const title = `${booking.service} - ${booking.name}`;
-      const description = `Klientas: ${booking.name}\\nTelefonas: ${booking.phone}\\nEl. paštas: ${booking.email || 'Nenurodyta'}\\nPastabos: ${booking.notes || 'Nėra'}`;
+      const title = `☀️ ${booking.service} - ${booking.name}`;
+      const description = `Klientas: ${booking.name}\\nTelefonas: ${booking.phone}\\nEl. paštas: ${booking.email || 'Nenurodyta'}\\nTrukmė: ${booking.duration || '-'} min (vizitas 30 min)\\nPastabos: ${booking.notes || 'Nėra'}`;
       const location = '';
       
       // Format dates for Google Calendar

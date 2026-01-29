@@ -284,6 +284,11 @@ function validateForm(formData) {
         return false;
     }
 
+    if (!formData.duration) {
+        showMessage('Prašome pasirinkti trukmę', 'error');
+        return false;
+    }
+
     if (!formData.date) {
         showMessage('Prašome pasirinkti datą', 'error');
         return false;
@@ -313,17 +318,30 @@ function validateForm(formData) {
 
 /**
  * Check if time slot is already taken
+ * Blocks 30-minute intervals regardless of duration
  */
 function isTimeSlotTaken(date, time) {
     try {
         const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
         
-        // Check if any approved booking exists for this date/time
-        return bookings.some(booking => 
-            booking.date === date && 
-            booking.time === time && 
-            booking.approvedToCalendar === true
-        );
+        // Parse requested time
+        const [hours, minutes] = time.split(':').map(Number);
+        const requestedStart = hours * 60 + minutes;
+        const requestedEnd = requestedStart + 30; // Always 30-minute slot
+        
+        // Check if any approved booking conflicts with this 30-minute window
+        return bookings.some(booking => {
+            if (booking.date !== date || !booking.approvedToCalendar) {
+                return false;
+            }
+            
+            const [bookingHours, bookingMinutes] = booking.time.split(':').map(Number);
+            const bookingStart = bookingHours * 60 + bookingMinutes;
+            const bookingEnd = bookingStart + 30; // Always 30-minute slot
+            
+            // Check for overlap
+            return (requestedStart < bookingEnd && requestedEnd > bookingStart);
+        });
     } catch (error) {
         console.error('Error checking time slot:', error);
         return false; // Allow booking if check fails
@@ -369,6 +387,7 @@ function initBookingForm() {
             phone: document.getElementById('phone').value.trim(),
             email: document.getElementById('email').value.trim(),
             service: document.getElementById('service').value,
+            duration: document.getElementById('duration').value,
             date: document.getElementById('date').value,
             time: document.getElementById('time').value,
             notes: document.getElementById('notes').value.trim()
