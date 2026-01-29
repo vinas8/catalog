@@ -292,8 +292,124 @@
       bookings[index] = booking;
       localStorage.setItem('bookings', JSON.stringify(bookings));
       
+      // Show confirmation message options
+      showConfirmationDialog(booking);
+      
       // Reload
       setTimeout(() => loadBookings(), 500);
+    }
+
+    function showConfirmationDialog(booking) {
+      const dateFormatted = new Date(booking.date).toLocaleDateString('lt-LT', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      // Confirmation message template
+      const confirmationText = `Sveiki, ${booking.name}! 👋
+
+Jūsų vizitas patvirtintas! ✅
+
+📅 Data: ${dateFormatted}
+🕐 Laikas: ${booking.time}
+⏱️ Saulės lova: ${booking.duration} min
+📍 Adresas: [Jūsų adresas]
+
+Prašome atvykti 5 min anksčiau.
+
+Iki pasimatymo! ☀️`;
+
+      // Create modal
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      `;
+      
+      const dialog = document.createElement('div');
+      dialog.style.cssText = `
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      `;
+      
+      const phone = booking.phone.replace(/\s/g, ''); // Remove spaces
+      const whatsappLink = `https://wa.me/${phone}?text=${encodeURIComponent(confirmationText)}`;
+      const smsLink = `sms:${phone}?body=${encodeURIComponent(confirmationText)}`;
+      const emailSubject = `Patvirtinimas: Soliariumas ${booking.date} ${booking.time}`;
+      const emailLink = `mailto:${booking.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(confirmationText)}`;
+      
+      dialog.innerHTML = `
+        <h2 style="margin-top: 0; color: #667eea;">📨 Siųsti patvirtinimą</h2>
+        <p style="color: #666; margin-bottom: 1.5rem;">Pasirinkite būdą informuoti klientą:</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <a href="${whatsappLink}" target="_blank" class="btn" style="background: #25D366; color: white; text-decoration: none; display: block; text-align: center;">
+            💬 WhatsApp
+          </a>
+          <a href="${smsLink}" class="btn" style="background: #2196F3; color: white; text-decoration: none; display: block; text-align: center;">
+            📱 SMS
+          </a>
+          ${booking.email ? `
+            <a href="${emailLink}" class="btn" style="background: #9c27b0; color: white; text-decoration: none; display: block; text-align: center;">
+              📧 El. paštas
+            </a>
+          ` : ''}
+          <button onclick="copyConfirmation()" class="btn" style="background: #ff9800; color: white;">
+            📋 Kopijuoti tekstą
+          </button>
+        </div>
+        
+        <details style="margin-bottom: 1rem;">
+          <summary style="cursor: pointer; color: #667eea; font-weight: 500;">📝 Peržiūrėti žinutę</summary>
+          <pre id="confirmationText" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin-top: 0.5rem; white-space: pre-wrap; font-size: 0.9rem;">${confirmationText}</pre>
+        </details>
+        
+        <button onclick="closeConfirmationDialog()" class="btn" style="background: #666; color: white; width: 100%;">
+          Uždaryti
+        </button>
+      `;
+      
+      modal.appendChild(dialog);
+      document.body.appendChild(modal);
+      
+      // Store for copy function
+      window.confirmationText = confirmationText;
+      window.confirmationModal = modal;
+    }
+    
+    function copyConfirmation() {
+      navigator.clipboard.writeText(window.confirmationText).then(() => {
+        alert('✅ Tekstas nukopijuotas! Galite įklijuoti į bet kurią programą.');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = window.confirmationText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('✅ Tekstas nukopijuotas!');
+      });
+    }
+    
+    function closeConfirmationDialog() {
+      if (window.confirmationModal) {
+        window.confirmationModal.remove();
+      }
     }
 
     function deleteBooking(index) {
