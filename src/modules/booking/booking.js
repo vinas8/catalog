@@ -7,12 +7,11 @@
 
 // Backend API Configuration
 const CONFIG = {
-    // Google Apps Script Web App URL
-    // Get this after deploying the script (see BACKEND-SETUP.md)
-    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzZYVjq-JWmdfLCAz9rua6QUmIw6A48glObVS6POv7WawxcKlgrRkCCf17xs3MkOHFM/exec',
+    // Cloudflare Worker backend (no Apps Script needed!)
+    BACKEND_URL: 'https://catalog.navickaszilvinas.workers.dev/booking',
     
-    // Old OAuth config (not used with backend approach)
-    USE_BACKEND: false, // Set to false to use client-side OAuth
+    // Use backend instead of client OAuth (no user login required)
+    USE_BACKEND: true, // Set to false to use client-side OAuth
     DEBUG_MODE: true, // Enable debug logging
     CLIENT_ID: '904838926097-09n22uaudeshvrmc4b5g6p798mu5b4bk.apps.googleusercontent.com',
     API_KEY: 'AIzaSyCYfxy1UFVxFm56PNpNMC115zB6M8wLx-Y',

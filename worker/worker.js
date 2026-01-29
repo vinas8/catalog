@@ -201,6 +201,11 @@ export default {
       return handleGetSessionInfo(request, env, corsHeaders);
     }
 
+    // Route: POST /booking (booking system - no login required)
+    if (pathname === '/booking' && request.method === 'POST') {
+      return handleBookingSimple(request, env, corsHeaders);
+    }
+
     // Route: POST /stripe-product-webhook (Stripe product sync)
     if (pathname === '/stripe-product-webhook' && request.method === 'POST') {
       return handleStripeProductWebhook(request, env, corsHeaders);
@@ -2263,6 +2268,58 @@ async function handleKVDelete(request, env, corsHeaders) {
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
+
+/**
+ * Handle booking request (simple version - stores in KV)
+ */
+async function handleBookingSimple(request, env, corsHeaders) {
+  try {
+    const data = await request.json();
+    
+    // Validate
+    if (!data.name || !data.phone || !data.service || !data.date || !data.time) {
+      return new Response(JSON.stringify({ 
+        error: 'Trūksta būtinų laukų',
+        required: ['name', 'phone', 'service', 'date', 'time']
+      }), {
+        status: 400,
+        headers: corsHeaders
+      });
+    }
+
+    // Store booking in KV
+    const bookingId = `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    if (env.BOOKINGS) {
+      await env.BOOKINGS.put(bookingId, JSON.stringify({
+        ...data,
+        createdAt: new Date().toISOString(),
+        status: 'pending'
+      }));
+    }
+
+    // Log to console (visible in Cloudflare dashboard)
+    console.log('New booking:', { bookingId, ...data });
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Užsakymas priimtas! Susisieksime su Jumis artimiausiu metu.',
+      bookingId: bookingId
+    }), {
+      status: 200,
+      headers: corsHeaders
+    });
+
+  } catch (error) {
+    console.error('Booking error:', error);
+    return new Response(JSON.stringify({
+      error: 'Įvyko klaida. Prašome bandyti dar kartą arba skambinti telefonu.',
+      details: error.message
+    }), {
       status: 500,
       headers: corsHeaders
     });
