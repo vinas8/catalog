@@ -307,6 +307,39 @@ function validateForm(formData) {
         return false;
     }
 
+    // Patikrinti darbo laiką
+    const dayOfWeek = selectedDate.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+    const [hours, minutes] = formData.time.split(':').map(Number);
+    const timeInMinutes = hours * 60 + minutes;
+
+    // Sekmadienis (0) - nedirbame
+    if (dayOfWeek === 0) {
+        showMessage('❌ Sekmadieniais nedirbame. Prašome pasirinkti kitą dieną.', 'error');
+        return false;
+    }
+
+    // Šeštadienis (6) - 14:00-20:00
+    if (dayOfWeek === 6) {
+        const startTime = 14 * 60; // 14:00
+        const endTime = 20 * 60;   // 20:00
+        
+        if (timeInMinutes < startTime || timeInMinutes >= endTime) {
+            showMessage('⚠️ Šeštadieniais dirbame 14:00-20:00. Prašome pasirinkti laiką šiame intervale.', 'error');
+            return false;
+        }
+    }
+
+    // Darbo dienos (1-5) - 9:00-20:00
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+        const startTime = 9 * 60;  // 9:00
+        const endTime = 20 * 60;   // 20:00
+        
+        if (timeInMinutes < startTime || timeInMinutes >= endTime) {
+            showMessage('⚠️ Darbo dienomis dirbame 9:00-20:00. Prašome pasirinkti laiką šiame intervale.', 'error');
+            return false;
+        }
+    }
+
     // Patikrinti ar šis laikas jau užimtas
     if (isTimeSlotTaken(formData.date, formData.time)) {
         showMessage('⚠️ Šis laikas jau užimtas. Prašome pasirinkti kitą laiką.', 'error');
