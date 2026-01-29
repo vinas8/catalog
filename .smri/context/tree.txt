@@ -139,6 +139,7 @@
 │   ├── smri-save-context.sh
 │   ├── smri-startup.sh
 │   ├── smri-update-context.sh
+│   ├── test-booking-flow.sh
 │   ├── test-demo-logic.sh
 │   ├── test-demo.sh
 │   ├── update-products-with-links.js
@@ -209,10 +210,13 @@
 │   ├── worker.js
 │   └── wrangler.toml
 ├── 404.html
+├── QUICK-FIX-CORS.md
 ├── README.md
 ├── _redirects
 ├── account.html
 ├── admin-kv.html
+├── booking-backend.html
+├── booking.html
 ├── calculator-integrated.html
 ├── calculator.html
 ├── catalog-router.html
@@ -238,4 +242,4 @@
 ├── test-calc.html
 └── test-integration.html
 
-72 directories, 167 files
+72 directories, 171 files

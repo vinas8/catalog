@@ -17,13 +17,13 @@
 [34m
 📊 Summary:[0m 
 [31m❌[0m Version Consistency
-[32m✅[0m Module Structure
+[31m❌[0m Module Structure
 [32m✅[0m SMRI Structure
 [31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 3/6 (50%)[0m
+[36mScore: 2/6 (33%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m

@@ -1,6 +1,6 @@
 # SMRI Session Context
-**Generated:** 2026-01-24 01:36:58 UTC  
-**Commit:** cd65671  
+**Generated:** 2026-01-29 10:41:36 UTC  
+**Commit:** 1fbd08f  
 **Version:** 0.9.0
 
 ---
@@ -9,6 +9,18 @@
 
 ### Git Log (Last 20 commits)
 ```
+1fbd08f Add debug mode and cache busting
+77e4624 🎉 FINAL: Clean minimal backend - should work!
+314adfe Update to working backend URL - final deployment
+695e185 Add CORS fix guide and updated minimal script
+603750c Add minimal working Apps Script version
+bca157b Update backend URL - ready for live testing
+da2a34b Fix Apps Script CORS headers issue
+920ae37 Add SMRI booking flow test script
+1ce75ce Add backend URL - no user login required
+efd7e53 Add setup summary
+f9a576f Add backend solution - no user login required
+34a6d0c Add booking system with Google Calendar integration
 cd65671 docs: Add comprehensive README for complete RPG game
 b0d4edf feat: Complete RPG with combat, enemies (bats), health, hitboxes - Full Godot tutorial implementation
 eea0417 feat: Add mobile touch controls (D-pad + action buttons)
@@ -17,24 +29,14 @@ bff342a feat: Add Godot source code and JavaScript translation guide
 6fabc85 docs: Update plan - Phase 1 clone RPG foundation, Phase 2 add farming mechanics
 ac67c27 fix: Correct debug-loader.js path in calc, add direct test
 7c10ec9 docs: Add Godot Action RPG video list - clarify this is Zelda-like combat, not farming
-74ccc46 fix: Remove duplicate debug component, use existing debug-loader.js
-ef56a9b docs: Add comprehensive Godot farming game implementation plan (S9.2,6.01)
-3b18f15 docs: Add Godot farming game tutorial reference for future Stardew Valley-type features
-1c21469 fix: Set APP_BASE_PATH in calc-search-test.html to enable database loading
-1b53f45 chore: Bump version to 0.9.0 - localStorage caching, debug overlay, mobile fixes
-67dc594 feat: Add simple debug overlay that intercepts console.log and displays on screen
-dc91ba9 feat: Add draggable debug panel component with console interception
-a9c976a feat: Add localStorage caching for genetics database - loads instantly after first visit
-6f08769 fix: Add extensive logging to debug morph search, prevent autocomplete if database fails
-bcce730 fix: Demo button now shows results and scrolls to data display
-70750fb debug: Add live morph search test page
-d315338 fix: Mobile button layout - stack buttons vertically on small screens
 ```
 
 ### Git Status
 ```
  M .smri/context/LAST_UPDATE.txt
  M .smri/context/git-log.txt
+ M .smri/context/health.txt
+ M .smri/context/modules.txt
  M .smri/context/session.md
  M .smri/context/tree.txt
 ```
@@ -257,6 +259,7 @@ Stripe (Payments & Webhooks)
 ### Modules (src/modules/)
 ```
 auth
+booking
 breeding
 cart
 common
@@ -307,13 +310,13 @@ TestRenderer.js
 [34m
 📊 Summary:[0m 
 [31m❌[0m Version Consistency
-[32m✅[0m Module Structure
+[31m❌[0m Module Structure
 [32m✅[0m SMRI Structure
 [31m❌[0m Duplicate Files
 [31m❌[0m File Sizes
 [32m✅[0m Module Exports
 
-[36mScore: 3/6 (50%)[0m
+[36mScore: 2/6 (33%)[0m
 [33m
 ⚠️[0m Some checks failed - review above
 [36m
@@ -348,5 +351,5 @@ To read any file: `cat .smri/context/{filename}`
 
 ---
 
-**Context cached at:** 2026-01-24 01:37:00 UTC  
+**Context cached at:** 2026-01-29 10:41:37 UTC  
 **To update:** Run `bash scripts/smri-update-context.sh`

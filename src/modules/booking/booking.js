@@ -138,7 +138,8 @@ async function sendBookingToBackend(formData) {
             body: JSON.stringify({
                 ...formData,
                 origin: window.location.origin
-            })
+            }),
+            redirect: 'follow' // Handle redirects
         });
 
         DEBUG.log('Response received', {
@@ -155,6 +156,13 @@ async function sendBookingToBackend(formData) {
             throw new Error(`Server error: ${response.status}`);
         }
 
+        // Check if response is HTML (redirect page) instead of JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+            DEBUG.error('Received HTML instead of JSON - CORS/redirect issue', { contentType });
+            throw new Error('Backend neatsakė teisingai. Patikrinkite Apps Script nustatymus.');
+        }
+
         const result = await response.json();
         DEBUG.log('Success', result);
         return result;
@@ -165,6 +173,11 @@ async function sendBookingToBackend(formData) {
             stack: error.stack,
             name: error.name
         });
+        
+        // User-friendly error message
+        if (error.message === 'Failed to fetch') {
+            throw new Error('Nepavyko prisijungti prie serverio. Apps Script turi CORS problemą - reikia peržiūrėti deployment nustatymus.');
+        }
         throw error;
     }
 }
