@@ -224,8 +224,21 @@
                   <button class="btn btn-delete" onclick="deleteBooking(${index})">
                     🗑️ Ištrinti
                   </button>
+                  ${booking.phone ? `
+                    <a href="tel:${booking.phone}" class="btn" style="background: #2196F3; color: white; text-decoration: none;">
+                      📞 Skambinti
+                    </a>
+                  ` : ''}
+                  ${booking.email ? `
+                    <a href="mailto:${booking.email}?subject=Dėl jūsų užsakymo: ${booking.service} ${booking.date} ${booking.time}" class="btn" style="background: #9c27b0; color: white; text-decoration: none;">
+                      📧 Rašyti
+                    </a>
+                  ` : ''}
                 ` : `
                   <button class="btn btn-approve" disabled>✅ Pridėta į kalendorių</button>
+                  <button class="btn btn-delete" onclick="deleteBooking(${index})">
+                    🗑️ Ištrinti
+                  </button>
                 `}
               </div>
             </div>

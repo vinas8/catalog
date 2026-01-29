@@ -302,7 +302,32 @@ function validateForm(formData) {
         return false;
     }
 
+    // Patikrinti ar šis laikas jau užimtas
+    if (isTimeSlotTaken(formData.date, formData.time)) {
+        showMessage('⚠️ Šis laikas jau užimtas. Prašome pasirinkti kitą laiką.', 'error');
+        return false;
+    }
+
     return true;
+}
+
+/**
+ * Check if time slot is already taken
+ */
+function isTimeSlotTaken(date, time) {
+    try {
+        const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        
+        // Check if any approved booking exists for this date/time
+        return bookings.some(booking => 
+            booking.date === date && 
+            booking.time === time && 
+            booking.approvedToCalendar === true
+        );
+    } catch (error) {
+        console.error('Error checking time slot:', error);
+        return false; // Allow booking if check fails
+    }
 }
 
 /**
