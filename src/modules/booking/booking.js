@@ -123,12 +123,13 @@ function gisLoaded() {
  * Send booking to backend (no user login required)
  */
 async function sendBookingToBackend(formData) {
-    DEBUG.log('Starting backend request', {
+    DEBUG.log('🚀 Starting backend request', {
         url: CONFIG.BACKEND_URL,
         data: formData
     });
     
     try {
+        DEBUG.log('📤 Sending POST request...');
         const response = await fetch(CONFIG.BACKEND_URL, {
             method: 'POST',
             headers: {
@@ -141,33 +142,42 @@ async function sendBookingToBackend(formData) {
             redirect: 'follow' // Handle redirects
         });
 
-        DEBUG.log('Response received', {
+        DEBUG.log('📥 Response received', {
             status: response.status,
             statusText: response.statusText,
             ok: response.ok,
             type: response.type,
-            url: response.url
+            url: response.url,
+            headers: {
+                contentType: response.headers.get('content-type')
+            }
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            DEBUG.error('Bad response', { status: response.status, body: errorText.substring(0, 500) });
+            DEBUG.error('❌ Bad response', { status: response.status, body: errorText.substring(0, 500) });
             throw new Error(`Server error: ${response.status}`);
         }
 
         // Check if response is HTML (redirect page) instead of JSON
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
-            DEBUG.error('Received HTML instead of JSON - CORS/redirect issue', { contentType });
+            DEBUG.error('❌ Received HTML instead of JSON - CORS/redirect issue', { contentType });
             throw new Error('Backend neatsakė teisingai. Patikrinkite Apps Script nustatymus.');
         }
 
         const result = await response.json();
-        DEBUG.log('Success', result);
+        DEBUG.log('✅ Success!', result);
+        
+        // Show detailed success info
+        if (result.bookingId) {
+            DEBUG.log(`📋 Booking ID: ${result.bookingId}`);
+        }
+        
         return result;
         
     } catch (error) {
-        DEBUG.error('Fetch failed', {
+        DEBUG.error('💥 Fetch failed', {
             message: error.message,
             stack: error.stack,
             name: error.name
@@ -175,7 +185,7 @@ async function sendBookingToBackend(formData) {
         
         // User-friendly error message
         if (error.message === 'Failed to fetch') {
-            throw new Error('Nepavyko prisijungti prie serverio. Apps Script turi CORS problemą - reikia peržiūrėti deployment nustatymus.');
+            throw new Error('Nepavyko prisijungti prie serverio. Patikrinkite interneto ryšį.');
         }
         throw error;
     }
@@ -352,17 +362,28 @@ function initBookingForm() {
             // Išsaugoti lokaliai kaip backup
             saveBookingLocally(formData);
 
+            DEBUG.log('🎯 Attempting to submit booking...', {
+                useBackend: CONFIG.USE_BACKEND,
+                backendUrl: CONFIG.BACKEND_URL,
+                gapiInited,
+                gisInited
+            });
+
             // Check if using backend or client-side OAuth
             if (CONFIG.USE_BACKEND && CONFIG.BACKEND_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
                 // Backend approach - NO USER LOGIN REQUIRED
-                await sendBookingToBackend(formData);
+                DEBUG.log('📡 Using backend approach (no login)');
+                const result = await sendBookingToBackend(formData);
+                DEBUG.log('✅ Backend response:', result);
                 showMessage('✓ Užsakymas priimtas! Netrukus susisieksime su Jumis.', 'success');
             } else if (!CONFIG.USE_BACKEND && gapiInited && gisInited) {
                 // Client-side OAuth - requires user to login
+                DEBUG.log('🔐 Using client OAuth (requires login)');
                 await addEventToGoogleCalendar(formData);
                 showMessage('✓ Užsakymas priimtas ir laukia patvirtinimo! Susisieksime netrukus.', 'success');
             } else {
                 // Demo mode
+                DEBUG.log('🎭 Demo mode - no backend configured');
                 console.log('Užsakymo duomenys:', formData);
                 showMessage('✓ Užsakymas priimtas! (Demo režimas - sukonfigūruokite backend)', 'success');
             }
