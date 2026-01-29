@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Užsakymų Valdymas</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 4px solid #ffa500;
+    }
+
+    .booking-card.pending {
+      border-left-color: #ffa500;
+    }
+
+    .booking-card.approved {
+      border-left-color: #4caf50;
+      opacity: 0.7;
+    }
+
+    .booking-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .booking-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .btn-approve {
+      background: #4caf50;
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: #45a049;
+    }
+
+    .btn-calendar {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-calendar:hover {
+      background: #5568d3;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #da190b;
+    }
+
+    .btn-refresh {
+      background: #667eea;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>📋 Užsakymų Valdymas</h1>
+      <p>Peržiūrėkite ir tvarkykite gautus užsakymus</p>
+      <button class="btn btn-refresh" onclick="loadBookings()">🔄 Atnaujinti</button>
+    </div>
+
+    <div id="bookings-list">
+      <div class="loading">⏳ Kraunama...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://catalog.navickaszilvinas.workers.dev';
+    const CALENDAR_EMAIL = 'sunroomsiauliai@gmail.com';
+
+    // Load bookings on page load
+    loadBookings();
+
+    async function loadBookings() {
+      const container = document.getElementById('bookings-list');
+      container.innerHTML = '<div class="loading">⏳ Kraunama...</div>';
+
+      try {
+        // Get all booking keys from worker logs
+        // For now, we'll use localStorage to show submitted bookings
+        const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        
+        if (bookings.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 Nėra užsakymų</div>';
+          return;
+        }
+
+        // Sort by date (newest first)
+        bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        // Render bookings
+        container.innerHTML = bookings.map((booking, index) => {
+          const status = booking.approvedToCalendar ? 'approved' : 'pending';
+          const statusText = booking.approvedToCalendar ? 'Patvirtinta' : 'Laukiama';
+          
+          return `
+            <div class="booking-card ${status}" data-index="${index}">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="status-badge status-${status}">${statusText}</span>
+                <small style="color: #999;">${new Date(booking.timestamp).toLocaleString('lt-LT')}</small>
+              </div>
+              
+              <div class="booking-info">
+                <div class="info-item">
+                  <span class="info-label">👤 Vardas</span>
+                  <span class="info-value">${booking.name}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📞 Telefonas</span>
+                  <span class="info-value">${booking.phone}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📧 El. paštas</span>
+                  <span class="info-value">${booking.email || 'Nenurodyta'}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">🎯 Paslauga</span>
+                  <span class="info-value">${booking.service}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📅 Data</span>
+                  <span class="info-value">${booking.date}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">🕐 Laikas</span>
+                  <span class="info-value">${booking.time}</span>
+                </div>
+              </div>
+              
+              ${booking.notes ? `<div style="margin-top: 1rem;"><span class="info-label">📝 Pastabos:</span><br>${booking.notes}</div>` : ''}
+              
+              <div class="booking-actions">
+                ${!booking.approvedToCalendar ? `
+                  <button class="btn btn-calendar" onclick="addToCalendar(${index})">
+                    📅 Pridėti į kalendorių
+                  </button>
+                  <button class="btn btn-delete" onclick="deleteBooking(${index})">
+                    🗑️ Ištrinti
+                  </button>
+                ` : `
+                  <button class="btn btn-approve" disabled>✅ Pridėta į kalendorių</button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Error loading bookings:', error);
+        container.innerHTML = '<div class="empty-state">❌ Klaida kraunant užsakymus</div>';
+      }
+    }
+
+    function addToCalendar(index) {
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      const booking = bookings[index];
+      
+      if (!booking) {
+        alert('Užsakymas nerastas');
+        return;
+      }
+
+      // Create Google Calendar URL
+      const startDateTime = new Date(`${booking.date}T${booking.time}:00`);
+      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // +1 hour
+      
+      const title = `${booking.service} - ${booking.name}`;
+      const description = `Klientas: ${booking.name}\\nTelefonas: ${booking.phone}\\nEl. paštas: ${booking.email || 'Nenurodyta'}\\nPastabos: ${booking.notes || 'Nėra'}`;
+      const location = '';
+      
+      // Format dates for Google Calendar
+      const formatDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+      };
+      
+      const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+        `&text=${encodeURIComponent(title)}` +
+        `&dates=${formatDate(startDateTime)}/${formatDate(endDateTime)}` +
+        `&details=${encodeURIComponent(description)}` +
+        `&location=${encodeURIComponent(location)}` +
+        `&ctz=Europe/Vilnius`;
+      
+      // Open Google Calendar in new window
+      window.open(calendarUrl, '_blank');
+      
+      // Mark as approved
+      booking.approvedToCalendar = true;
+      bookings[index] = booking;
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      
+      // Reload
+      setTimeout(() => loadBookings(), 500);
+    }
+
+    function deleteBooking(index) {
+      if (!confirm('Ar tikrai norite ištrinti šį užsakymą?')) {
+        return;
+      }
+      
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      bookings.splice(index, 1);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      loadBookings();
+    }
+  </script>
+</body>
+</html>
