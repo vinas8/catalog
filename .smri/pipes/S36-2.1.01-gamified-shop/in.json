@@ -1,0 +1,6 @@
+{
+  "demo_base": "http://localhost:8000",
+  "test_type": "feature",
+  "catalog_ref": "S2.1,2.01",
+  "urls": ["/"]
+}

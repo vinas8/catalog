@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Serpent Town SMRI — Pipe Demo</title>
+    <style>body { margin: 0; padding: 0; overflow: hidden; }</style>
+</head>
+<body>
+    <div id="demo-root"></div>
+    <script src="/smri/shared/smri-demo/demo.js"></script>
+    <script>
+        const demo = new SMRIDemo({
+            containerId: 'demo-root',
+            apiBase: 'http://localhost:4000',
+            scenarios: [
+                {
+                    icon: '🧪',
+                    title: 'Health Check',
+                    description: 'Run all catalog health checks',
+                    pipes: ['S36-0.0.01']
+                },
+                {
+                    icon: '🐍',
+                    title: 'Product Availability Chain',
+                    description: 'Check product availability → Duplicate check → Happy path purchase',
+                    pipes: ['S36-1.1.01', 'S36-1.1.03', 'S36-1.1.05']
+                },
+                {
+                    icon: '🛒',
+                    title: 'Purchase Flow',
+                    description: 'Buy snakes → Email receipt → Returning user',
+                    pipes: ['S36-1.1.02', 'S36-1.4.06', 'S36-1.1.04']
+                },
+                {
+                    icon: '🎮',
+                    title: 'Gamified Shop',
+                    description: 'Gamified shop → Tutorial happy path → Tutorial missed care',
+                    pipes: ['S36-2.1.01', 'S36-2.7.03', 'S36-2.7.04']
+                },
+                {
+                    icon: '🧬',
+                    title: 'Snake Data',
+                    description: 'Calculator genetics → Real snake completeness',
+                    pipes: ['S36-3.2.01', 'S36-1.2.07']
+                },
+                {
+                    icon: '🚶',
+                    title: 'Customer Journey',
+                    description: 'Full customer journey flow',
+                    pipes: ['S36-6.1.01']
+                }
+            ]
+        });
+        demo.init();
+    </script>
+</body>
+</html>

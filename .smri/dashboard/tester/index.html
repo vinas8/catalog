@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Serpent Town SMRI — Tester</title>
+</head>
+<body>
+    <script src="/smri/shared/smri-core.js"></script>
+    <script>
+        SMRICore.init({
+            project: 'catalog',
+            name: 'Serpent Town SMRI',
+            emoji: '🐍',
+            color: '#10b981',
+            colorEnd: '#059669',
+            version: 'v0.16',
+            view: 'tester',
+            apiBase: 'http://localhost:4000',
+            testerPath: '/smri/tester/',
+            navLinks: [
+                { label: '📂 Explorer', href: '/smri/explorer/' },
+                { label: '🧪 Tester', href: '/smri/tester/', active: true },
+                { label: '⚡ Executor', href: '/smri/executor/' },
+                { label: '🎭 Demo Portal', href: '/demo' },
+                { label: '🧠 Main SMRI', href: 'http://localhost:4000/explorer/', external: true, color: '#667eea' },
+                { label: '🌲 LarchSupply', href: 'http://localhost:8888/demo/smri/explorer/', external: true, color: '#d97706' }
+            ]
+        });
+    </script>
+</body>
+</html>

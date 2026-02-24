@@ -1,0 +1,6 @@
+{
+  "demo_base": "http://localhost:8000",
+  "test_type": "health",
+  "catalog_ref": "S0.0,1,2,3,4,5.01",
+  "urls": ["/"]
+}
