@@ -1,6 +1,0 @@
-{
-  "demo_base": "http://localhost:8000",
-  "test_type": "e2e",
-  "catalog_ref": "S2.7,5,5-1.02",
-  "urls": ["/"]
-}

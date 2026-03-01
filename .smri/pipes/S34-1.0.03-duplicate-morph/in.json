@@ -1,6 +1,0 @@
-{
-  "demo_base": "http://localhost:8000",
-  "test_type": "integrity",
-  "catalog_ref": "S1.1,2.03",
-  "urls": ["/"]
-}
